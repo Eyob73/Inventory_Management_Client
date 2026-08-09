@@ -1,12 +1,11 @@
 import { Component, HostListener, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })

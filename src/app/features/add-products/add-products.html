@@ -1,0 +1,124 @@
+<form class="product-form" [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+    <div class="product-form__header">
+        <h1 class="product-form__title">Add product</h1>
+        <p class="product-form__subtitle">Fill in the details below to add a new product in your catalog.</p>
+    </div>
+
+    @if (submitted()) {
+    <div class="product-form__success">
+        <p>Product added successfully!</p>
+    </div>
+    }
+
+    <section class="product-form__section">
+        <h2 class="product-form__section-title">Basic information</h2>
+
+        <div class="form-group">
+            <label for="name">Product name</label>
+            <input type="text" id="name" formControlName="name" [class.has-error]="isInvalid('name')"
+                placeholder="e.g. Sweater">
+            @if (isInvalid('name')) {
+            <span class="form-error">Product name is required.</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" formControlName="description"
+                placeholder="Short, clear description of the product">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" formControlName="category" placeholder="e.g. Apparel">
+            </div>
+
+            <div class="form-group">
+                <label for="sku">SKU</label>
+                <input type="text" id="sku" formControlName="sku" placeholder="e.g. MW-SWT-001">
+            </div>
+        </div>
+    </section>
+
+    <section class="product-form__section">
+        <h2 class="product-form__section-title">Pricing &amp; inventory</h2>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Price</label>
+                <div class="input-prefix">
+                    <span class="input-prefix__symbol"></span>
+                    <input type="number" id="price" formControlName="price" [class.has-error]="isInvalid('price')"
+                        placeholder="0.00" min="0" step="0.01">
+                </div>
+                @if (isInvalid('price')) {
+                <span class="form-error">Enter a valid price.</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" formControlName="stock" [class.has-error]="isInvalid('stock')"
+                    placeholder="0" min="0">
+                @if (isInvalid('stock')) {
+                <span class="form-error">Enter available stock.</span>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="product-form__section" formArrayName="variants">
+        <div class="product-form__section-header">
+            <div>
+                <h2 class="product-form__section-title">Variants</h2>
+                <p class="product-form__section-hint">Add size, color, or material options for this product.</p>
+            </div>
+            <button type="button" class="btn btn--ghost" (click)="addVariant()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                Add variant
+            </button>
+        </div>
+
+        <div class="variant-list">
+            @for (variant of variants.controls; let i = $index; track variant) {
+            <div class="variant-card" [formGroupName]="i">
+                <div class="variant-card__fields">
+                    <div class="form-group">
+                        <label>Variant name</label>
+                        <input type="text" formControlName="name" [class.has-error]="isVariantInvalid(i, 'name')"
+                            placeholder="e.g. Size">
+                    </div>
+                    <div class="form-group">
+                        <label>Value</label>
+                        <input type="text" formControlName="value" [class.has-error]="isVariantInvalid(i, 'value')"
+                            placeholder="e.g. Medium">
+                    </div>
+                    <div class="form-group form-group--narrow">
+                        <label>Stock</label>
+                        <input type="number" formControlName="stock" [class.has-error]="isVariantInvalid(i, 'stock')"
+                            placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <button type="button" class="variant-card__remove" (click)="removeVariant(i)"
+                    [disabled]="variants.length === 1" aria-label="Remove variant">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            }
+        </div>
+    </section>
+
+    <div class="product-form__footer">
+        <button type="button" class="btn btn--secondary">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="productForm.invalid">
+            Save product
+        </button>
+    </div>
+</form>

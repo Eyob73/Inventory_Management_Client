@@ -17,6 +17,13 @@ export const routes: Routes = [
             ),
     },
     {
+        path: 'add-products',
+        loadComponent: () =>
+            import('./features/add-products/add-products').then(
+                (m) => m.AddProducts,
+            ),
+    },
+    {
         path: 'categories',
         loadComponent: () =>
             import('./features/categories/categories').then(
