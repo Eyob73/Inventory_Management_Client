@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import { Navbar } from '../../layout/navbar/navbar';
+import { Sidebar } from '../../layout/sidebar/sidebar';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [Navbar, Sidebar],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

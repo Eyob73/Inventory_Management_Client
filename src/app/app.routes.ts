@@ -1,3 +1,69 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    {
+        path: 'dashboard',
+        loadComponent: () =>
+            import('./features/dashboard/dashboard').then(
+                (m) => m.Dashboard,
+            ),
+    },
+    {
+        path: 'products',
+        loadComponent: () =>
+            import('./features/products/products').then(
+                (m) => m.Products,
+            ),
+    },
+    {
+        path: 'categories',
+        loadComponent: () =>
+            import('./features/categories/categories').then(
+                (m) => m.Categories,
+            ),
+    },
+    {
+        path: 'inventory',
+        loadComponent: () =>
+            import('./features/inventory/inventory').then(
+                (m) => m.Inventory,
+            ),
+    },
+    {
+        path: 'sales',
+        loadComponent: () =>
+            import('./features/sales/sales').then(
+                (m) => m.Sales,
+            ),
+    },
+    {
+        path: 'purchases',
+        loadComponent: () =>
+            import('./features/purchases/purchases').then(
+                (m) => m.Purchases,
+            ),
+    },
+    {
+        path: 'customers',
+        loadComponent: () =>
+            import('./features/customers/customers').then(
+                (m) => m.Customers,
+            ),
+    },
+    {
+        path: 'suppliers',
+        loadComponent: () =>
+            import('./features/suppliers/suppliers').then(
+                (m) => m.Suppliers,
+            ),
+    },
+    {
+        path: 'reports',
+        loadComponent: () =>
+            import('./features/reports/reports').then(
+                (m) => m.Reports,
+            ),
+    },
+
+];
