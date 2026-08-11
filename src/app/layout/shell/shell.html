@@ -1,0 +1,150 @@
+<div class="shell-wrapper">
+
+  <!-- ── Full-width Toolbar ───────────────────────────────────────── -->
+  <mat-toolbar class="shell-toolbar" [class.toolbar-scrolled]="isScrolled()">
+
+    <div class="toolbar-left">
+      <!-- Brand logo -->
+      <a routerLink="/" class="toolbar-brand">
+        <span class="toolbar-mark" aria-hidden="true">
+          <svg viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="16" height="16" rx="4" [attr.fill]="themeService.isDark() ? '#2d9c8f' : '#0E8C7F'" />
+            <rect x="10" y="10" width="16" height="16" rx="4" [attr.fill]="themeService.isDark() ? '#f0f4f8' : '#0B1F2E'" />
+          </svg>
+        </span>
+        @if (!isMobile()) {
+          <span class="toolbar-wordmark">INV-MGNT</span>
+        }
+      </a>
+
+      <!-- Collapse toggle (only on desktop) -->
+      @if (!isMobile()) {
+        <button mat-icon-button class="collapse-btn" (click)="toggleCollapse()"
+          [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+          [matTooltip]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+          matTooltipPosition="below">
+          <mat-icon>{{ isCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+        </button>
+      }
+
+      <!-- On mobile, a hamburger to open side-nav -->
+      @if (isMobile()) {
+        <button mat-icon-button class="collapse-btn" (click)="sidenav.toggle()"
+          aria-label="Toggle navigation">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+
+      <span class="toolbar-divider"></span>
+      <span class="toolbar-title">{{ pageTitle() }}</span>
+    </div>
+
+    <span class="toolbar-spacer"></span>
+
+    <div class="toolbar-right">
+      <!-- Search pill -->
+      <div class="toolbar-search" role="search" (click)="openSearch($event)">
+        <mat-icon class="search-icon">search</mat-icon>
+        <span class="search-text">Search…</span>
+        <kbd class="search-kbd">⌘K</kbd>
+      </div>
+
+      <!-- Theme toggle -->
+      <button mat-icon-button (click)="toggleTheme()" matTooltip="Toggle theme" class="toolbar-action-btn">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      <!-- Notifications -->
+      <button mat-icon-button aria-label="Notifications" matTooltip="Notifications" class="toolbar-action-btn">
+        <mat-icon [matBadge]="'3'" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+      </button>
+
+      <!-- Avatar / Account menu -->
+      <button mat-icon-button [matMenuTriggerFor]="accountMenu" class="toolbar-avatar" aria-label="Account menu">
+        <span class="avatar-initials">SA</span>
+      </button>
+    </div>
+
+    <mat-menu #accountMenu="matMenu" xPosition="before">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <mat-divider />
+      <button mat-menu-item class="logout-item">
+        <mat-icon>logout</mat-icon>
+        <span>Sign out</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- ── Sidenav + Content ───────────────────────────────────────── -->
+  <mat-sidenav-container class="shell-container" [class.shell-container--collapsed]="isCollapsed() && !isMobile()">
+
+    <!-- Sidebar -->
+    <mat-sidenav #sidenav
+      class="shell-sidenav"
+      [mode]="mode()"
+      [opened]="!isMobile() || undefined"
+      [style.width]="sidenavWidth()"
+      disableClose>
+      <!-- Navigation -->
+      <mat-nav-list class="sidenav-nav">
+        @for (group of navGroups(); track group.label) {
+          <div class="nav-group">
+            @if (!isCollapsedOrMobile()) {
+              <p class="nav-group-label">{{ group.label }}</p>
+            }
+            @for (item of group.items; track item.path) {
+              <a mat-list-item
+                [routerLink]="item.path"
+                routerLinkActive="active-link"
+                class="nav-item"
+                [matTooltip]="isCollapsedOrMobile() ? item.label : ''"
+                matTooltipPosition="right"
+                (click)="isMobile() && sidenav.close()">
+                <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                @if (!isCollapsedOrMobile()) {
+                  <span matListItemTitle>{{ item.label }}</span>
+                }
+              </a>
+            }
+          </div>
+          @if (!$last) {
+            <mat-divider />
+          }
+        }
+      </mat-nav-list>
+
+      <!-- User footer -->
+      <div class="sidenav-footer">
+        <mat-divider />
+        <a mat-list-item routerLink="/profile" class="user-item"
+          [matTooltip]="isCollapsedOrMobile() ? 'My Profile' : ''"
+          matTooltipPosition="right">
+          <span class="user-avatar" matListItemIcon>SA</span>
+          @if (!isCollapsedOrMobile()) {
+            <span matListItemTitle class="user-name">Admin User</span>
+          }
+          @if (!isCollapsedOrMobile()) {
+            <span matListItemLine class="user-role">Administrator</span>
+          }
+        </a>
+      </div>
+    </mat-sidenav>
+
+    <!-- Page content -->
+    <mat-sidenav-content class="shell-content">
+      <!-- Loading bar -->
+      <mat-progress-bar mode="indeterminate" *ngIf="isLoading()" class="loading-bar"></mat-progress-bar>
+      <div class="page-content">
+        <router-outlet />
+      </div>
+    </mat-sidenav-content>
+
+  </mat-sidenav-container>
+</div>

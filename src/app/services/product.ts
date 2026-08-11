@@ -1,10 +1,20 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, Service, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Product } from "../models/products.model";
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface ProductPayload {
+  name: string;
+  description: string;
+  sku: string;
+  price: number;
+  cost: number;
+  stock: number;
+  supplierId: null | string;
+  quantityInStock: number;
+  categoryId: string;
+}
+
+@Service()
 export class ProductService {
   private http = inject(HttpClient);
   private baseUrl = "http://localhost:5111/api/products";
@@ -15,5 +25,9 @@ export class ProductService {
 
   getById(id: string) {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
+  }
+
+  create(product: Partial<Product>) {
+    return this.http.post<Product>(this.baseUrl, product);
   }
 }

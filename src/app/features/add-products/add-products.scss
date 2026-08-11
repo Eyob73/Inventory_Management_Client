@@ -1,15 +1,8 @@
+/* Tokens come from styles/_theme.scss (body / :root) */
 :host {
-    --ink: #0b1f2e;
-    --teal: #0e8c7f;
-    --paper: #f6f8f9;
-    --slate: #5b6b76;
-    --surface: #ffffff;
-    --border: rgba(11, 31, 46, 0.1);
-    --error: #c4432f;
-
-    display: block;
-    font-family: 'Inter', system-ui, sans-serif;
-    color: var(--ink);
+  display: block;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ink);
 }
 
 .product-form {
@@ -34,6 +27,28 @@
     font-size: 14.5px;
     color: var(--slate);
     margin: 0;
+}
+
+.product-form__status {
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    background: #eef7f6;
+    border: 1px solid rgba(14, 140, 127, 0.3);
+    border-radius: 8px;
+    color: var(--teal);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    p {
+        margin: 0;
+    }
+
+    &--error {
+        background: #fdf4f3;
+        border-color: rgba(196, 67, 47, 0.3);
+        color: var(--error);
+    }
 }
 
 .product-form__section {

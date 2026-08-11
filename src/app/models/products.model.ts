@@ -7,7 +7,7 @@ export interface Product {
     cost: number;
     quantityInStock: number;
     categoryId: string;
-    supplierId: string;
+    supplierId: string | null;
     createdAt: string;
     updatedAt: string | null;
 }

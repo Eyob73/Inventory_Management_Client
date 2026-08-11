@@ -1,114 +1,117 @@
 :host {
-    display: block;
-    font-family: 'Inter', system-ui, sans-serif;
+  display: block;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ink);
 }
 
 .card {
-    background: var(--surface, #ffffff);
-    border: 1px solid rgba(11, 31, 46, 0.08);
-    border-radius: 12px;
-    padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
 
-    &__header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 8px;
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  &__title {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  &__badge {
+    font-family: monospace;
+    font-size: 12px;
+    padding: 3px 8px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--slate);
+  }
+
+  &__description {
+    font-size: 13.5px;
+    color: var(--slate);
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+
+  &__footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 14px;
+    background: var(--paper);
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  &__price-row,
+  &__stock-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--slate);
+  }
+
+  &__value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &--primary {
+      background: var(--ink);
+      color: var(--btn-primary-fg);
+      border: none;
+
+      &:hover {
+        background: var(--teal);
+        color: #ffffff;
+      }
     }
 
-    &__title {
-        font-family: 'Space Grotesk', 'Inter', sans-serif;
-        font-size: 18px;
-        font-weight: 700;
-        color: #0b1f2e;
-        margin: 0;
+    &--secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--slate);
+
+      &:hover {
+        background: var(--paper);
+        color: var(--ink);
+      }
     }
-
-    &__badge {
-        font-family: monospace;
-        font-size: 12px;
-        padding: 3px 8px;
-        background: #f6f8f9;
-        border: 1px solid rgba(11, 31, 46, 0.08);
-        border-radius: 6px;
-        color: #5b6b76;
-    }
-
-    &__description {
-        font-size: 13.5px;
-        color: #5b6b76;
-        margin: 0 0 20px;
-        line-height: 1.5;
-    }
-
-    &__footer {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        padding: 14px;
-        background: #f6f8f9;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-
-    &__price-row,
-    &__stock-row {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    &__label {
-        font-size: 11.5px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: #5b6b76;
-    }
-
-    &__value {
-        font-size: 16px;
-        font-weight: 700;
-        color: #0b1f2e;
-    }
-
-    &__actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    &__btn {
-        flex: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 38px;
-        font-size: 13px;
-        font-weight: 600;
-        border-radius: 8px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background 0.15s ease, color 0.15s ease;
-
-        &--primary {
-            background: #0b1f2e;
-            color: #ffffff;
-
-            &:hover {
-                background: #0e8c7f;
-            }
-        }
-
-        &--secondary {
-            background: #ffffff;
-            border: 1px solid rgba(11, 31, 46, 0.1);
-            color: #5b6b76;
-
-            &:hover {
-                background: #f6f8f9;
-                color: #0b1f2e;
-            }
-        }
-    }
+  }
 }

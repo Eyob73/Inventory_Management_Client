@@ -1,0 +1,33 @@
+.search-dialog {
+    padding: 16px;
+    min-width: 400px;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-field {
+    width: 100%;
+}
+
+.result-list {
+    overflow-y: auto;
+    flex: 1;
+    margin-top: 8px;
+}
+
+.result-item {
+    border-radius: 8px;
+    margin: 2px 0;
+}
+
+.no-results {
+    padding: 16px;
+    text-align: center;
+    color: var(--slate);
+}
+
+.close-btn {
+    align-self: flex-end;
+    margin-top: 12px;
+}
