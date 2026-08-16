@@ -23,7 +23,7 @@ export const ProductStore = signalStore(
         error: null as string | null,
         totalCount: 0,
         pageIndex: 1,
-        pageSize: 1,
+        pageSize: 10,
         totalPages: 1,
         hasPreviousPage: false,
         hasNextPage: false,
@@ -43,11 +43,15 @@ export const ProductStore = signalStore(
         ),
     })),
     withMethods((store, api = inject(ProductService)) => ({
-        loadProducts: rxMethod<void>(
+        loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number } | void>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
-                switchMap(() =>
-                    api.getAll().pipe(
+                switchMap((params) => {
+                    const query = params || {};
+                    const reqPageIndex = query.pageIndex ?? store.pageIndex();
+                    const reqPageSize = query.pageSize ?? store.pageSize();
+
+                    return api.getAll(reqPageIndex, reqPageSize).pipe(
                         tap((res: PagedProductResponse | Product[]) => {
                             if (Array.isArray(res)) {
                                 patchState(
@@ -70,8 +74,8 @@ export const ProductStore = signalStore(
                                     {
                                         isLoading: false,
                                         totalCount: res.totalCount || 0,
-                                        pageIndex: res.pageIndex || 1,
-                                        pageSize: res.pageSize || 1,
+                                        pageIndex: res.pageIndex || reqPageIndex,
+                                        pageSize: res.pageSize || reqPageSize,
                                         totalPages: res.totalPages || 1,
                                         hasPreviousPage: res.hasPreviousPage || false,
                                         hasNextPage: res.hasNextPage || false,
@@ -86,8 +90,8 @@ export const ProductStore = signalStore(
                             });
                             return EMPTY;
                         })
-                    )
-                )
+                    );
+                })
             )
         ),
 

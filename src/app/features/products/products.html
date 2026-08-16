@@ -119,9 +119,12 @@
 
       <mat-paginator
         class="products-paginator"
-        [pageSize]="pageSize"
+        [length]="store.totalCount()"
+        [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
         [pageSizeOptions]="pageSizeOptions"
         [showFirstLastButtons]="true"
+        (page)="onPageChange($event)"
         aria-label="Select page of products"
       />
     </div>

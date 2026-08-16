@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Product, PagedProductResponse, ProductQueryFilter } from "../models/products.model";
 
 export interface ProductPayload {
@@ -21,8 +21,14 @@ export class ProductService {
   private http = inject(HttpClient);
   private baseUrl = "http://localhost:5111/api/products";
 
-  getAll() {
-    return this.http.get<PagedProductResponse>(`${this.baseUrl}/paged`);
+  getAll(pageIndex = 1, pageSize = 10) {
+    const params = new HttpParams()
+      .set('pageIndex', pageIndex)
+      .set('pageNumber', pageIndex)
+      .set('page', pageIndex)
+      .set('pageSize', pageSize);
+
+    return this.http.get<PagedProductResponse>(`${this.baseUrl}/paged`, { params });
   }
 
   getById(id: string) {

@@ -279,7 +279,8 @@
 
     .mat-mdc-paginator-page-size-select {
       margin: 0 0 0 8px;
-      width: 72px;
+      width: 150px;
+      min-width: 92px;
 
       .mat-mdc-form-field-subscript-wrapper {
         display: none;
