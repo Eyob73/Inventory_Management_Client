@@ -1,0 +1,75 @@
+<div class="panel-dialog">
+  <!-- Header -->
+  <div class="panel-head">
+    <div class="panel-head-left">
+      <mat-icon class="panel-head-icon">tune</mat-icon>
+      <div>
+        <h2 class="panel-title">Customize Dashboard</h2>
+        <p class="panel-subtitle">Add, remove, and manage widgets</p>
+      </div>
+    </div>
+    <button mat-icon-button class="panel-close-btn" (click)="close()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Category Filter Tabs -->
+  <div class="category-tabs">
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">All</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'kpi'" (click)="setCategory('kpi')">KPIs</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'charts'" (click)="setCategory('charts')">Charts</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'tables'" (click)="setCategory('tables')">Tables</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'lists'" (click)="setCategory('lists')">Lists</button>
+  </div>
+
+  <!-- Reset Confirmation Banner -->
+  @if (confirmingReset()) {
+    <div class="reset-confirm-box">
+      <mat-icon class="warn-icon">warning</mat-icon>
+      <div class="confirm-text">
+        <strong>Reset to default layout?</strong>
+        <p>This will restore the original widget order, visibility, and default dimensions.</p>
+      </div>
+      <div class="confirm-actions">
+        <button mat-button class="cancel-btn" (click)="cancelReset()">Cancel</button>
+        <button mat-flat-button class="confirm-btn" (click)="doReset()">Reset Now</button>
+      </div>
+    </div>
+  }
+
+  <!-- Widget List -->
+  <div class="panel-body">
+    @for (w of filteredWidgets(); track w.id) {
+      <div class="panel-row" [class.panel-row--hidden]="!w.visible">
+        <span class="panel-icon-wrap">
+          <mat-icon>{{ w.icon }}</mat-icon>
+        </span>
+        <div class="panel-row-info">
+          <div class="label-row">
+            <span class="panel-row-label">{{ w.label }}</span>
+            <span class="size-badge">{{ w.columns }}×{{ w.rows }}</span>
+          </div>
+          <span class="panel-row-desc">{{ w.description }}</span>
+        </div>
+        <mat-slide-toggle
+          [checked]="w.visible"
+          (change)="toggle(w.id, w.visible)"
+          [attr.aria-label]="'Toggle ' + w.label"
+          color="primary"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="panel-footer">
+    <button mat-stroked-button class="reset-btn" (click)="askReset()">
+      <mat-icon>restart_alt</mat-icon>
+      Reset
+    </button>
+    <button mat-flat-button class="done-btn" (click)="close()">
+      <mat-icon>check</mat-icon>
+      Done
+    </button>
+  </div>
+</div>

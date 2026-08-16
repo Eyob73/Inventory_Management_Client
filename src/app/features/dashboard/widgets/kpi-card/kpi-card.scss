@@ -1,0 +1,65 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 14px 10px;
+  width: 100%;
+}
+
+/* Metric value */
+.kpi-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Delta row */
+.kpi-delta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  background: var(--teal-soft);
+
+  mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+
+  &.negative {
+    color: var(--rose, var(--error));
+    background: var(--rose-soft, color-mix(in srgb, var(--error) 12%, transparent));
+  }
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--slate-soft);
+  white-space: nowrap;
+}

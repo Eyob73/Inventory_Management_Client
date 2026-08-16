@@ -1,0 +1,18 @@
+<div class="activity-timeline">
+  @for (act of activities; track act.id) {
+    <div class="activity-item">
+      <div class="activity-icon" [class]="'type-' + act.type">
+        <mat-icon>{{ act.icon }}</mat-icon>
+      </div>
+      <div class="activity-content">
+        <div class="activity-header">
+          <span class="activity-user">{{ act.user }}</span>
+          <span class="activity-time">{{ act.timestamp }}</span>
+        </div>
+        <div class="activity-desc">
+          {{ act.action }} &mdash; <strong class="activity-target">{{ act.target }}</strong>
+        </div>
+      </div>
+    </div>
+  }
+</div>

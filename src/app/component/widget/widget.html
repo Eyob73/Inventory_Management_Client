@@ -1,1 +1,172 @@
-<p>widget works!</p>
+<div class="container" [class.is-loading]="widget().loading">
+  <!-- Placeholder shown in grid slot while widget is being dragged -->
+  <div *cdkDragPlaceholder class="widget-placeholder"></div>
+
+  <!-- Header -->
+  <div class="widget-header">
+    <!-- Dedicated Drag Handle -->
+    <button
+      type="button"
+      class="drag-handle widget-drag-handle"
+      cdkDragHandle
+      matTooltip="Drag widget to reposition"
+      matTooltipPosition="above"
+      aria-label="Drag widget handle"
+    >
+      <mat-icon>drag_indicator</mat-icon>
+    </button>
+
+    <!-- Widget Icon & Title -->
+    <span class="widget-icon-wrap">
+      <mat-icon>{{ widget().icon }}</mat-icon>
+    </span>
+
+    <h2 class="widget-label">
+      {{ widget().settings.customTitle || widget().label }}
+    </h2>
+
+    <span class="spacer"></span>
+
+    <!-- Action Toolbar -->
+    <div class="widget-actions">
+      <!-- Settings Menu Trigger -->
+      <button
+        mat-icon-button
+        class="widget-action-btn"
+        [matMenuTriggerFor]="settingsMenu"
+        matTooltip="Widget settings & size"
+        matTooltipPosition="above"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+
+      <!-- Remove Button -->
+      <button
+        mat-icon-button
+        class="widget-action-btn remove-btn"
+        matTooltip="Remove widget"
+        matTooltipPosition="above"
+        (click)="remove()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Dropdown Menu -->
+  <mat-menu #settingsMenu="matMenu" class="widget-settings-menu">
+    <div class="menu-header">Widget Customization</div>
+
+    <!-- Width / Columns Selector -->
+    <div class="menu-section">
+      <span class="menu-section-label">Columns (Width)</span>
+      <div class="size-btn-group">
+        @for (c of [1, 2, 3, 4]; track c) {
+          @if (c >= widget().minColumns && c <= widget().maxColumns) {
+            <button
+              type="button"
+              class="size-btn"
+              [class.active]="widget().columns === c"
+              (click)="resize(c, widget().rows)"
+            >
+              {{ c }} Col
+            </button>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Height / Rows Selector -->
+    <div class="menu-section">
+      <span class="menu-section-label">Rows (Height)</span>
+      <div class="size-btn-group">
+        @for (r of [1, 2, 3, 4]; track r) {
+          @if (r >= widget().minRows && r <= widget().maxRows) {
+            <button
+              type="button"
+              class="size-btn"
+              [class.active]="widget().rows === r"
+              (click)="resize(widget().columns, r)"
+            >
+              {{ r }} Row
+            </button>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Card Background Style -->
+    <div class="menu-section">
+      <span class="menu-section-label">Card Style</span>
+      <div class="size-btn-group">
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="(widget().settings.bgStyle || 'default') === 'default'"
+          (click)="setBgStyle('default')"
+        >
+          Default
+        </button>
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="widget().settings.bgStyle === 'surface'"
+          (click)="setBgStyle('surface')"
+        >
+          Card
+        </button>
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="widget().settings.bgStyle === 'glass'"
+          (click)="setBgStyle('glass')"
+        >
+          Glass
+        </button>
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="widget().settings.bgStyle === 'accent'"
+          (click)="setBgStyle('accent')"
+        >
+          Accent
+        </button>
+      </div>
+    </div>
+
+    <div class="menu-divider"></div>
+
+    <button mat-menu-item (click)="remove()">
+      <mat-icon class="menu-icon-danger">visibility_off</mat-icon>
+      <span>Hide Widget</span>
+    </button>
+  </mat-menu>
+
+  <!-- Body Content -->
+  <div class="widget-body">
+    <!-- Loading Overlay -->
+    @if (widget().loading) {
+      <div class="widget-loading-overlay">
+        <mat-spinner diameter="32" color="accent" />
+        <span>Updating widget...</span>
+      </div>
+    }
+
+    <!-- Error State Banner -->
+    @if (widget().error) {
+      <div class="widget-error-state">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <p class="error-msg">{{ widget().error }}</p>
+        <button mat-button class="retry-btn" (click)="refresh()">
+          <mat-icon>refresh</mat-icon> Retry
+        </button>
+      </div>
+    } @else {
+      <!-- Dynamic Angular Component Content -->
+      <ng-container
+        [ngComponentOutlet]="widget().component"
+        [ngComponentOutletInputs]="widget().inputs ?? {}"
+      />
+    }
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<span class="alerts-count">{{ lowStockAlerts.length }}</span>
+
+<div class="alerts-list">
+  @for (a of lowStockAlerts; track a.sku) {
+    <div class="alert-row">
+      <div class="alert-info">
+        <p class="alert-name">{{ a.name }}</p>
+        <p class="alert-sku mono">{{ a.sku }}</p>
+      </div>
+      <div class="alert-qty">
+        <p class="alert-onhand mono">{{ a.onHand }}</p>
+        <!-- <p class="alert-of">of {{ a.reorderPoint }}</p> -->
+      </div>
+    </div>
+  }
+</div>
+
+<button mat-button class="create-po-btn">
+  Create purchase order <mat-icon>arrow_forward</mat-icon>
+</button>

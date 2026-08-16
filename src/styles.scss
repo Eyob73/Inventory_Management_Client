@@ -56,3 +56,22 @@ button {
   font-family: inherit;
   cursor: pointer;
 }
+
+/* ─── Widget Panel Dialog (Customize) ──────────────────────── */
+.widget-panel-dialog {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18) !important;
+    background: transparent !important;
+  }
+
+  .mdc-dialog__surface {
+    border-radius: 18px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: var(--surface) !important;
+  }
+}
+

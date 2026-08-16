@@ -1,4 +1,61 @@
-<div class="dashboard-page">
-    <h1 class="page-heading">Dashboard</h1>
-    <p class="page-subtitle">Welcome back — here's what's happening today.</p>
+<div class="dash">
+  <!-- Header -->
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Overview</h1>
+      <p class="dash-subtitle">Sales, stock &amp; real-time inventory performance · updated 4 min ago</p>
+    </div>
+
+    <div class="dash-header-actions">
+      <button
+        mat-button
+        class="customize-btn"
+        (click)="openPanel()"
+        matTooltip="Add or remove widgets"
+        id="customize-dashboard-btn"
+      >
+        <mat-icon>tune</mat-icon>
+        Customize
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard CSS Grid Layout with cdkDropListGroup -->
+  <div class="dashboard-grid" cdkDropListGroup>
+    @for (w of activeWidgets(); track w.id) {
+      <div
+        class="widget-slot"
+        [style.grid-column]="'span ' + w.columns"
+        [style.grid-row]="'span ' + w.rows"
+        cdkDropList
+        [cdkDropListData]="w"
+        (cdkDropListDropped)="onWidgetDrop($event)"
+      >
+        <app-widget
+          [widget]="w"
+          cdkDrag
+          [cdkDragData]="w"
+        />
+      </div>
+    }
+
+    <!-- Empty State Banner -->
+    @if (activeWidgets().length === 0) {
+      <div class="empty-state">
+        <mat-icon>dashboard_customize</mat-icon>
+        <h3>No active widgets</h3>
+        <p>Your dashboard is currently empty. Click Customize to choose which widgets to display.</p>
+        <div class="empty-actions">
+          <button mat-flat-button class="empty-btn" (click)="openPanel()">
+            <mat-icon>tune</mat-icon>
+            Customize Dashboard
+          </button>
+          <button mat-stroked-button (click)="resetLayout()">
+            <mat-icon>restart_alt</mat-icon>
+            Restore Default Layout
+          </button>
+        </div>
+      </div>
+    }
+  </div>
 </div>
