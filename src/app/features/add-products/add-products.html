@@ -29,7 +29,7 @@
                 placeholder="Short, clear description of the product">
         </div>
 
-        <div class="form-row">
+        <div class="form-row form-row--3">
             <div class="form-group">
                 <label for="category">Category</label>
                 <mat-form-field appearance="outline" class="category-select-field">
@@ -41,6 +41,21 @@
                 </mat-form-field>
                 @if (categoriesResource.isLoading()) {
                     <span class="form-hint">Loading categories...</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="supplierId">Supplier</label>
+                <mat-form-field appearance="outline" class="category-select-field">
+                    <mat-select id="supplierId" formControlName="supplierId" placeholder="Select a supplier">
+                        <mat-option [value]="''">None (No Supplier)</mat-option>
+                        @for (sup of suppliersResource.value() || []; track sup.id) {
+                            <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                @if (suppliersResource.isLoading()) {
+                    <span class="form-hint">Loading suppliers...</span>
                 }
             </div>
 

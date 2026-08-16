@@ -12,6 +12,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { Product } from "../../models/products.model";
 import { ProductStore } from "../../store/products.store";
 import { CategoryService } from "../../services/category";
+import { SupplierService } from "../../services/supplier";
 
 @Component({
   selector: 'app-add-products',
@@ -25,6 +26,7 @@ export class AddProducts {
   private router = inject(Router);
   readonly productStore = inject(ProductStore);
   private categoryService = inject(CategoryService);
+  private supplierService = inject(SupplierService);
 
   isError = signal(false);
   submissionStatus = signal<string | null>(null);
@@ -34,6 +36,10 @@ export class AddProducts {
     stream: () => this.categoryService.getAll(),
   });
 
+  readonly suppliersResource = rxResource({
+    stream: () => this.supplierService.getAll(),
+  });
+
   productForm = this.fb.group({
     name: ['', Validators.required],
     description: [''],
@@ -41,6 +47,7 @@ export class AddProducts {
     cost: [null as number | null, [Validators.min(0)]],
     stock: [null as number | null, [Validators.required, Validators.min(0)]],
     category: [''],
+    supplierId: [''],
     sku: [''],
     variants: this.fb.array([
       this.fb.group({
@@ -116,7 +123,7 @@ export class AddProducts {
       quantityInStock: rawValue.stock ?? 0,
       sku: rawValue.sku || '',
       categoryId: rawValue.category || '',
-      supplierId: null,
+      supplierId: rawValue.supplierId || null,
     };
 
     this.wasSubmitting = true;
