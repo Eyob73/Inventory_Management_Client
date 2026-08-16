@@ -1,6 +1,6 @@
-import { Injectable, Service, inject } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Product } from "../models/products.model";
+import { Product, PagedProductResponse, ProductQueryFilter } from "../models/products.model";
 
 export interface ProductPayload {
   name: string;
@@ -14,13 +14,15 @@ export interface ProductPayload {
   categoryId: string;
 }
 
-@Service()
+@Injectable({
+  providedIn: 'root',
+})
 export class ProductService {
   private http = inject(HttpClient);
   private baseUrl = "http://localhost:5111/api/products";
 
   getAll() {
-    return this.http.get<Product[]>(this.baseUrl);
+    return this.http.get<PagedProductResponse>(`${this.baseUrl}/paged`);
   }
 
   getById(id: string) {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, signal, effect } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
 import {
@@ -6,27 +6,33 @@ import {
   Validators,
   ReactiveFormsModule,
 } from "@angular/forms";
-import { ProductPayload, ProductService } from "../../services/product";
-import { Subject, exhaustMap } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { rxResource } from "@angular/core/rxjs-interop";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSelectModule } from "@angular/material/select";
+import { Product } from "../../models/products.model";
+import { ProductStore } from "../../store/products.store";
+import { CategoryService } from "../../services/category";
 
 @Component({
   selector: 'app-add-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule],
   templateUrl: './add-products.html',
   styleUrl: './add-products.scss',
 })
 export class AddProducts {
   private fb = inject(FormBuilder);
-  private productService = inject(ProductService);
   private router = inject(Router);
+  readonly productStore = inject(ProductStore);
+  private categoryService = inject(CategoryService);
 
-  api = inject(ProductService);
-  isSubmitting = signal(false);
   isError = signal(false);
   submissionStatus = signal<string | null>(null);
-  private submitClick$ = new Subject<ProductPayload>();
+  private wasSubmitting = false;
+
+  readonly categoriesResource = rxResource({
+    stream: () => this.categoryService.getAll(),
+  });
 
   productForm = this.fb.group({
     name: ['', Validators.required],
@@ -44,6 +50,24 @@ export class AddProducts {
       }),
     ]),
   });
+
+  constructor() {
+    effect(() => {
+      const isLoading = this.productStore.isLoading();
+      const error = this.productStore.error();
+
+      if (error && this.wasSubmitting) {
+        this.wasSubmitting = false;
+        this.isError.set(true);
+        this.submissionStatus.set(`Submission failed: ${error}`);
+      } else if (!isLoading && this.wasSubmitting && !error) {
+        this.wasSubmitting = false;
+        this.isError.set(false);
+        this.submissionStatus.set('Product saved successfully!');
+        setTimeout(() => this.router.navigate(['/products']), 1000);
+      }
+    });
+  }
 
   get variants() {
     return this.productForm.controls.variants;
@@ -77,31 +101,6 @@ export class AddProducts {
     this.router.navigate(['/products']);
   }
 
-  constructor() {
-    this.submitClick$
-      .pipe(
-        exhaustMap((payload) => {
-          this.isSubmitting.set(true);
-          this.isError.set(false);
-          this.submissionStatus.set('Submitting product to server...');
-          return this.api.create(payload);
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe({
-        next: (result) => {
-          this.isSubmitting.set(false);
-          this.isError.set(false);
-          this.submissionStatus.set(`Product saved successfully! ID: ${result?.id || ''}`);
-        },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          this.isError.set(true);
-          this.submissionStatus.set(`Submission failed: ${err.message || 'Server error'}`);
-        },
-      });
-  }
-
   onSubmit() {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
@@ -109,7 +108,7 @@ export class AddProducts {
     }
 
     const rawValue = this.productForm.getRawValue();
-    this.submitClick$.next({
+    const payload: Partial<Product> = {
       name: rawValue.name || '',
       description: rawValue.description || '',
       price: rawValue.price ?? 0,
@@ -118,7 +117,11 @@ export class AddProducts {
       sku: rawValue.sku || '',
       categoryId: rawValue.category || '',
       supplierId: null,
-      stock: rawValue.stock ?? 0
-    });
+    };
+
+    this.wasSubmitting = true;
+    this.isError.set(false);
+    this.submissionStatus.set('Submitting product to store...');
+    this.productStore.createProduct(payload);
   }
 }

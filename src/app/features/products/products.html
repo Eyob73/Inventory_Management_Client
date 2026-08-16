@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  @if (productsResource.isLoading()) {
+  @if (store.isLoading()) {
     <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
   } @else {
     <div class="table-card">

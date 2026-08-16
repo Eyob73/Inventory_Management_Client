@@ -8,7 +8,6 @@ import {
   OnInit,
   OnDestroy,
   DestroyRef,
-  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd, RouterOutlet } from '@angular/router';

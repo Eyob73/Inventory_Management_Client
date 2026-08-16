@@ -1,12 +1,11 @@
-import { Component, inject, ViewChild, AfterViewInit, effect, afterNextRender, Injector } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, effect, afterNextRender, Injector, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { Product } from '../../models/products.model';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { ProductService } from '../../services/product';
+import { ProductStore } from '../../store/products.store';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 
 @Component({
@@ -23,8 +22,8 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })
-export class Products implements AfterViewInit {
-  private api = inject(ProductService);
+export class Products implements OnInit, AfterViewInit {
+  readonly store = inject(ProductStore);
   private injector = inject(Injector);
 
   displayedColumns: string[] = ['name', 'sku', 'price', 'cost', 'quantityInStock'];
@@ -43,24 +42,19 @@ export class Products implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  productsResource = rxResource({
-    stream: () => this.api.getAll(),
-  });
-
   constructor() {
     effect(() => {
-      const res = this.productsResource.value();
-      if (res && Array.isArray(res)) {
-        this.dataSource.data = res;
-      } else {
-        this.dataSource.data = [];
-      }
+      const products = this.store.entities();
+      this.dataSource.data = products || [];
 
-      // Re-bind when table mounts after skeleton unmounts
-      if (!this.productsResource.isLoading()) {
+      if (!this.store.isLoading()) {
         afterNextRender(() => this.bindTableControls(), { injector: this.injector });
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.store.loadProducts();
   }
 
   ngAfterViewInit() {

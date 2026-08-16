@@ -32,8 +32,8 @@
 .product-form__status {
     padding: 12px 16px;
     margin-bottom: 24px;
-    background: #eef7f6;
-    border: 1px solid rgba(14, 140, 127, 0.3);
+    background: var(--teal-glow);
+    border: 1px solid var(--teal);
     border-radius: 8px;
     color: var(--teal);
     font-size: 14px;
@@ -45,8 +45,8 @@
     }
 
     &--error {
-        background: #fdf4f3;
-        border-color: rgba(196, 67, 47, 0.3);
+        background: var(--rose-soft);
+        border-color: var(--error);
         color: var(--error);
     }
 }
@@ -119,7 +119,7 @@
         color: var(--ink);
     }
 
-    input {
+    input, select {
         height: 40px;
         padding: 0 12px;
         font-size: 14px;
@@ -132,26 +132,93 @@
         transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 
         &::placeholder {
-            color: #9aa7ae;
+            color: var(--slate-soft);
         }
 
         &:hover {
-            border-color: rgba(11, 31, 46, 0.2);
+            border-color: var(--border-strong);
         }
 
         &:focus {
             background: var(--surface);
             border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(14, 140, 127, 0.14);
+            box-shadow: 0 0 0 3px var(--teal-glow);
         }
 
         &.has-error {
             border-color: var(--error);
-            background: #fdf4f3;
+            background: var(--rose-soft);
 
             &:focus {
                 box-shadow: 0 0 0 3px rgba(196, 67, 47, 0.12);
             }
+        }
+
+        option {
+            background: var(--surface);
+            color: var(--ink);
+        }
+    }
+}
+
+.form-hint {
+    font-size: 12px;
+    color: var(--slate);
+}
+
+.category-select-field {
+    width: 100%;
+    margin-bottom: 0;
+
+    ::ng-deep {
+        .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+        }
+
+        .mat-mdc-text-field-wrapper {
+            background: var(--paper) !important;
+            border-radius: 8px !important;
+            height: 40px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: var(--border) !important;
+        }
+
+        &:hover .mdc-notched-outline__leading,
+        &:hover .mdc-notched-outline__notch,
+        &:hover .mdc-notched-outline__trailing {
+            border-color: var(--border-strong) !important;
+        }
+
+        &.mat-focused .mdc-notched-outline__leading,
+        &.mat-focused .mdc-notched-outline__notch,
+        &.mat-focused .mdc-notched-outline__trailing {
+            border-color: var(--teal) !important;
+            border-width: 1px !important;
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+            display: none;
+        }
+
+        .mat-mdc-select-value-text {
+            color: var(--ink);
+            font-size: 14px;
+        }
+
+        .mat-mdc-select-arrow {
+            color: var(--slate);
+        }
+
+        .mat-mdc-select-placeholder {
+            color: var(--slate-soft);
+            font-size: 14px;
         }
     }
 }
@@ -272,16 +339,20 @@
     &--primary {
         background: var(--ink);
         border: 1px solid var(--ink);
-        color: #fff;
+        color: var(--btn-primary-fg);
 
         &:hover:not(:disabled) {
             background: var(--teal);
             border-color: var(--teal);
+            color: #ffffff;
         }
 
         &:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
+            background: var(--border-strong);
+            border-color: var(--border-strong);
+            color: var(--slate);
         }
     }
 }

@@ -26,7 +26,7 @@
   height: 64px !important;
   min-height: 64px !important;
   flex-shrink: 0;
-  background: var(--toolbar-bg) !important;
+  background: var(--sidenav-bg) !important;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border);
@@ -36,7 +36,7 @@
   transition: box-shadow 0.3s var(--ease), background 0.3s var(--ease);
 
   &.toolbar-scrolled {
-    background: var(--toolbar-bg-scrolled) !important;
+    background: var(--sidenav-bg) !important;
     box-shadow: var(--shadow-sm);
   }
 }
@@ -312,18 +312,6 @@
       display: none !important;
       opacity: 0 !important;
     }
-  }
-}
-
-/* Sidebar top header */
-.sidenav-header {
-  flex-shrink: 0;
-  padding: 8px 0;
-
-  .shell-container--collapsed & {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 }
 
@@ -632,62 +620,6 @@
 .user-role {
   font-size: 10.5px !important;
   color: var(--slate) !important;
-}
-
-/* Sidebar collapse/expand toggle button inside sidebar */
-.sidebar-toggle-btn {
-  display: flex;
-  align-items: center;
-  width: calc(100% - 24px);
-  height: 36px;
-  margin: 4px 12px;
-  padding: 0 10px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--slate);
-  font-size: 12px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
-
-  &:hover {
-    background: var(--paper);
-    color: var(--teal);
-
-    .toggle-icon {
-      color: var(--teal);
-    }
-  }
-
-  .toggle-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: var(--slate-soft);
-    margin-right: 10px;
-    transition: color var(--transition-fast);
-  }
-
-  .toggle-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .shell-container--collapsed & {
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    margin: 4px auto;
-    padding: 0;
-    justify-content: center;
-
-    .toggle-icon {
-      margin-right: 0;
-    }
-  }
 }
 
 /* ─── Content area ───────────────────────────────────────────── */

@@ -11,3 +11,25 @@ export interface Product {
     createdAt: string;
     updatedAt: string | null;
 }
+
+export interface PagedResult<T> {
+    items: T[];
+    totalCount: number;
+    pageIndex: number;
+    pageSize: number;
+    totalPages: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+}
+
+export type PagedProductResponse = PagedResult<Product>;
+
+export interface ProductQueryFilter {
+    search?: string;
+    categoryId?: string;
+    supplierId?: string;
+    pageIndex?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+}
