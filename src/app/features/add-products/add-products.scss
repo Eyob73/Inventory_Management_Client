@@ -1,8 +1,8 @@
 /* Tokens come from styles/_theme.scss (body / :root) */
 :host {
-  display: block;
-  font-family: 'Inter', system-ui, sans-serif;
-  color: var(--ink);
+    display: block;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
 }
 
 .product-form {
@@ -123,7 +123,8 @@
         color: var(--ink);
     }
 
-    input, select {
+    input,
+    select {
         height: 40px;
         padding: 0 12px;
         font-size: 14px;

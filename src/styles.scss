@@ -1,20 +1,16 @@
-// Angular Material theming — teal design system
+// Angular Material theming — moss design system
 // https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 @use './styles/theme';
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$cyan-palette,
+  @include mat.theme((color: (primary: mat.$cyan-palette,
         tertiary: mat.$cyan-palette,
       ),
       typography: Inter,
       density: 0,
-    )
-  );
+    ));
 }
 
 /* ─── Global Reset & Foundation ───────────────── */
@@ -93,12 +89,13 @@ button {
 
     &:hover:not(.mdc-list-item--disabled),
     &.mat-mdc-option-active {
-      background-color: var(--row-hover) !important;
+      background-color: var(--moss-soft) !important;
+      color: var(--moss) !important;
     }
 
     &.mdc-list-item--selected {
-      background-color: var(--teal-glow) !important;
-      color: var(--teal) !important;
+      background-color: var(--moss-soft) !important;
+      color: var(--moss) !important;
       font-weight: 600;
     }
 
@@ -108,3 +105,22 @@ button {
   }
 }
 
+/* ─── Global Form Control Focus & Hover Styles ─────────────── */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    background: var(--surface);
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+}

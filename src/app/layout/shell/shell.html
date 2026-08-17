@@ -13,8 +13,8 @@
       <a routerLink="/" class="sidebar-brand">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 28 28" fill="none">
-            <rect x="2" y="2" width="16" height="16" rx="4" [attr.fill]="themeService.isDark() ? '#2d9c8f' : '#0E8C7F'" />
-            <rect x="10" y="10" width="16" height="16" rx="4" [attr.fill]="themeService.isDark() ? '#f0f4f8' : '#0B1F2E'" />
+            <rect x="2" y="2" width="16" height="16" rx="4" fill="var(--moss)" />
+            <rect x="10" y="10" width="16" height="16" rx="4" fill="var(--ink)" opacity="0.8" />
           </svg>
         </span>
         @if (!isCollapsedOrMobile()) {

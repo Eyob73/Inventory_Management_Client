@@ -305,6 +305,7 @@
   }
 
   ::ng-deep {
+
     .mat-mdc-button-persistent-ripple::before,
     .mdc-icon-button__ripple,
     .mat-ripple,
@@ -454,6 +455,7 @@
     }
 
     ::ng-deep {
+
       .mdc-list-item__content,
       .mat-mdc-list-item-unscoped-content {
         display: flex !important;
@@ -532,6 +534,7 @@
   }
 
   ::ng-deep {
+
     .mdc-list-item__ripple,
     .mat-ripple,
     .mat-mdc-focus-indicator,
@@ -567,6 +570,7 @@
     }
 
     ::ng-deep {
+
       .mdc-list-item__content,
       .mat-mdc-list-item-unscoped-content {
         display: flex !important;

@@ -73,7 +73,7 @@ export class Shell implements OnInit, OnDestroy {
 
   // computed
   readonly sidenavWidth = computed(() =>
-    this.isMobile() ? '100%' : this.isCollapsed() ? '50px' : '248px'
+    this.isMobile() ? '100%' : this.isCollapsed() ? '56px' : '248px'
   );
   readonly isCollapsedOrMobile = computed(() => this.isCollapsed() || this.isMobile());
   readonly mode = computed(() => (this.isMobile() ? 'over' : 'side'));
