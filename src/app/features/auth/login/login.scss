@@ -1,0 +1,339 @@
+/* ---------------------------------------------------------------
+   Inventory Management — Login Component Styles
+   Consumes global design tokens (--moss, --cobalt, --surface, --paper, --ink, --slate, --border)
+----------------------------------------------------------------*/
+:host {
+    display: block;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.stage {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    background: var(--paper);
+}
+
+/* ---------------- BRAND PANEL (left showcase) ---------------- */
+
+.brand-panel {
+    background: linear-gradient(135deg, #0e1713 0%, #15221b 50%, #0a110e 100%);
+    color: #ffffff;
+    padding: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.glow-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 15% 15%, rgba(91, 117, 83, 0.35) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(14, 140, 127, 0.22) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+}
+
+.brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(14, 156, 138, 0.4));
+
+    svg {
+        width: 30px;
+        height: 30px;
+        display: block;
+    }
+}
+
+.brand-wordmark {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+}
+
+.brand-hero {
+    z-index: 1;
+    max-width: 30rem;
+    margin: auto 0;
+}
+
+.brand-tagline {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #74a483;
+    margin: 0 0 1rem;
+}
+
+.hero-headline {
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.22;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+    color: #ffffff;
+}
+
+.headline-accent {
+    color: #8fbf7a;
+}
+
+.hero-subtext {
+    color: #8fa498;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 2rem;
+}
+
+/* Feature list */
+.feature-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.feature-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+    div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+}
+
+.feature-icon-wrap {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: rgba(143, 191, 122, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #8fbf7a;
+    }
+}
+
+.feature-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #e8efe9;
+    letter-spacing: -0.01em;
+}
+
+.feature-note {
+    font-size: 0.78rem;
+    color: #6b8273;
+    line-height: 1.4;
+}
+
+.brand-footer {
+    z-index: 1;
+    color: #4a5e52;
+    font-size: 0.78rem;
+    margin: 0;
+}
+
+/* ---------------- FORM PANEL (right) ---------------- */
+
+.form-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    background: var(--surface);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 24rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--moss);
+    margin: 0 0 0.4rem;
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin: 0 0 1.75rem;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.auth-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--rose-soft);
+    color: var(--error);
+    border: 1px solid rgba(217, 56, 56, 0.25);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.auth-alert mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.row-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.2rem 0 1.75rem;
+    font-size: 0.85rem;
+}
+
+.text-link {
+    color: var(--moss);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.15s ease;
+}
+
+.text-link:hover {
+    color: var(--teal-dark);
+    text-decoration: underline;
+}
+
+.submit-btn {
+    height: 48px !important;
+    border-radius: 10px !important;
+    background: var(--moss) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: -0.01em !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px var(--teal-glow) !important;
+    transition: all 0.2s ease !important;
+
+    &:hover:not([disabled]) {
+        background: var(--teal-dark) !important;
+        box-shadow: 0 6px 18px var(--teal-glow) !important;
+        transform: translateY(-1px);
+    }
+}
+
+.btn-spinner ::ng-deep circle {
+    stroke: #ffffff;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--slate);
+    font-size: 0.78rem;
+    margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.signup-hint {
+    text-align: center;
+    color: var(--slate);
+    font-size: 0.85rem;
+    margin: 1.25rem 0 0;
+}
+
+/* ---------------- Material overrides — App theme palette ---------------- */
+
+:host ::ng-deep .mat-mdc-form-field {
+    --mdc-outlined-text-field-focus-outline-color: var(--moss);
+    --mdc-outlined-text-field-caret-color: var(--moss);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+    color: var(--moss) !important;
+}
+
+:host ::ng-deep .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: var(--moss) !important;
+    border-color: var(--moss) !important;
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 900px) {
+    .stage {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-panel {
+        padding: 2.5rem 1.75rem;
+        min-height: auto;
+    }
+
+    .hero-headline {
+        font-size: 1.85rem;
+    }
+
+    .form-panel {
+        padding: 2.25rem 1.5rem 3rem;
+    }
+}
+
+/* ---------------- Focus visibility ---------------- */
+
+:host ::ng-deep a:focus-visible,
+:host ::ng-deep button:focus-visible {
+    outline: 2px solid var(--moss);
+    outline-offset: 2px;
+}

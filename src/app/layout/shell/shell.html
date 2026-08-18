@@ -41,7 +41,7 @@
               (click)="isMobile() && sidenav.close()">
               <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
               @if (!isCollapsedOrMobile()) {
-                <span matListItemTitle>{{ item.label }}</span>
+                <span class="mat-list-item-content" matListItemTitle>{{ item.label }}</span>
               }
             </a>
           }

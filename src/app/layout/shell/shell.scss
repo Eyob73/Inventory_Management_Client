@@ -79,7 +79,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 6px 12px;
+  margin: 0 8px;
   background: var(--paper);
   border: 1px solid transparent;
   border-radius: 10px;
@@ -123,16 +124,18 @@
 /* Notification button */
 .toolbar-action-btn {
   color: var(--slate) !important;
-  border-radius: 10px !important;
+  border-radius: 50% !important;
   transition: all 0.2s var(--ease) !important;
+  background-color: none;
 
-  &:hover {
-    background: var(--paper) !important;
-    color: var(--ink) !important;
+  mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
 
   ::ng-deep .mat-badge-content {
-    font-size: 9px !important;
+    font-size: 15px !important;
     font-weight: 700 !important;
     background: #ef4444 !important;
   }
@@ -188,7 +191,7 @@
 
   &.shell-container--collapsed {
     ::ng-deep .mat-sidenav-content {
-      margin-left: 56px !important;
+      margin-left: 48px !important;
     }
   }
 }
@@ -294,7 +297,7 @@
   &:hover,
   &:focus,
   &:active {
-    background: transparent !important;
+    background: var(--paper) !important;
     color: var(--ink) !important;
   }
 
@@ -375,12 +378,16 @@
   font-weight: 500 !important;
   transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast) !important;
 
+  .mat-list-item-content {
+    font-size: 13px !important;
+  }
+
   mat-icon {
     color: var(--slate-soft) !important;
     transition: color var(--transition-fast);
-    font-size: 20px !important;
-    width: 20px !important;
-    height: 20px !important;
+    font-size: 17px !important;
+    width: 17px !important;
+    height: 17px !important;
     margin-right: 12px !important;
   }
 
@@ -418,8 +425,8 @@
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      height: 22px;
-      width: 3px;
+      height: 17px;
+      width: 2px;
       background: linear-gradient(180deg, var(--teal) 0%, var(--teal-dark) 100%);
       border-radius: 999px;
       box-shadow: 0 0 10px color-mix(in srgb, var(--teal) 40%, transparent);
@@ -432,16 +439,16 @@
   .shell-container--collapsed & {
     --mdc-list-list-item-leading-space: 0;
     --mdc-list-list-item-trailing-space: 0;
-    --mdc-list-list-item-one-line-container-height: 40px;
+    --mdc-list-list-item-one-line-container-height: 34px;
     --mat-list-list-item-leading-icon-start-space: 0;
     --mat-list-list-item-leading-icon-end-space: 0;
 
     margin: 3px auto !important;
     padding: 0 !important;
-    width: 40px !important;
-    min-width: 40px !important;
-    max-width: 40px !important;
-    height: 40px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -463,13 +470,20 @@
         align-items: center !important;
         padding: 0 !important;
         width: 100% !important;
+        height: 100% !important;
       }
 
       .mdc-list-item__start,
       [matListItemIcon],
       .mat-mdc-list-item-icon {
         margin: 0 !important;
-        margin-inline: 0 !important;
+        margin-inline-start: 0 !important;
+        margin-inline-end: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
       }
 
       .mdc-list-item__end {
@@ -547,16 +561,16 @@
   .shell-container--collapsed & {
     --mdc-list-list-item-leading-space: 0;
     --mdc-list-list-item-trailing-space: 0;
-    --mdc-list-list-item-one-line-container-height: 40px;
+    --mdc-list-list-item-one-line-container-height: 34px;
     --mat-list-list-item-leading-icon-start-space: 0;
     --mat-list-list-item-leading-icon-end-space: 0;
 
     margin: 4px auto !important;
     padding: 0 !important;
-    width: 40px !important;
-    min-width: 40px !important;
-    max-width: 40px !important;
-    height: 40px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -578,12 +592,19 @@
         align-items: center !important;
         padding: 0 !important;
         width: 100% !important;
+        height: 100% !important;
       }
 
       .mdc-list-item__start,
       [matListItemIcon] {
         margin: 0 !important;
-        margin-inline: 0 !important;
+        margin-inline-start: 0 !important;
+        margin-inline-end: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
       }
 
       .mdc-list-item__end {

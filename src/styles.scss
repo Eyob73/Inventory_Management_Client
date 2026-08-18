@@ -106,7 +106,7 @@ button {
 }
 
 /* ─── Global Form Control Focus & Hover Styles ─────────────── */
-input:not([type="checkbox"]):not([type="radio"]),
+input:not([type="checkbox"]):not([type="radio"]):not(.mat-mdc-input-element):not(.mat-input-element),
 select,
 textarea {
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
@@ -122,5 +122,18 @@ textarea {
     background: var(--surface);
     border-color: var(--moss);
     box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+}
+
+/* Ensure Angular Material inputs never inherit generic input borders or glow on focus/hover */
+.mat-mdc-form-field input.mat-mdc-input-element,
+.mat-mdc-input-element {
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
   }
 }

@@ -1,0 +1,116 @@
+<div class="stage">
+
+    <!-- LEFT — Brand Showcase Panel -->
+    <aside class="brand-panel">
+        <div class="glow-bg"></div>
+
+        <!-- Logo -->
+        <div class="brand-header">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 28 28" fill="none">
+                    <rect x="2" y="2" width="16" height="16" rx="4" fill="var(--moss)" />
+                    <rect x="10" y="10" width="16" height="16" rx="4" fill="#ffffff" opacity="0.85" />
+                </svg>
+            </span>
+            <span class="brand-wordmark">Inventory Management</span>
+        </div>
+
+        <!-- Hero copy -->
+        <div class="brand-hero">
+            <p class="brand-tagline">Built for modern teams</p>
+            <h1 class="hero-headline">
+                Full control of your <span class="headline-accent">stock & supply chain</span> — in one place.
+            </h1>
+            <p class="hero-subtext">
+                From product catalogues to supplier orders, get complete visibility and take action with confidence.
+            </p>
+
+            <!-- Feature rows -->
+            <ul class="feature-list" aria-label="Platform features">
+                <li class="feature-row">
+                    <span class="feature-icon-wrap">
+                        <mat-icon>inventory_2</mat-icon>
+                    </span>
+                    <div>
+                        <span class="feature-name">Live Inventory Tracking</span>
+                        <span class="feature-note">Real-time stock levels across all locations</span>
+                    </div>
+                </li>
+                <li class="feature-row">
+                    <span class="feature-icon-wrap">
+                        <mat-icon>notifications_active</mat-icon>
+                    </span>
+                    <div>
+                        <span class="feature-name">Smart Reorder Alerts</span>
+                        <span class="feature-note">Automated low-stock warnings before you run out</span>
+                    </div>
+                </li>
+                <li class="feature-row">
+                    <span class="feature-icon-wrap">
+                        <mat-icon>bar_chart</mat-icon>
+                    </span>
+                    <div>
+                        <span class="feature-name">Sales & Purchase Reports</span>
+                        <span class="feature-note">Clear analytics to guide every business decision</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <p class="brand-footer">&copy; Inventory Management Platform</p>
+    </aside>
+
+
+    <!-- RIGHT — sign-in form -->
+    <main class="form-panel">
+        <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+            <p class="eyebrow">Welcome back</p>
+            <h2 class="form-title">Sign in to your account</h2>
+
+            <div class="auth-alert" role="alert" *ngIf="authError">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ authError }}</span>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Work email</mat-label>
+                <input matInput type="email" formControlName="email" autocomplete="email" required />
+                <mat-icon matSuffix>mail_outline</mat-icon>
+                <mat-error *ngIf="emailControl.invalid">{{ emailErrorText() }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Password</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+                    autocomplete="current-password" required />
+                <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
+                    [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+                    [attr.aria-pressed]="!hidePassword">
+                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordControl.invalid">{{ passwordErrorText() }}</mat-error>
+            </mat-form-field>
+
+            <div class="row-between">
+                <mat-checkbox formControlName="remember" color="primary">
+                    Remember me
+                </mat-checkbox>
+                <a class="text-link" href="#" (click)="$event.preventDefault()">Forgot password?</a>
+            </div>
+
+            <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="submitting">
+                <mat-spinner *ngIf="submitting" diameter="20" class="btn-spinner"></mat-spinner>
+                <span *ngIf="!submitting">Sign in</span>
+                <span *ngIf="submitting">Signing in…</span>
+            </button>
+
+            <p class="signup-hint">
+                Don't have an account? <a class="text-link" href="#" (click)="$event.preventDefault()">Request
+                    access</a>
+            </p>
+        </form>
+    </main>
+
+</div>
