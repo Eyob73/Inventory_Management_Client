@@ -20,9 +20,9 @@ export const appConfig: ApplicationConfig = {
         cookieName: 'XSRF-TOKEN',
         headerName: 'X-XSRF-TOKEN',
       }),
+      withXhr()
     ),
     provideAnimations(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withXhr()),
   ],
 };

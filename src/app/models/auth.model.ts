@@ -1,20 +1,23 @@
 export interface User {
   id: string;
   email: string;
-  name?: string;
+  userName?: string;
   firstName?: string;
   lastName?: string;
-  role?: string;
-}
-
-export interface AuthResponse {
-  accessToken: string;
+  role?: string | string[];
+  roles?: string[] | string;
 }
 
 export interface LoginCredentials {
   email: string;
   password: string;
   remember?: boolean;
+}
+
+export interface AuthResponse {
+  message: string;
+  token?: string;
+  user?: User;
 }
 
 export interface RegisterCredentials {

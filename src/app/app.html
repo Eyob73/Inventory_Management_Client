@@ -1,1 +1,3 @@
-<router-outlet />
+<div class="app-host-container" [@routeFadeAnimation]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet" />
+</div>

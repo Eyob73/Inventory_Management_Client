@@ -9,7 +9,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err: HttpErrorResponse) => {
       const detailMessage = err.error?.detail ?? 'A system error occurred. Please try again.';
       if (err.status === 401) {
-        router.navigate(['/login']);
+        if (!router.url.includes('/login')) {
+          router.navigate(['/login']);
+        }
       } else {
         console.error('API Error Response:', detailMessage);
       }

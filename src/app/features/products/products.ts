@@ -7,6 +7,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { Product } from '../../models/products.model';
 import { ProductStore } from '../../store/products.store';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-products',
@@ -24,6 +25,7 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
 })
 export class Products implements OnInit {
   readonly store = inject(ProductStore);
+  readonly authService = inject(AuthService);
 
   displayedColumns: string[] = ['name', 'sku', 'price', 'cost', 'quantityInStock'];
   dataSource = new MatTableDataSource<Product>([]);

@@ -15,7 +15,7 @@ function readStoredDarkPreference(): boolean {
   } catch {
     // localStorage may be unavailable
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return window.matchMedia('(prefers-color-scheme: light)').matches;
 }
 
 function applyDarkClass(dark: boolean): void {

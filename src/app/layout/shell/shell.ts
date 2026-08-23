@@ -30,11 +30,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
 
-// Services
+// Services & Animations
 import { NavigationService, NavGroup } from '../../services/navigation-service';
 import { SearchDialogComponent } from '../../component/search-dialog-component/search-dialog-component';
 import { ThemeService } from '../../services/theme-service';
 import { AuthStore } from '../../store/auth.store';
+import { routeFadeAnimation } from '../../animations/fade.animation';
 
 @Component({
   selector: 'app-shell',
@@ -56,10 +57,16 @@ import { AuthStore } from '../../store/auth.store';
     MatMenuModule,
     MatProgressBarModule,
   ],
+  animations: [routeFadeAnimation],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })
 export class Shell implements OnInit, AfterViewInit, OnDestroy {
+  prepareRoute(outlet: RouterOutlet) {
+    return outlet && outlet.isActivated && outlet.activatedRoute
+      ? outlet.activatedRoute.snapshot.url.join('/') || outlet.activatedRoute.snapshot.routeConfig?.path || ''
+      : '';
+  }
   @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
 
   private router = inject(Router);
@@ -76,12 +83,11 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     if (u.firstName) {
       return u.lastName ? `${u.firstName} ${u.lastName}` : u.firstName;
     }
-    return u.name || u.email?.split('@')[0] || 'User';
+    return u.userName || u.email?.split('@')[0] || 'User';
   });
 
   readonly userRole = computed(() => {
-    const u = this.authStore.user();
-    return u?.role || this.authStore.userRole() || 'Administrator';
+    return this.authStore.userRole();
   });
 
   readonly userInitials = computed(() => {
@@ -205,5 +211,9 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  logout(): void {
+    this.authStore.logout();
   }
 }

@@ -119,7 +119,7 @@
           <span>Settings</span>
         </button>
         <mat-divider />
-        <button mat-menu-item class="logout-item">
+        <button mat-menu-item class="logout-item" (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Sign out</span>
         </button>
@@ -128,8 +128,8 @@
 
     <!-- Loading bar & Page outlet -->
     <mat-progress-bar mode="indeterminate" *ngIf="isLoading()" class="loading-bar"></mat-progress-bar>
-    <div class="page-content">
-      <router-outlet />
+    <div class="page-content" [@routeFadeAnimation]="prepareRoute(outlet)">
+      <router-outlet #outlet="outlet" />
     </div>
   </mat-sidenav-content>
 

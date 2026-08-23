@@ -6,127 +6,99 @@
         Manage catalog items, track stock levels, and view product details.
       </p>
     </div>
+    @if (authService.hasRole('Admin')) {
     <a routerLink="/add-products" class="btn btn--primary">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
       Add product
     </a>
+    }
   </div>
 
   <!-- Search / Filter toolbar -->
   <div class="toolbar">
     <div class="search-box">
       <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none">
-        <path
-          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
+        <path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      <input
-        type="text"
-        (keyup)="applyFilter($event)"
-        placeholder="Search products by name, SKU, or category..."
-      />
+      <input type="text" (keyup)="applyFilter($event)" placeholder="Search products by name, SKU, or category..." />
     </div>
   </div>
 
   @if (store.isLoading()) {
-    <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+  <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
   } @else {
-    <div class="table-card">
-      <table mat-table [dataSource]="dataSource" matSort class="products-table">
-        <!-- Product Name & Description Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Product</th>
-          <td mat-cell *matCellDef="let element">
-            <div class="product-cell">
-              <span class="product-cell__name">{{ element.name }}</span>
-              <span class="product-cell__desc">{{ element.description }}</span>
-            </div>
-          </td>
-        </ng-container>
+  <div class="table-card">
+    <table mat-table [dataSource]="dataSource" matSort class="products-table">
+      <!-- Product Name & Description Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="product-cell">
+            <span class="product-cell__name">{{ element.name }}</span>
+            <span class="product-cell__desc">{{ element.description }}</span>
+          </div>
+        </td>
+      </ng-container>
 
-        <!-- SKU Column -->
-        <ng-container matColumnDef="sku">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>SKU</th>
-          <td mat-cell *matCellDef="let element">
-            <code class="sku-tag">{{ element.sku }}</code>
-          </td>
-        </ng-container>
+      <!-- SKU Column -->
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>SKU</th>
+        <td mat-cell *matCellDef="let element">
+          <code class="sku-tag">{{ element.sku }}</code>
+        </td>
+      </ng-container>
 
-        <!-- Price Column -->
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
-          <td mat-cell *matCellDef="let element" class="font-medium">
-            {{ element.price?.toFixed(2) }} ETB
-          </td>
-        </ng-container>
+      <!-- Price Column -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let element" class="font-medium">
+          {{ element.price?.toFixed(2) }} ETB
+        </td>
+      </ng-container>
 
-        <!-- Cost Column -->
-        <ng-container matColumnDef="cost">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Cost</th>
-          <td mat-cell *matCellDef="let element" class="text-slate">
-            {{ element.cost?.toFixed(2) }} ETB
-          </td>
-        </ng-container>
+      <!-- Cost Column -->
+      <ng-container matColumnDef="cost">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cost</th>
+        <td mat-cell *matCellDef="let element" class="text-slate">
+          {{ element.cost?.toFixed(2) }} ETB
+        </td>
+      </ng-container>
 
-        <!-- Stock Column -->
-        <ng-container matColumnDef="quantityInStock">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
-          <td mat-cell *matCellDef="let element">
-            <span class="status-badge" [ngClass]="getStockStatus(element.quantityInStock).class">
-              {{ getStockStatus(element.quantityInStock).label }} ({{ element.quantityInStock }})
-            </span>
-          </td>
-        </ng-container>
+      <!-- Stock Column -->
+      <ng-container matColumnDef="quantityInStock">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="status-badge" [ngClass]="getStockStatus(element.quantityInStock).class">
+            {{ getStockStatus(element.quantityInStock).label }} ({{ element.quantityInStock }})
+          </span>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns"
-          class="table-row"
-        ></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
 
-        <!-- Row shown when there is no data or no matching search filter -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="table-empty" colspan="5">
-            <div class="empty-state">
-              <svg
-                class="empty-icon"
-                viewBox="0 0 24 24"
-                width="44"
-                height="44"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <p class="empty-title">No products found</p>
-              <p class="empty-subtitle">There are no products available in the catalog.</p>
-            </div>
-          </td>
-        </tr>
-      </table>
+      <!-- Row shown when there is no data or no matching search filter -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="table-empty" colspan="5">
+          <div class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor"
+              stroke-width="1.5">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <p class="empty-title">No products found</p>
+            <p class="empty-subtitle">There are no products available in the catalog.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
 
-      <mat-paginator
-        class="products-paginator"
-        [length]="store.totalCount()"
-        [pageSize]="store.pageSize()"
-        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
-        [pageSizeOptions]="pageSizeOptions"
-        [showFirstLastButtons]="true"
-        (page)="onPageChange($event)"
-        aria-label="Select page of products"
-      />
-    </div>
+    <mat-paginator class="products-paginator" [length]="store.totalCount()" [pageSize]="store.pageSize()"
+      [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0" [pageSizeOptions]="pageSizeOptions"
+      [showFirstLastButtons]="true" (page)="onPageChange($event)" aria-label="Select page of products" />
+  </div>
   }
 </div>

@@ -20,7 +20,7 @@ export interface ProductPayload {
 })
 export class ProductService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/Product`;
+  private baseUrl = `${environment.apiUrl}/Products`;
 
   getAll(pageIndex = 1, pageSize = 10) {
     const params = new HttpParams()
