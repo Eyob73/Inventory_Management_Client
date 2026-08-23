@@ -189,6 +189,12 @@
     transition: margin-left 0.25s var(--ease) !important;
   }
 
+  &:not(.shell-container--collapsed) {
+    ::ng-deep .mat-sidenav-content {
+      margin-left: 210px !important;
+    }
+  }
+
   &.shell-container--collapsed {
     ::ng-deep .mat-sidenav-content {
       margin-left: 48px !important;

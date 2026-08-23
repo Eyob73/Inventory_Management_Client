@@ -6,8 +6,10 @@ import {
   computed,
   inject,
   OnInit,
+  AfterViewInit,
   OnDestroy,
   DestroyRef,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd, RouterOutlet } from '@angular/router';
@@ -16,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 // Material
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenavModule, MatSidenavContainer } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +34,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NavigationService, NavGroup } from '../../services/navigation-service';
 import { SearchDialogComponent } from '../../component/search-dialog-component/search-dialog-component';
 import { ThemeService } from '../../services/theme-service';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-shell',
@@ -56,12 +59,46 @@ import { ThemeService } from '../../services/theme-service';
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })
-export class Shell implements OnInit, OnDestroy {
+export class Shell implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
+
   private router = inject(Router);
   private navigation = inject(NavigationService);
   protected themeService = inject(ThemeService);
+  protected authStore = inject(AuthStore);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
+
+  // ========== Computed User Details ==========
+  readonly userName = computed(() => {
+    const u = this.authStore.user();
+    if (!u) return 'User';
+    if (u.firstName) {
+      return u.lastName ? `${u.firstName} ${u.lastName}` : u.firstName;
+    }
+    return u.name || u.email?.split('@')[0] || 'User';
+  });
+
+  readonly userRole = computed(() => {
+    const u = this.authStore.user();
+    return u?.role || this.authStore.userRole() || 'Administrator';
+  });
+
+  readonly userInitials = computed(() => {
+    const u = this.authStore.user();
+    if (u?.firstName) {
+      const firstInitial = u.firstName.charAt(0);
+      const lastInitial = u.lastName ? u.lastName.charAt(0) : '';
+      return (firstInitial + lastInitial).toUpperCase() || firstInitial.toUpperCase();
+    }
+    const name = this.userName();
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  });
 
   // ========== State ==========
   isCollapsed = signal(false);
@@ -127,6 +164,12 @@ export class Shell implements OnInit, OnDestroy {
   ngOnInit() {
     // Initialize theme (dark/light) from stored preference
     this.themeService.initializeTheme();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.sidenavContainer?.updateContentMargins();
+    }, 0);
   }
 
   ngOnDestroy() {

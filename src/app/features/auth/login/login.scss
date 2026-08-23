@@ -251,12 +251,15 @@
     font-weight: 600 !important;
     font-size: 0.95rem !important;
     letter-spacing: -0.01em !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
     box-shadow: 0 4px 12px var(--teal-glow) !important;
     transition: all 0.2s ease !important;
+
+    ::ng-deep .mdc-button__label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
 
     &:hover:not([disabled]) {
         background: var(--teal-dark) !important;
@@ -265,8 +268,14 @@
     }
 }
 
-.btn-spinner ::ng-deep circle {
-    stroke: #ffffff;
+.btn-spinner {
+    display: inline-block !important;
+    margin: 0 !important;
+    flex-shrink: 0;
+
+    ::ng-deep circle {
+        stroke: #ffffff;
+    }
 }
 
 .divider {

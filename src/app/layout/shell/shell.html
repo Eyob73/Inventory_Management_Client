@@ -1,12 +1,8 @@
 <mat-sidenav-container class="shell-container" [class.shell-container--collapsed]="isCollapsed() && !isMobile()">
 
   <!-- ── Sidebar (Full Height) ────────────────────────────────────── -->
-  <mat-sidenav #sidenav
-    class="shell-sidenav"
-    [mode]="mode()"
-    [opened]="!isMobile() || undefined"
-    [style.width]="sidenavWidth()"
-    disableClose>
+  <mat-sidenav #sidenav class="shell-sidenav" [mode]="mode()" [opened]="!isMobile() || undefined"
+    [style.width]="sidenavWidth()" disableClose>
 
     <!-- Brand Header at Top of Sidebar -->
     <div class="sidenav-brand-header">
@@ -18,7 +14,7 @@
           </svg>
         </span>
         @if (!isCollapsedOrMobile()) {
-          <span class="brand-wordmark">INV-MGNT</span>
+        <span class="brand-wordmark">INV-MGNT</span>
         }
       </a>
     </div>
@@ -27,43 +23,38 @@
     <!-- Navigation -->
     <mat-nav-list class="sidenav-nav">
       @for (group of navGroups(); track group.label) {
-        <div class="nav-group">
-          @if (!isCollapsedOrMobile()) {
-            <p class="nav-group-label">{{ group.label }}</p>
-          }
-          @for (item of group.items; track item.path) {
-            <a mat-list-item
-              [routerLink]="item.path"
-              routerLinkActive="active-link"
-              class="nav-item"
-              [matTooltip]="isCollapsedOrMobile() ? item.label : ''"
-              matTooltipPosition="right"
-              (click)="isMobile() && sidenav.close()">
-              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-              @if (!isCollapsedOrMobile()) {
-                <span class="mat-list-item-content" matListItemTitle>{{ item.label }}</span>
-              }
-            </a>
-          }
-        </div>
-        @if (!$last) {
-          <mat-divider />
+      <div class="nav-group">
+        @if (!isCollapsedOrMobile()) {
+        <p class="nav-group-label">{{ group.label }}</p>
         }
+        @for (item of group.items; track item.path) {
+        <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link" class="nav-item"
+          [matTooltip]="isCollapsedOrMobile() ? item.label : ''" matTooltipPosition="right"
+          (click)="isMobile() && sidenav.close()">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          @if (!isCollapsedOrMobile()) {
+          <span class="mat-list-item-content" matListItemTitle>{{ item.label }}</span>
+          }
+        </a>
+        }
+      </div>
+      @if (!$last) {
+      <mat-divider />
+      }
       }
     </mat-nav-list>
 
     <!-- User footer -->
     <div class="sidenav-footer">
       <mat-divider />
-      <a mat-list-item routerLink="/profile" class="user-item"
-        [matTooltip]="isCollapsedOrMobile() ? 'My Profile' : ''"
+      <a mat-list-item routerLink="/profile" class="user-item" [matTooltip]="isCollapsedOrMobile() ? userName() : ''"
         matTooltipPosition="right">
-        <span class="user-avatar" matListItemIcon>SA</span>
+        <span class="user-avatar" matListItemIcon>{{ userInitials() }}</span>
         @if (!isCollapsedOrMobile()) {
-          <span matListItemTitle class="user-name">Admin User</span>
+        <span matListItemTitle class="user-name">{{ userName() }}</span>
         }
         @if (!isCollapsedOrMobile()) {
-          <span matListItemLine class="user-role">Administrator</span>
+        <span matListItemLine class="user-role">{{ userRole() }}</span>
         }
       </a>
     </div>
@@ -76,20 +67,18 @@
       <div class="toolbar-left">
         <!-- Collapse toggle (only on desktop) -->
         @if (!isMobile()) {
-          <button mat-icon-button class="collapse-btn" (click)="toggleCollapse()"
-            [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
-            [matTooltip]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
-            matTooltipPosition="below">
-            <mat-icon>{{ isCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
-          </button>
+        <button mat-icon-button class="collapse-btn" (click)="toggleCollapse()"
+          [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+          [matTooltip]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'" matTooltipPosition="below">
+          <mat-icon>{{ isCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+        </button>
         }
 
         <!-- Mobile menu hamburger -->
         @if (isMobile()) {
-          <button mat-icon-button class="collapse-btn" (click)="sidenav.toggle()"
-            aria-label="Toggle navigation">
-            <mat-icon>menu</mat-icon>
-          </button>
+        <button mat-icon-button class="collapse-btn" (click)="sidenav.toggle()" aria-label="Toggle navigation">
+          <mat-icon>menu</mat-icon>
+        </button>
         }
         <span class="toolbar-title">{{ pageTitle() }}</span>
       </div>
@@ -116,7 +105,7 @@
 
         <!-- Avatar / Account menu -->
         <button mat-icon-button [matMenuTriggerFor]="accountMenu" class="toolbar-avatar" aria-label="Account menu">
-          <span class="avatar-initials">SA</span>
+          <span class="avatar-initials">{{ userInitials() }}</span>
         </button>
       </div>
 
