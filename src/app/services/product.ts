@@ -1,6 +1,7 @@
-import { Injectable, inject } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Product, PagedProductResponse, ProductQueryFilter } from "../models/products.model";
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Product, PagedProductResponse, ProductQueryFilter } from '../models/products.model';
+import { environment } from '../../environments/environment.development';
 
 export interface ProductPayload {
   name: string;
@@ -19,7 +20,7 @@ export interface ProductPayload {
 })
 export class ProductService {
   private http = inject(HttpClient);
-  private baseUrl = "http://localhost:5111/api/products";
+  private baseUrl = `${environment.apiUrl}/Product`;
 
   getAll(pageIndex = 1, pageSize = 10) {
     const params = new HttpParams()
