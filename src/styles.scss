@@ -108,6 +108,34 @@ button {
       color: inherit !important;
     }
   }
+
+  &.supplier-select-panel {
+    .mat-pseudo-checkbox,
+    .mat-mdc-option-pseudo-checkbox,
+    .mat-pseudo-checkbox-minimal,
+    .mat-pseudo-checkbox-full,
+    .mdc-list-item__graphic,
+    .mdc-list-item__meta {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      visibility: hidden !important;
+    }
+  }
+}
+
+.supplier-select-panel {
+  .mat-pseudo-checkbox,
+  .mat-mdc-option-pseudo-checkbox,
+  .mat-pseudo-checkbox-minimal,
+  .mat-pseudo-checkbox-full,
+  .mdc-list-item__graphic,
+  .mdc-list-item__meta {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    visibility: hidden !important;
+  }
 }
 
 /* ─── Global Form Control Focus & Hover Styles ─────────────── */

@@ -17,10 +17,6 @@ export class AuthService {
     if (!user) return false;
 
     const userRoles: string[] = [];
-    if (user.role) {
-      if (Array.isArray(user.role)) userRoles.push(...user.role);
-      else userRoles.push(user.role);
-    }
     if (user.roles) {
       if (Array.isArray(user.roles)) userRoles.push(...user.roles);
       else userRoles.push(user.roles);
@@ -49,8 +45,15 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    this.currentUser.set(null);
-    return of(undefined);
+    return this.http.post<void>(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        this.currentUser.set(null);
+      }),
+      catchError(() => {
+        this.currentUser.set(null);
+        return of(undefined);
+      }),
+    );
   }
 
   getCurrentUser(): Observable<User | null> {

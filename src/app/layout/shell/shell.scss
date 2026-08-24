@@ -376,9 +376,10 @@
 
 .nav-item {
   position: relative;
-  margin: 3px 12px !important;
+  margin: 2px 7px !important;
   border-radius: 8px !important;
   height: 42px !important;
+  width: calc(100% - 10px) !important;
   color: var(--slate) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
@@ -410,9 +411,29 @@
     color: var(--teal) !important;
     font-weight: 600 !important;
     box-shadow: none !important;
+    background: transparent !important;
+
+    .mat-list-item-content {
+      position: relative;
+      z-index: 2;
+    }
 
     mat-icon {
       color: var(--teal) !important;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% - 10px);
+      height: calc(100% - 4px);
+      background: var(--teal-soft);
+      border-radius: 10px;
+      pointer-events: none;
+      z-index: 0;
     }
 
     &:hover {
@@ -424,7 +445,7 @@
       }
     }
 
-    // Use ::after — Material list items own ::before for the state overlay
+    // Keep the thin green accent indicator on the far left.
     &::after {
       content: '';
       position: absolute;
@@ -437,7 +458,7 @@
       border-radius: 999px;
       box-shadow: 0 0 10px color-mix(in srgb, var(--teal) 40%, transparent);
       pointer-events: none;
-      z-index: 1;
+      z-index: 3;
     }
   }
 

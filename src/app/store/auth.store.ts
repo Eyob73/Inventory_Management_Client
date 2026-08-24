@@ -35,7 +35,7 @@ export const AuthStore = signalStore(
     userRole: computed(() => {
       const u = store.user();
       if (!u) return 'Guest';
-      const r = u.role || u.roles;
+      const r = u.roles;
       if (Array.isArray(r)) return r[0] ?? 'Guest';
       return r ?? 'Guest';
     }),

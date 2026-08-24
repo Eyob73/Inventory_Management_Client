@@ -47,7 +47,7 @@
             <div class="form-group">
                 <label for="supplierId">Supplier</label>
                 <mat-form-field appearance="outline" class="category-select-field">
-                    <mat-select id="supplierId" formControlName="supplierId" placeholder="Select a supplier">
+                    <mat-select id="supplierId" formControlName="supplierId" placeholder="Select a supplier" panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
                         <mat-option [value]="''">None (No Supplier)</mat-option>
                         @for (sup of suppliersResource.value() || []; track sup.id) {
                             <mat-option [value]="sup.id">{{ sup.name }}</mat-option>

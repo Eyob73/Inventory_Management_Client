@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment.development';
 })
 export class SupplierService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/Supplier`;
+  private baseUrl = `${environment.apiUrl}/Suppliers`;
 
   getAll() {
     return this.http.get<Supplier[]>(this.baseUrl);

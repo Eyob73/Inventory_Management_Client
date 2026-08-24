@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment.development';
 })
 export class CategoryService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/Category`;
+  private baseUrl = `${environment.apiUrl}/Categories`;
 
   getAll() {
     return this.http.get<Category[]>(this.baseUrl);
