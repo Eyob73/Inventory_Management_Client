@@ -35,6 +35,7 @@ import { NavigationService, NavGroup } from '../../services/navigation-service';
 import { SearchDialogComponent } from '../../component/search-dialog-component/search-dialog-component';
 import { ThemeService } from '../../services/theme-service';
 import { AuthStore } from '../../store/auth.store';
+import { NotificationService } from '../../services/notification.service';
 import { routeFadeAnimation } from '../../animations/fade.animation';
 
 @Component({
@@ -73,6 +74,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   private navigation = inject(NavigationService);
   protected themeService = inject(ThemeService);
   protected authStore = inject(AuthStore);
+  protected notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
   private destroyRef = inject(DestroyRef);
 
@@ -88,6 +90,10 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
 
   readonly userRole = computed(() => {
     return this.authStore.userRole();
+  });
+
+  readonly userEmail = computed(() => {
+    return this.authStore.user()?.email || '';
   });
 
   readonly userInitials = computed(() => {
@@ -215,5 +221,16 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
 
   logout(): void {
     this.authStore.logout();
+  }
+
+  getTimeAgo(date: Date): string {
+    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+    if (seconds < 60) return 'Just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
   }
 }

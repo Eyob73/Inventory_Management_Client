@@ -99,30 +99,123 @@
         </button>
 
         <!-- Notifications -->
-        <button mat-icon-button aria-label="Notifications" matTooltip="Notifications" class="toolbar-action-btn">
-          <mat-icon [matBadge]="'3'" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+        <button mat-icon-button aria-label="Notifications" matTooltip="Notifications" class="toolbar-action-btn"
+          [matMenuTriggerFor]="notificationMenu"
+          [matBadge]="notificationService.unreadCount()"
+          [matBadgeHidden]="notificationService.unreadCount() === 0"
+          matBadgeColor="warn" matBadgeSize="small" matBadgeOverlap="true">
+          <mat-icon>notifications_none</mat-icon>
         </button>
 
         <!-- Avatar / Account menu -->
-        <button mat-icon-button [matMenuTriggerFor]="accountMenu" class="toolbar-avatar" aria-label="Account menu">
-          <span class="avatar-initials">{{ userInitials() }}</span>
+        <button type="button" [matMenuTriggerFor]="accountMenu" class="toolbar-account-btn" aria-label="Account menu">
+          <div class="avatar-wrapper">
+            <span class="avatar-initials">{{ userInitials() }}</span>
+          </div>
+          <div class="toolbar-user-meta">
+            <span class="toolbar-user-name">{{ userName() }}</span>
+            <span class="toolbar-user-role">{{ userRole() }}</span>
+          </div>
+          <mat-icon class="chevron-icon">expand_more</mat-icon>
         </button>
       </div>
 
-      <mat-menu #accountMenu="matMenu" xPosition="before">
-        <button mat-menu-item>
-          <mat-icon>person</mat-icon>
-          <span>Profile</span>
-        </button>
-        <button mat-menu-item>
-          <mat-icon>settings</mat-icon>
-          <span>Settings</span>
-        </button>
+      <mat-menu #accountMenu="matMenu" xPosition="before" class="profile-dropdown-menu">
+        <div class="profile-menu-header" (click)="$event.stopPropagation()">
+          <div class="header-avatar-wrapper">
+            <span class="header-avatar-initials">{{ userInitials() }}</span>
+            <span class="header-status-indicator"></span>
+          </div>
+          <div class="header-user-info">
+            <div class="header-user-name">{{ userName() }}</div>
+            @if (userEmail()) {
+            <div class="header-user-email">{{ userEmail() }}</div>
+            }
+            <div class="header-role-badge">
+              <span class="role-dot"></span>
+              {{ userRole() }}
+            </div>
+          </div>
+        </div>
+
         <mat-divider />
-        <button mat-menu-item class="logout-item" (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Sign out</span>
-        </button>
+
+        <div class="menu-items-group">
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon class="menu-item-icon">person_outline</mat-icon>
+            <span>My Profile</span>
+          </button>
+          <button mat-menu-item routerLink="/settings">
+            <mat-icon class="menu-item-icon">tune</mat-icon>
+            <span>Settings</span>
+          </button>
+        </div>
+
+        <mat-divider />
+
+        <div class="menu-items-group">
+          <button mat-menu-item class="logout-item" (click)="logout()">
+            <mat-icon class="menu-item-icon">logout</mat-icon>
+            <span>Sign out</span>
+          </button>
+        </div>
+      </mat-menu>
+
+      <!-- Notification Dropdown Menu -->
+      <mat-menu #notificationMenu="matMenu" xPosition="before" class="notification-dropdown-menu">
+        <div class="notification-menu-header" (click)="$event.stopPropagation()">
+          <div class="header-title-row">
+            <span class="header-title">Notifications</span>
+            @if (notificationService.unreadCount() > 0) {
+            <span class="unread-pill">{{ notificationService.unreadCount() }} unread</span>
+            }
+          </div>
+          @if (notificationService.unreadCount() > 0) {
+          <button type="button" class="mark-all-btn" (click)="notificationService.markAllAsRead()">
+            <mat-icon class="btn-icon">done_all</mat-icon>
+            Mark read
+          </button>
+          }
+        </div>
+
+        <mat-divider />
+
+        <div class="notification-list" (click)="$event.stopPropagation()">
+          @for (item of notificationService.notifications(); track item.id) {
+          <div class="notification-item" [class.unread]="!item.read" (click)="notificationService.markAsRead(item.id)">
+            <div class="notification-icon-wrapper" [class]="'type-' + item.type">
+              <mat-icon>{{ item.icon }}</mat-icon>
+            </div>
+            <div class="notification-body">
+              <div class="notification-title-row">
+                <span class="notification-item-title">{{ item.title }}</span>
+                <span class="notification-time">{{ getTimeAgo(item.timestamp) }}</span>
+              </div>
+              <p class="notification-message">{{ item.message }}</p>
+            </div>
+            @if (!item.read) {
+            <span class="unread-dot"></span>
+            }
+            <button type="button" class="remove-btn" (click)="notificationService.removeNotification(item.id); $event.stopPropagation()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          } @empty {
+          <div class="notification-empty">
+            <mat-icon class="empty-icon">notifications_off</mat-icon>
+            <p class="empty-text">No notifications right now</p>
+          </div>
+          }
+        </div>
+
+        @if (notificationService.notifications().length > 0) {
+        <mat-divider />
+        <div class="notification-footer" (click)="$event.stopPropagation()">
+          <button type="button" class="clear-all-btn" (click)="notificationService.clearAll()">
+            Clear all
+          </button>
+        </div>
+        }
       </mat-menu>
     </mat-toolbar>
 
