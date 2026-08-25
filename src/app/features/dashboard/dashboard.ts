@@ -2,7 +2,9 @@ import {
   Component,
   ChangeDetectionStrategy,
   inject,
+  computed,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -12,12 +14,14 @@ import { Widget } from '../../component/widget/widget';
 import { WidgetPanel } from './widget-panel/widget-panel';
 import { DashboardService } from '../../services/dashboard';
 import { DashboardWidget } from '../../models/dashboard';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
@@ -31,8 +35,17 @@ import { DashboardWidget } from '../../models/dashboard';
 export class Dashboard {
   readonly dashSvc = inject(DashboardService);
   private readonly dialog = inject(MatDialog);
+  private readonly authStore = inject(AuthStore);
 
   readonly activeWidgets = this.dashSvc.activeWidgets;
+
+  readonly userRole = computed(() => this.authStore.userRole());
+  readonly isSales = computed(() => this.authStore.userRole()?.toLowerCase() === 'sales');
+  readonly isAdmin = computed(() => this.authStore.userRole()?.toLowerCase() === 'admin');
+  readonly userName = computed(() => {
+    const u = this.authStore.user();
+    return u?.firstName || u?.userName || 'there';
+  });
 
   openPanel(): void {
     this.dialog.open(WidgetPanel, {
@@ -65,3 +78,5 @@ export class Dashboard {
     this.dashSvc.resetDashboard();
   }
 }
+
+

@@ -145,10 +145,12 @@
             <mat-icon class="menu-item-icon">person_outline</mat-icon>
             <span>My Profile</span>
           </button>
+          @if (canAccessSettings()) {
           <button mat-menu-item routerLink="/settings">
             <mat-icon class="menu-item-icon">tune</mat-icon>
             <span>Settings</span>
           </button>
+          }
         </div>
 
         <mat-divider />

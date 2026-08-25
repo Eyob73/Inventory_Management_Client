@@ -1,0 +1,221 @@
+<div class="users-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">User Management</h1>
+      <p class="page-subtitle">Manage system users, assign roles, and control access.</p>
+    </div>
+    <button class="btn btn--primary" (click)="showCreateForm.set(true)" [disabled]="showCreateForm()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      Add User
+    </button>
+  </div>
+
+  <!-- Error Banner -->
+  @if (error()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+      <button class="dismiss-btn" (click)="dismissError()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--total">
+        <mat-icon>group</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats().total }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--active">
+        <mat-icon>verified_user</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats().active }}</div>
+        <div class="stat-label">Active</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--admin">
+        <mat-icon>shield</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats().admin }}</div>
+        <div class="stat-label">Admins</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--manager">
+        <mat-icon>manage_accounts</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats().manager }}</div>
+        <div class="stat-label">Managers</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--sales">
+        <mat-icon>point_of_sale</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ stats().sales }}</div>
+        <div class="stat-label">Sales</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create User Form -->
+  @if (showCreateForm()) {
+    <div class="form-card">
+      <div class="form-card-header">
+        <mat-icon>person_add</mat-icon>
+        <h2>Create New User</h2>
+      </div>
+      <form [formGroup]="createForm" (ngSubmit)="createUser()" class="create-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <input id="firstName" type="text" formControlName="firstName" placeholder="Enter first name" />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input id="lastName" type="text" formControlName="lastName" placeholder="Enter last name" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userEmail">Email *</label>
+            <input id="userEmail" type="email" formControlName="email" placeholder="user@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="userPassword">Password *</label>
+            <input id="userPassword" type="password" formControlName="password" placeholder="Min 6 characters" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userRole">Role *</label>
+            <select id="userRole" formControlName="role">
+              @for (role of ROLES; track role) {
+                <option [value]="role">{{ role }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost" (click)="cancelCreate()">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="createForm.invalid">
+            Create User
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Search bar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search by name, email, or role…"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      />
+    </div>
+  </div>
+
+  <!-- Users Table / Loading / Empty -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading users…</p>
+    </div>
+  } @else if (filteredUsers().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">person_off</mat-icon>
+      <p class="empty-title">No users found</p>
+      <p class="empty-subtitle">
+        @if (searchQuery()) {
+          No users match your search query.
+        } @else {
+          No users have been created yet. Click "Add User" to get started.
+        }
+      </p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filteredUsers(); track user.id) {
+            <tr class="user-row">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar-sm">{{ getUserInitials(user) }}</div>
+                  <div class="user-meta">
+                    <span class="user-name">{{ getUserName(user) }}</span>
+                    @if (user.userName) {
+                      <span class="user-username">@{{ user.userName }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td class="text-secondary">{{ user.email }}</td>
+              <td>
+                <select
+                  class="role-select"
+                  [class]="getRoleClass(getPrimaryRole(user))"
+                  [value]="getPrimaryRole(user)"
+                  (change)="changeRole(user, $any($event.target).value)"
+                  [disabled]="savingId() === user.id"
+                >
+                  @for (role of ROLES; track role) {
+                    <option [value]="role">{{ role }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <span class="status-badge" [class.status--active]="user.isActive" [class.status--inactive]="!user.isActive">
+                  {{ user.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button
+                    class="action-btn"
+                    [class.action-btn--deactivate]="user.isActive"
+                    [class.action-btn--activate]="!user.isActive"
+                    (click)="toggleStatus(user)"
+                    [disabled]="savingId() === user.id"
+                    [matTooltip]="user.isActive ? 'Deactivate user' : 'Activate user'"
+                  >
+                    <mat-icon>{{ user.isActive ? 'person_off' : 'person' }}</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

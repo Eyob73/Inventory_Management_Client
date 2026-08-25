@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, effect, OnInit } from '@angular/core';
+import { Component, inject, ViewChild, effect, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -7,7 +7,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { Product } from '../../models/products.model';
 import { ProductStore } from '../../store/products.store';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
-import { AuthService } from '../../services/auth';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-products',
@@ -25,9 +25,26 @@ import { AuthService } from '../../services/auth';
 })
 export class Products implements OnInit {
   readonly store = inject(ProductStore);
-  readonly authService = inject(AuthService);
+  readonly authStore = inject(AuthStore);
 
-  displayedColumns: string[] = ['name', 'sku', 'price', 'cost', 'quantityInStock'];
+  /** Whether the current user is a Sales role */
+  readonly isSales = computed(() =>
+    this.authStore.userRole()?.toLowerCase() === 'sales'
+  );
+
+  /** Whether the current user can create/edit products (Admin or Manager) */
+  readonly canEditProducts = computed(() => {
+    const role = this.authStore.userRole()?.toLowerCase() ?? '';
+    return role === 'admin' || role === 'manager';
+  });
+
+  /** Column list — hide 'cost' for Sales users */
+  readonly displayedColumns = computed<string[]>(() =>
+    this.isSales()
+      ? ['name', 'sku', 'price', 'quantityInStock']
+      : ['name', 'sku', 'price', 'cost', 'quantityInStock']
+  );
+
   dataSource = new MatTableDataSource<Product>([]);
   pageSizeOptions = [5, 10, 15, 25, 50];
 
@@ -74,3 +91,4 @@ export class Products implements OnInit {
     return { label: 'In stock', class: 'status--in' };
   }
 }
+

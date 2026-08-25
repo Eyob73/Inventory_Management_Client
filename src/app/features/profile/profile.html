@@ -1,0 +1,111 @@
+<div class="profile-page">
+
+  <!-- Header Card -->
+  <div class="profile-hero">
+    <div class="hero-background"></div>
+    <div class="hero-content">
+      <div class="avatar-ring">
+        <div class="avatar-circle">{{ initials() }}</div>
+        <div class="avatar-status-dot"></div>
+      </div>
+
+      <div class="hero-info">
+        <h1 class="hero-name">{{ fullName() }}</h1>
+        @if (user()?.email) {
+          <p class="hero-email">{{ user()?.email }}</p>
+        }
+        <div class="hero-role-badge" [class]="roleColor()">
+          <mat-icon class="badge-icon">{{ roleIcon() }}</mat-icon>
+          {{ role() }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+
+    <!-- Account Information Card -->
+    <div class="profile-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">person_outline</mat-icon>
+        <h2 class="card-title">Account Information</h2>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-row">
+            <span class="info-label">Full Name</span>
+            <span class="info-value">{{ fullName() }}</span>
+          </div>
+          @if (user()?.firstName) {
+            <div class="info-row">
+              <span class="info-label">First Name</span>
+              <span class="info-value">{{ user()?.firstName }}</span>
+            </div>
+          }
+          @if (user()?.lastName) {
+            <div class="info-row">
+              <span class="info-label">Last Name</span>
+              <span class="info-value">{{ user()?.lastName }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ user()?.email || '—' }}</span>
+          </div>
+          @if (user()?.userName) {
+            <div class="info-row">
+              <span class="info-label">Username</span>
+              <span class="info-value">{{ user()?.userName }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Role</span>
+            <span class="info-value">
+              <span class="inline-role-badge" [class]="roleColor()">
+                <mat-icon class="badge-icon-sm">{{ roleIcon() }}</mat-icon>
+                {{ role() }}
+              </span>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Account Status</span>
+            <span class="info-value">
+              <span class="status-active">
+                <span class="status-dot"></span>
+                Active
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Permissions Card -->
+    <div class="profile-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">security</mat-icon>
+        <h2 class="card-title">Your Permissions</h2>
+      </div>
+      <div class="card-body">
+        <p class="permissions-note">
+          Permissions are controlled by your assigned role and cannot be changed from this page. Contact your administrator if you need different access.
+        </p>
+        <div class="permissions-grid">
+          @for (perm of permissions(); track perm.label) {
+            <div class="permission-item" [class.granted]="perm.granted" [class.denied]="!perm.granted">
+              <div class="permission-icon-wrap">
+                @if (perm.granted) {
+                  <mat-icon class="perm-check">check_circle</mat-icon>
+                } @else {
+                  <mat-icon class="perm-block">block</mat-icon>
+                }
+              </div>
+              <span class="permission-label">{{ perm.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

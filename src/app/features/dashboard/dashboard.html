@@ -2,10 +2,26 @@
   <!-- Header -->
   <div class="dash-header">
     <div>
-      <h1 class="dash-title">Overview</h1>
-      <p class="dash-subtitle">Sales, stock &amp; real-time inventory performance · updated 4 min ago</p>
+      <h1 class="dash-title">
+        @if (isSales()) {
+          Sales Dashboard
+        } @else if (isAdmin()) {
+          Admin Overview
+        } @else {
+          Overview
+        }
+      </h1>
+      <p class="dash-subtitle">
+        Welcome back, <strong>{{ userName() }}</strong> ·
+        @if (isSales()) {
+          Track your sales, revenue, and customers.
+        } @else {
+          Sales, stock &amp; real-time inventory performance · updated 4 min ago
+        }
+      </p>
     </div>
 
+    @if (!isSales()) {
     <div class="dash-header-actions">
       <button
         mat-button
@@ -18,7 +34,44 @@
         Customize
       </button>
     </div>
+    }
   </div>
+
+  <!-- Sales Quick Actions (Sales role only) -->
+  @if (isSales()) {
+    <div class="quick-actions">
+      <a class="quick-action-card" routerLink="/sales">
+        <div class="qa-icon qa-icon--primary">
+          <mat-icon>add_shopping_cart</mat-icon>
+        </div>
+        <div class="qa-body">
+          <span class="qa-title">Create Sale</span>
+          <span class="qa-sub">Start a new transaction</span>
+        </div>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </a>
+      <a class="quick-action-card" routerLink="/products">
+        <div class="qa-icon qa-icon--blue">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="qa-body">
+          <span class="qa-title">View Products</span>
+          <span class="qa-sub">Browse available catalog</span>
+        </div>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </a>
+      <a class="quick-action-card" routerLink="/customers">
+        <div class="qa-icon qa-icon--amber">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="qa-body">
+          <span class="qa-title">View Customers</span>
+          <span class="qa-sub">Find or add customers</span>
+        </div>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </a>
+    </div>
+  }
 
   <!-- Dashboard CSS Grid Layout with cdkDropListGroup -->
   <div class="dashboard-grid" cdkDropListGroup>
@@ -45,17 +98,20 @@
         <mat-icon>dashboard_customize</mat-icon>
         <h3>No active widgets</h3>
         <p>Your dashboard is currently empty. Click Customize to choose which widgets to display.</p>
-        <div class="empty-actions">
-          <button mat-flat-button class="empty-btn" (click)="openPanel()">
-            <mat-icon>tune</mat-icon>
-            Customize Dashboard
-          </button>
-          <button mat-stroked-button (click)="resetLayout()">
-            <mat-icon>restart_alt</mat-icon>
-            Restore Default Layout
-          </button>
-        </div>
+        @if (!isSales()) {
+          <div class="empty-actions">
+            <button mat-flat-button class="empty-btn" (click)="openPanel()">
+              <mat-icon>tune</mat-icon>
+              Customize Dashboard
+            </button>
+            <button mat-stroked-button (click)="resetLayout()">
+              <mat-icon>restart_alt</mat-icon>
+              Restore Default Layout
+            </button>
+          </div>
+        }
       </div>
     }
   </div>
 </div>
+

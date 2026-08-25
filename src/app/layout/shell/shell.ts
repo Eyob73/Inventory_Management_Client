@@ -117,8 +117,17 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   isScrolled = signal(false);
   isLoading = signal(false);
   pageTitle = signal('Dashboard');
-  navGroups = signal<NavGroup[]>(this.navigation.getNavGroups());
   isMobile = signal(false);
+
+  // Role-reactive nav groups: automatically updates when the role changes
+  readonly navGroups = computed(() =>
+    this.navigation.getNavGroups(this.authStore.userRole())
+  );
+
+  // Only admin can access Settings
+  readonly canAccessSettings = computed(() =>
+    this.authStore.userRole()?.toLowerCase() === 'admin'
+  );
 
   // computed
   readonly sidenavWidth = computed(() =>

@@ -1,0 +1,259 @@
+<div class="settings-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">System Settings</h1>
+      <p class="page-subtitle">Configure system-level options for your inventory management platform.</p>
+    </div>
+  </div>
+
+  <!-- Success Banner -->
+  @if (saveSuccess()) {
+    <div class="success-banner">
+      <mat-icon>check_circle</mat-icon>
+      <span>Settings saved successfully!</span>
+    </div>
+  }
+
+  <div class="settings-layout">
+
+    <!-- Sidebar Nav -->
+    <nav class="settings-nav">
+      @for (section of sections; track section.id) {
+        <button
+          class="nav-item"
+          [class.active]="activeSection() === section.id"
+          (click)="setSection(section.id)"
+        >
+          <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
+          {{ section.label }}
+        </button>
+      }
+    </nav>
+
+    <!-- Settings Content -->
+    <div class="settings-content">
+
+      <!-- Company Profile -->
+      @if (activeSection() === 'company') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>business</mat-icon>
+            <h2>Company Profile</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-group">
+              <label for="companyName">Company Name</label>
+              <input id="companyName" type="text" [(ngModel)]="company.name" placeholder="Your company name" />
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="companyPhone">Phone</label>
+                <input id="companyPhone" type="tel" [(ngModel)]="company.phone" placeholder="+251 9XX XXX XXXX" />
+              </div>
+              <div class="field-group">
+                <label for="companyEmail">Email</label>
+                <input id="companyEmail" type="email" [(ngModel)]="company.email" placeholder="info@company.com" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="companyAddress">Address</label>
+              <input id="companyAddress" type="text" [(ngModel)]="company.address" placeholder="Addis Ababa, Ethiopia" />
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="companyWebsite">Website</label>
+                <input id="companyWebsite" type="url" [(ngModel)]="company.website" placeholder="https://example.com" />
+              </div>
+              <div class="field-group">
+                <label for="companyTaxId">Tax ID / TIN</label>
+                <input id="companyTaxId" type="text" [(ngModel)]="company.taxId" placeholder="Enter TIN number" />
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Inventory Alerts -->
+      @if (activeSection() === 'inventory') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>inventory_2</mat-icon>
+            <h2>Inventory Alerts</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field-group">
+                <label for="lowStockThreshold">Low Stock Threshold</label>
+                <p class="field-hint">Alert when item quantity falls below this number.</p>
+                <input id="lowStockThreshold" type="number" [(ngModel)]="inventory.lowStockThreshold" min="1" />
+              </div>
+              <div class="field-group">
+                <label for="criticalStockThreshold">Critical Stock Threshold</label>
+                <p class="field-hint">Alert when item is almost out of stock.</p>
+                <input id="criticalStockThreshold" type="number" [(ngModel)]="inventory.criticalStockThreshold" min="0" />
+              </div>
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Auto-Reorder</span>
+                <span class="toggle-hint">Automatically create purchase orders for low-stock items.</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="inventory.autoReorderEnabled" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            @if (inventory.autoReorderEnabled) {
+              <div class="field-group">
+                <label for="defaultReorderQty">Default Reorder Quantity</label>
+                <input id="defaultReorderQty" type="number" [(ngModel)]="inventory.defaultReorderQty" min="1" />
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Currency & Locale -->
+      @if (activeSection() === 'currency') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>payments</mat-icon>
+            <h2>Currency & Locale</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field-group">
+                <label for="currencyCode">Currency Code</label>
+                <input id="currencyCode" type="text" [(ngModel)]="currency.code" placeholder="ETB" />
+              </div>
+              <div class="field-group">
+                <label for="currencySymbol">Currency Symbol</label>
+                <input id="currencySymbol" type="text" [(ngModel)]="currency.symbol" placeholder="Br" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="locale">Locale</label>
+                <select id="locale" [(ngModel)]="currency.locale">
+                  <option value="am-ET">Ethiopian (Amharic)</option>
+                  <option value="en-US">English (US)</option>
+                  <option value="en-GB">English (UK)</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="decimalPlaces">Decimal Places</label>
+                <select id="decimalPlaces" [(ngModel)]="currency.decimalPlaces">
+                  <option [value]="0">0 (e.g., 1,000 ETB)</option>
+                  <option [value]="2">2 (e.g., 1,000.00 ETB)</option>
+                </select>
+              </div>
+            </div>
+            <div class="currency-preview">
+              <span class="preview-label">Preview:</span>
+              <span class="preview-value">{{ currency.symbol }} 1,234{{ currency.decimalPlaces === 2 ? '.00' : '' }} {{ currency.code }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Notifications -->
+      @if (activeSection() === 'notifications') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>notifications</mat-icon>
+            <h2>Notification Settings</h2>
+          </div>
+          <div class="card-body">
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Low Stock Alerts</span>
+                <span class="toggle-hint">Receive alerts when a product reaches the low-stock threshold.</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="notifications.lowStockAlerts" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Sale Completed</span>
+                <span class="toggle-hint">Notify when a sale is completed.</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="notifications.saleCompletedAlerts" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">User Login Alerts</span>
+                <span class="toggle-hint">Get notified when a user logs in.</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="notifications.userLoginAlerts" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Weekly Report Email</span>
+                <span class="toggle-hint">Receive a weekly summary report via email.</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="notifications.weeklyReportEmail" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Security -->
+      @if (activeSection() === 'security') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>security</mat-icon>
+            <h2>Security Settings</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-group">
+              <label for="sessionTimeout">Session Timeout (minutes)</label>
+              <p class="field-hint">Automatically log out idle users after this duration.</p>
+              <input id="sessionTimeout" type="number" [(ngModel)]="security.sessionTimeout" min="5" max="480" />
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Require Password Change</span>
+                <span class="toggle-hint">Force users to change password on next login.</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="security.requirePasswordChange" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Two-Factor Authentication</span>
+                <span class="toggle-hint">Enable 2FA for all users (requires backend support).</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="security.twoFactorEnabled" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Save Button -->
+      <div class="save-area">
+        <button class="btn btn--primary" (click)="saveSettings()">
+          <mat-icon>save</mat-icon>
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
