@@ -1,0 +1,152 @@
+.confirm-dialog {
+  padding: 1.75rem;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+// ── Icon Badge ────────────────────────────────────────────────────
+.dialog-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-icon-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+
+  mat-icon {
+    font-size: 1.75rem;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+// Type variations
+.dialog--danger {
+  .dialog-icon-badge {
+    background: var(--rose-soft, rgba(239, 68, 68, 0.12));
+    color: var(--rose, #f87171);
+    border: 1px solid color-mix(in srgb, var(--rose) 25%, transparent);
+  }
+}
+
+.dialog--warning {
+  .dialog-icon-badge {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+}
+
+.dialog--info {
+  .dialog-icon-badge {
+    background: var(--cobalt-soft, rgba(99, 102, 241, 0.12));
+    color: var(--cobalt, #a5b4fc);
+    border: 1px solid color-mix(in srgb, var(--cobalt) 25%, transparent);
+  }
+}
+
+// ── Content ───────────────────────────────────────────────────────
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialog-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.dialog-message {
+  font-size: 0.9rem;
+  color: var(--slate);
+  line-height: 1.5;
+  margin: 0;
+}
+
+// ── Actions ───────────────────────────────────────────────────────
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.btn--danger {
+  background: var(--rose, #ef4444);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+
+  &:hover {
+    filter: brightness(0.92);
+  }
+}
+
+.btn--warning {
+  background: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+
+  &:hover {
+    filter: brightness(0.92);
+  }
+}
+
+.btn--info {
+  background: var(--moss);
+  color: var(--btn-primary-fg, #ffffff);
+  box-shadow: 0 4px 14px var(--teal-glow);
+
+  &:hover {
+    filter: brightness(0.92);
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--slate);
+  border: 1px solid var(--border);
+
+  &:hover {
+    background: var(--row-hover);
+    color: var(--ink);
+  }
+}

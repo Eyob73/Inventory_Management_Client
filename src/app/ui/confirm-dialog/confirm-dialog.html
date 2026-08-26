@@ -1,0 +1,24 @@
+<div class="confirm-dialog" [class]="'dialog--' + type">
+  <!-- Dialog Header Icon -->
+  <div class="dialog-icon-container">
+    <div class="dialog-icon-badge">
+      <mat-icon>{{ icon }}</mat-icon>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="dialog-body">
+    <h2 class="dialog-title">{{ data.title }}</h2>
+    <p class="dialog-message">{{ data.message }}</p>
+  </div>
+
+  <!-- Actions -->
+  <div class="dialog-actions">
+    <button type="button" class="btn btn--ghost" (click)="onCancel()">
+      {{ cancelText }}
+    </button>
+    <button type="button" class="btn" [class]="'btn--' + type" (click)="onConfirm()">
+      {{ confirmText }}
+    </button>
+  </div>
+</div>

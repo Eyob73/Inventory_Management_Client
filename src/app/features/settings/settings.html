@@ -43,33 +43,33 @@
             <h2>Company Profile</h2>
           </div>
           <div class="card-body">
-            <div class="field-group">
-              <label for="companyName">Company Name</label>
-              <input id="companyName" type="text" [(ngModel)]="company.name" placeholder="Your company name" />
-            </div>
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>Company Name</mat-label>
+              <input matInput id="companyName" type="text" [(ngModel)]="company.name" placeholder="Your company name" />
+            </mat-form-field>
             <div class="field-row">
-              <div class="field-group">
-                <label for="companyPhone">Phone</label>
-                <input id="companyPhone" type="tel" [(ngModel)]="company.phone" placeholder="+251 9XX XXX XXXX" />
-              </div>
-              <div class="field-group">
-                <label for="companyEmail">Email</label>
-                <input id="companyEmail" type="email" [(ngModel)]="company.email" placeholder="info@company.com" />
-              </div>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Phone</mat-label>
+                <input matInput id="companyPhone" type="tel" [(ngModel)]="company.phone" placeholder="+251 9XX XXX XXXX" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Email</mat-label>
+                <input matInput id="companyEmail" type="email" [(ngModel)]="company.email" placeholder="info@company.com" />
+              </mat-form-field>
             </div>
-            <div class="field-group">
-              <label for="companyAddress">Address</label>
-              <input id="companyAddress" type="text" [(ngModel)]="company.address" placeholder="Addis Ababa, Ethiopia" />
-            </div>
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>Address</mat-label>
+              <input matInput id="companyAddress" type="text" [(ngModel)]="company.address" placeholder="Addis Ababa, Ethiopia" />
+            </mat-form-field>
             <div class="field-row">
-              <div class="field-group">
-                <label for="companyWebsite">Website</label>
-                <input id="companyWebsite" type="url" [(ngModel)]="company.website" placeholder="https://example.com" />
-              </div>
-              <div class="field-group">
-                <label for="companyTaxId">Tax ID / TIN</label>
-                <input id="companyTaxId" type="text" [(ngModel)]="company.taxId" placeholder="Enter TIN number" />
-              </div>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Website</mat-label>
+                <input matInput id="companyWebsite" type="url" [(ngModel)]="company.website" placeholder="https://example.com" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Tax ID / TIN</mat-label>
+                <input matInput id="companyTaxId" type="text" [(ngModel)]="company.taxId" placeholder="Enter TIN number" />
+              </mat-form-field>
             </div>
           </div>
         </div>
@@ -84,71 +84,68 @@
           </div>
           <div class="card-body">
             <div class="field-row">
-              <div class="field-group">
-                <label for="lowStockThreshold">Low Stock Threshold</label>
-                <p class="field-hint">Alert when item quantity falls below this number.</p>
-                <input id="lowStockThreshold" type="number" [(ngModel)]="inventory.lowStockThreshold" min="1" />
-              </div>
-              <div class="field-group">
-                <label for="criticalStockThreshold">Critical Stock Threshold</label>
-                <p class="field-hint">Alert when item is almost out of stock.</p>
-                <input id="criticalStockThreshold" type="number" [(ngModel)]="inventory.criticalStockThreshold" min="0" />
-              </div>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Low Stock Threshold</mat-label>
+                <input matInput id="lowStockThreshold" type="number" [(ngModel)]="inventory.lowStockThreshold" min="1" />
+                <mat-hint>Alert when item quantity falls below this number.</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Critical Stock Threshold</mat-label>
+                <input matInput id="criticalStockThreshold" type="number" [(ngModel)]="inventory.criticalStockThreshold" min="0" />
+                <mat-hint>Alert when item is almost out of stock.</mat-hint>
+              </mat-form-field>
             </div>
             <div class="toggle-item">
               <div class="toggle-info">
                 <span class="toggle-label">Auto-Reorder</span>
                 <span class="toggle-hint">Automatically create purchase orders for low-stock items.</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="inventory.autoReorderEnabled" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="inventory.autoReorderEnabled" color="primary"></mat-slide-toggle>
             </div>
             @if (inventory.autoReorderEnabled) {
-              <div class="field-group">
-                <label for="defaultReorderQty">Default Reorder Quantity</label>
-                <input id="defaultReorderQty" type="number" [(ngModel)]="inventory.defaultReorderQty" min="1" />
-              </div>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Default Reorder Quantity</mat-label>
+                <input matInput id="defaultReorderQty" type="number" [(ngModel)]="inventory.defaultReorderQty" min="1" />
+              </mat-form-field>
             }
           </div>
         </div>
       }
 
-      <!-- Currency & Locale -->
+      <!-- Currency & Language -->
       @if (activeSection() === 'currency') {
         <div class="settings-card">
           <div class="card-header">
             <mat-icon>payments</mat-icon>
-            <h2>Currency & Locale</h2>
+            <h2>Currency & Language</h2>
           </div>
           <div class="card-body">
             <div class="field-row">
-              <div class="field-group">
-                <label for="currencyCode">Currency Code</label>
-                <input id="currencyCode" type="text" [(ngModel)]="currency.code" placeholder="ETB" />
-              </div>
-              <div class="field-group">
-                <label for="currencySymbol">Currency Symbol</label>
-                <input id="currencySymbol" type="text" [(ngModel)]="currency.symbol" placeholder="Br" />
-              </div>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Currency Code</mat-label>
+                <input matInput id="currencyCode" type="text" [(ngModel)]="currency.code" placeholder="ETB" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Currency Symbol</mat-label>
+                <input matInput id="currencySymbol" type="text" [(ngModel)]="currency.symbol" placeholder="Br" />
+              </mat-form-field>
             </div>
             <div class="field-row">
-              <div class="field-group">
-                <label for="locale">Locale</label>
-                <select id="locale" [(ngModel)]="currency.locale">
-                  <option value="am-ET">Ethiopian (Amharic)</option>
-                  <option value="en-US">English (US)</option>
-                  <option value="en-GB">English (UK)</option>
-                </select>
-              </div>
-              <div class="field-group">
-                <label for="decimalPlaces">Decimal Places</label>
-                <select id="decimalPlaces" [(ngModel)]="currency.decimalPlaces">
-                  <option [value]="0">0 (e.g., 1,000 ETB)</option>
-                  <option [value]="2">2 (e.g., 1,000.00 ETB)</option>
-                </select>
-              </div>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Language</mat-label>
+                <mat-select id="language" [(ngModel)]="currency.language">
+                  <mat-option value="am-ET">Ethiopian (Amharic)</mat-option>
+                  <mat-option value="en-US">English (US)</mat-option>
+                  <mat-option value="en-GB">English (UK)</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Decimal Places</mat-label>
+                <mat-select id="decimalPlaces" [(ngModel)]="currency.decimalPlaces">
+                  <mat-option [value]="0">0 (e.g., 1,000 ETB)</mat-option>
+                  <mat-option [value]="2">2 (e.g., 1,000.00 ETB)</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
             <div class="currency-preview">
               <span class="preview-label">Preview:</span>
@@ -171,40 +168,28 @@
                 <span class="toggle-label">Low Stock Alerts</span>
                 <span class="toggle-hint">Receive alerts when a product reaches the low-stock threshold.</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="notifications.lowStockAlerts" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="notifications.lowStockAlerts" color="primary"></mat-slide-toggle>
             </div>
             <div class="toggle-item">
               <div class="toggle-info">
                 <span class="toggle-label">Sale Completed</span>
                 <span class="toggle-hint">Notify when a sale is completed.</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="notifications.saleCompletedAlerts" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="notifications.saleCompletedAlerts" color="primary"></mat-slide-toggle>
             </div>
             <div class="toggle-item">
               <div class="toggle-info">
                 <span class="toggle-label">User Login Alerts</span>
                 <span class="toggle-hint">Get notified when a user logs in.</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="notifications.userLoginAlerts" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="notifications.userLoginAlerts" color="primary"></mat-slide-toggle>
             </div>
             <div class="toggle-item">
               <div class="toggle-info">
                 <span class="toggle-label">Weekly Report Email</span>
                 <span class="toggle-hint">Receive a weekly summary report via email.</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="notifications.weeklyReportEmail" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="notifications.weeklyReportEmail" color="primary"></mat-slide-toggle>
             </div>
           </div>
         </div>
@@ -218,30 +203,24 @@
             <h2>Security Settings</h2>
           </div>
           <div class="card-body">
-            <div class="field-group">
-              <label for="sessionTimeout">Session Timeout (minutes)</label>
-              <p class="field-hint">Automatically log out idle users after this duration.</p>
-              <input id="sessionTimeout" type="number" [(ngModel)]="security.sessionTimeout" min="5" max="480" />
-            </div>
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>Session Timeout (minutes)</mat-label>
+              <input matInput id="sessionTimeout" type="number" [(ngModel)]="security.sessionTimeout" min="5" max="480" />
+              <mat-hint>Automatically log out idle users after this duration.</mat-hint>
+            </mat-form-field>
             <div class="toggle-item">
               <div class="toggle-info">
                 <span class="toggle-label">Require Password Change</span>
                 <span class="toggle-hint">Force users to change password on next login.</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="security.requirePasswordChange" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="security.requirePasswordChange" color="primary"></mat-slide-toggle>
             </div>
             <div class="toggle-item">
               <div class="toggle-info">
                 <span class="toggle-label">Two-Factor Authentication</span>
                 <span class="toggle-hint">Enable 2FA for all users (requires backend support).</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" [(ngModel)]="security.twoFactorEnabled" />
-                <span class="slider"></span>
-              </label>
+              <mat-slide-toggle [(ngModel)]="security.twoFactorEnabled" color="primary"></mat-slide-toggle>
             </div>
           </div>
         </div>

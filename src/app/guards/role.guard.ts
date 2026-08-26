@@ -35,7 +35,7 @@ export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
       const allowed = roles.some((r) => r.toLowerCase() === normalizedUserRole);
       if (allowed) return true;
 
-      return router.createUrlTree(['/unauthorized']);
+      return router.createUrlTree(['/dashboard']);
     };
 
     // Wait for auth loading to finish before evaluating

@@ -108,16 +108,41 @@ export const AuthStore = signalStore(
                       user: null,
                       isAuthenticated: false,
                       isLoading: false,
-                      error: 'Login succeeded, but user profile could not be loaded.',
+                      error: 'Invalid credentials',
                     });
                   }
                 })
               )
             ),
             catchError((err) => {
+              let errorMsg = 'Invalid credentials';
+              if (err?.status === 401 || err?.status === 400 || err?.status === 403) {
+                errorMsg = 'Invalid credentials';
+              } else if (err?.error?.message) {
+                const msg = String(err.error.message);
+                errorMsg = /invalid|credential|unauthorized|bad request|failed/i.test(msg)
+                  ? 'Invalid credentials'
+                  : msg;
+              } else if (err?.error?.detail) {
+                const detail = String(err.error.detail);
+                errorMsg = /invalid|credential|unauthorized|bad request|failed/i.test(detail)
+                  ? 'Invalid credentials'
+                  : detail;
+              } else if (typeof err?.error === 'string' && err.error.trim()) {
+                const strErr = err.error.trim();
+                errorMsg = /invalid|credential|unauthorized|bad request|failed/i.test(strErr)
+                  ? 'Invalid credentials'
+                  : strErr;
+              } else if (err?.message) {
+                const msg = String(err.message);
+                errorMsg = /invalid|credential|unauthorized|bad request|401|400|failed/i.test(msg)
+                  ? 'Invalid credentials'
+                  : msg;
+              }
+
               patchState(store, {
                 isLoading: false,
-                error: err?.error?.message || err?.message || 'Login failed',
+                error: errorMsg,
               });
               return EMPTY;
             })

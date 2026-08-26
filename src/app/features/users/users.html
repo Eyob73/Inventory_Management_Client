@@ -8,7 +8,7 @@
     </div>
     <button class="btn btn--primary" (click)="showCreateForm.set(true)" [disabled]="showCreateForm()">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
       </svg>
       Add User
     </button>
@@ -16,13 +16,13 @@
 
   <!-- Error Banner -->
   @if (error()) {
-    <div class="error-banner">
-      <mat-icon>error_outline</mat-icon>
-      <span>{{ error() }}</span>
-      <button class="dismiss-btn" (click)="dismissError()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
+  <div class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error() }}</span>
+    <button class="dismiss-btn" (click)="dismissError()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
   }
 
   <!-- Stats Row -->
@@ -76,146 +76,165 @@
 
   <!-- Create User Form -->
   @if (showCreateForm()) {
-    <div class="form-card">
-      <div class="form-card-header">
-        <mat-icon>person_add</mat-icon>
-        <h2>Create New User</h2>
-      </div>
-      <form [formGroup]="createForm" (ngSubmit)="createUser()" class="create-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="firstName">First Name *</label>
-            <input id="firstName" type="text" formControlName="firstName" placeholder="Enter first name" />
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input id="lastName" type="text" formControlName="lastName" placeholder="Enter last name" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="userEmail">Email *</label>
-            <input id="userEmail" type="email" formControlName="email" placeholder="user@example.com" />
-          </div>
-          <div class="form-group">
-            <label for="userPassword">Password *</label>
-            <input id="userPassword" type="password" formControlName="password" placeholder="Min 6 characters" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="userRole">Role *</label>
-            <select id="userRole" formControlName="role">
-              @for (role of ROLES; track role) {
-                <option [value]="role">{{ role }}</option>
-              }
-            </select>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn--ghost" (click)="cancelCreate()">Cancel</button>
-          <button type="submit" class="btn btn--primary" [disabled]="createForm.invalid">
-            Create User
-          </button>
-        </div>
-      </form>
+  <div class="form-card">
+    <div class="form-card-header">
+      <mat-icon>person_add</mat-icon>
+      <h2>Create New User</h2>
     </div>
+    <form [formGroup]="createForm" (ngSubmit)="createUser()" class="create-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="user-form-field">
+          <mat-label>First Name</mat-label>
+          <input matInput id="firstName" formControlName="firstName" placeholder="Enter first name" required />
+          @if (createForm.get('firstName')?.invalid && createForm.get('firstName')?.touched) {
+          <mat-error>First name is required</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="user-form-field">
+          <mat-label>Last Name</mat-label>
+          <input matInput id="lastName" formControlName="lastName" placeholder="Enter last name" />
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="user-form-field">
+          <mat-label>Email</mat-label>
+          <input matInput id="userEmail" type="email" formControlName="email" placeholder="user@example.com" required />
+          @if (createForm.get('email')?.hasError('required') && createForm.get('email')?.touched) {
+          <mat-error>Email is required</mat-error>
+          } @else if (createForm.get('email')?.hasError('email') && createForm.get('email')?.touched) {
+          <mat-error>Enter a valid email address</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="user-form-field">
+          <mat-label>Password</mat-label>
+          <input matInput id="userPassword" [type]="hidePassword() ? 'password' : 'text'" formControlName="password"
+            placeholder="Min 12 characters" required />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())"
+            [attr.aria-label]="'Toggle password visibility'">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (createForm.get('password')?.hasError('required') && createForm.get('password')?.touched) {
+          <mat-error>Password is required</mat-error>
+          } @else if (createForm.get('password')?.hasError('minlength') && createForm.get('password')?.touched) {
+          <mat-error>Password must be at least 12 characters</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="user-form-field">
+          <mat-label>Role</mat-label>
+          <mat-select id="userRole" formControlName="role">
+            @for (role of ROLES; track role) {
+            <mat-option [value]="role">{{ role }}</mat-option>
+            }
+          </mat-select>
+          @if (createForm.get('role')?.hasError('required') && createForm.get('role')?.touched) {
+          <mat-error>Role is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn--ghost" (click)="cancelCreate()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="createForm.invalid">
+          Create User
+        </button>
+      </div>
+    </form>
+  </div>
   }
 
   <!-- Search bar -->
   <div class="toolbar">
-    <div class="search-box">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input
-        type="text"
-        placeholder="Search by name, email, or role…"
-        [value]="searchQuery()"
-        (input)="searchQuery.set($any($event.target).value)"
-      />
-    </div>
+    <mat-form-field appearance="outline" class="search-form-field">
+      <mat-icon matPrefix class="search-icon">search</mat-icon>
+      <input matInput type="text" placeholder="Search by name, email, or role…" (keyup)="applyFilter($event)" />
+    </mat-form-field>
   </div>
 
-  <!-- Users Table / Loading / Empty -->
+  <!-- Users Table / Loading -->
   @if (isLoading()) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading users…</p>
-    </div>
-  } @else if (filteredUsers().length === 0) {
-    <div class="empty-state">
-      <mat-icon class="empty-icon">person_off</mat-icon>
-      <p class="empty-title">No users found</p>
-      <p class="empty-subtitle">
-        @if (searchQuery()) {
-          No users match your search query.
-        } @else {
-          No users have been created yet. Click "Add User" to get started.
-        }
-      </p>
-    </div>
+  <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
   } @else {
-    <div class="table-card">
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (user of filteredUsers(); track user.id) {
-            <tr class="user-row">
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar-sm">{{ getUserInitials(user) }}</div>
-                  <div class="user-meta">
-                    <span class="user-name">{{ getUserName(user) }}</span>
-                    @if (user.userName) {
-                      <span class="user-username">@{{ user.userName }}</span>
-                    }
-                  </div>
-                </div>
-              </td>
-              <td class="text-secondary">{{ user.email }}</td>
-              <td>
-                <select
-                  class="role-select"
-                  [class]="getRoleClass(getPrimaryRole(user))"
-                  [value]="getPrimaryRole(user)"
-                  (change)="changeRole(user, $any($event.target).value)"
-                  [disabled]="savingId() === user.id"
-                >
-                  @for (role of ROLES; track role) {
-                    <option [value]="role">{{ role }}</option>
-                  }
-                </select>
-              </td>
-              <td>
-                <span class="status-badge" [class.status--active]="user.isActive" [class.status--inactive]="!user.isActive">
-                  {{ user.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td>
-                <div class="actions-cell">
-                  <button
-                    class="action-btn"
-                    [class.action-btn--deactivate]="user.isActive"
-                    [class.action-btn--activate]="!user.isActive"
-                    (click)="toggleStatus(user)"
-                    [disabled]="savingId() === user.id"
-                    [matTooltip]="user.isActive ? 'Deactivate user' : 'Activate user'"
-                  >
-                    <mat-icon>{{ user.isActive ? 'person_off' : 'person' }}</mat-icon>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+  <div class="table-card">
+    <table mat-table [dataSource]="dataSource" matSort class="users-table">
+
+      <!-- User Column -->
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="user-cell">
+            <div class="user-avatar-sm">{{ getUserInitials(user) }}</div>
+            <div class="user-meta">
+              <span class="user-name">{{ getUserName(user) }}</span>
+              @if (user.userName) {
+              <span class="user-username">&#64;{{ user.userName }}</span>
+              }
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let user" class="text-secondary">{{ user.email }}</td>
+      </ng-container>
+
+      <!-- Role Column -->
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+        <td mat-cell *matCellDef="let user">
+          <span class="role-badge">
+            {{ getPrimaryRole(user) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let user">
+          <span class="status-badge" [class.status--active]="user.isActive" [class.status--inactive]="!user.isActive">
+            {{ user.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="actions-cell">
+            <button class="action-btn action-btn--edit" (click)="editUser(user)" [disabled]="savingId() === user.id"
+              matTooltip="Edit user">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="action-btn" [class.action-btn--deactivate]="user.isActive"
+              [class.action-btn--activate]="!user.isActive" (click)="toggleStatus(user)"
+              [disabled]="savingId() === user.id" [matTooltip]="user.isActive ? 'Lock account' : 'Unlock account'">
+              <mat-icon>{{ user.isActive ? 'person_off' : 'person' }}</mat-icon>
+            </button>
+            <button class="action-btn action-btn--delete" (click)="deleteUser(user)" [disabled]="savingId() === user.id"
+              matTooltip="Delete user">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="user-row"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="table-empty" [attr.colspan]="displayedColumns.length">
+          <div class="empty-state">
+            <mat-icon class="empty-icon">person_off</mat-icon>
+            <p class="empty-title">No users found</p>
+            <p class="empty-subtitle">No users match your search criteria.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
   }
 </div>

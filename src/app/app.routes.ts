@@ -83,6 +83,12 @@ export const routes: Routes = [
         canActivate: [roleGuard('Admin')],
       },
       {
+        path: 'users/edit/:id',
+        loadComponent: () =>
+          import('./features/users/edit-user/edit-user').then((m) => m.EditUserComponent),
+        canActivate: [roleGuard('Admin')],
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then((m) => m.SettingsComponent),
         canActivate: [roleGuard('Admin')],

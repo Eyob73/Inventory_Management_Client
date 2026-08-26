@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 interface SettingsSection {
   id: string;
@@ -14,7 +18,17 @@ interface SettingsSection {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+  ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -25,7 +39,7 @@ export class SettingsComponent {
   readonly sections: SettingsSection[] = [
     { id: 'company', label: 'Company Profile', icon: 'business' },
     { id: 'inventory', label: 'Inventory Alerts', icon: 'inventory_2' },
-    { id: 'currency', label: 'Currency & Locale', icon: 'payments' },
+    { id: 'currency', label: 'Currency & Language', icon: 'payments' },
     { id: 'notifications', label: 'Notifications', icon: 'notifications' },
     { id: 'security', label: 'Security', icon: 'security' },
   ];
@@ -52,7 +66,7 @@ export class SettingsComponent {
   currency = {
     code: 'ETB',
     symbol: 'Br',
-    locale: 'am-ET',
+    language: 'am-ET',
     decimalPlaces: 2,
   };
 
