@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, catchError, tap } from 'rxjs';
+import { Observable, of, catchError, map, tap } from 'rxjs';
 import { LoginCredentials, RegisterCredentials, User, AuthResponse } from '../models/auth.model';
 import { environment } from '../../environments/environment';
 
@@ -58,11 +58,27 @@ export class AuthService {
 
   getCurrentUser(): Observable<User | null> {
     return this.http.get<User>(`${this.baseUrl}/me`, { withCredentials: true }).pipe(
+      map((user) => {
+        if (!user) return null;
+        const u = user as any;
+        return {
+          ...user,
+          userName: user.userName || u.username || undefined,
+        };
+      }),
       tap((user) => this.currentUser.set(user)),
       catchError(() => {
         this.currentUser.set(null);
         return of(null);
       }),
+    );
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/change-password`,
+      { currentPassword, newPassword },
+      { withCredentials: true }
     );
   }
 }

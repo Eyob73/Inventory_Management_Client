@@ -46,6 +46,7 @@ export class EditUserComponent implements OnInit {
   editForm = this.fb.group({
     firstName: ['', Validators.required],
     lastName: [''],
+    userName: [''],
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: [''],
     role: ['User', Validators.required],
@@ -72,6 +73,7 @@ export class EditUserComponent implements OnInit {
         this.editForm.patchValue({
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
+          userName: userData.userName || '',
           email: userData.email,
           phoneNumber: userData.phoneNumber || '',
           role: userData.roles?.[0] || 'User',
@@ -100,6 +102,7 @@ export class EditUserComponent implements OnInit {
     this.userService
       .updateUser(this.userId()!, {
         email: val.email!,
+        userName: val.userName || undefined,
         firstName: val.firstName || '',
         lastName: val.lastName || '',
         phoneNumber: val.phoneNumber || undefined,
@@ -144,10 +147,13 @@ export class EditUserComponent implements OnInit {
   getUserInitials(): string {
     const u = this.user();
     if (!u) return 'US';
-    if (u.firstName) {
-      const f = u.firstName.charAt(0);
-      const l = u.lastName ? u.lastName.charAt(0) : '';
-      return (f + l).toUpperCase();
+    if (u.firstName || u.lastName) {
+      const f = (u.firstName || '').charAt(0);
+      const l = (u.lastName || '').charAt(0);
+      return (f + l).toUpperCase() || 'US';
+    }
+    if (u.userName && u.userName !== u.email) {
+      return u.userName.slice(0, 2).toUpperCase();
     }
     return u.email.slice(0, 2).toUpperCase();
   }

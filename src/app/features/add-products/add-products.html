@@ -35,27 +35,28 @@
                 <mat-form-field appearance="outline" class="category-select-field">
                     <mat-select id="category" formControlName="category" placeholder="Select a category">
                         @for (cat of categoriesResource.value() || []; track cat.id) {
-                            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
                         }
                     </mat-select>
                 </mat-form-field>
                 @if (categoriesResource.isLoading()) {
-                    <span class="form-hint">Loading categories...</span>
+                <span class="form-hint">Loading categories...</span>
                 }
             </div>
 
             <div class="form-group">
                 <label for="supplierId">Supplier</label>
                 <mat-form-field appearance="outline" class="category-select-field">
-                    <mat-select id="supplierId" formControlName="supplierId" placeholder="Select a supplier" panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
+                    <mat-select id="supplierId" formControlName="supplierId" placeholder="Select a supplier"
+                        panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
                         <mat-option [value]="''">None (No Supplier)</mat-option>
                         @for (sup of suppliersResource.value() || []; track sup.id) {
-                            <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
+                        <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
                         }
                     </mat-select>
                 </mat-form-field>
                 @if (suppliersResource.isLoading()) {
-                    <span class="form-hint">Loading suppliers...</span>
+                <span class="form-hint">Loading suppliers...</span>
                 }
             </div>
 
@@ -150,9 +151,9 @@
         <button type="button" class="btn btn--secondary" (click)="cancel()">Cancel</button>
         <button type="submit" class="btn btn--primary" [disabled]="productForm.invalid || productStore.isLoading()">
             @if (productStore.isLoading()) {
-                Saving...
+            Saving...
             } @else {
-                Save product
+            Save product
             }
         </button>
     </div>

@@ -205,6 +205,15 @@ export const AuthStore = signalStore(
     clearError(): void {
       patchState(store, { error: null });
     },
+
+    updateUser(partialUser: Partial<User>): void {
+      const current = store.user();
+      if (current) {
+        patchState(store, {
+          user: { ...current, ...partialUser },
+        });
+      }
+    },
   })),
   withHooks({
     onInit(store) {

@@ -91,7 +91,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then((m) => m.SettingsComponent),
-        canActivate: [roleGuard('Admin')],
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
       },
       {
         path: 'purchases',

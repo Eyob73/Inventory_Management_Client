@@ -8,131 +8,138 @@
     </button>
 
     @if (user()) {
-      <div class="header-main">
-        <div class="user-avatar">{{ getUserInitials() }}</div>
-        <div>
-          <h1 class="page-title">Edit User Profile</h1>
-          <p class="page-subtitle">{{ user()?.email }} &bull; ID: {{ user()?.id }}</p>
-        </div>
+    <div class="header-main">
+      <div class="user-avatar">{{ getUserInitials() }}</div>
+      <div>
+        <h1 class="page-title">Edit User Profile</h1>
+        <p class="page-subtitle">{{ user()?.email }} &bull; ID: {{ user()?.id }}</p>
       </div>
+    </div>
     }
   </div>
 
   <!-- Messages -->
   @if (error()) {
-    <div class="error-banner">
-      <mat-icon>error_outline</mat-icon>
-      <span>{{ error() }}</span>
-      <button class="dismiss-btn" (click)="dismissError()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
+  <div class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error() }}</span>
+    <button class="dismiss-btn" (click)="dismissError()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
   }
 
   @if (successMessage()) {
-    <div class="success-banner">
-      <mat-icon>check_circle_outline</mat-icon>
-      <span>{{ successMessage() }}</span>
-    </div>
+  <div class="success-banner">
+    <mat-icon>check_circle_outline</mat-icon>
+    <span>{{ successMessage() }}</span>
+  </div>
   }
 
   <!-- Loading State -->
   @if (isLoading()) {
-    <div class="loading-card">
-      <div class="spinner"></div>
-      <p>Loading user details...</p>
-    </div>
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <p>Loading user details...</p>
+  </div>
   } @else if (user()) {
-    <!-- Form Card -->
-    <div class="form-card">
-      <form [formGroup]="editForm" (ngSubmit)="saveUser()" class="edit-form">
+  <!-- Form Card -->
+  <div class="form-card">
+    <form [formGroup]="editForm" (ngSubmit)="saveUser()" class="edit-form">
 
-        <!-- Section: Personal Information -->
-        <div class="form-section">
-          <div class="section-title">
-            <mat-icon>person</mat-icon>
-            <span>Personal Information</span>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="user-form-field">
-              <mat-label>First Name</mat-label>
-              <input matInput id="firstName" formControlName="firstName" placeholder="Enter first name" required />
-              @if (editForm.get('firstName')?.invalid && editForm.get('firstName')?.touched) {
-                <mat-error>First name is required</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="user-form-field">
-              <mat-label>Last Name</mat-label>
-              <input matInput id="lastName" formControlName="lastName" placeholder="Enter last name" />
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="user-form-field">
-              <mat-label>Email Address</mat-label>
-              <input matInput id="email" type="email" formControlName="email" placeholder="user@example.com" required />
-              @if (editForm.get('email')?.hasError('required') && editForm.get('email')?.touched) {
-                <mat-error>Email is required</mat-error>
-              } @else if (editForm.get('email')?.hasError('email') && editForm.get('email')?.touched) {
-                <mat-error>Valid email is required</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="user-form-field">
-              <mat-label>Phone Number</mat-label>
-              <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="+1 (555) 000-0000" />
-            </mat-form-field>
-          </div>
+      <!-- Section: Personal Information -->
+      <div class="form-section">
+        <div class="section-title">
+          <mat-icon>person</mat-icon>
+          <span>Personal Information</span>
         </div>
 
-        <!-- Section: Role & Account Settings -->
-        <div class="form-section">
-          <div class="section-title">
-            <mat-icon>admin_panel_settings</mat-icon>
-            <span>Role & Account Permissions</span>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="user-form-field">
-              <mat-label>System Role</mat-label>
-              <mat-select id="role" formControlName="role">
-                @for (role of ROLES; track role) {
-                  <mat-option [value]="role">{{ role }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            <div class="toggle-field">
-              <div class="toggle-label">
-                <span class="toggle-title">Account Status</span>
-                <span class="toggle-desc">Toggle to active or lock access for this account</span>
-              </div>
-              <mat-slide-toggle color="primary" formControlName="isActive">
-                {{ editForm.get('isActive')?.value ? 'Active' : 'Locked' }}
-              </mat-slide-toggle>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button type="button" class="btn btn--ghost" (click)="goBack()" [disabled]="isSaving()">
-            Cancel
-          </button>
-          <button type="submit" class="btn btn--primary" [disabled]="editForm.invalid || isSaving()">
-            @if (isSaving()) {
-              <div class="btn-spinner"></div>
-              <span>Saving...</span>
-            } @else {
-              <mat-icon>save</mat-icon>
-              <span>Save Changes</span>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>First Name</mat-label>
+            <input matInput id="firstName" formControlName="firstName" placeholder="Enter first name" required />
+            @if (editForm.get('firstName')?.invalid && editForm.get('firstName')?.touched) {
+            <mat-error>First name is required</mat-error>
             }
-          </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>Last Name</mat-label>
+            <input matInput id="lastName" formControlName="lastName" placeholder="Enter last name" />
+          </mat-form-field>
         </div>
 
-      </form>
-    </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>Email Address</mat-label>
+            <input matInput id="email" type="email" formControlName="email" placeholder="user@example.com" required />
+            @if (editForm.get('email')?.hasError('required') && editForm.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+            } @else if (editForm.get('email')?.hasError('email') && editForm.get('email')?.touched) {
+            <mat-error>Valid email is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>Username (Optional)</mat-label>
+            <input matInput id="userName" formControlName="userName" placeholder="e.g. AB123" />
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>Phone Number</mat-label>
+            <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="+1 (555) 000-0000" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Section: Role & Account Settings -->
+      <div class="form-section">
+        <div class="section-title">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Role & Account Permissions</span>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>System Role</mat-label>
+            <mat-select id="role" formControlName="role">
+              @for (role of ROLES; track role) {
+              <mat-option [value]="role">{{ role }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="toggle-field">
+            <div class="toggle-label">
+              <span class="toggle-title">Account Status</span>
+              <span class="toggle-desc">Toggle to active or lock access for this account</span>
+            </div>
+            <mat-slide-toggle color="primary" formControlName="isActive">
+              {{ editForm.get('isActive')?.value ? 'Active' : 'Locked' }}
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--ghost" (click)="goBack()" [disabled]="isSaving()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn--primary" [disabled]="editForm.invalid || isSaving()">
+          @if (isSaving()) {
+          <div class="btn-spinner"></div>
+          <span>Saving...</span>
+          } @else {
+          <mat-icon>save</mat-icon>
+          <span>Save Changes</span>
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
   }
 </div>

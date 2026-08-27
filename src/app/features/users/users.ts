@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ViewChild, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,9 +10,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { UserService, SystemUser } from '../../services/user.service';
+import { UserStore } from '../../store/users.store';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 
 @Component({
@@ -31,122 +33,77 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatSelectModule,
     MatTableModule,
     MatSortModule,
+    MatPaginatorModule,
     TableSkeleton,
   ],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
 export class UsersComponent implements OnInit {
+  readonly store = inject(UserStore);
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private confirmDialog = inject(ConfirmDialogService);
 
-  users = signal<SystemUser[]>([]);
-  isLoading = signal(true);
-  error = signal<string | null>(null);
   showCreateForm = signal(false);
-  editingUser = signal<SystemUser | null>(null);
   savingId = signal<string | null>(null);
   hidePassword = signal(true);
+  error = signal<string | null>(null);
 
   dataSource = new MatTableDataSource<SystemUser>([]);
+  pageSizeOptions = [5, 10, 15, 25, 50];
 
-  readonly displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
+  readonly displayedColumns = ['no', 'user', 'email', 'role', 'status', 'actions'];
   readonly ROLES = ['Admin', 'Manager', 'Sales', 'User'];
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
+    { width: '6%' },
     { width: '25%', dual: true },
     { width: '25%' },
-    { width: '20%' },
-    { width: '15%' },
-    { width: '15%' },
+    { width: '18%' },
+    { width: '13%' },
+    { width: '13%' },
   ];
 
   @ViewChild(MatSort) set sort(sort: MatSort | undefined) {
-    if (sort) {
-      this.dataSource.sort = sort;
-    }
+    if (sort) this.dataSource.sort = sort;
   }
 
   constructor() {
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'user':
-          return this.getUserName(item).toLowerCase();
-        case 'email':
-          return item.email.toLowerCase();
-        case 'role':
-          return this.getPrimaryRole(item).toLowerCase();
-        case 'status':
-          return item.isActive ? 1 : 0;
-        default:
-          return (item as any)[property];
-      }
-    };
-
-    this.dataSource.filterPredicate = (data, filter) => {
-      const searchStr = (
-        data.firstName +
-        ' ' +
-        data.lastName +
-        ' ' +
-        data.email +
-        ' ' +
-        data.userName +
-        ' ' +
-        this.getPrimaryRole(data)
-      ).toLowerCase();
-      return searchStr.includes(filter);
-    };
-
+    // Keep dataSource in sync with store
     effect(() => {
-      this.dataSource.data = this.users();
+      this.dataSource.data = this.store.users();
     });
   }
 
-  readonly stats = computed(() => {
-    const all = this.users();
-    return {
-      total: all.length,
-      active: all.filter((u) => u.isActive).length,
-      admin: all.filter((u) => u.roles.includes('Admin')).length,
-      manager: all.filter((u) => u.roles.includes('Manager')).length,
-      sales: all.filter((u) => u.roles.includes('Sales') || u.roles.includes('User')).length,
-    };
-  });
-
-  createForm = this.fb.group({
-    firstName: ['', Validators.required],
-    lastName: [''],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(12)]],
-    role: ['User', Validators.required],
-  });
-
   ngOnInit() {
-    this.loadUsers();
+    this.store.loadUsers({ page: 1, pageSize: 10 });
   }
 
-  loadUsers() {
-    this.isLoading.set(true);
-    this.error.set(null);
-    this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.users.set(users);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err?.error?.detail || 'Failed to load users. Please try again.');
-        this.isLoading.set(false);
-      },
+  onPageChange(event: PageEvent): void {
+    this.store.loadUsers({
+      page: event.pageIndex + 1,
+      pageSize: event.pageSize,
+      search: this.store.search() || undefined,
     });
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const search = (event.target as HTMLInputElement).value.trim();
+    this.store.loadUsers({ page: 1, pageSize: this.store.pageSize(), search });
   }
+
+  readonly stats = this.store.stats;
+
+  createForm = this.fb.group({
+    firstName: ['', Validators.required],
+    lastName: [''],
+    userName: [''],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(12)]],
+    role: ['User', Validators.required],
+  });
 
   createUser() {
     if (this.createForm.invalid) return;
@@ -154,16 +111,18 @@ export class UsersComponent implements OnInit {
     this.userService
       .createUser({
         email: val.email!,
+        userName: val.userName || undefined,
         password: val.password!,
         firstName: val.firstName ?? undefined,
         lastName: val.lastName ?? undefined,
         role: val.role!,
       })
       .subscribe({
-        next: (user) => {
-          this.users.update((list) => [user, ...list]);
+        next: () => {
           this.showCreateForm.set(false);
           this.createForm.reset({ role: 'User' });
+          // Reload current page
+          this.store.loadUsers({ page: this.store.page(), pageSize: this.store.pageSize() });
         },
         error: (err) => {
           const apiErrors = err?.error?.errors;
@@ -179,14 +138,9 @@ export class UsersComponent implements OnInit {
   toggleStatus(user: SystemUser) {
     this.savingId.set(user.id);
     this.userService.toggleActive(user.id).subscribe({
-      next: (res) => {
-        const isLockedOut = res.isLockedOut;
-        this.users.update((list) =>
-          list.map((u) =>
-            u.id === user.id ? { ...u, isLockedOut, isActive: !isLockedOut } : u
-          )
-        );
+      next: () => {
         this.savingId.set(null);
+        this.store.loadUsers({ page: this.store.page(), pageSize: this.store.pageSize() });
       },
       error: (err) => {
         this.error.set(err?.error?.detail || 'Failed to update user status.');
@@ -204,12 +158,15 @@ export class UsersComponent implements OnInit {
       .confirmDelete('User Account', this.getUserName(user))
       .subscribe((confirmed) => {
         if (!confirmed) return;
-
         this.savingId.set(user.id);
         this.userService.deleteUser(user.id).subscribe({
           next: () => {
-            this.users.update((list) => list.filter((u) => u.id !== user.id));
             this.savingId.set(null);
+            // If last item on page, go back one
+            const newPage = this.store.users().length === 1 && this.store.page() > 1
+              ? this.store.page() - 1
+              : this.store.page();
+            this.store.loadUsers({ page: newPage, pageSize: this.store.pageSize() });
           },
           error: (err) => {
             this.error.set(err?.error?.detail || 'Failed to delete user.');
@@ -220,19 +177,29 @@ export class UsersComponent implements OnInit {
   }
 
   getUserName(user: SystemUser): string {
-    if (user.firstName) {
-      return user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName;
-    }
-    return user.userName || user.email;
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ');
+    if (fullName) return fullName;
+    if (user.userName && user.userName !== user.email) return user.userName;
+    return user.email;
   }
 
   getUserInitials(user: SystemUser): string {
-    if (user.firstName) {
-      const f = user.firstName.charAt(0);
-      const l = user.lastName ? user.lastName.charAt(0) : '';
-      return (f + l).toUpperCase();
+    if (user.firstName || user.lastName) {
+      const f = (user.firstName || '').charAt(0);
+      const l = (user.lastName || '').charAt(0);
+      return (f + l).toUpperCase() || 'U';
+    }
+    if (user.userName && user.userName !== user.email) {
+      return user.userName.slice(0, 2).toUpperCase();
     }
     return user.email.slice(0, 2).toUpperCase();
+  }
+
+  shouldShowUsernameHandle(user: SystemUser): boolean {
+    if (!user.userName) return false;
+    if (user.userName === user.email) return false;
+    if (user.userName === this.getUserName(user)) return false;
+    return true;
   }
 
   getPrimaryRole(user: SystemUser): string {

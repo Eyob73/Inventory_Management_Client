@@ -4,6 +4,9 @@ import { RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { Product } from '../../models/products.model';
 import { ProductStore } from '../../store/products.store';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
@@ -18,6 +21,9 @@ import { AuthStore } from '../../store/auth.store';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
     TableSkeleton,
   ],
   templateUrl: './products.html',
@@ -41,14 +47,15 @@ export class Products implements OnInit {
   /** Column list — hide 'cost' for Sales users */
   readonly displayedColumns = computed<string[]>(() =>
     this.isSales()
-      ? ['name', 'sku', 'price', 'quantityInStock']
-      : ['name', 'sku', 'price', 'cost', 'quantityInStock']
+      ? ['no', 'name', 'sku', 'price', 'quantityInStock']
+      : ['no', 'name', 'sku', 'price', 'cost', 'quantityInStock']
   );
 
   dataSource = new MatTableDataSource<Product>([]);
   pageSizeOptions = [5, 10, 15, 25, 50];
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
+    { width: '6%' },
     { width: '30%', dual: true },
     { width: '16%' },
     { width: '14%' },
@@ -77,12 +84,13 @@ export class Products implements OnInit {
     this.store.loadProducts({
       pageIndex: event.pageIndex + 1,
       pageSize: event.pageSize,
+      search: this.store.search() || undefined,
     });
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const search = (event.target as HTMLInputElement).value.trim();
+    this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search });
   }
 
   getStockStatus(stock: number): { label: string; class: string } {

@@ -39,10 +39,10 @@ const ALL_NAV_GROUPS: NavGroup[] = [
   },
   {
     label: 'Administration',
-    roles: ['Admin'],
+    roles: ['Admin', 'Manager', 'Sales'],
     items: [
       { label: 'Users', path: '/users', icon: 'manage_accounts', roles: ['Admin'] },
-      { label: 'Settings', path: '/settings', icon: 'settings', roles: ['Admin'] },
+      { label: 'Settings', path: '/settings', icon: 'settings', roles: ['Admin', 'Manager', 'Sales'] },
     ],
   },
 ];

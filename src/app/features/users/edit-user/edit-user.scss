@@ -98,7 +98,10 @@
     display: flex;
     align-items: center;
     opacity: 0.7;
-    &:hover { opacity: 1; }
+
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 
@@ -137,7 +140,11 @@
   }
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 // ── Form Card ────────────────────────────────────────────────────
 .form-card {
@@ -275,44 +282,7 @@
   border-top: 1px solid var(--border);
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.4rem;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
 
-  mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-}
-
-.btn--primary {
-  background: var(--moss);
-  color: var(--btn-primary-fg, #fff);
-  box-shadow: 0 4px 14px var(--teal-glow);
-
-  &:hover:not(:disabled) {
-    filter: brightness(0.92);
-    transform: translateY(-1px);
-  }
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--slate);
-  border: 1px solid var(--border);
-
-  &:hover:not(:disabled) {
-    background: var(--row-hover);
-    color: var(--ink);
-  }
-}
 
 .btn-spinner {
   width: 16px;

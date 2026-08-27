@@ -27,6 +27,7 @@ export const ProductStore = signalStore(
         totalPages: 1,
         hasPreviousPage: false,
         hasNextPage: false,
+        search: '',
     }),
     withEntities<Product>(),
     withComputed((store) => ({
@@ -43,15 +44,16 @@ export const ProductStore = signalStore(
         ),
     })),
     withMethods((store, api = inject(ProductService)) => ({
-        loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number } | void>(
+        loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string } | void>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
                 switchMap((params) => {
                     const query = params || {};
                     const reqPageIndex = query.pageIndex ?? store.pageIndex();
                     const reqPageSize = query.pageSize ?? store.pageSize();
+                    const search = query.search ?? store.search();
 
-                    return api.getAll(reqPageIndex, reqPageSize).pipe(
+                    return api.getAll(reqPageIndex, reqPageSize, search || undefined).pipe(
                         tap((res: PagedProductResponse | Product[]) => {
                             if (Array.isArray(res)) {
                                 patchState(
@@ -65,6 +67,7 @@ export const ProductStore = signalStore(
                                         totalPages: 1,
                                         hasPreviousPage: false,
                                         hasNextPage: false,
+                                        search,
                                     }
                                 );
                             } else {
@@ -79,6 +82,7 @@ export const ProductStore = signalStore(
                                         totalPages: res.totalPages || 1,
                                         hasPreviousPage: res.hasPreviousPage || false,
                                         hasNextPage: res.hasNextPage || false,
+                                        search,
                                     }
                                 );
                             }

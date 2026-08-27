@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -18,6 +18,7 @@ export interface SystemUser {
 
 export interface CreateUserDto {
   email: string;
+  userName?: string;
   password: string;
   firstName?: string;
   lastName?: string;
@@ -28,11 +29,22 @@ export interface CreateUserDto {
 
 export interface UpdateUserDto {
   email?: string;
+  userName?: string;
   firstName?: string;
   lastName?: string;
   role?: string;
   phoneNumber?: string;
   tenantId?: string;
+}
+
+export interface PagedUserResponse {
+  items: SystemUser[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,6 +56,19 @@ export class UserService {
     return this.http.get<SystemUser[]>(this.baseUrl, { withCredentials: true }).pipe(
       map((users) => users.map((u) => ({ ...u, isActive: !u.isLockedOut })))
     );
+  }
+
+  getPagedUsers(page = 1, pageSize = 10, search?: string): Observable<PagedUserResponse> {
+    let params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    if (search) params = params.set('search', search);
+    return this.http
+      .get<PagedUserResponse>(`${this.baseUrl}/paged`, { params, withCredentials: true })
+      .pipe(
+        map((res) => ({
+          ...res,
+          items: res.items.map((u) => ({ ...u, isActive: !u.isLockedOut })),
+        }))
+      );
   }
 
   getUserById(id: string): Observable<SystemUser> {

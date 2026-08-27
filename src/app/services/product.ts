@@ -22,12 +22,16 @@ export class ProductService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Products`;
 
-  getAll(pageIndex = 1, pageSize = 10) {
-    const params = new HttpParams()
+  getAll(pageIndex = 1, pageSize = 10, search?: string) {
+    let params = new HttpParams()
       .set('pageIndex', pageIndex)
       .set('pageNumber', pageIndex)
       .set('page', pageIndex)
       .set('pageSize', pageSize);
+
+    if (search) {
+      params = params.set('search', search).set('searchTerm', search);
+    }
 
     return this.http.get<PagedProductResponse>(`${this.baseUrl}/paged`, { params });
   }

@@ -7,6 +7,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthStore } from '../../store/auth.store';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth';
 
 interface ActivityItem {
   id: string;
@@ -33,6 +35,8 @@ interface ActivityItem {
 })
 export class ProfileComponent {
   readonly authStore = inject(AuthStore);
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
 
   readonly user = computed(() => this.authStore.user());
   readonly role = computed(() => this.authStore.userRole());
@@ -41,7 +45,10 @@ export class ProfileComponent {
   readonly activeTab = signal<'overview' | 'security' | 'activity'>('overview');
   readonly emailCopied = signal(false);
   readonly isEditing = signal(false);
+  readonly isSaving = signal(false);
+  readonly isChangingPassword = signal(false);
   readonly saveSuccess = signal(false);
+  readonly profileError = signal<string | null>(null);
 
   // Password Visibility Signals
   readonly hideCurrentPassword = signal(true);
@@ -51,6 +58,7 @@ export class ProfileComponent {
   // Editable Form Fields
   editFirstName = '';
   editLastName = '';
+  editUserName = '';
 
   // Password Fields (Security tab)
   currentPassword = '';
@@ -124,6 +132,7 @@ export class ProfileComponent {
     const u = this.user();
     this.editFirstName = u?.firstName || '';
     this.editLastName = u?.lastName || '';
+    this.editUserName = u?.userName || '';
     this.isEditing.set(true);
   }
 
@@ -132,15 +141,44 @@ export class ProfileComponent {
   }
 
   saveProfile(): void {
-    // Save updated name state locally
     const u = this.user();
-    if (u) {
-      u.firstName = this.editFirstName;
-      u.lastName = this.editLastName;
-    }
-    this.isEditing.set(false);
-    this.saveSuccess.set(true);
-    setTimeout(() => this.saveSuccess.set(false), 3000);
+    if (!u || !u.id) return;
+
+    this.isSaving.set(true);
+    this.profileError.set(null);
+
+    const roleVal = Array.isArray(u.roles) ? u.roles[0] : (u.roles || 'User');
+
+    this.userService
+      .updateUser(u.id, {
+        email: u.email,
+        firstName: this.editFirstName,
+        lastName: this.editLastName,
+        userName: this.editUserName || undefined,
+        role: roleVal,
+      })
+      .subscribe({
+        next: (updatedUser) => {
+          this.authStore.updateUser({
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            userName: updatedUser.userName,
+          });
+          this.isSaving.set(false);
+          this.isEditing.set(false);
+          this.saveSuccess.set(true);
+          setTimeout(() => this.saveSuccess.set(false), 3000);
+        },
+        error: (err) => {
+          this.isSaving.set(false);
+          const apiErrors = err?.error?.errors;
+          if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+            this.profileError.set(apiErrors.join(' '));
+          } else {
+            this.profileError.set(err?.error?.detail || 'Failed to update profile.');
+          }
+        },
+      });
   }
 
   copyEmail(): void {
@@ -167,10 +205,25 @@ export class ProfileComponent {
       return;
     }
 
-    this.passwordChangeSuccess.set(true);
-    this.currentPassword = '';
-    this.newPassword = '';
-    this.confirmPassword = '';
-    setTimeout(() => this.passwordChangeSuccess.set(false), 3000);
+    this.isChangingPassword.set(true);
+    this.authService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.isChangingPassword.set(false);
+        this.passwordChangeSuccess.set(true);
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+        setTimeout(() => this.passwordChangeSuccess.set(false), 4000);
+      },
+      error: (err) => {
+        this.isChangingPassword.set(false);
+        const apiErrors = err?.error?.errors;
+        if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+          this.passwordError.set(apiErrors.join(' '));
+        } else {
+          this.passwordError.set(err?.error?.detail || err?.error?.message || 'Failed to update password. Please verify your current password.');
+        }
+      },
+    });
   }
 }

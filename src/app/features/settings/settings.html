@@ -2,13 +2,39 @@
 
   <!-- Header -->
   <div class="page-header">
-    <div>
-      <h1 class="page-title">System Settings</h1>
-      <p class="page-subtitle">Configure system-level options for your inventory management platform.</p>
+    <div class="header-main">
+      <div class="header-title-row">
+        <h1 class="page-title">
+          @if (normalizedRole() === 'sales') {
+            Sales Preferences
+          } @else if (normalizedRole() === 'manager') {
+            Manager Control & Store Settings
+          } @else {
+            System & Administration Settings
+          }
+        </h1>
+        <span class="role-badge" [class]="'role-badge--' + (normalizedRole() || 'default')">
+          <mat-icon class="role-badge-icon">
+            @if (normalizedRole() === 'sales') { point_of_sale }
+            @else if (normalizedRole() === 'manager') { supervisor_account }
+            @else { admin_panel_settings }
+          </mat-icon>
+          {{ userRole() }} Role
+        </span>
+      </div>
+      <p class="page-subtitle">
+        @if (normalizedRole() === 'sales') {
+          Customize point-of-sale checkout behaviors, terminal display settings, personal target alerts, and quick actions.
+        } @else if (normalizedRole() === 'manager') {
+          Configure inventory reorder rules, sales discount thresholds, manager alerts, and store preferences.
+        } @else {
+          Configure company details, inventory thresholds, security policies, and system defaults.
+        }
+      </p>
     </div>
   </div>
 
-  <!-- Success Banner -->
+  <!-- Success Banners -->
   @if (saveSuccess()) {
     <div class="success-banner">
       <mat-icon>check_circle</mat-icon>
@@ -16,223 +42,666 @@
     </div>
   }
 
+  @if (resetSuccess()) {
+    <div class="info-banner">
+      <mat-icon>info</mat-icon>
+      <span>Settings restored to default role values.</span>
+    </div>
+  }
+
   <div class="settings-layout">
 
     <!-- Sidebar Nav -->
     <nav class="settings-nav">
-      @for (section of sections; track section.id) {
+      @for (section of sections(); track section.id) {
         <button
+          type="button"
           class="nav-item"
           [class.active]="activeSection() === section.id"
           (click)="setSection(section.id)"
         >
           <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
-          {{ section.label }}
+          <span class="nav-label">{{ section.label }}</span>
         </button>
       }
     </nav>
 
-    <!-- Settings Content -->
+    <!-- Settings Content Area -->
     <div class="settings-content">
 
-      <!-- Company Profile -->
-      @if (activeSection() === 'company') {
-        <div class="settings-card">
-          <div class="card-header">
-            <mat-icon>business</mat-icon>
-            <h2>Company Profile</h2>
-          </div>
-          <div class="card-body">
-            <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Company Name</mat-label>
-              <input matInput id="companyName" type="text" [(ngModel)]="company.name" placeholder="Your company name" />
-            </mat-form-field>
-            <div class="field-row">
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Phone</mat-label>
-                <input matInput id="companyPhone" type="tel" [(ngModel)]="company.phone" placeholder="+251 9XX XXX XXXX" />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Email</mat-label>
-                <input matInput id="companyEmail" type="email" [(ngModel)]="company.email" placeholder="info@company.com" />
-              </mat-form-field>
+      <!-- =================================================================== -->
+      <!-- SALES ROLE SECTIONS                                                 -->
+      <!-- =================================================================== -->
+      @if (normalizedRole() === 'sales') {
+
+        <!-- POS & Fast Checkout -->
+        @if (activeSection() === 'pos') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>point_of_sale</mat-icon>
+              <div>
+                <h2>POS & Fast Checkout</h2>
+                <p class="card-desc">Set default checkout options and printing behaviors for rapid transactions.</p>
+              </div>
             </div>
-            <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Address</mat-label>
-              <input matInput id="companyAddress" type="text" [(ngModel)]="company.address" placeholder="Addis Ababa, Ethiopia" />
-            </mat-form-field>
-            <div class="field-row">
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Website</mat-label>
-                <input matInput id="companyWebsite" type="url" [(ngModel)]="company.website" placeholder="https://example.com" />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Tax ID / TIN</mat-label>
-                <input matInput id="companyTaxId" type="text" [(ngModel)]="company.taxId" placeholder="Enter TIN number" />
-              </mat-form-field>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Default Payment Method</mat-label>
+                  <mat-select [(ngModel)]="salesPos.defaultPaymentMethod">
+                    <mat-option value="Cash">Cash</mat-option>
+                    <mat-option value="Card">Card / POS Terminal</mat-option>
+                    <mat-option value="Mobile Transfer">Mobile Transfer (Telebirr/CBE)</mat-option>
+                    <mat-option value="Credit">Customer Account Credit</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Default Customer Group</mat-label>
+                  <mat-select [(ngModel)]="salesPos.defaultCustomerGroup">
+                    <mat-option value="Retail">Retail Walk-in Customer</mat-option>
+                    <mat-option value="Wholesale">Wholesale Customer</mat-option>
+                    <mat-option value="VIP">VIP / Regular Customer</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Quick Quantity Step Increment</mat-label>
+                  <mat-select [(ngModel)]="salesPos.quickQtyStep">
+                    <mat-option [value]="1">+1 unit step</mat-option>
+                    <mat-option [value]="5">+5 units step</mat-option>
+                    <mat-option [value]="10">+10 units step</mat-option>
+                  </mat-select>
+                  <mat-hint>Used for quick-add buttons in POS product list.</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Auto-Print Receipt on Sale Complete</span>
+                  <span class="toggle-hint">Automatically send receipt to receipt printer after completing sale.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesPos.autoPrintReceipt" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Print Duplicate Customer Copy</span>
+                  <span class="toggle-hint">Print two receipt copies (Merchant copy + Customer copy).</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesPos.printCustomerCopy" color="primary"></mat-slide-toggle>
+              </div>
             </div>
           </div>
-        </div>
+        }
+
+        <!-- Sales Terminal Display -->
+        @if (activeSection() === 'terminal') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>desktop_windows</mat-icon>
+              <div>
+                <h2>Sales Terminal Display</h2>
+                <p class="card-desc">Tailor product layouts and barcode scanner responsiveness for your register.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>POS Grid Display Mode</mat-label>
+                  <mat-select [(ngModel)]="salesTerminal.layoutMode">
+                    <mat-option value="grid">Product Cards Grid (Visual)</mat-option>
+                    <mat-option value="list">Compact List View (High Density)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Show Product Images in POS</span>
+                  <span class="toggle-hint">Display product thumbnail images in the search grid. Disable for faster performance.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesTerminal.showProductImages" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Barcode Scanner Audio Feedback</span>
+                  <span class="toggle-hint">Play a quick sound chime when a product barcode is scanned.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesTerminal.barcodeSound" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Show Quick Keyboard Shortcuts Bar</span>
+                  <span class="toggle-hint">Keep shortcut hints (F1 for search, F9 for checkout) visible on register screen.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesTerminal.showQuickShortcuts" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Targets & Alerts -->
+        @if (activeSection() === 'salesAlerts') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>track_changes</mat-icon>
+              <div>
+                <h2>Sales Targets & Ring-Up Alerts</h2>
+                <p class="card-desc">Stay informed about low stock items while ringing up orders and track daily progress.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Personal Daily Sales Goal (ETB)</mat-label>
+                <input matInput id="personalTargetGoal" type="number" [(ngModel)]="salesAlerts.personalTargetGoal" min="1000" step="5000" />
+                <mat-hint>Your target sales volume per shift.</mat-hint>
+              </mat-form-field>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Daily Target Progress Popups</span>
+                  <span class="toggle-hint">Get notified when you hit 50%, 75%, and 100% of daily target.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesAlerts.dailyTargetAlert" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Low Stock Warning On Scan</span>
+                  <span class="toggle-hint">Show a warning popup if scanned product has less than 5 units left.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesAlerts.lowStockScanWarning" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Sale Success Audio Notification</span>
+                  <span class="toggle-hint">Play confirmation sound when cash register completes transaction.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="salesAlerts.saleSuccessSound" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Display & Theme -->
+        @if (activeSection() === 'theme') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>palette</mat-icon>
+              <div>
+                <h2>Display & Terminal Theme</h2>
+                <p class="card-desc">Adjust UI contrast and text readability for your register screen.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Preferred Language</mat-label>
+                  <mat-select [(ngModel)]="salesTheme.language">
+                    <mat-option value="en-US">English (US)</mat-option>
+                    <mat-option value="am-ET">Amharic (አማርኛ)</mat-option>
+                    <mat-option value="om-ET">Afaan Oromoo</mat-option>
+                    <mat-option value="ti-ET">Tigrinya (ትግርኛ)</mat-option>
+                    <mat-option value="en-GB">English (UK)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Interface Theme</mat-label>
+                  <mat-select [(ngModel)]="salesTheme.colorMode">
+                    <mat-option value="system">Follow System Theme</mat-option>
+                    <mat-option value="light">Light Mode</mat-option>
+                    <mat-option value="dark">Dark Mode (High Contrast)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>POS Font Size Scale</mat-label>
+                  <mat-select [(ngModel)]="salesTheme.fontSize">
+                    <mat-option value="normal">Standard Font Size</mat-option>
+                    <mat-option value="large">Large Font Size (Touchscreen Friendly)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        }
       }
 
-      <!-- Inventory Alerts -->
-      @if (activeSection() === 'inventory') {
-        <div class="settings-card">
-          <div class="card-header">
-            <mat-icon>inventory_2</mat-icon>
-            <h2>Inventory Alerts</h2>
-          </div>
-          <div class="card-body">
-            <div class="field-row">
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Low Stock Threshold</mat-label>
-                <input matInput id="lowStockThreshold" type="number" [(ngModel)]="inventory.lowStockThreshold" min="1" />
-                <mat-hint>Alert when item quantity falls below this number.</mat-hint>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Critical Stock Threshold</mat-label>
-                <input matInput id="criticalStockThreshold" type="number" [(ngModel)]="inventory.criticalStockThreshold" min="0" />
-                <mat-hint>Alert when item is almost out of stock.</mat-hint>
-              </mat-form-field>
-            </div>
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">Auto-Reorder</span>
-                <span class="toggle-hint">Automatically create purchase orders for low-stock items.</span>
+      <!-- =================================================================== -->
+      <!-- MANAGER ROLE SECTIONS                                               -->
+      <!-- =================================================================== -->
+      @if (normalizedRole() === 'manager') {
+
+        <!-- Stock & Reorder Rules -->
+        @if (activeSection() === 'inventory') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>inventory_2</mat-icon>
+              <div>
+                <h2>Stock Thresholds & Reorder Rules</h2>
+                <p class="card-desc">Define store-wide stock thresholds and automated reordering quantities.</p>
               </div>
-              <mat-slide-toggle [(ngModel)]="inventory.autoReorderEnabled" color="primary"></mat-slide-toggle>
             </div>
-            @if (inventory.autoReorderEnabled) {
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Default Reorder Quantity</mat-label>
-                <input matInput id="defaultReorderQty" type="number" [(ngModel)]="inventory.defaultReorderQty" min="1" />
-              </mat-form-field>
-            }
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Low Stock Warning Threshold</mat-label>
+                  <input matInput id="lowStockThreshold" type="number" [(ngModel)]="managerInventory.lowStockThreshold" min="1" />
+                  <mat-hint>Triggers yellow low stock status on products list.</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Critical Stock Threshold</mat-label>
+                  <input matInput id="criticalStockThreshold" type="number" [(ngModel)]="managerInventory.criticalStockThreshold" min="0" />
+                  <mat-hint>Triggers urgent red stock status on products list.</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Auto-Reorder Generation</span>
+                  <span class="toggle-hint">Draft purchase orders automatically when items breach low stock threshold.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="managerInventory.autoReorderEnabled" color="primary"></mat-slide-toggle>
+              </div>
+
+              @if (managerInventory.autoReorderEnabled) {
+                <div class="field-row">
+                  <mat-form-field appearance="outline" class="settings-form-field">
+                    <mat-label>Default Reorder Quantity</mat-label>
+                    <input matInput id="defaultReorderQty" type="number" [(ngModel)]="managerInventory.defaultReorderQty" min="1" />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="settings-form-field">
+                    <mat-label>Fast-Moving Multiplier</mat-label>
+                    <input matInput id="fastMovingMultiplier" type="number" [(ngModel)]="managerInventory.fastMovingMultiplier" step="0.1" min="1.0" max="3.0" />
+                    <mat-hint>Multiplies reorder quantity for high-velocity items.</mat-hint>
+                  </mat-form-field>
+                </div>
+              }
+            </div>
           </div>
-        </div>
+        }
+
+        <!-- Sales & Discount Policies -->
+        @if (activeSection() === 'salesPolicies') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>local_offer</mat-icon>
+              <div>
+                <h2>Sales & Discount Control Policies</h2>
+                <p class="card-desc">Control discount limits and supervisor approval requirements for store operations.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Maximum Allowed Sales Discount (%)</mat-label>
+                  <input matInput id="maxDiscountPercent" type="number" [(ngModel)]="managerPolicies.maxDiscountPercent" min="0" max="100" />
+                  <mat-hint>Discounts above this percentage require manager override key.</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Default Tax Rate (%)</mat-label>
+                  <input matInput id="defaultTaxRate" type="number" [(ngModel)]="managerPolicies.defaultTaxRate" min="0" max="50" />
+                  <mat-hint>Standard VAT applied to commercial invoices.</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Allow Custom Sales Rep Discounts</span>
+                  <span class="toggle-hint">Permit sales reps to apply manually specified percentage discounts.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="managerPolicies.allowCustomDiscounts" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Require Manager Approval for Item Returns / Voids</span>
+                  <span class="toggle-hint">Mandate supervisor pin authorization before processing item refunds.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="managerPolicies.requireApprovalForReturn" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Manager Notifications -->
+        @if (activeSection() === 'managerNotifications') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>notifications</mat-icon>
+              <div>
+                <h2>Manager Notifications & Alerts</h2>
+                <p class="card-desc">Configure automated store digests, high-value transaction alerts, and supplier warnings.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>High-Value Transaction Threshold (ETB)</mat-label>
+                <input matInput id="highValueAlertThreshold" type="number" [(ngModel)]="managerNotifications.highValueAlertThreshold" min="1000" step="5000" />
+                <mat-hint>Receive instant alert when any sale exceeds this value.</mat-hint>
+              </mat-form-field>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Daily Inventory & Sales Email Digest</span>
+                  <span class="toggle-hint">Receive an automated summary report every evening at 18:00.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="managerNotifications.dailyDigestEmail" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">New Purchase Order Received Alerts</span>
+                  <span class="toggle-hint">Notify when suppliers fulfill or update pending purchase orders.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="managerNotifications.purchaseOrderAlerts" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Supplier Delivery Delay Warnings</span>
+                  <span class="toggle-hint">Get alerted if expected stock shipment is overdue.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="managerNotifications.supplierDelayWarnings" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Regional & Table Display -->
+        @if (activeSection() === 'regionalView') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>display_settings</mat-icon>
+              <div>
+                <h2>Store Currency & Table View Preferences</h2>
+                <p class="card-desc">Customize store currency display and default data grid density.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Preferred Language</mat-label>
+                  <mat-select [(ngModel)]="managerRegional.language">
+                    <mat-option value="en-US">English (US)</mat-option>
+                    <mat-option value="am-ET">Amharic (አማርኛ)</mat-option>
+                    <mat-option value="om-ET">Afaan Oromoo</mat-option>
+                    <mat-option value="ti-ET">Tigrinya (ትግርኛ)</mat-option>
+                    <mat-option value="en-GB">English (UK)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Currency Symbol</mat-label>
+                  <input matInput id="currencySymbol" type="text" [(ngModel)]="managerRegional.currencySymbol" placeholder="Br" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Currency Code</mat-label>
+                  <input matInput id="currencyCode" type="text" [(ngModel)]="managerRegional.currencyCode" placeholder="ETB" />
+                </mat-form-field>
+              </div>
+
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Decimal Places</mat-label>
+                  <mat-select [(ngModel)]="managerRegional.decimalPlaces">
+                    <mat-option [value]="0">0 (e.g., 1,500 ETB)</mat-option>
+                    <mat-option [value]="2">2 (e.g., 1,500.00 ETB)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Data Table Row Density</mat-label>
+                  <mat-select [(ngModel)]="managerRegional.tableDensity">
+                    <mat-option value="compact">Compact (More items per screen)</mat-option>
+                    <mat-option value="comfortable">Comfortable (Standard)</mat-option>
+                    <mat-option value="spacious">Spacious (Easier viewing)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="currency-preview">
+                <span class="preview-label">Price Display Format:</span>
+                <span class="preview-value">{{ managerRegional.currencySymbol }} 1,234{{ managerRegional.decimalPlaces === 2 ? '.00' : '' }} {{ managerRegional.currencyCode }}</span>
+              </div>
+            </div>
+          </div>
+        }
       }
 
-      <!-- Currency & Language -->
-      @if (activeSection() === 'currency') {
-        <div class="settings-card">
-          <div class="card-header">
-            <mat-icon>payments</mat-icon>
-            <h2>Currency & Language</h2>
+      <!-- =================================================================== -->
+      <!-- ADMIN / GENERAL SECTIONS                                            -->
+      <!-- =================================================================== -->
+      @if (normalizedRole() !== 'sales' && normalizedRole() !== 'manager') {
+
+        <!-- Company Profile -->
+        @if (activeSection() === 'company') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>business</mat-icon>
+              <div>
+                <h2>Company Profile</h2>
+                <p class="card-desc">System-wide organization profile information used in receipts and reports.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Company Name</mat-label>
+                <input matInput id="companyName" type="text" [(ngModel)]="company.name" placeholder="Company Name" />
+              </mat-form-field>
+
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Phone</mat-label>
+                  <input matInput id="companyPhone" type="tel" [(ngModel)]="company.phone" placeholder="+251 9XX XXX XXX" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Email</mat-label>
+                  <input matInput id="companyEmail" type="email" [(ngModel)]="company.email" placeholder="contact@company.com" />
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Address</mat-label>
+                <input matInput id="companyAddress" type="text" [(ngModel)]="company.address" placeholder="Location address" />
+              </mat-form-field>
+
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Website</mat-label>
+                  <input matInput id="companyWebsite" type="url" [(ngModel)]="company.website" placeholder="https://example.com" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Tax ID / TIN Number</mat-label>
+                  <input matInput id="companyTaxId" type="text" [(ngModel)]="company.taxId" placeholder="TIN Number" />
+                </mat-form-field>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="field-row">
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Currency Code</mat-label>
-                <input matInput id="currencyCode" type="text" [(ngModel)]="currency.code" placeholder="ETB" />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Currency Symbol</mat-label>
-                <input matInput id="currencySymbol" type="text" [(ngModel)]="currency.symbol" placeholder="Br" />
-              </mat-form-field>
+        }
+
+        <!-- Admin Inventory -->
+        @if (activeSection() === 'inventory') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>inventory_2</mat-icon>
+              <div>
+                <h2>Global Inventory Defaults</h2>
+                <p class="card-desc">System default alert thresholds for new inventory items.</p>
+              </div>
             </div>
-            <div class="field-row">
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Language</mat-label>
-                <mat-select id="language" [(ngModel)]="currency.language">
-                  <mat-option value="am-ET">Ethiopian (Amharic)</mat-option>
-                  <mat-option value="en-US">English (US)</mat-option>
-                  <mat-option value="en-GB">English (UK)</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="settings-form-field">
-                <mat-label>Decimal Places</mat-label>
-                <mat-select id="decimalPlaces" [(ngModel)]="currency.decimalPlaces">
-                  <mat-option [value]="0">0 (e.g., 1,000 ETB)</mat-option>
-                  <mat-option [value]="2">2 (e.g., 1,000.00 ETB)</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="currency-preview">
-              <span class="preview-label">Preview:</span>
-              <span class="preview-value">{{ currency.symbol }} 1,234{{ currency.decimalPlaces === 2 ? '.00' : '' }} {{ currency.code }}</span>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Low Stock Threshold</mat-label>
+                  <input matInput id="adminLowStockThreshold" type="number" [(ngModel)]="adminInventory.lowStockThreshold" min="1" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Critical Stock Threshold</mat-label>
+                  <input matInput id="adminCriticalStockThreshold" type="number" [(ngModel)]="adminInventory.criticalStockThreshold" min="0" />
+                </mat-form-field>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Auto-Reorder System Default</span>
+                  <span class="toggle-hint">Enable automatic reorder drafting by default across all stores.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="adminInventory.autoReorderEnabled" color="primary"></mat-slide-toggle>
+              </div>
             </div>
           </div>
-        </div>
+        }
+
+        <!-- Admin Currency -->
+        @if (activeSection() === 'currency') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>payments</mat-icon>
+              <div>
+                <h2>Currency & System Language</h2>
+                <p class="card-desc">Default regional localization settings for the entire application.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Currency Code</mat-label>
+                  <input matInput id="adminCurrencyCode" type="text" [(ngModel)]="adminCurrency.code" placeholder="ETB" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Currency Symbol</mat-label>
+                  <input matInput id="adminCurrencySymbol" type="text" [(ngModel)]="adminCurrency.symbol" placeholder="Br" />
+                </mat-form-field>
+              </div>
+
+              <div class="field-row">
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>System & User Language</mat-label>
+                  <mat-select [(ngModel)]="adminCurrency.language">
+                    <mat-option value="en-US">English (US)</mat-option>
+                    <mat-option value="am-ET">Amharic (አማርኛ)</mat-option>
+                    <mat-option value="om-ET">Afaan Oromoo</mat-option>
+                    <mat-option value="ti-ET">Tigrinya (ትግርኛ)</mat-option>
+                    <mat-option value="en-GB">English (UK)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="settings-form-field">
+                  <mat-label>Decimal Places</mat-label>
+                  <mat-select [(ngModel)]="adminCurrency.decimalPlaces">
+                    <mat-option [value]="0">0 (e.g., 1,000 ETB)</mat-option>
+                    <mat-option [value]="2">2 (e.g., 1,000.00 ETB)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Admin Notifications -->
+        @if (activeSection() === 'notifications') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>notifications</mat-icon>
+              <div>
+                <h2>System Notification Preferences</h2>
+                <p class="card-desc">Configure system-wide triggers and broadcast alerts.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Low Stock Global Alerts</span>
+                  <span class="toggle-hint">Send alerts when products drop below threshold.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="adminNotifications.lowStockAlerts" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Sale Completed Alerts</span>
+                  <span class="toggle-hint">Notify system admins on high value transactions.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="adminNotifications.saleCompletedAlerts" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">User Login Alerts</span>
+                  <span class="toggle-hint">Log and alert on new user sessions.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="adminNotifications.userLoginAlerts" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Admin Security -->
+        @if (activeSection() === 'security') {
+          <div class="settings-card">
+            <div class="card-header">
+              <mat-icon>security</mat-icon>
+              <div>
+                <h2>Security & Session Policies</h2>
+                <p class="card-desc">Global security controls, session timeout, and authentication policies.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <mat-form-field appearance="outline" class="settings-form-field">
+                <mat-label>Session Timeout (minutes)</mat-label>
+                <input matInput id="sessionTimeout" type="number" [(ngModel)]="adminSecurity.sessionTimeout" min="5" max="480" />
+                <mat-hint>Automatically log out inactive users.</mat-hint>
+              </mat-form-field>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Require Periodic Password Change</span>
+                  <span class="toggle-hint">Force users to change password every 90 days.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="adminSecurity.requirePasswordChange" color="primary"></mat-slide-toggle>
+              </div>
+
+              <div class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Two-Factor Authentication (2FA)</span>
+                  <span class="toggle-hint">Enforce 2FA verification for privileged users.</span>
+                </div>
+                <mat-slide-toggle [(ngModel)]="adminSecurity.twoFactorEnabled" color="primary"></mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        }
       }
 
-      <!-- Notifications -->
-      @if (activeSection() === 'notifications') {
-        <div class="settings-card">
-          <div class="card-header">
-            <mat-icon>notifications</mat-icon>
-            <h2>Notification Settings</h2>
-          </div>
-          <div class="card-body">
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">Low Stock Alerts</span>
-                <span class="toggle-hint">Receive alerts when a product reaches the low-stock threshold.</span>
-              </div>
-              <mat-slide-toggle [(ngModel)]="notifications.lowStockAlerts" color="primary"></mat-slide-toggle>
-            </div>
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">Sale Completed</span>
-                <span class="toggle-hint">Notify when a sale is completed.</span>
-              </div>
-              <mat-slide-toggle [(ngModel)]="notifications.saleCompletedAlerts" color="primary"></mat-slide-toggle>
-            </div>
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">User Login Alerts</span>
-                <span class="toggle-hint">Get notified when a user logs in.</span>
-              </div>
-              <mat-slide-toggle [(ngModel)]="notifications.userLoginAlerts" color="primary"></mat-slide-toggle>
-            </div>
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">Weekly Report Email</span>
-                <span class="toggle-hint">Receive a weekly summary report via email.</span>
-              </div>
-              <mat-slide-toggle [(ngModel)]="notifications.weeklyReportEmail" color="primary"></mat-slide-toggle>
-            </div>
-          </div>
-        </div>
-      }
-
-      <!-- Security -->
-      @if (activeSection() === 'security') {
-        <div class="settings-card">
-          <div class="card-header">
-            <mat-icon>security</mat-icon>
-            <h2>Security Settings</h2>
-          </div>
-          <div class="card-body">
-            <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Session Timeout (minutes)</mat-label>
-              <input matInput id="sessionTimeout" type="number" [(ngModel)]="security.sessionTimeout" min="5" max="480" />
-              <mat-hint>Automatically log out idle users after this duration.</mat-hint>
-            </mat-form-field>
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">Require Password Change</span>
-                <span class="toggle-hint">Force users to change password on next login.</span>
-              </div>
-              <mat-slide-toggle [(ngModel)]="security.requirePasswordChange" color="primary"></mat-slide-toggle>
-            </div>
-            <div class="toggle-item">
-              <div class="toggle-info">
-                <span class="toggle-label">Two-Factor Authentication</span>
-                <span class="toggle-hint">Enable 2FA for all users (requires backend support).</span>
-              </div>
-              <mat-slide-toggle [(ngModel)]="security.twoFactorEnabled" color="primary"></mat-slide-toggle>
-            </div>
-          </div>
-        </div>
-      }
-
-      <!-- Save Button -->
+      <!-- Bottom Actions Bar -->
       <div class="save-area">
-        <button class="btn btn--primary" (click)="saveSettings()">
+        <button type="button" class="btn btn--outline" (click)="resetDefaults()">
+          <mat-icon>restart_alt</mat-icon>
+          Reset Role Defaults
+        </button>
+
+        <button type="button" class="btn btn--primary" (click)="saveSettings()">
           <mat-icon>save</mat-icon>
-          Save Settings
+          Save {{ userRole() }} Settings
         </button>
       </div>
+
     </div>
   </div>
 </div>
