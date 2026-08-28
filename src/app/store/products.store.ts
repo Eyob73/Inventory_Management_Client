@@ -10,9 +10,10 @@ import {
     withEntities,
     setAllEntities,
     addEntity,
+    updateEntity,
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, concatMap, tap, catchError, EMPTY, switchMap, exhaustMap } from 'rxjs';
+import { pipe, tap, catchError, EMPTY, switchMap, exhaustMap } from 'rxjs';
 import { ProductService } from '../services/product';
 import { Product, PagedProductResponse } from '../models/products.model';
 
@@ -111,6 +112,74 @@ export const ProductStore = signalStore(
                             patchState(store, {
                                 isLoading: false,
                                 error: err.message || 'Failed to create product',
+                            });
+                            return EMPTY;
+                        })
+                    )
+                )
+            )
+        ),
+
+        updateProduct: rxMethod<{ id: string; payload: Partial<Product> }>(
+            pipe(
+                tap(() => patchState(store, { isLoading: true, error: null })),
+                exhaustMap(({ id, payload }) =>
+                    api.update(id, payload).pipe(
+                        tap((updated) => {
+                            patchState(store, updateEntity({ id, changes: updated }), { isLoading: false });
+                        }),
+                        catchError((err) => {
+                            patchState(store, {
+                                isLoading: false,
+                                error: err.message || 'Failed to update product',
+                            });
+                            return EMPTY;
+                        })
+                    )
+                )
+            )
+        ),
+
+        deleteProduct: rxMethod<string>(
+            pipe(
+                tap(() => patchState(store, { isLoading: true, error: null })),
+                exhaustMap((id) =>
+                    api.delete(id).pipe(
+                        switchMap(() => {
+                            const pageIndex =
+                                store.entities().length <= 1 && store.pageIndex() > 1
+                                    ? store.pageIndex() - 1
+                                    : store.pageIndex();
+                            return api.getAll(pageIndex, store.pageSize(), store.search() || undefined).pipe(
+                                tap((res: PagedProductResponse | Product[]) => {
+                                    if (Array.isArray(res)) {
+                                        patchState(store, setAllEntities(res), {
+                                            isLoading: false,
+                                            totalCount: res.length,
+                                            pageIndex: 1,
+                                            pageSize: res.length,
+                                            totalPages: 1,
+                                            hasPreviousPage: false,
+                                            hasNextPage: false,
+                                        });
+                                    } else {
+                                        patchState(store, setAllEntities(res.items || []), {
+                                            isLoading: false,
+                                            totalCount: res.totalCount || 0,
+                                            pageIndex: res.pageIndex || pageIndex,
+                                            pageSize: res.pageSize || store.pageSize(),
+                                            totalPages: res.totalPages || 1,
+                                            hasPreviousPage: res.hasPreviousPage || false,
+                                            hasNextPage: res.hasNextPage || false,
+                                        });
+                                    }
+                                })
+                            );
+                        }),
+                        catchError((err) => {
+                            patchState(store, {
+                                isLoading: false,
+                                error: err.message || 'Failed to delete product',
                             });
                             return EMPTY;
                         })

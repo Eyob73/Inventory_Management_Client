@@ -1,6 +1,6 @@
-import { Component, inject, signal, effect } from "@angular/core";
+import { Component, inject, signal, effect, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   FormBuilder,
   Validators,
@@ -11,6 +11,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { Product } from "../../models/products.model";
 import { ProductStore } from "../../store/products.store";
+import { ProductService } from "../../services/product";
 import { CategoryService } from "../../services/category";
 import { SupplierService } from "../../services/supplier";
 
@@ -21,15 +22,19 @@ import { SupplierService } from "../../services/supplier";
   templateUrl: './add-products.html',
   styleUrl: './add-products.scss',
 })
-export class AddProducts {
+export class AddProducts implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
   readonly productStore = inject(ProductStore);
   private categoryService = inject(CategoryService);
   private supplierService = inject(SupplierService);
 
   isError = signal(false);
   submissionStatus = signal<string | null>(null);
+  readonly isEditMode = signal(false);
+  readonly productId = signal<string | null>(null);
   private wasSubmitting = false;
 
   readonly categoriesResource = rxResource({
@@ -70,9 +75,26 @@ export class AddProducts {
       } else if (!isLoading && this.wasSubmitting && !error) {
         this.wasSubmitting = false;
         this.isError.set(false);
-        this.submissionStatus.set('Product saved successfully!');
+        this.submissionStatus.set(
+          this.isEditMode() ? 'Product updated successfully!' : 'Product saved successfully!'
+        );
         setTimeout(() => this.router.navigate(['/products']), 1000);
       }
+    });
+  }
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    this.isEditMode.set(true);
+    this.productId.set(id);
+    this.productService.getById(id).subscribe({
+      next: (product) => this.patchForm(product),
+      error: (err) => {
+        this.isError.set(true);
+        this.submissionStatus.set(err?.error?.detail || 'Failed to load product for editing.');
+      },
     });
   }
 
@@ -114,6 +136,32 @@ export class AddProducts {
       return;
     }
 
+    const payload = this.buildPayload();
+    this.wasSubmitting = true;
+    this.isError.set(false);
+    this.submissionStatus.set(this.isEditMode() ? 'Updating product…' : 'Submitting product to store...');
+
+    if (this.isEditMode() && this.productId()) {
+      this.productStore.updateProduct({ id: this.productId()!, payload });
+    } else {
+      this.productStore.createProduct(payload);
+    }
+  }
+
+  private patchForm(product: Product): void {
+    this.productForm.patchValue({
+      name: product.name || '',
+      description: product.description || '',
+      price: product.price ?? null,
+      cost: product.cost ?? null,
+      stock: product.quantityInStock ?? null,
+      category: product.categoryId || '',
+      supplierId: product.supplierId || '',
+      sku: product.sku || '',
+    });
+  }
+
+  private buildPayload(): Partial<Product> {
     const rawValue = this.productForm.getRawValue();
     const payload: Partial<Product> = {
       name: rawValue.name || '',
@@ -125,10 +173,9 @@ export class AddProducts {
       categoryId: rawValue.category || '',
       supplierId: rawValue.supplierId || null,
     };
-
-    this.wasSubmitting = true;
-    this.isError.set(false);
-    this.submissionStatus.set('Submitting product to store...');
-    this.productStore.createProduct(payload);
+    if (this.productId()) {
+      payload.id = this.productId()!;
+    }
+    return payload;
   }
 }

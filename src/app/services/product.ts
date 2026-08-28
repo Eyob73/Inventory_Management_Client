@@ -43,4 +43,12 @@ export class ProductService {
   create(product: Partial<Product>) {
     return this.http.post<Product>(this.baseUrl, product);
   }
+
+  update(id: string, product: Partial<Product>) {
+    return this.http.put<Product>(`${this.baseUrl}/${id}`, { ...product, id });
+  }
+
+  delete(id: string) {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

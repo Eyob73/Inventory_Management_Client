@@ -10,6 +10,8 @@ export interface Product {
     supplierId: string | null;
     createdAt: string;
     updatedAt: string | null;
+    imageUrl?: string | null;
+    minimumStockLevel?: number | null;
 }
 
 export interface PagedResult<T> {

@@ -91,7 +91,11 @@ export class NavigationService {
   }
 
   getTitleForUrl(url: string): string {
-    return routeTitleMap[url] || this.formatTitle(url);
+    const path = url.split('?')[0];
+    if (routeTitleMap[path]) return routeTitleMap[path];
+    if (/^\/products\/[^/]+\/edit$/.test(path)) return 'Edit Product';
+    if (/^\/products\/[^/]+$/.test(path)) return 'Product Details';
+    return this.formatTitle(url);
   }
 
   private formatTitle(url: string): string {

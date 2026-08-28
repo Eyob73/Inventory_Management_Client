@@ -1,8 +1,12 @@
 <form class="product-form" [formGroup]="productForm" (ngSubmit)="onSubmit()">
 
     <div class="product-form__header">
-        <h1 class="product-form__title">Add product</h1>
-        <p class="product-form__subtitle">Fill in the details below to add a new product in your catalog.</p>
+        <h1 class="product-form__title">{{ isEditMode() ? 'Edit product' : 'Add product' }}</h1>
+        <p class="product-form__subtitle">
+          {{ isEditMode()
+            ? 'Update catalog details, pricing, and stock for this product.'
+            : 'Fill in the details below to add a new product in your catalog.' }}
+        </p>
     </div>
 
     @if (submissionStatus()) {
@@ -153,7 +157,7 @@
             @if (productStore.isLoading()) {
             Saving...
             } @else {
-            Save product
+            {{ isEditMode() ? 'Save changes' : 'Save product' }}
             }
         </button>
     </div>

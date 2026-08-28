@@ -1,16 +1,25 @@
 import { Component, inject, ViewChild, effect, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Product } from '../../models/products.model';
 import { ProductStore } from '../../store/products.store';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { AuthStore } from '../../store/auth.store';
+import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import {
+  canAddProduct,
+  canDeleteProduct,
+  canEditProduct,
+  canViewProductCost,
+  getStockStatus,
+} from '../../utils/product-permissions';
 
 @Component({
   selector: 'app-products',
@@ -24,6 +33,7 @@ import { AuthStore } from '../../store/auth.store';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatTooltipModule,
     TableSkeleton,
   ],
   templateUrl: './products.html',
@@ -32,23 +42,18 @@ import { AuthStore } from '../../store/auth.store';
 export class Products implements OnInit {
   readonly store = inject(ProductStore);
   readonly authStore = inject(AuthStore);
+  private router = inject(Router);
+  private confirmDialog = inject(ConfirmDialogService);
 
-  /** Whether the current user is a Sales role */
-  readonly isSales = computed(() =>
-    this.authStore.userRole()?.toLowerCase() === 'sales'
-  );
+  readonly isSales = computed(() => !canViewProductCost(this.authStore.userRole()));
+  readonly canAddProducts = computed(() => canAddProduct(this.authStore.userRole()));
+  readonly canEditProducts = computed(() => canEditProduct(this.authStore.userRole()));
+  readonly canDeleteProducts = computed(() => canDeleteProduct(this.authStore.userRole()));
 
-  /** Whether the current user can create/edit products (Admin or Manager) */
-  readonly canEditProducts = computed(() => {
-    const role = this.authStore.userRole()?.toLowerCase() ?? '';
-    return role === 'admin' || role === 'manager';
-  });
-
-  /** Column list — hide 'cost' for Sales users */
   readonly displayedColumns = computed<string[]>(() =>
     this.isSales()
-      ? ['no', 'name', 'sku', 'price', 'quantityInStock']
-      : ['no', 'name', 'sku', 'price', 'cost', 'quantityInStock']
+      ? ['no', 'name', 'sku', 'price', 'quantityInStock', 'actions']
+      : ['no', 'name', 'sku', 'price', 'cost', 'quantityInStock', 'actions']
   );
 
   dataSource = new MatTableDataSource<Product>([]);
@@ -56,11 +61,12 @@ export class Products implements OnInit {
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '6%' },
-    { width: '30%', dual: true },
+    { width: '28%', dual: true },
+    { width: '14%' },
+    { width: '12%' },
+    { width: '12%' },
     { width: '16%' },
-    { width: '14%' },
-    { width: '14%' },
-    { width: '18%' },
+    { width: '12%' },
   ];
 
   @ViewChild(MatSort) set sort(sort: MatSort | undefined) {
@@ -93,10 +99,24 @@ export class Products implements OnInit {
     this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search });
   }
 
+  viewDetails(product: Product): void {
+    this.router.navigate(['/products', product.id]);
+  }
+
+  editProduct(product: Product): void {
+    if (!this.canEditProducts()) return;
+    this.router.navigate(['/products', product.id, 'edit']);
+  }
+
+  deleteProduct(product: Product): void {
+    if (!this.canDeleteProducts()) return;
+    this.confirmDialog.confirmDelete('Product', product.name).subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.store.deleteProduct(product.id);
+    });
+  }
+
   getStockStatus(stock: number): { label: string; class: string } {
-    if (stock <= 0) return { label: 'Out of stock', class: 'status--out' };
-    if (stock <= 15) return { label: 'Low stock', class: 'status--low' };
-    return { label: 'In stock', class: 'status--in' };
+    return getStockStatus(stock);
   }
 }
-

@@ -1,0 +1,27 @@
+<div class="pdp">
+  <div class="pdp-header">
+    <div>
+      <a routerLink="/products" class="pdp-back">
+        <mat-icon>arrow_back</mat-icon>
+        Products
+      </a>
+      <h1 class="pdp-title">Product details</h1>
+      <p class="pdp-subtitle">Complete catalog information for this item.</p>
+    </div>
+    @if (canEdit() && product()) {
+    <button type="button" class="btn btn--primary" (click)="editProduct()">
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+  <div class="pdp-state">Loading product…</div>
+  } @else if (error()) {
+  <div class="pdp-state pdp-state--error">{{ error() }}</div>
+  } @else if (product()) {
+  <app-product-details [product]="product()!" [categoryName]="categoryName()" [supplierName]="supplierName()"
+    [showCost]="showCost()" />
+  }
+</div>

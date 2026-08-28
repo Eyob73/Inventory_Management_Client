@@ -1,0 +1,100 @@
+<div class="pd">
+  <header class="pd-hero">
+    <div class="pd-hero__media">
+      @if (imageUrl()) {
+      <img [src]="imageUrl()!" [alt]="product().name" class="pd-hero__image" />
+      } @else {
+      <div class="pd-hero__placeholder" aria-hidden="true">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      }
+    </div>
+    <div class="pd-hero__meta">
+      <span class="status-badge" [ngClass]="stockStatus().class">{{ stockStatus().label }}</span>
+      <h2 class="pd-hero__name">{{ product().name }}</h2>
+      <p class="pd-hero__sku">SKU <code>{{ product().sku || '—' }}</code></p>
+      @if (product().description) {
+      <p class="pd-hero__desc">{{ product().description }}</p>
+      }
+    </div>
+  </header>
+
+  <div class="pd-grid">
+    <section class="pd-card">
+      <h3 class="pd-card__title">Identity</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>Product name</dt>
+          <dd>{{ product().name }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>Product code / SKU</dt>
+          <dd><code class="sku-tag">{{ product().sku || '—' }}</code></dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>Category</dt>
+          <dd>{{ categoryName() || '—' }}</dd>
+        </div>
+        <div class="pd-dl__row pd-dl__row--block">
+          <dt>Description</dt>
+          <dd>{{ product().description || '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="pd-card">
+      <h3 class="pd-card__title">Pricing</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>Price</dt>
+          <dd class="pd-dl__strong">{{ product().price != null ? (product().price | number:'1.2-2') + ' ETB' : '—' }}
+          </dd>
+        </div>
+        @if (showCost()) {
+        <div class="pd-dl__row">
+          <dt>Cost price</dt>
+          <dd>{{ product().cost != null ? (product().cost | number:'1.2-2') + ' ETB' : '—' }}</dd>
+        </div>
+        }
+      </dl>
+    </section>
+
+    <section class="pd-card">
+      <h3 class="pd-card__title">Inventory</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>Current stock quantity</dt>
+          <dd>{{ product().quantityInStock ?? 0 }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>Minimum stock level</dt>
+          <dd>{{ minStock() != null ? minStock() : '—' }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>Product status</dt>
+          <dd>
+            <span class="status-badge" [ngClass]="stockStatus().class">{{ stockStatus().label }}</span>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="pd-card">
+      <h3 class="pd-card__title">Supplier &amp; audit</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>Supplier</dt>
+          <dd>{{ supplierName() || '—' }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>Created date</dt>
+          <dd>{{ product().createdAt ? (product().createdAt | date:'MMM d, y, h:mm a') : '—' }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>Last updated date</dt>
+          <dd>{{ product().updatedAt ? (product().updatedAt | date:'MMM d, y, h:mm a') : '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</div>

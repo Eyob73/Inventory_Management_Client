@@ -7,7 +7,7 @@ import { AuthStore } from '../store/auth.store';
 /**
  * Role guard factory. Accepts a single role string or an array of allowed roles.
  * Admin users always have access (admin is super-role).
- * Redirects to /unauthorized when access is denied.
+ * Cancels navigation when access is denied so the user stays on the current page.
  *
  * Usage:
  *   canActivate: [roleGuard('Admin')]
@@ -35,7 +35,8 @@ export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
       const allowed = roles.some((r) => r.toLowerCase() === normalizedUserRole);
       if (allowed) return true;
 
-      return router.createUrlTree(['/dashboard']);
+      // Cancel navigation so the user stays on the current page.
+      return false;
     };
 
     // Wait for auth loading to finish before evaluating

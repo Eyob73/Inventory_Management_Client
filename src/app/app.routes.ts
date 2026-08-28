@@ -33,6 +33,20 @@ export const routes: Routes = [
         canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
       },
       {
+        path: 'products/:id/edit',
+        loadComponent: () =>
+          import('./features/add-products/add-products').then((m) => m.AddProducts),
+        canActivate: [roleGuard(['Admin', 'Manager'])],
+      },
+      {
+        path: 'products/:id',
+        loadComponent: () =>
+          import('./features/products/product-details-page/product-details-page').then(
+            (m) => m.ProductDetailsPage
+          ),
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
+      },
+      {
         path: 'sales',
         loadComponent: () => import('./features/sales/sales').then((m) => m.Sales),
         canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
@@ -75,7 +89,7 @@ export const routes: Routes = [
         path: 'add-products',
         loadComponent: () =>
           import('./features/add-products/add-products').then((m) => m.AddProducts),
-        canActivate: [roleGuard('Admin')],
+        canActivate: [roleGuard(['Admin', 'Manager'])],
       },
       {
         path: 'users',
