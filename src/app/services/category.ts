@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Category } from '../models/category.model';
 import { environment } from '../../environments/environment.development';
 
+export type { Category };
+
 @Injectable({
   providedIn: 'root',
 })

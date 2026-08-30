@@ -102,8 +102,14 @@
 }
 
 .search-form-field {
+  --mdc-outlined-text-field-caret-color: #ffffff !important;
   width: 100%;
   max-width: 420px;
+
+  input,
+  .mat-mdc-form-field-input-control {
+    caret-color: #ffffff !important;
+  }
 
   .mat-mdc-form-field-subscript-wrapper {
     display: none !important;
@@ -259,6 +265,23 @@
     overflow: hidden !important;
     background: transparent !important;
     box-shadow: none !important;
+  }
+}
+
+.pos-receipt-modal {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow-lg), 0 24px 64px rgba(0, 0, 0, 0.2) !important;
+    background: transparent !important;
+  }
+
+  .mdc-dialog__surface {
+    border-radius: 16px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: var(--surface) !important;
   }
 }
 
@@ -715,42 +738,80 @@
   }
 }
 
-/* ─── 5. Mat Table & Data Grids ───────────────────────────────────────── */
+/* ─── 5. Mat Table & Data Grids (Global Table CSS) ──────────────────────── */
 .table-card {
+  position: relative;
   background: var(--card-bg, var(--surface));
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
 }
 
-.mat-mdc-table {
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-strong, var(--border));
+    border-radius: 999px;
+
+    &:hover {
+      background: var(--slate);
+    }
+  }
+}
+
+.mat-mdc-table,
+.app-table {
   width: 100%;
   background: transparent !important;
   font-size: 0.875rem;
   color: var(--ink);
+  border-collapse: separate;
+  border-spacing: 0;
 
   .mat-mdc-header-row {
-    background: var(--paper, rgba(255, 255, 255, 0.02)) !important;
+    background: var(--paper, rgba(255, 255, 255, 0.04)) !important;
     border-bottom: 1px solid var(--border) !important;
     height: 48px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   .mat-mdc-header-cell {
-    padding: 0.875rem 1rem !important;
+    padding: 0.75rem 1rem !important;
     font-size: 0.75rem !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     color: var(--slate, var(--text-secondary)) !important;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-bottom: none !important;
-    background: transparent !important;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border) !important;
+    background: var(--paper, var(--surface)) !important;
+    white-space: nowrap;
+
+    .mat-sort-header-arrow {
+      color: var(--moss) !important;
+    }
   }
 
   .mat-mdc-row {
     border-bottom: 1px solid var(--border) !important;
     transition: background 0.15s ease;
-    height: auto;
+    height: 52px;
 
     &:last-child {
       border-bottom: none !important;
@@ -762,15 +823,51 @@
   }
 
   .mat-mdc-cell {
-    padding: 0.875rem 1rem !important;
+    padding: 0.75rem 1rem !important;
     color: var(--ink, var(--text-primary));
-    border-bottom: none !important;
+    border-bottom: 1px solid var(--border) !important;
     vertical-align: middle;
   }
 
   .mat-mdc-no-data-row td {
     padding: 3rem 1rem !important;
     text-align: center;
+    color: var(--slate);
+    font-style: italic;
+  }
+}
+
+/* Global Table Helpers & Badges */
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.font-bold { font-weight: 700 !important; }
+.font-mono { font-family: monospace !important; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
+  &.completed,
+  &.status--in {
+    background: var(--status-in-bg, rgba(16, 185, 129, 0.12));
+    color: var(--status-in-fg, #10b981);
+  }
+
+  &.cancelled,
+  &.status--out {
+    background: var(--status-out-bg, rgba(239, 68, 68, 0.12));
+    color: var(--status-out-fg, #ef4444);
+  }
+
+  &.status--low {
+    background: var(--status-low-bg, rgba(245, 158, 11, 0.12));
+    color: var(--status-low-fg, #f59e0b);
   }
 }
 
@@ -978,11 +1075,77 @@
 .mat-mdc-button,
 .mat-mdc-outlined-button,
 .mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-flat-button,
+.mat-mdc-mini-fab,
+.mat-mdc-fab,
 .mat-mdc-icon-button {
   font-family: inherit !important;
 
   .mat-mdc-button-touch-target {
     border-radius: inherit;
+  }
+}
+
+.mat-mdc-mini-fab.mat-primary,
+.mat-mdc-fab.mat-primary,
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-flat-button.mat-primary {
+  --mdc-protected-button-container-color: var(--moss);
+  --mdc-protected-button-label-text-color: var(--btn-primary-fg, #ffffff);
+  --mdc-filled-button-container-color: var(--moss);
+  --mdc-filled-button-label-text-color: var(--btn-primary-fg, #ffffff);
+  background-color: var(--moss) !important;
+  color: var(--btn-primary-fg, #ffffff) !important;
+}
+
+.mat-mdc-progress-spinner circle {
+  stroke: var(--moss) !important;
+}
+
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--surface);
+  --mdc-snackbar-supporting-text-color: var(--ink);
+
+  .mdc-snackbar__surface {
+    background-color: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  .mdc-snackbar__label {
+    color: var(--ink) !important;
+    font-size: 0.875rem !important;
+    font-family: inherit !important;
+  }
+
+  .mdc-snackbar__actions {
+    .mat-mdc-snack-bar-action {
+      --mdc-snack-bar-button-label-text-color: var(--moss) !important;
+      color: var(--moss) !important;
+      font-weight: 700 !important;
+    }
+  }
+}
+
+/* Success Snackbar Palette Class */
+.snackbar-success {
+  .mdc-snackbar__surface {
+    background-color: var(--moss-soft) !important;
+    border-color: rgba(91, 117, 83, 0.4) !important;
+  }
+  .mdc-snackbar__label {
+    color: var(--moss) !important;
+    font-weight: 600 !important;
+  }
+  .mdc-snackbar__actions {
+    .mat-mdc-snack-bar-action {
+      --mdc-snack-bar-button-label-text-color: var(--moss) !important;
+      color: var(--moss) !important;
+      font-weight: 700 !important;
+    }
   }
 }
 

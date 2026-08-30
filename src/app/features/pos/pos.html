@@ -1,0 +1,287 @@
+<div class="pos-terminal">
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- LEFT PANEL — Product catalog                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="catalog-panel">
+
+    <!-- Top bar: search + category chips -->
+    <header class="catalog-topbar">
+      <mat-form-field appearance="outline" class="search-form-field catalog-search">
+        <mat-icon matPrefix class="search-icon">search</mat-icon>
+        <input matInput type="text" placeholder="Search products…" [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)" />
+        <button *ngIf="searchTerm()" matSuffix mat-icon-button (click)="searchTerm.set('')" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="category-rail">
+        <button class="cat-pill" [class.cat-pill--active]="selectedCategoryId() === 'ALL'"
+          (click)="selectedCategoryId.set('ALL')">
+          <mat-icon>grid_view</mat-icon>
+          <span>All</span>
+        </button>
+        <button *ngFor="let cat of categories()" class="cat-pill"
+          [class.cat-pill--active]="selectedCategoryId() === cat.id" [style.--cat-accent]="categoryColor(cat.id)"
+          (click)="selectedCategoryId.set(cat.id)">
+          <span class="cat-pip"></span>
+          <span>{{ cat.name }}</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Product count indicator -->
+    <div class="catalog-meta" *ngIf="!isLoadingProducts()">
+      <span class="catalog-count">
+        {{ filteredProducts().length }} product{{ filteredProducts().length !== 1 ? 's' : '' }}
+      </span>
+    </div>
+
+    <!-- Product grid -->
+    <div class="catalog-grid-scroll">
+
+      <!-- Loading -->
+      <div *ngIf="isLoadingProducts()" class="catalog-placeholder">
+        <mat-spinner diameter="36"></mat-spinner>
+        <p>Loading catalog…</p>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!isLoadingProducts() && filteredProducts().length === 0" class="catalog-placeholder">
+        <mat-icon class="placeholder-icon">inventory_2</mat-icon>
+        <p class="placeholder-title">No products found</p>
+        <p class="placeholder-sub">Try a different search or category.</p>
+      </div>
+
+      <!-- Grid -->
+      <div *ngIf="!isLoadingProducts() && filteredProducts().length > 0" class="catalog-grid">
+        <button *ngFor="let product of filteredProducts()" class="product-tile"
+          [class.product-tile--oos]="product.quantityInStock <= 0"
+          [class.product-tile--in-cart]="cartQuantities().has(product.id)" (click)="addToCart(product)"
+          [disabled]="product.quantityInStock <= 0">
+
+          <!-- In-cart quantity bubble -->
+          <span class="tile-cart-qty" *ngIf="cartQuantities().get(product.id) as qty">
+            {{ qty }}
+          </span>
+
+
+          <!-- Main content -->
+          <div class="tile-body">
+            <div class="tile-stock-row">
+              <span class="stock-chip"
+                [class.stock-chip--low]="product.quantityInStock > 0 && product.quantityInStock <= 5"
+                [class.stock-chip--out]="product.quantityInStock <= 0">
+                <mat-icon>{{
+                  product.quantityInStock <= 0 ? 'remove_circle_outline' : product.quantityInStock <=5 ? 'warning_amber'
+                    : 'check_circle' }}</mat-icon>
+                    {{ product.quantityInStock > 0 ? product.quantityInStock + ' left' : 'Out of stock' }}
+              </span>
+            </div>
+
+            <h4 class="tile-name">{{ product.name }}</h4>
+            <span class="tile-sku">{{ product.sku }}</span>
+          </div>
+
+          <div class="tile-footer">
+            <span class="tile-price">{{ product.price | number:'1.2-2' }} ETB</span>
+            <span class="tile-add-icon" aria-hidden="true">
+              <mat-icon>add</mat-icon>
+            </span>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- RIGHT PANEL — Order ticket & checkout                          -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <aside class="order-panel">
+
+    <!-- Panel header -->
+    <header class="order-header">
+      <div class="order-header-left">
+        <span class="order-label">Order Ticket</span>
+        <div class="order-title-row">
+          <h2 class="order-heading">Current Order</h2>
+          <span class="order-badge" *ngIf="cartItemCount() > 0">
+            {{ cartItemCount() }} {{ cartItemCount() === 1 ? 'item' : 'items' }}
+          </span>
+        </div>
+      </div>
+      <div class="order-header-right">
+        <button mat-icon-button class="order-clear-btn" *ngIf="cart().length > 0" matTooltip="Clear order"
+          (click)="clearCart()">
+          <mat-icon>delete_sweep</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Customer row -->
+    <div class="customer-row">
+      <!-- Active customer chip -->
+      <div class="customer-active-chip" *ngIf="selectedCustomer() as cust">
+        <span class="chip-avatar">
+          <mat-icon>person</mat-icon>
+        </span>
+        <div class="chip-info">
+          <span class="chip-name">{{ cust.name }}</span>
+          <span class="chip-phone" *ngIf="cust.phoneNumber">{{ cust.phoneNumber }}</span>
+        </div>
+        <button mat-icon-button class="chip-remove" (click)="clearCustomer()" matTooltip="Clear customer">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Customer select (no customer chosen) -->
+      <ng-container *ngIf="!selectedCustomer()">
+        <mat-form-field appearance="outline" class="customer-field">
+          <mat-icon matPrefix>person_outline</mat-icon>
+          <mat-label>Customer</mat-label>
+          <mat-select [ngModel]="selectedCustomerId()" (ngModelChange)="selectedCustomerId.set($event)">
+            <mat-option [value]="null">— Walk-in —</mat-option>
+            <mat-option *ngFor="let cust of customers()" [value]="cust.id">
+              {{ cust.name }}{{ cust.phoneNumber ? ' · ' + cust.phoneNumber : '' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+    </div>
+
+    <!-- Line items -->
+    <div class="order-items">
+      <!-- Empty state -->
+      <div *ngIf="cart().length === 0" class="order-empty">
+        <div class="order-empty-icon-wrap">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <p class="order-empty-title">No items yet</p>
+        <p class="order-empty-sub">Tap a product to add it to the order.</p>
+      </div>
+
+      <!-- Item rows -->
+      <div *ngFor="let item of cart(); let i = index" class="order-line">
+        <div class="line-info">
+          <span class="line-name">{{ item.product.name }}</span>
+          <span class="line-price">{{ item.product.price | number:'1.2-2' }} ETB ea.</span>
+        </div>
+        <div class="line-controls">
+          <div class="qty-group">
+            <button class="qty-action" (click)="updateQuantity(i, item.quantity - 1)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="qty-num">{{ item.quantity }}</span>
+            <button class="qty-action" (click)="updateQuantity(i, item.quantity + 1)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <span class="line-total">{{ (item.product.price * item.quantity) | number:'1.2-2' }} ETB</span>
+          <button class="line-remove" (click)="removeItem(i)" matTooltip="Remove">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout footer (only visible when cart has items) -->
+    <footer class="checkout-footer" *ngIf="cart().length > 0">
+
+      <!-- Divider -->
+      <div class="dashed-rule" aria-hidden="true"></div>
+
+      <!-- Totals block -->
+      <div class="totals-block">
+        <div class="totals-row">
+          <span>Subtotal</span>
+          <span>{{ cartSubtotal() | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="totals-row" *ngIf="itemDiscountsTotal() > 0">
+          <span>Item discounts</span>
+          <span class="totals-deduct">&minus;{{ itemDiscountsTotal() | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="totals-row totals-input-row">
+          <span>Discount (ETB)</span>
+          <input type="number" min="0" class="totals-input" [ngModel]="discountAmount()"
+            (ngModelChange)="discountAmount.set(+$event)" />
+        </div>
+        <div class="totals-row totals-input-row">
+          <span>Tax (%)</span>
+          <input type="number" min="0" max="100" class="totals-input" [ngModel]="taxRatePercent()"
+            (ngModelChange)="taxRatePercent.set(+$event)" />
+        </div>
+        <div class="totals-row" *ngIf="calculatedTax() > 0">
+          <span>Tax amount</span>
+          <span>{{ calculatedTax() | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="totals-row totals-grand">
+          <span>Total</span>
+          <span class="grand-amount">{{ grandTotal() | number:'1.2-2' }} ETB</span>
+        </div>
+      </div>
+
+      <!-- Payment method tabs -->
+      <div class="payment-tabs">
+        <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Cash'" (click)="setPaymentMethod('Cash')">
+          <mat-icon>payments</mat-icon>
+          <span>Cash</span>
+        </button>
+        <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Mobile Banking'" (click)="setPaymentMethod('Mobile Banking')">
+          <mat-icon>account_balance</mat-icon>
+          <span>Mobile Banking</span>
+        </button>
+        <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Telebirr'" (click)="setPaymentMethod('Telebirr')">
+          <mat-icon>phone_android</mat-icon>
+          <span>Telebirr</span>
+        </button>
+        <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Card'" (click)="setPaymentMethod('Card')">
+          <mat-icon>credit_card</mat-icon>
+          <span>Card</span>
+        </button>
+      </div>
+
+      <!-- Cash panel -->
+      <div class="cash-panel" *ngIf="paymentMethod() === 'Cash'">
+        <div class="cash-label">Amount received</div>
+        <div class="cash-presets">
+          <button class="preset-btn" (click)="setCashExact()">Exact</button>
+          <button class="preset-btn" (click)="addCashPreset(10)">+10 ETB</button>
+          <button class="preset-btn" (click)="addCashPreset(20)">+20 ETB</button>
+          <button class="preset-btn" (click)="addCashPreset(50)">+50 ETB</button>
+        </div>
+        <input type="number" step="0.01" class="cash-input-field" [ngModel]="amountReceived()"
+          (ngModelChange)="amountReceived.set(+$event)" />
+        <div class="cash-change" [class.cash-change--positive]="changeAmount() > 0">
+          <span>Change due</span>
+          <span class="change-value">{{ changeAmount() | number:'1.2-2' }} ETB</span>
+        </div>
+      </div>
+
+      <!-- Notes toggle -->
+      <button type="button" class="notes-btn" (click)="showNotes.set(!showNotes())">
+        <mat-icon>{{ showNotes() ? 'sticky_note_2' : 'add_comment' }}</mat-icon>
+        <span>{{ showNotes() ? 'Hide note' : 'Add order note' }}</span>
+      </button>
+      <textarea *ngIf="showNotes()" class="notes-area" rows="2" placeholder="Gift wrap, special instructions…"
+        [ngModel]="saleNotes()" (ngModelChange)="saleNotes.set($event)"></textarea>
+
+      <!-- Submit -->
+      <button type="button" class="btn btn--primary submit-btn" [disabled]="isSubmitting() || cart().length === 0"
+        (click)="completeSale()">
+        <ng-container *ngIf="isSubmitting(); else btnLabel">
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>Processing…</span>
+        </ng-container>
+        <ng-template #btnLabel>
+          <mat-icon>point_of_sale</mat-icon>
+          <span>Submit &nbsp;{{ grandTotal() | number:'1.2-2' }} ETB</span>
+        </ng-template>
+      </button>
+
+    </footer>
+
+  </aside>
+
+</div>

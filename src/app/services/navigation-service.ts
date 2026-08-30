@@ -26,7 +26,8 @@ const ALL_NAV_GROUPS: NavGroup[] = [
   {
     label: 'Transactions',
     items: [
-      { label: 'Sales', path: '/sales', icon: 'point_of_sale' },
+      { label: 'POS Terminal', path: '/pos', icon: 'storefront' },
+      { label: 'Sales History', path: '/sales-history', icon: 'receipt_long' },
       { label: 'Customers', path: '/customers', icon: 'people' },
       { label: 'Suppliers', path: '/suppliers', icon: 'local_shipping', roles: ['Admin', 'Manager'] },
     ],
@@ -53,7 +54,9 @@ const routeTitleMap: Record<string, string> = {
   '/add-products': 'Add Product',
   '/categories': 'Categories',
   '/inventory': 'Inventory',
-  '/sales': 'Sales',
+  '/pos': 'POS Terminal',
+  '/sales-history': 'Sales History',
+  '/sales': 'POS Terminal',
   '/purchases': 'Purchases',
   '/customers': 'Customers',
   '/suppliers': 'Suppliers',

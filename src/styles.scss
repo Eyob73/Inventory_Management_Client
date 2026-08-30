@@ -108,6 +108,23 @@ textarea {
   }
 }
 
+/* ─── Global Search Input White Cursor (Caret) ─────────────── */
+.search-form-field,
+.search-input-container,
+.search-input,
+.pos-search-input,
+.search-dialog,
+input[type="search"],
+input[placeholder*="Search" i],
+input[placeholder*="search" i] {
+  caret-color: #ffffff !important;
+
+  input,
+  .mat-mdc-form-field-input-control {
+    caret-color: #ffffff !important;
+  }
+}
+
 /* ─── Global Button Component Styles ────────────────────────────── */
 .btn {
   display: inline-flex;

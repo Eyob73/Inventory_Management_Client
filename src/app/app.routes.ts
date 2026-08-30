@@ -47,9 +47,20 @@ export const routes: Routes = [
         canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
       },
       {
-        path: 'sales',
-        loadComponent: () => import('./features/sales/sales').then((m) => m.Sales),
+        path: 'pos',
+        loadComponent: () => import('./features/pos/pos').then((m) => m.PosComponent),
         canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
+      },
+      {
+        path: 'sales-history',
+        loadComponent: () =>
+          import('./features/sales-history/sales-history').then((m) => m.SalesHistoryComponent),
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
+      },
+      {
+        path: 'sales',
+        redirectTo: 'pos',
+        pathMatch: 'full'
       },
       {
         path: 'customers',

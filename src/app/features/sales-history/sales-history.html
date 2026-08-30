@@ -1,0 +1,166 @@
+<div class="sales-history-container">
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">Sales History</h1>
+      <p class="page-subtitle">Track, filter, and inspect past retail transactions and customer invoices</p>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Invoice / Cashier / Customer</mat-label>
+        <input matInput placeholder="e.g. INV-20260830 or John Doe" [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)" (keyup.enter)="onSearch()" />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input matInput type="date" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onSearch()" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input matInput type="date" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onSearch()" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Payment Method</mat-label>
+        <mat-select [ngModel]="selectedPaymentMethod()" (ngModelChange)="selectedPaymentMethod.set($event); onSearch()">
+          <mat-option value="">All Payment Methods</mat-option>
+          <mat-option value="Cash">Cash</mat-option>
+          <mat-option value="Card">Card</mat-option>
+          <mat-option value="Mobile Payment">Mobile Payment</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event); onSearch()">
+          <mat-option value="">All Statuses</mat-option>
+          <mat-option value="Completed">Completed</mat-option>
+          <mat-option value="Cancelled">Cancelled</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="resetFilters()" class="reset-btn">
+        <mat-icon>refresh</mat-icon> Reset Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Sales Table Card -->
+  <div class="table-card">
+    <div *ngIf="isLoading()" class="loading-overlay">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Loading transactions...</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="sales-table">
+        <!-- Number Column -->
+        <ng-container matColumnDef="number">
+          <th mat-header-cell *matHeaderCellDef>No</th>
+          <td mat-cell *matCellDef="let element; let i = index">
+            {{ (pageIndex() - 1) * pageSize() + i + 1 }}
+          </td>
+        </ng-container>
+
+        <!-- Sale Number Column -->
+        <ng-container matColumnDef="saleNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sale #</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="sale-number-code">{{ element.saleNumber }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date & Time</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.saleDate | date:'medium' }}
+          </td>
+        </ng-container>
+
+        <!-- Cashier Column -->
+        <ng-container matColumnDef="cashier">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Cashier</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.cashierName || 'System' }}
+          </td>
+        </ng-container>
+
+        <!-- Customer Column -->
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.customerName || 'Walk-in Customer' }}
+          </td>
+        </ng-container>
+
+        <!-- Payment Method Column -->
+        <ng-container matColumnDef="paymentMethod">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Method</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="payment-badge">{{ element.paymentMethod }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Items Count Column -->
+        <ng-container matColumnDef="itemsCount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Items</th>
+          <td mat-cell *matCellDef="let element" class="text-center font-bold">
+            {{ element.items.length }}
+          </td>
+        </ng-container>
+
+        <!-- Total Amount Column -->
+        <ng-container matColumnDef="totalAmount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">Total Amount</th>
+          <td mat-cell *matCellDef="let element" class="text-right font-bold amount-cell">
+            {{ element.totalAmount | number:'1.2-2' }} ETB
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Status</th>
+          <td mat-cell *matCellDef="let element" class="text-center">
+            <span class="status-badge" [ngClass]="element.status.toLowerCase()">
+              {{ element.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+          <td mat-cell *matCellDef="let element" class="text-center">
+            <button mat-icon-button color="primary" matTooltip="View Invoice & Receipt" (click)="viewDetails(element)">
+              <mat-icon>receipt_long</mat-icon>
+            </button>
+            <button *ngIf="canCancelSale" mat-icon-button color="warn" matTooltip="Cancel / Void Sale"
+              [disabled]="element.status === 'Cancelled'" (click)="cancelSale(element)">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-table-cell" [attr.colspan]="displayedColumns.length">
+            No sales records found matching your filters.
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="totalCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex() - 1"
+      [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

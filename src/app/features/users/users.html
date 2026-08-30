@@ -160,7 +160,8 @@
   <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
   } @else {
   <div class="table-card">
-    <table mat-table [dataSource]="dataSource" matSort class="users-table">
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="users-table">
 
       <!-- No Column -->
       <ng-container matColumnDef="no">
@@ -247,6 +248,7 @@
         </td>
       </tr>
     </table>
+    </div>
 
     <mat-paginator class="users-paginator" [length]="store.totalCount()" [pageSize]="store.pageSize()"
       [pageIndex]="store.page() > 0 ? store.page() - 1 : 0" [pageSizeOptions]="pageSizeOptions"
