@@ -102,13 +102,13 @@
 }
 
 .search-form-field {
-  --mdc-outlined-text-field-caret-color: #ffffff !important;
+  --mdc-outlined-text-field-caret-color: var(--ink) !important;
   width: 100%;
   max-width: 420px;
 
   input,
   .mat-mdc-form-field-input-control {
-    caret-color: #ffffff !important;
+    caret-color: var(--ink) !important;
   }
 
   .mat-mdc-form-field-subscript-wrapper {
@@ -743,7 +743,7 @@
   position: relative;
   background: var(--card-bg, var(--surface));
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -784,7 +784,7 @@
   border-spacing: 0;
 
   .mat-mdc-header-row {
-    background: var(--paper, rgba(255, 255, 255, 0.04)) !important;
+    background: var(--paper, rgba(255, 255, 255, 0.02)) !important;
     border-bottom: 1px solid var(--border) !important;
     height: 48px;
     position: sticky;
@@ -794,13 +794,13 @@
 
   .mat-mdc-header-cell {
     padding: 0.75rem 1rem !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    color: var(--slate, var(--text-secondary)) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary, var(--slate)) !important;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     border-bottom: 1px solid var(--border) !important;
-    background: var(--paper, var(--surface)) !important;
+    background: var(--paper, rgba(255, 255, 255, 0.02)) !important;
     white-space: nowrap;
 
     .mat-sort-header-arrow {
@@ -818,13 +818,13 @@
     }
 
     &:hover {
-      background: var(--row-hover, rgba(255, 255, 255, 0.03)) !important;
+      background: rgba(255, 255, 255, 0.03) !important;
     }
   }
 
   .mat-mdc-cell {
     padding: 0.75rem 1rem !important;
-    color: var(--ink, var(--text-primary));
+    color: var(--text-primary, var(--ink));
     border-bottom: 1px solid var(--border) !important;
     vertical-align: middle;
   }
@@ -833,41 +833,126 @@
     padding: 3rem 1rem !important;
     text-align: center;
     color: var(--slate);
-    font-style: italic;
   }
 }
 
-/* Global Table Helpers & Badges */
-.text-center { text-align: center !important; }
-.text-right { text-align: right !important; }
-.font-bold { font-weight: 700 !important; }
-.font-mono { font-family: monospace !important; }
+/* Global Table Helpers & Action Buttons */
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.font-bold {
+  font-weight: 700 !important;
+}
+
+.font-mono {
+  font-family: monospace !important;
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  &.justify-center,
+  &.text-center {
+    justify-content: center;
+  }
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--text-secondary, var(--slate));
+
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--text-primary, var(--ink));
+  }
+
+  &--view:hover:not(:disabled) {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #60a5fa;
+  }
+
+  &--edit:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+  }
+
+  &--delete:hover:not(:disabled),
+  &--deactivate:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+  }
+
+  &--activate:hover:not(:disabled) {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.4);
+    color: #4ade80;
+  }
+}
 
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
+  padding: 0.25em 0.65em;
   border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
   letter-spacing: 0.02em;
 
-  &.completed,
-  &.status--in {
-    background: var(--status-in-bg, rgba(16, 185, 129, 0.12));
-    color: var(--status-in-fg, #10b981);
+  &.status--active,
+  &.status--in,
+  &.completed {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.25);
   }
 
-  &.cancelled,
-  &.status--out {
-    background: var(--status-out-bg, rgba(239, 68, 68, 0.12));
-    color: var(--status-out-fg, #ef4444);
+  &.status--inactive,
+  &.status--out,
+  &.cancelled {
+    background: rgba(148, 163, 184, 0.1);
+    color: #64748b;
+    border: 1px solid rgba(148, 163, 184, 0.2);
   }
 
   &.status--low {
-    background: var(--status-low-bg, rgba(245, 158, 11, 0.12));
-    color: var(--status-low-fg, #f59e0b);
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  &.status--danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
   }
 }
 
@@ -1136,10 +1221,12 @@
     background-color: var(--moss-soft) !important;
     border-color: rgba(91, 117, 83, 0.4) !important;
   }
+
   .mdc-snackbar__label {
     color: var(--moss) !important;
     font-weight: 600 !important;
   }
+
   .mdc-snackbar__actions {
     .mat-mdc-snack-bar-action {
       --mdc-snack-bar-button-label-text-color: var(--moss) !important;

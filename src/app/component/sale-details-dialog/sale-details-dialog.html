@@ -65,11 +65,11 @@
   </div>
 
   <div class="totals-section">
-    <div class="notes-box" *ngIf="sale.notes">
-      <span class="notes-title">Notes:</span>
-      <p class="notes-text">{{ sale.notes }}</p>
-    </div>
     <div class="totals-summary">
+      <div class="notes-box" *ngIf="sale.notes">
+        <span class="notes-title">Notes:</span>
+        <p class="notes-text">{{ sale.notes }}</p>
+      </div>
       <div class="summary-row">
         <span>Subtotal</span>
         <span>{{ sale.subtotal | number:'1.2-2' }} ETB</span>

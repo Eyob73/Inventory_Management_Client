@@ -19,7 +19,7 @@ const ALL_NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
       { label: 'Products', path: '/products', icon: 'inventory_2' },
-      { label: 'Categories', path: '/categories', icon: 'category', roles: ['Admin', 'Manager'] },
+      { label: 'Categories', path: '/categories', icon: 'category', roles: ['Admin', 'Manager', 'Sales'] },
       { label: 'Inventory', path: '/inventory', icon: 'tune', roles: ['Admin', 'Manager'] },
     ],
   },

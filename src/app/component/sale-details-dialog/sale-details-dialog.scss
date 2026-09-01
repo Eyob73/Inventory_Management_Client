@@ -192,37 +192,36 @@
 
 .totals-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-start;
   gap: 1.5rem;
   margin-top: 1rem;
 
-  .notes-box {
-    flex: 1;
-    background: var(--paper);
-    padding: 0.75rem;
-    border-radius: 8px;
-    border-left: 3px solid var(--moss);
-
-    .notes-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--slate);
-      text-transform: uppercase;
-    }
-
-    .notes-text {
-      margin: 0.25rem 0 0;
-      font-size: 0.85rem;
-      color: var(--ink);
-    }
-  }
-
   .totals-summary {
-    width: 260px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+
+    .notes-box {
+      background: var(--paper);
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+
+      .notes-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--slate);
+        text-transform: uppercase;
+      }
+
+      .notes-text {
+        margin: 0.25rem 0 0;
+        font-size: 0.85rem;
+        color: var(--ink);
+      }
+    }
 
     .summary-row {
       display: flex;

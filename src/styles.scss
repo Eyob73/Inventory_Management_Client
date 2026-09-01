@@ -108,7 +108,7 @@ textarea {
   }
 }
 
-/* ─── Global Search Input White Cursor (Caret) ─────────────── */
+/* ─── Global Search Input Cursor (Caret) ─────────────── */
 .search-form-field,
 .search-input-container,
 .search-input,
@@ -117,11 +117,11 @@ textarea {
 input[type="search"],
 input[placeholder*="Search" i],
 input[placeholder*="search" i] {
-  caret-color: #ffffff !important;
+  caret-color: var(--ink) !important;
 
   input,
   .mat-mdc-form-field-input-control {
-    caret-color: #ffffff !important;
+    caret-color: var(--ink) !important;
   }
 }
 

@@ -16,6 +16,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 // Services & Models
 import { ProductService } from '../../services/product';
@@ -25,6 +26,7 @@ import { SaleService } from '../../services/sale.service';
 import { Product } from '../../models/products.model';
 import { CreateSaleRequest, Sale } from '../../models/sale.model';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
+import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 
 export interface CartItem {
   product: Product;
@@ -50,7 +52,8 @@ export interface CartItem {
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatPaginatorModule
   ],
   templateUrl: './pos.html',
   styleUrl: './pos.scss'
@@ -62,6 +65,7 @@ export class PosComponent implements OnInit, OnDestroy {
   private saleService = inject(SaleService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private confirmDialog = inject(ConfirmDialogService);
 
   // State Signals
   products = signal<Product[]>([]);
@@ -71,6 +75,11 @@ export class PosComponent implements OnInit, OnDestroy {
 
   searchTerm = signal<string>('');
   selectedCategoryId = signal<string>('ALL');
+
+  // Pagination Signals
+  currentPage = signal<number>(0);
+  pageSize = signal<number>(15);
+  totalCount = signal<number>(0);
 
   selectedCustomerId = signal<string | null>(null);
   manualCustomerName = signal<string>('');
@@ -90,23 +99,13 @@ export class PosComponent implements OnInit, OnDestroy {
   private clockHandle = setInterval(() => this.currentTime.set(new Date()), 1000);
 
   // Computed Properties
-  readonly filteredProducts = computed(() => {
-    const term = this.searchTerm().trim().toLowerCase();
-    const catId = this.selectedCategoryId();
-    const allProds = this.products();
+  readonly filteredProducts = computed(() => this.products());
 
-    return allProds.filter((prod) => {
-      const matchesSearch =
-        !term ||
-        prod.name.toLowerCase().includes(term) ||
-        prod.sku.toLowerCase().includes(term) ||
-        (prod.description && prod.description.toLowerCase().includes(term));
+  readonly paginatedProducts = computed(() => this.products());
 
-      const matchesCat = catId === 'ALL' || prod.categoryId === catId;
-
-      return matchesSearch && matchesCat;
-    });
-  });
+  readonly totalPages = computed(() =>
+    Math.ceil(this.totalCount() / this.pageSize()) || 1
+  );
 
   readonly cartItemCount = computed(() =>
     this.cart().reduce((sum, item) => sum + item.quantity, 0)
@@ -167,9 +166,20 @@ export class PosComponent implements OnInit, OnDestroy {
 
   loadProducts(): void {
     this.isLoadingProducts.set(true);
-    this.productService.getAll(1, 100).subscribe({
-      next: (res) => {
-        this.products.set(res.items || []);
+    const pageIndex = this.currentPage() + 1;
+    const size = this.pageSize();
+    const search = this.searchTerm().trim() || undefined;
+    const catId = this.selectedCategoryId() === 'ALL' ? undefined : this.selectedCategoryId();
+
+    this.productService.getAll(pageIndex, size, search, catId).subscribe({
+      next: (res: any) => {
+        if (Array.isArray(res)) {
+          this.products.set(res);
+          this.totalCount.set(res.length);
+        } else {
+          this.products.set(res.items || []);
+          this.totalCount.set(res.totalCount || 0);
+        }
         this.isLoadingProducts.set(false);
       },
       error: () => {
@@ -177,6 +187,24 @@ export class PosComponent implements OnInit, OnDestroy {
         this.isLoadingProducts.set(false);
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.loadProducts();
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm.set(term);
+    this.currentPage.set(0);
+    this.loadProducts();
+  }
+
+  onCategorySelect(catId: string): void {
+    this.selectedCategoryId.set(catId);
+    this.currentPage.set(0);
+    this.loadProducts();
   }
 
   loadCategories(): void {
@@ -277,31 +305,13 @@ export class PosComponent implements OnInit, OnDestroy {
 
   setPaymentMethod(method: string): void {
     this.paymentMethod.set(method);
-    if (method === 'Cash' && this.amountReceived() === 0) {
-      this.amountReceived.set(Math.ceil(this.grandTotal()));
-    }
-  }
-
-  setCashExact(): void {
+    // Always sync amount received to grand total for non-manual payment modes
     this.amountReceived.set(parseFloat(this.grandTotal().toFixed(2)));
-  }
-
-  addCashPreset(amount: number): void {
-    this.amountReceived.update((prev) => parseFloat((prev + amount).toFixed(2)));
   }
 
   completeSale(): void {
     if (this.cart().length === 0) {
       this.snackBar.open('Cannot complete sale with an empty shopping cart.', 'Close', { duration: 3000 });
-      return;
-    }
-
-    if (this.paymentMethod() === 'Cash' && this.amountReceived() < this.grandTotal()) {
-      this.snackBar.open(
-        `Amount received (${this.amountReceived()} ETB) is less than total amount (${this.grandTotal().toFixed(2)} ETB).`,
-        'Close',
-        { duration: 3000 }
-      );
       return;
     }
 
@@ -311,11 +321,13 @@ export class PosComponent implements OnInit, OnDestroy {
       if (found) customerName = found.name;
     }
 
+    const grandTotalVal = parseFloat(this.grandTotal().toFixed(2));
+
     const payload: CreateSaleRequest = {
       customerId: this.selectedCustomerId() || undefined,
       customerName: customerName || undefined,
       paymentMethod: this.paymentMethod(),
-      amountReceived: this.paymentMethod() === 'Cash' ? this.amountReceived() : this.grandTotal(),
+      amountReceived: grandTotalVal,
       discountAmount: this.discountAmount(),
       taxAmount: parseFloat(this.calculatedTax().toFixed(2)),
       notes: this.saleNotes().trim() || undefined,
@@ -327,32 +339,48 @@ export class PosComponent implements OnInit, OnDestroy {
       }))
     };
 
-    this.isSubmitting.set(true);
+    const totalFormatted = `${this.grandTotal().toFixed(2)} ETB`;
+    const itemCount = this.cartItemCount();
+    const itemText = `${itemCount} ${itemCount === 1 ? 'item' : 'items'}`;
+    const customerInfo = customerName ? ` for ${customerName}` : '';
 
-    this.saleService.createSale(payload).subscribe({
-      next: (completedSale: Sale) => {
-        this.isSubmitting.set(false);
-        this.snackBar.open(`Sale #${completedSale.saleNumber} completed successfully!`, 'Success', {
-          duration: 3500,
-          panelClass: ['snackbar-success']
-        });
+    this.confirmDialog.confirm({
+      title: 'Confirm Sale',
+      message: `Are you sure you want to submit this sale of ${itemText}${customerInfo} for a total of ${totalFormatted} using ${this.paymentMethod()}?`,
+      type: 'info',
+      confirmText: 'Submit Sale',
+      cancelText: 'Cancel',
+      icon: 'point_of_sale'
+    }).subscribe((confirmed) => {
+      if (!confirmed) return;
 
-        // Open Receipt Modal
-        this.dialog.open(SaleDetailsDialogComponent, {
-          data: { sale: completedSale },
-          width: '680px',
-          panelClass: 'pos-receipt-modal'
-        });
+      this.isSubmitting.set(true);
 
-        // Reset cart & refresh product inventory stock levels
-        this.clearCart();
-        this.loadProducts();
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const msg = err?.error?.detail || err?.message || 'Failed to complete sale transaction.';
-        this.snackBar.open(msg, 'Close', { duration: 4500 });
-      }
+      this.saleService.createSale(payload).subscribe({
+        next: (completedSale: Sale) => {
+          this.isSubmitting.set(false);
+          this.snackBar.open(`Sale #${completedSale.saleNumber} completed successfully!`, 'Success', {
+            duration: 3500,
+            panelClass: ['snackbar-success']
+          });
+
+          // Open Receipt Modal
+          this.dialog.open(SaleDetailsDialogComponent, {
+            data: { sale: completedSale },
+            width: '680px',
+            panelClass: 'pos-receipt-modal'
+          });
+
+          // Reset cart & refresh product inventory stock levels
+          this.clearCart();
+          this.loadProducts();
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          const msg = err?.error?.detail || err?.message || 'Failed to complete sale transaction.';
+          this.snackBar.open(msg, 'Close', { duration: 4500 });
+        }
+      });
     });
   }
 }

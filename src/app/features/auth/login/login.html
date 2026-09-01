@@ -101,7 +101,7 @@
             </div>
 
             <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="submitting">
-                <mat-spinner *ngIf="submitting" diameter="20" class="btn-spinner"></mat-spinner>
+                <mat-progress-spinner *ngIf="submitting" mode="indeterminate" diameter="20" class="btn-spinner"></mat-progress-spinner>
                 <span *ngIf="!submitting">Sign in</span>
                 <span *ngIf="submitting">Signing in…</span>
             </button>

@@ -1,0 +1,53 @@
+<div class="category-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">{{ isEdit ? 'edit_note' : 'add_circle' }}</mat-icon>
+      <h2>{{ isEdit ? 'Edit Category' : 'Create New Category' }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSave()" class="dialog-form">
+    @if (duplicateError) {
+      <div class="alert alert--error">
+        <mat-icon>error_outline</mat-icon>
+        <span>A category with this name already exists. Please choose a different name.</span>
+      </div>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g. Electronics, Beverages, Office Equipment" required />
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>Category name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Brief summary of items in this category…"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="isActive">
+        <mat-option [value]="true">
+          <span class="status-badge-inline status--active">Active</span>
+        </mat-option>
+        <mat-option [value]="false">
+          <span class="status-badge-inline status--inactive">Inactive</span>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn btn--outline" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn btn--primary" [disabled]="form.invalid">
+        <mat-icon>{{ isEdit ? 'check' : 'add' }}</mat-icon>
+        {{ isEdit ? 'Save Changes' : 'Create Category' }}
+      </button>
+    </div>
+  </form>
+</div>

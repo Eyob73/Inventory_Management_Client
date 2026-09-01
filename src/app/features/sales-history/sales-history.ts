@@ -12,16 +12,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+// Components & UI
+import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
+import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
+import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 
 // Services & Models
 import { SaleService } from '../../services/sale.service';
 import { AuthService } from '../../services/auth';
 import { Sale, SaleFilter } from '../../models/sale.model';
-import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 
 @Component({
   selector: 'app-sales-history',
@@ -38,10 +41,10 @@ import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatProgressSpinnerModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TableSkeleton
   ],
   templateUrl: './sales-history.html',
   styleUrl: './sales-history.scss'
@@ -51,6 +54,7 @@ export class SalesHistoryComponent implements OnInit {
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private confirmDialog = inject(ConfirmDialogService);
 
   sales = signal<Sale[]>([]);
   totalCount = signal<number>(0);
@@ -85,6 +89,19 @@ export class SalesHistoryComponent implements OnInit {
     'totalAmount',
     'status',
     'actions'
+  ];
+
+  readonly skeletonColumns: TableSkeletonColumn[] = [
+    { width: '4%' },
+    { width: '12%' },
+    { width: '15%' },
+    { width: '12%' },
+    { width: '13%' },
+    { width: '12%' },
+    { width: '6%', align: 'center' },
+    { width: '11%', align: 'right' },
+    { width: '8%', align: 'center' },
+    { width: '7%', align: 'center' }
   ];
 
   get isSalesRole(): boolean {
@@ -175,7 +192,16 @@ export class SalesHistoryComponent implements OnInit {
       return;
     }
 
-    if (confirm(`Are you sure you want to cancel Sale #${sale.saleNumber}? This will restore stock.`)) {
+    this.confirmDialog.confirm({
+      title: 'Cancel Sale',
+      message: `Are you sure you want to cancel Sale #${sale.saleNumber}? This action will void the transaction and restore all stock quantities.`,
+      type: 'danger',
+      confirmText: 'Cancel Sale',
+      cancelText: 'Keep Sale',
+      icon: 'cancel'
+    }).subscribe((confirmed) => {
+      if (!confirmed) return;
+
       this.saleService.cancelSale(sale.id).subscribe({
         next: () => {
           this.snackBar.open(`Sale #${sale.saleNumber} cancelled and stock restored.`, 'Success', {
@@ -188,6 +214,6 @@ export class SalesHistoryComponent implements OnInit {
           this.snackBar.open(msg, 'Close', { duration: 4000 });
         }
       });
-    }
+    });
   }
 }

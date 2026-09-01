@@ -1,1 +1,185 @@
-<p>categories works!</p>
+<div class="categories-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Category Management</h1>
+      <p class="page-subtitle">Organize products, manage catalog classifications, and control stock categories.</p>
+    </div>
+    @if (canAddCategory) {
+      <button class="btn btn--primary" (click)="openCreateDialog()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+        </svg>
+        Add Category
+      </button>
+    }
+  </div>
+
+  <!-- Error Banner -->
+  @if (store.error()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ store.error() }}</span>
+      <button class="dismiss-btn" (click)="dismissError()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--total">
+        <mat-icon>category</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ store.stats().total }}</div>
+        <div class="stat-label">Total Categories</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--active">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ store.stats().active }}</div>
+        <div class="stat-label">Active</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--inactive">
+        <mat-icon>pause_circle_outline</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ store.stats().inactive }}</div>
+        <div class="stat-label">Inactive</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--products">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ store.stats().totalProducts }}</div>
+        <div class="stat-label">Total Products</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar / Search -->
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-form-field">
+      <mat-icon matPrefix class="search-icon">search</mat-icon>
+      <input matInput type="text" placeholder="Search categories by name or description…" (keyup)="applyFilter($event)" />
+    </mat-form-field>
+  </div>
+
+  <!-- Table / Skeleton -->
+  @if (store.isLoading()) {
+    <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+  } @else {
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" matSort class="app-table">
+
+          <!-- No Column -->
+          <ng-container matColumnDef="no">
+            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <td mat-cell *matCellDef="let category; let i = index" class="font-mono text-secondary">
+              {{ (store.pageIndex() - 1) * store.pageSize() + i + 1 }}
+            </td>
+          </ng-container>
+
+          <!-- Category Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Category Name</th>
+            <td mat-cell *matCellDef="let category">
+              <span class="category-name-cell">{{ category.name }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+            <td mat-cell *matCellDef="let category" class="text-secondary desc-cell">
+              {{ category.description || '—' }}
+            </td>
+          </ng-container>
+
+          <!-- Created Date Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Created Date</th>
+            <td mat-cell *matCellDef="let category" class="text-secondary">
+              {{ category.createdAt ? (category.createdAt | date: 'mediumDate') : '—' }}
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let category">
+              <span class="status-badge" [class.status--active]="category.isActive !== false" [class.status--inactive]="category.isActive === false">
+                {{ category.isActive !== false ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Product Count Column -->
+          <ng-container matColumnDef="productCount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Products</th>
+            <td mat-cell *matCellDef="let category" class="text-center">
+              <span class="products-count-badge">
+                {{ category.productCount || 0 }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+            <td mat-cell *matCellDef="let category">
+              <div class="actions-cell">
+                <button type="button" class="action-btn action-btn--view" (click)="openDetailsDialog(category)"
+                  matTooltip="View details & products" aria-label="View details">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                @if (canEditCategory) {
+                  <button type="button" class="action-btn action-btn--edit" (click)="openEditDialog(category)"
+                    matTooltip="Edit category" aria-label="Edit category">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                }
+                @if (canDeleteCategory) {
+                  <button type="button" class="action-btn action-btn--delete" (click)="deleteCategory(category)"
+                    matTooltip="Delete category" aria-label="Delete category">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="category-row"></tr>
+
+          <!-- Empty Row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="table-empty" [attr.colspan]="displayedColumns.length">
+              <div class="empty-state">
+                <mat-icon class="empty-icon">category</mat-icon>
+                <p class="empty-title">No categories found</p>
+                <p class="empty-subtitle">There are no categories matching your search criteria.</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator class="categories-paginator" [length]="store.totalCount()" [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0" [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true" (page)="onPageChange($event)" aria-label="Select page of categories" />
+    </div>
+  }
+
+</div>
