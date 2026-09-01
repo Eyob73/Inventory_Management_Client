@@ -6,6 +6,8 @@ export interface Product {
     price: number;
     cost: number;
     quantityInStock: number;
+    minimumStock?: number;
+    isActive?: boolean;
     categoryId: string;
     supplierId: string | null;
     createdAt: string;

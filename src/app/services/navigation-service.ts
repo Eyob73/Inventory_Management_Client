@@ -29,7 +29,8 @@ const ALL_NAV_GROUPS: NavGroup[] = [
       { label: 'POS Terminal', path: '/pos', icon: 'storefront' },
       { label: 'Sales History', path: '/sales-history', icon: 'receipt_long' },
       { label: 'Customers', path: '/customers', icon: 'people' },
-      { label: 'Suppliers', path: '/suppliers', icon: 'local_shipping', roles: ['Admin', 'Manager'] },
+      { label: 'Suppliers', path: '/suppliers', icon: 'local_shipping', roles: ['Admin', 'Manager', 'Sales'] },
+      { label: 'Purchases', path: '/purchases', icon: 'local_mall', roles: ['Admin', 'Manager'] },
     ],
   },
   {
@@ -98,6 +99,9 @@ export class NavigationService {
     if (routeTitleMap[path]) return routeTitleMap[path];
     if (/^\/products\/[^/]+\/edit$/.test(path)) return 'Edit Product';
     if (/^\/products\/[^/]+$/.test(path)) return 'Product Details';
+    if (path === '/purchases/new') return 'New Purchase';
+    if (/^\/purchases\/[^/]+\/edit$/.test(path)) return 'Edit Purchase';
+    if (/^\/purchases\/[^/]+$/.test(path)) return 'Purchase Details';
     return this.formatTitle(url);
   }
 

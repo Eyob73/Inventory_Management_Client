@@ -171,6 +171,49 @@
     color: var(--slate);
 }
 
+.catalog-status-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 40px;
+    font-size: 12px;
+    color: var(--slate);
+    cursor: pointer;
+
+    input[type='checkbox'] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        border: none;
+        border-radius: 5px;
+        background: var(--paper);
+        box-shadow: inset 0 0 0 1px transparent;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:checked {
+            background: var(--moss);
+            box-shadow: none;
+
+            &::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 5px;
+                height: 9px;
+                border: solid #fff;
+                border-width: 0 2px 2px 0;
+                transform: translate(-50%, -60%) rotate(45deg);
+            }
+        }
+    }
+}
+
 .category-select-field {
     width: 100%;
     margin-bottom: 0;

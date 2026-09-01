@@ -40,19 +40,48 @@
   box-shadow: var(--shadow-sm);
 
   .filter-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.85rem;
+    align-items: start;
 
     mat-form-field {
-      flex: 1;
-      min-width: 170px;
+      width: 100%;
       margin-bottom: -1.25em;
 
       &.search-field {
-        min-width: 260px;
+        grid-column: span 2;
       }
+    }
+
+    .btn--outline {
+      align-self: center;
+      height: 56px;
+      white-space: nowrap;
+      padding: 0 1rem;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .filters-card .filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    mat-form-field.search-field {
+      grid-column: span 2;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .filters-card .filter-row {
+    grid-template-columns: 1fr;
+
+    mat-form-field.search-field,
+    .btn--outline {
+      grid-column: auto;
     }
   }
 }

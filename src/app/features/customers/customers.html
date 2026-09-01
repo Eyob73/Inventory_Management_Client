@@ -1,15 +1,21 @@
 <div class="customers-page">
-
   <!-- Header -->
   <div class="page-header">
     <div>
       <h1 class="page-title">Customer Management</h1>
-      <p class="page-subtitle">Manage customer profiles, contact info, sales transactions, and account statuses.</p>
+      <p class="page-subtitle">
+        Manage customer profiles, contact info, sales transactions, and account statuses.
+      </p>
     </div>
     @if (canAddCustomer) {
       <button class="btn btn--primary" (click)="openCreateDialog()">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <path
+            d="M12 5v14M5 12h14"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
         </svg>
         Add Customer
       </button>
@@ -61,24 +67,31 @@
         <mat-icon>payments</mat-icon>
       </div>
       <div class="stat-body">
-        <div class="stat-value">{{ store.stats().totalSpent | number:'1.0-0' }} ETB</div>
+        <div class="stat-value">{{ store.stats().totalSpent | number: '1.0-0' }} ETB</div>
         <div class="stat-label">Total Revenue</div>
       </div>
     </div>
   </div>
 
   <!-- Toolbar / Search -->
-  <div class="toolbar">
-    <mat-form-field appearance="outline" class="search-form-field">
-      <mat-icon matPrefix class="search-icon">search</mat-icon>
-      <input matInput type="text" placeholder="Search by name, phone, or email…" [value]="store.search()"
-        (input)="applyFilter($event)" />
-      @if (store.search()) {
-        <button matSuffix mat-icon-button (click)="store.setSearch('')" aria-label="Clear search">
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </mat-form-field>
+  <div class="filter-panel">
+    <div class="toolbar">
+      <mat-form-field appearance="outline" class="search-form-field">
+        <mat-icon matPrefix class="search-icon">search</mat-icon>
+        <input
+          matInput
+          type="text"
+          placeholder="Search by name, phone, or email…"
+          [value]="store.search()"
+          (input)="applyFilter($event)"
+        />
+        @if (store.search()) {
+          <button matSuffix mat-icon-button (click)="store.setSearch('')" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
   </div>
 
   <!-- Table / Skeleton -->
@@ -88,7 +101,6 @@
     <div class="table-card">
       <div class="table-wrapper">
         <table mat-table [dataSource]="dataSource" matSort class="app-table">
-
           <!-- # No Column -->
           <ng-container matColumnDef="no">
             <th mat-header-cell *matHeaderCellDef>No.</th>
@@ -101,7 +113,9 @@
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer Name</th>
             <td mat-cell *matCellDef="let customer">
-              <span class="customer-name-cell" (click)="openDetailsDialog(customer)">{{ customer.name }}</span>
+              <span class="customer-name-cell" (click)="openDetailsDialog(customer)">{{
+                customer.name
+              }}</span>
             </td>
           </ng-container>
 
@@ -133,7 +147,7 @@
           <ng-container matColumnDef="createdAt">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Created Date</th>
             <td mat-cell *matCellDef="let customer" class="text-secondary">
-              {{ customer.createdAt ? (customer.createdAt | date:'mediumDate') : '—' }}
+              {{ customer.createdAt ? (customer.createdAt | date: 'mediumDate') : '—' }}
             </td>
           </ng-container>
 
@@ -141,7 +155,11 @@
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
             <td mat-cell *matCellDef="let customer">
-              <span class="status-badge" [class.status--active]="customer.isActive !== false" [class.status--inactive]="customer.isActive === false">
+              <span
+                class="status-badge"
+                [class.status--active]="customer.isActive !== false"
+                [class.status--inactive]="customer.isActive === false"
+              >
                 {{ customer.isActive !== false ? 'Active' : 'Inactive' }}
               </span>
             </td>
@@ -160,19 +178,34 @@
             <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
             <td mat-cell *matCellDef="let customer">
               <div class="actions-cell">
-                <button type="button" class="action-btn action-btn--view" (click)="openDetailsDialog(customer)"
-                  matTooltip="View details & sales history" aria-label="View details">
+                <button
+                  type="button"
+                  class="action-btn action-btn--view"
+                  (click)="openDetailsDialog(customer)"
+                  matTooltip="View details & sales history"
+                  aria-label="View details"
+                >
                   <mat-icon>visibility</mat-icon>
                 </button>
                 @if (canEditCustomer) {
-                  <button type="button" class="action-btn action-btn--edit" (click)="openEditDialog(customer)"
-                    matTooltip="Edit customer" aria-label="Edit customer">
+                  <button
+                    type="button"
+                    class="action-btn action-btn--edit"
+                    (click)="openEditDialog(customer)"
+                    matTooltip="Edit customer"
+                    aria-label="Edit customer"
+                  >
                     <mat-icon>edit</mat-icon>
                   </button>
                 }
                 @if (canDeleteCustomer) {
-                  <button type="button" class="action-btn action-btn--delete" (click)="onDelete(customer)"
-                    matTooltip="Delete customer" aria-label="Delete customer">
+                  <button
+                    type="button"
+                    class="action-btn action-btn--delete"
+                    (click)="onDelete(customer)"
+                    matTooltip="Delete customer"
+                    aria-label="Delete customer"
+                  >
                     <mat-icon>delete_outline</mat-icon>
                   </button>
                 }
@@ -181,7 +214,7 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="customer-row"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="customer-row"></tr>
 
           <!-- Empty Row -->
           <tr class="mat-row" *matNoDataRow>
@@ -202,15 +235,16 @@
         </table>
       </div>
 
-      <mat-paginator class="customers-paginator"
+      <mat-paginator
+        class="customers-paginator"
         [length]="store.totalCount()"
         [pageSize]="store.pageSize()"
         [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
         [pageSizeOptions]="pageSizeOptions"
         [showFirstLastButtons]="true"
         (page)="onPageChange($event)"
-        aria-label="Select page of customers" />
+        aria-label="Select page of customers"
+      />
     </div>
   }
-
 </div>

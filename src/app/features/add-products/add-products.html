@@ -4,8 +4,8 @@
         <h1 class="product-form__title">{{ isEditMode() ? 'Edit product' : 'Add product' }}</h1>
         <p class="product-form__subtitle">
           {{ isEditMode()
-            ? 'Update catalog details, pricing, and stock for this product.'
-            : 'Fill in the details below to add a new product in your catalog.' }}
+            ? 'Update catalog details and pricing. Stock is changed through purchases and adjustments.'
+            : 'New products start at 0 stock. Receive quantity through a purchase or inventory adjustment.' }}
         </p>
     </div>
 
@@ -95,12 +95,27 @@
             </div>
 
             <div class="form-group">
-                <label for="stock">Stock</label>
-                <input type="number" id="stock" formControlName="stock" [class.has-error]="isInvalid('stock')"
-                    placeholder="0" min="0">
-                @if (isInvalid('stock')) {
-                <span class="form-error">Enter available stock.</span>
+                <label for="stock">Current stock</label>
+                <input type="number" id="stock" formControlName="stock" placeholder="0" min="0" readonly>
+                <span class="form-hint">Stock starts at 0 and is updated only by purchases, sales, and adjustments.</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="minimumStock">Minimum stock</label>
+                <input type="number" id="minimumStock" formControlName="minimumStock"
+                    [class.has-error]="isInvalid('minimumStock')" placeholder="0" min="0">
+                @if (isInvalid('minimumStock')) {
+                <span class="form-error">Enter a minimum stock of 0 or more.</span>
                 }
+            </div>
+            <div class="form-group form-group--status">
+                <label for="isActive">Catalog status</label>
+                <label class="catalog-status-toggle">
+                    <input type="checkbox" id="isActive" formControlName="isActive">
+                    <span>Active (available for POS and purchases)</span>
+                </label>
             </div>
         </div>
     </section>

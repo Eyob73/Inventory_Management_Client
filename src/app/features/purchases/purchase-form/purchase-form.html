@@ -1,0 +1,167 @@
+<div class="purchase-form-page">
+  <div class="page-header">
+    <div>
+      <a routerLink="/purchases" class="pdp-back">
+        <mat-icon>arrow_back</mat-icon>
+        Purchases
+      </a>
+      <h1 class="page-title">{{ isEditMode() ? 'Edit Draft Purchase' : 'New Purchase' }}</h1>
+      <p class="page-subtitle">
+        @if (purchaseNumber()) {
+          {{ purchaseNumber() }} —
+        }
+        Stock is added only when you complete the draft.
+      </p>
+    </div>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading purchase…</p>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <section class="form-section">
+        <h2 class="section-title">Purchase details</h2>
+        <div class="form-row form-row--3">
+          <div class="form-group">
+            <label for="supplierId">Supplier</label>
+            <mat-form-field appearance="outline" class="select-field">
+              <mat-select id="supplierId" formControlName="supplierId" placeholder="Optional">
+                <mat-option value="">None (no supplier)</mat-option>
+                @for (supplier of suppliers(); track supplier.id) {
+                  <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <label for="purchaseDate">Purchase date</label>
+            <mat-form-field appearance="outline" class="text-field">
+              <input matInput id="purchaseDate" type="date" formControlName="purchaseDate" />
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <mat-form-field appearance="outline" class="text-field">
+              <input
+                matInput
+                id="notes"
+                type="text"
+                formControlName="notes"
+                placeholder="Optional"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section" formArrayName="items">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Line items</h2>
+            <p class="section-hint">Unit cost is taken from each product’s catalog cost.</p>
+          </div>
+          <button type="button" class="btn btn--secondary" (click)="addLine()">Add line</button>
+        </div>
+
+        <div class="line-list">
+          @for (line of items.controls; let i = $index; track line) {
+            <div class="line-card" [formGroupName]="i">
+              <div class="line-card__fields">
+                <div class="form-group line-card__product">
+                  <label [attr.for]="'product-' + i">Product</label>
+                  <mat-form-field appearance="outline" class="select-field">
+                    <mat-select
+                      [id]="'product-' + i"
+                      formControlName="productId"
+                      placeholder="Select a product"
+                    >
+                      @for (product of availableProducts(i); track product.id) {
+                        <mat-option [value]="product.id"
+                          >{{ product.name }} ({{ product.sku }})</mat-option
+                        >
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  @if (isLineInvalid(i, 'productId')) {
+                    <span class="form-error">Select a product.</span>
+                  }
+                </div>
+                <div class="form-group">
+                  <label [attr.for]="'qty-' + i">Quantity</label>
+                  <mat-form-field appearance="outline" class="text-field">
+                    <input
+                      matInput
+                      [id]="'qty-' + i"
+                      type="number"
+                      min="1"
+                      step="1"
+                      formControlName="quantity"
+                      [class.has-error]="isLineInvalid(i, 'quantity')"
+                    />
+                  </mat-form-field>
+                  @if (isLineInvalid(i, 'quantity')) {
+                    <span class="form-error">Enter a quantity of 1 or more.</span>
+                  }
+                </div>
+                <div class="form-group">
+                  <label>Unit cost (ETB)</label>
+                  <mat-form-field appearance="outline" class="text-field">
+                    <input matInput type="text" [value]="lineCost(i) | number: '1.2-2'" readonly />
+                  </mat-form-field>
+                </div>
+                <div class="form-group">
+                  <label>Line total</label>
+                  <div class="line-total">{{ lineTotal(i) | number: '1.2-2' }} ETB</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="line-card__remove"
+                (click)="removeLine(i)"
+                [disabled]="items.length === 1"
+                aria-label="Remove line"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <div class="form-footer">
+        <div class="grand-total">Grand total: {{ grandTotal() | number: '1.2-2' }} ETB</div>
+        <div class="form-footer__actions">
+          <button
+            type="button"
+            class="btn btn--secondary"
+            (click)="cancel()"
+            [disabled]="isSubmitting()"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn--primary"
+            [disabled]="isSubmitting() || form.invalid"
+          >
+            @if (isSubmitting()) {
+              Saving…
+            } @else {
+              {{ isEditMode() ? 'Update draft' : 'Save draft' }}
+            }
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div>

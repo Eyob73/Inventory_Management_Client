@@ -87,7 +87,7 @@ export const routes: Routes = [
       {
         path: 'suppliers',
         loadComponent: () => import('./features/suppliers/suppliers').then((m) => m.Suppliers),
-        canActivate: [roleGuard(['Admin', 'Manager'])],
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
       },
       {
         path: 'reports',
@@ -121,6 +121,26 @@ export const routes: Routes = [
       {
         path: 'purchases',
         loadComponent: () => import('./features/purchases/purchases').then((m) => m.Purchases),
+        canActivate: [roleGuard(['Admin', 'Manager'])],
+      },
+      {
+        path: 'purchases/new',
+        loadComponent: () =>
+          import('./features/purchases/purchase-form/purchase-form').then((m) => m.PurchaseFormComponent),
+        canActivate: [roleGuard(['Admin', 'Manager'])],
+      },
+      {
+        path: 'purchases/:id/edit',
+        loadComponent: () =>
+          import('./features/purchases/purchase-form/purchase-form').then((m) => m.PurchaseFormComponent),
+        canActivate: [roleGuard(['Admin', 'Manager'])],
+      },
+      {
+        path: 'purchases/:id',
+        loadComponent: () =>
+          import('./features/purchases/purchase-details/purchase-details').then(
+            (m) => m.PurchaseDetailsComponent
+          ),
         canActivate: [roleGuard(['Admin', 'Manager'])],
       },
     ],

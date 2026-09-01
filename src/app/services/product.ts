@@ -40,6 +40,10 @@ export class ProductService {
     return this.http.get<PagedProductResponse>(`${this.baseUrl}/paged`, { params });
   }
 
+  getCatalog() {
+    return this.http.get<Product[]>(this.baseUrl);
+  }
+
   getById(id: string) {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
