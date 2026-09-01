@@ -27,6 +27,7 @@ import { Product } from '../../models/products.model';
 import { CreateSaleRequest, Sale } from '../../models/sale.model';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { CustomerDialogComponent } from '../customers/customer-dialog/customer-dialog';
 
 export interface CartItem {
   product: Product;
@@ -301,6 +302,23 @@ export class PosComponent implements OnInit, OnDestroy {
   clearCustomer(): void {
     this.selectedCustomerId.set(null);
     this.manualCustomerName.set('');
+  }
+
+  openAddCustomerDialog(): void {
+    const dialogRef = this.dialog.open(CustomerDialogComponent, {
+      width: '500px',
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && typeof result === 'object' && result.id) {
+        this.loadCustomers();
+        this.selectedCustomerId.set(result.id);
+        this.snackBar.open(`Customer "${result.name}" added and selected.`, 'Close', { duration: 3000 });
+      } else if (result) {
+        this.loadCustomers();
+      }
+    });
   }
 
   setPaymentMethod(method: string): void {

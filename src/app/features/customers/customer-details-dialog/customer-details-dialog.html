@@ -1,0 +1,181 @@
+<div class="customer-details-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">account_circle</mat-icon>
+      <h2>Customer Profile & History</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onClose()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading customer profile and sales history…</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  } @else if (customer(); as cust) {
+    <!-- Customer Info Card -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="profile-main">
+          <div class="name-row">
+            <h3 class="cust-name">{{ cust.name }}</h3>
+            <span class="status-badge" [class.status--active]="cust.isActive !== false" [class.status--inactive]="cust.isActive === false">
+              {{ cust.isActive !== false ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="contact-row">
+            @if (cust.phoneNumber) {
+              <span class="contact-item">
+                <mat-icon>phone</mat-icon>
+                {{ cust.phoneNumber }}
+              </span>
+            }
+            @if (cust.email) {
+              <span class="contact-item">
+                <mat-icon>email</mat-icon>
+                {{ cust.email }}
+              </span>
+            }
+            @if (cust.address) {
+              <span class="contact-item">
+                <mat-icon>place</mat-icon>
+                {{ cust.address }}
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-pills-row">
+        <div class="stat-pill">
+          <span class="stat-label">Total Orders</span>
+          <span class="stat-value">{{ cust.totalSalesCount || cust.salesHistory?.length || 0 }}</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Total Spent</span>
+          <span class="stat-value stat-value--highlight">{{ (cust.totalSpent || 0) | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Customer Since</span>
+          <span class="stat-value">{{ cust.createdAt ? (cust.createdAt | date:'mediumDate') : '—' }}</span>
+        </div>
+        @if (cust.updatedAt) {
+          <div class="stat-pill">
+            <span class="stat-label">Last Updated</span>
+            <span class="stat-value">{{ cust.updatedAt | date:'mediumDate' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Purchase / Sales History Section -->
+    <div class="sales-history-section">
+      <h4 class="section-title">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Purchase & Sales History ({{ cust.salesHistory?.length || 0 }})</span>
+      </h4>
+
+      @if (!cust.salesHistory || cust.salesHistory.length === 0) {
+        <div class="empty-sales">
+          <mat-icon>remove_shopping_cart</mat-icon>
+          <p>No sales history recorded for this customer yet.</p>
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="cust.salesHistory" class="app-table sales-table">
+
+            <!-- Sale Number Column -->
+            <ng-container matColumnDef="saleNumber">
+              <th mat-header-cell *matHeaderCellDef>Sale #</th>
+              <td mat-cell *matCellDef="let sale" class="font-mono font-bold">
+                {{ sale.saleNumber }}
+              </td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let sale" class="text-secondary">
+                {{ sale.createdAt | date:'short' }}
+              </td>
+            </ng-container>
+
+            <!-- Items Count Column -->
+            <ng-container matColumnDef="itemsCount">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Items</th>
+              <td mat-cell *matCellDef="let sale" class="text-center">
+                <span class="items-count-badge">{{ sale.itemsCount || sale.items?.length || 0 }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Payment Method Column -->
+            <ng-container matColumnDef="paymentMethod">
+              <th mat-header-cell *matHeaderCellDef>Payment</th>
+              <td mat-cell *matCellDef="let sale">
+                <span class="payment-tag">{{ sale.paymentMethod }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Total Amount Column -->
+            <ng-container matColumnDef="totalAmount">
+              <th mat-header-cell *matHeaderCellDef class="text-right">Total</th>
+              <td mat-cell *matCellDef="let sale" class="text-right font-bold price-text">
+                {{ sale.totalAmount | number:'1.2-2' }} ETB
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Details</th>
+              <td mat-cell *matCellDef="let sale" class="text-center">
+                <button type="button" class="action-btn action-btn--view" (click)="toggleSaleExpand(sale.id)"
+                  matTooltip="Toggle items summary">
+                  <mat-icon>{{ expandedSaleId() === sale.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let sale; columns: displayedColumns;" class="sale-row"></tr>
+          </table>
+        </div>
+
+        <!-- Expanded Sale Items Drawer -->
+        @if (expandedSaleId(); as activeId) {
+          @for (s of cust.salesHistory; track s.id) {
+            @if (s.id === activeId && s.items && s.items.length > 0) {
+              <div class="expanded-items-box">
+                <h5 class="items-box-title">Order Items for {{ s.saleNumber }}</h5>
+                <div class="items-grid">
+                  @for (item of s.items; track item.productName) {
+                    <div class="item-chip">
+                      <span class="item-name">{{ item.productName }}</span>
+                      <span class="item-qty">&times; {{ item.quantity }}</span>
+                      <span class="item-price">{{ item.totalPrice | number:'1.2-2' }} ETB</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        }
+      }
+    </div>
+  }
+
+  <div class="dialog-actions">
+    <button type="button" class="btn btn--secondary" (click)="onClose()">
+      Close
+    </button>
+  </div>
+</div>

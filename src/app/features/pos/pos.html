@@ -156,6 +156,9 @@
               {{ cust.name }}{{ cust.phoneNumber ? ' · ' + cust.phoneNumber : '' }}
             </mat-option>
           </mat-select>
+          <button matSuffix mat-icon-button type="button" (click)="$event.stopPropagation(); openAddCustomerDialog()" matTooltip="Create new customer" aria-label="Add customer">
+            <mat-icon>person_add</mat-icon>
+          </button>
         </mat-form-field>
       </ng-container>
     </div>
