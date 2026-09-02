@@ -1,0 +1,452 @@
+// Reports & Analytics — Component-scoped styles only.
+// Buttons (.btn, .btn--primary, etc.), table containers (.table-card, .table-wrapper),
+// status badges (.status-badge), and utilities (.text-center, .font-bold, .font-mono)
+// are all inherited from the global styles.scss and _material.scss.
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.reports-page {
+  padding: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ── Page Header ──────────────────────────────────────────────────
+.header-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  color: var(--slate);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+// ── Filter Panel ─────────────────────────────────────────────────
+.filters-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+
+    mat-form-field {
+      flex: 1;
+      min-width: 160px;
+
+      &.search-field {
+        min-width: 220px;
+      }
+    }
+  }
+
+  .filter-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+}
+
+// ── Error Banner ─────────────────────────────────────────────────
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  background: var(--rose-soft);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
+  color: var(--rose);
+  font-size: 0.9rem;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+// ── Report Navigation Tabs ───────────────────────────────────────
+.report-tabs-nav {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--slate);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s var(--ease);
+
+    mat-icon {
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    &:hover {
+      background: var(--row-hover);
+      color: var(--ink);
+    }
+
+    &.active {
+      background: var(--moss);
+      color: var(--btn-primary-fg, #ffffff);
+
+      mat-icon {
+        color: var(--btn-primary-fg, #ffffff);
+      }
+    }
+  }
+}
+
+// ── Summary Cards Grid ───────────────────────────────────────────
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+
+  &.four-cols {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  &.five-cols {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  &.three-cols {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+// ── Dashboard-Styled Stat Card ───────────────────────────────────
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 12px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--moss);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .stat-icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--teal-soft);
+      color: var(--teal-dark);
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .stat-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--slate);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .stat-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stat-delta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .stat-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--teal-dark);
+    background: var(--teal-soft);
+
+    mat-icon {
+      font-size: 12px;
+      width: 12px;
+      height: 12px;
+    }
+
+    &.negative {
+      color: var(--rose);
+      background: var(--rose-soft);
+    }
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+
+  // Color-coded icon pill backgrounds
+  &.teal .stat-icon-wrap    { background: var(--teal-soft);  color: var(--teal-dark);  }
+  &.blue .stat-icon-wrap    { background: var(--cobalt-soft); color: var(--cobalt);    }
+  &.green .stat-icon-wrap   { background: var(--moss-soft);  color: var(--moss);      }
+  &.purple .stat-icon-wrap  { background: color-mix(in srgb, #8b5cf6 12%, transparent); color: #8b5cf6; }
+  &.amber .stat-icon-wrap   { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+  &.cyan .stat-icon-wrap    { background: var(--cobalt-soft); color: var(--cobalt);    }
+  &.warning .stat-icon-wrap { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+  &.danger .stat-icon-wrap  { background: var(--rose-soft);  color: var(--rose);      }
+}
+
+// ── Charts Layout ────────────────────────────────────────────────
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.widget-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+
+  .widget-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+}
+
+// ── Report Section Layout ────────────────────────────────────────
+.report-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ── Table Header Title  ──────────────────────────────────────────
+// (The .table-card and .table-wrapper containers are global via _material.scss.
+//  We add extra padding for the reports usage since the global version has none.)
+.table-header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem 0;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  span {
+    font-size: 0.8125rem;
+    color: var(--slate);
+  }
+}
+
+// ── Plain HTML Table Cell Styles ─────────────────────────────────
+// (The global .app-table targets mat-table cells via Material selectors.
+//  Reports use plain <th> and <td>, so we add them here.)
+.app-table {
+  th {
+    padding: 0.75rem 1rem;
+    background: var(--paper);
+    color: var(--slate);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr {
+    transition: background 0.15s ease;
+    &:hover td {
+      background: var(--row-hover);
+    }
+  }
+
+  .table-empty {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--slate);
+  }
+}
+
+// ── Payment Badge ────────────────────────────────────────────────
+.payment-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+// ── Info Banner ──────────────────────────────────────────────────
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--cobalt-soft);
+  border: 1px solid color-mix(in srgb, var(--cobalt) 25%, transparent);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  color: var(--cobalt);
+
+  mat-icon {
+    font-size: 1.5rem;
+    color: var(--cobalt);
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+  }
+
+  p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.8125rem;
+    color: var(--ink);
+  }
+}
+
+// ── Report-specific utilities ────────────────────────────────────
+.amount-cell { color: var(--ink); font-weight: 700; }
+.positive-text { color: var(--moss); }
+.negative-text { color: var(--rose); }
+.danger-text   { color: var(--rose); font-weight: 700; }
+.warning-text  { color: #f59e0b; }
+.text-secondary { color: var(--slate); }
+.action-text   { font-size: 0.8125rem; color: var(--slate); }
+
+// ── Print Media Query ────────────────────────────────────────────
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .reports-page {
+    padding: 0;
+  }
+
+  .widget-card, .stat-card, .table-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+}

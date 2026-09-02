@@ -1,0 +1,37 @@
+Γ¥» Building...
+Γ£ö Building...
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-NIFP7TWZ.js    | main          | 162.81 kB |                41.29 kB
+styles-NN6SOZCN.css | styles        |  60.98 kB |                 7.32 kB
+
+                    | Initial total | 223.79 kB |                48.61 kB
+
+Lazy chunk files    | Names         |  Raw size | Estimated transfer size
+chunk-C4dV6xtf.js   | -             | 255.22 kB |                72.34 kB
+chunk-CvY5Akdd2.js  | dashboard     | 116.23 kB |                26.38 kB
+chunk-BNLlhi5R.js   | shell         |  94.41 kB |                17.60 kB
+chunk-RGpEInX52.js  | reports       |  75.62 kB |                14.13 kB
+chunk-CWcF7MVa.js   | -             |  62.59 kB |                10.11 kB
+chunk-BawIWdPC.js   | -             |  57.84 kB |                13.44 kB
+chunk-p5wuPJZc2.js  | pos           |  52.06 kB |                 9.59 kB
+chunk-DsM2tXlY.js   | -             |  49.02 kB |                10.05 kB
+chunk-t34Pv227.js   | -             |  45.93 kB |                12.16 kB
+chunk-BPmfn6s92.js  | settings      |  44.99 kB |                 8.49 kB
+chunk-ZrSaIUL22.js  | suppliers     |  44.73 kB |                 9.15 kB
+chunk-Dj080z3H.js   | -             |  43.64 kB |                 9.38 kB
+chunk-CP9y6lCW2.js  | login         |  41.56 kB |                 8.23 kB
+chunk-DREBu8RR.js   | -             |  41.32 kB |                 5.49 kB
+chunk-CQOHo0Tc.js   | -             |  35.91 kB |                 8.82 kB
+...and 43 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [31.553 seconds] - 2026-09-01T18:09:45.489Z
+
+Γû▓ [WARNING] NG8113: CurrencyPipe is not used within the template of Reports [plugin angular-compiler]
+
+    src/app/features/reports/reports.ts:61:4:
+      61 Γöé     CurrencyPipe,
+         Γò╡     ~~~~~~~~~~~~
+
+
+Output location: C:\Users\sata\Desktop\project\INV\Inventory_Management\dist\Inventory_management
+

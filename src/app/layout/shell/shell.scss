@@ -486,10 +486,12 @@
   padding: 12px 0;
 
   .shell-container--collapsed & {
+    overflow: hidden;
     padding: 8px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    scrollbar-width: none;
   }
 
   &::-webkit-scrollbar {
@@ -503,6 +505,10 @@
   &::-webkit-scrollbar-thumb {
     background: var(--border-strong);
     border-radius: 4px;
+  }
+
+  .shell-container--collapsed &::-webkit-scrollbar {
+    display: none;
   }
 }
 

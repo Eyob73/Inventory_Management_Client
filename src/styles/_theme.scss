@@ -29,6 +29,13 @@
   --rose-soft: #fde8e8;
   --amber: var(--moss);
   --amber-soft: var(--moss-soft);
+  --primary: var(--moss);
+  --primary-soft: var(--moss-soft);
+  --surface-card: var(--surface);
+  --surface-hover: var(--paper);
+  --text-heading: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--slate);
 
   /* Layout Surfaces */
   --sidenav-bg: var(--surface);
@@ -96,6 +103,13 @@ html.dark-theme {
   --rose-soft: rgba(248, 113, 113, 0.16);
   --amber: var(--moss);
   --amber-soft: var(--moss-soft);
+  --primary: var(--moss);
+  --primary-soft: var(--moss-soft);
+  --surface-card: var(--surface);
+  --surface-hover: var(--paper);
+  --text-heading: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--slate);
 
   /* Layout Surfaces */
   --sidenav-bg: var(--surface);

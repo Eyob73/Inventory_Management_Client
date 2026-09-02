@@ -1,0 +1,68 @@
+<div class="bar-chart-container" [class.is-horizontal]="horizontal()">
+  @if (!hasData()) {
+    <div class="empty-chart">
+      <span class="material-icons">bar_chart</span>
+      <p>No data available</p>
+    </div>
+  } @else if (horizontal()) {
+    <div class="horizontal-bars">
+      @for (item of data(); track $index) {
+        <div
+          class="bar-row"
+          (mouseenter)="hoveredIndex.set($index)"
+          (mouseleave)="hoveredIndex.set(null)"
+        >
+          <div class="row-info">
+            <span class="item-name" [title]="item.name">{{ item.name }}</span>
+            <span class="item-val">
+              @if (formatAsCurrency()) {
+                {{ item.value | currency: 'ETB' }}
+              } @else {
+                {{ item.value | number }}
+              }
+            </span>
+          </div>
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              [style.width.%]="(item.value / maxVal()) * 100"
+              [style.background]="barColor()"
+            ></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="vertical-bars">
+      @for (item of data(); track $index) {
+        <div
+          class="v-bar-col"
+          (mouseenter)="hoveredIndex.set($index)"
+          (mouseleave)="hoveredIndex.set(null)"
+        >
+          <div class="v-track">
+            <div
+              class="v-fill"
+              [style.height.%]="(item.value / maxVal()) * 100"
+              [style.background]="barColor()"
+            >
+              @if (hoveredIndex() === $index) {
+                <div class="v-tooltip">
+                  <strong>{{ item.name }}</strong>
+                  <span>
+                    @if (formatAsCurrency()) {
+                      {{ item.value | currency: 'ETB' }}
+                    } @else {
+                      {{ item.value | number }}
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+          <span class="v-label" [title]="item.name">{{ item.name }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>

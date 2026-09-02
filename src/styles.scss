@@ -59,6 +59,34 @@ button {
   cursor: pointer;
 }
 
+/* ─── Global Custom Scrollbar Styles ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong, #cfcfcd);
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate, #6b6b6b);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong, #cfcfcd) rgba(148, 163, 184, 0.12);
+}
+
+
+
 /* ─── Global Utility Helpers ───────────────────────────────── */
 .text-truncate {
   white-space: nowrap;

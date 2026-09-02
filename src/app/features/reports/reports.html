@@ -1,1 +1,1074 @@
-<p>reports works!</p>
+<div class="reports-page">
+  <!-- Page Header -->
+  <header class="header-section">
+    <div>
+      <h1 class="page-title">Reports & Analytics</h1>
+      <p class="page-subtitle">Comprehensive performance metrics, stock intelligence & financial reporting</p>
+    </div>
+    <div class="header-actions no-print">
+      <button type="button" class="btn btn--outline" (click)="exportReport('csv')" matTooltip="Export report to CSV format">
+        <mat-icon>download</mat-icon> Export CSV
+      </button>
+      <button type="button" class="btn btn--outline" (click)="exportReport('xlsx')" matTooltip="Export report to Excel format">
+        <mat-icon>description</mat-icon> Export Excel
+      </button>
+      <button type="button" class="btn btn--primary" (click)="printReport()" matTooltip="Print current report view">
+        <mat-icon>print</mat-icon> Print Report
+      </button>
+    </div>
+  </header>
+
+  <!-- Global Filter Controls Card -->
+  <section class="filters-card no-print">
+    <div class="filter-row">
+      <!-- Date Range Preset -->
+      <mat-form-field appearance="outline">
+        <mat-label>Date Range</mat-label>
+        <mat-select
+          [ngModel]="dateRangePreset()"
+          (ngModelChange)="onPresetChange($event)"
+        >
+          <mat-option value="today">Today</mat-option>
+          <mat-option value="yesterday">Yesterday</mat-option>
+          <mat-option value="this_week">This Week</mat-option>
+          <mat-option value="this_month">This Month</mat-option>
+          <mat-option value="this_year">This Year</mat-option>
+          <mat-option value="custom">Custom Range</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Start Date -->
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input
+          matInput
+          type="date"
+          [ngModel]="startDate()"
+          (ngModelChange)="startDate.set($event)"
+        />
+      </mat-form-field>
+
+      <!-- End Date -->
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+        <input
+          matInput
+          type="date"
+          [ngModel]="endDate()"
+          (ngModelChange)="endDate.set($event)"
+        />
+      </mat-form-field>
+
+      <!-- Category Filter -->
+      @if (activeTab() === 'sales' || activeTab() === 'purchases' || activeTab() === 'inventory' || activeTab() === 'low-stock' || activeTab() === 'products') {
+        <mat-form-field appearance="outline">
+          <mat-label>Category</mat-label>
+          <mat-select
+            [ngModel]="categoryId()"
+            (ngModelChange)="categoryId.set($event)"
+          >
+            <mat-option value="">All Categories</mat-option>
+            @for (cat of categories(); track cat.id) {
+              <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- Product Filter -->
+      @if (activeTab() === 'sales' || activeTab() === 'purchases' || activeTab() === 'stock-transactions') {
+        <mat-form-field appearance="outline">
+          <mat-label>Product</mat-label>
+          <mat-select
+            [ngModel]="productId()"
+            (ngModelChange)="productId.set($event)"
+          >
+            <mat-option value="">All Products</mat-option>
+            @for (prod of products(); track prod.id) {
+              <mat-option [value]="prod.id">{{ prod.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- Supplier Filter -->
+      @if (activeTab() === 'purchases' || activeTab() === 'suppliers') {
+        <mat-form-field appearance="outline">
+          <mat-label>Supplier</mat-label>
+          <mat-select
+            [ngModel]="supplierId()"
+            (ngModelChange)="supplierId.set($event)"
+          >
+            <mat-option value="">All Suppliers</mat-option>
+            @for (sup of suppliers(); track sup.id) {
+              <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- Customer Filter -->
+      @if (activeTab() === 'sales' || activeTab() === 'customers') {
+        <mat-form-field appearance="outline">
+          <mat-label>Customer</mat-label>
+          <mat-select
+            [ngModel]="customerId()"
+            (ngModelChange)="customerId.set($event)"
+          >
+            <mat-option value="">All Customers</mat-option>
+            @for (cust of customers(); track cust.id) {
+              <mat-option [value]="cust.id">{{ cust.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- Stock Transaction Types & User -->
+      @if (activeTab() === 'stock-transactions') {
+        <mat-form-field appearance="outline">
+          <mat-label>Transaction Type</mat-label>
+          <mat-select
+            [ngModel]="transactionType()"
+            (ngModelChange)="transactionType.set($event)"
+          >
+            <mat-option value="">All Types</mat-option>
+            <mat-option value="Purchase">Purchase</mat-option>
+            <mat-option value="Sale">Sale</mat-option>
+            <mat-option value="Adjustment">Adjustment</mat-option>
+            <mat-option value="Return">Return</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Performed By</mat-label>
+          <mat-select
+            [ngModel]="userId()"
+            (ngModelChange)="userId.set($event)"
+          >
+            <mat-option value="">All Users</mat-option>
+            @for (usr of users(); track usr.id) {
+              <mat-option [value]="usr.id">{{ usr.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- Search Term -->
+      @if (activeTab() !== 'dashboard' && activeTab() !== 'profit') {
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Data</mat-label>
+          <input
+            matInput
+            placeholder="Search keyword..."
+            [ngModel]="search()"
+            (ngModelChange)="onSearchChange($event)"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+      }
+
+      <!-- Filter Buttons -->
+      <div class="filter-actions-group">
+        <button type="button" class="btn btn--primary" (click)="applyFilters()">
+          <mat-icon>filter_alt</mat-icon> Apply
+        </button>
+        <button type="button" class="btn btn--secondary" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon> Reset
+        </button>
+      </div>
+    </div>
+
+    @if (dateValidationError()) {
+      <div class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ dateValidationError() }}</span>
+      </div>
+    }
+  </section>
+
+  <!-- Report Navigation Tabs -->
+  <nav class="report-tabs-nav no-print">
+    <button [class.active]="activeTab() === 'dashboard'" (click)="setTab('dashboard')">
+      <mat-icon>dashboard</mat-icon> Overview
+    </button>
+    <button [class.active]="activeTab() === 'sales'" (click)="setTab('sales')">
+      <mat-icon>point_of_sale</mat-icon> Sales
+    </button>
+    <button [class.active]="activeTab() === 'purchases'" (click)="setTab('purchases')">
+      <mat-icon>local_mall</mat-icon> Purchases
+    </button>
+    <button [class.active]="activeTab() === 'inventory'" (click)="setTab('inventory')">
+      <mat-icon>inventory_2</mat-icon> Inventory
+    </button>
+    <button [class.active]="activeTab() === 'low-stock'" (click)="setTab('low-stock')">
+      <mat-icon>warning</mat-icon> Low Stock
+    </button>
+    <button [class.active]="activeTab() === 'products'" (click)="setTab('products')">
+      <mat-icon>insights</mat-icon> Product Perf.
+    </button>
+    <button [class.active]="activeTab() === 'customers'" (click)="setTab('customers')">
+      <mat-icon>people</mat-icon> Customers
+    </button>
+    <button [class.active]="activeTab() === 'suppliers'" (click)="setTab('suppliers')">
+      <mat-icon>local_shipping</mat-icon> Suppliers
+    </button>
+    <button [class.active]="activeTab() === 'profit'" (click)="setTab('profit')">
+      <mat-icon>account_balance_wallet</mat-icon> Profit Analysis
+    </button>
+    <button [class.active]="activeTab() === 'stock-transactions'" (click)="setTab('stock-transactions')">
+      <mat-icon>tune</mat-icon> Stock Movements
+    </button>
+  </nav>
+
+  <!-- Skeleton Loading State -->
+  @if (loading()) {
+    <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+  } @else {
+    <div class="report-content">
+
+      <!-- ================= 1. DASHBOARD OVERVIEW ================= -->
+      @if (activeTab() === 'dashboard' && dashboardData()) {
+        <div class="dashboard-grid">
+          <!-- Summary Cards Row (Dashboard Stat Card Style) -->
+          <div class="summary-cards-grid">
+            <!-- Total Sales -->
+            <div class="stat-card teal">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>trending_up</mat-icon>
+                </span>
+                <span class="stat-title">Total Sales</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.totalSales.value | number: '1.2-2' }} ETB</div>
+                <div class="stat-delta-row">
+                  <span class="stat-delta" [class.negative]="(dashboardData()!.totalSales.changePercent ?? 0) < 0">
+                    <mat-icon>{{ (dashboardData()!.totalSales.changePercent ?? 0) >= 0 ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                    {{ dashboardData()!.totalSales.changePercent | number: '1.1-1' }}%
+                  </span>
+                  <span class="stat-sub">vs prev period</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Purchases -->
+            <div class="stat-card blue">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>shopping_cart</mat-icon>
+                </span>
+                <span class="stat-title">Total Purchases</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.totalPurchases.value | number: '1.2-2' }} ETB</div>
+                <div class="stat-delta-row">
+                  <span class="stat-delta" [class.negative]="(dashboardData()!.totalPurchases.changePercent ?? 0) > 0">
+                    <mat-icon>{{ (dashboardData()!.totalPurchases.changePercent ?? 0) <= 0 ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+                    {{ dashboardData()!.totalPurchases.changePercent | number: '1.1-1' }}%
+                  </span>
+                  <span class="stat-sub">vs prev period</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Profit -->
+            <div class="stat-card green">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>account_balance_wallet</mat-icon>
+                </span>
+                <span class="stat-title">Total Profit</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.totalProfit.value | number: '1.2-2' }} ETB</div>
+                <div class="stat-delta-row">
+                  <span class="stat-delta" [class.negative]="(dashboardData()!.totalProfit.changePercent ?? 0) < 0">
+                    <mat-icon>{{ (dashboardData()!.totalProfit.changePercent ?? 0) >= 0 ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                    {{ dashboardData()!.totalProfit.changePercent | number: '1.1-1' }}%
+                  </span>
+                  <span class="stat-sub">vs prev period</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Products Sold -->
+            <div class="stat-card purple">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>sell</mat-icon>
+                </span>
+                <span class="stat-title">Products Sold</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.totalProductsSold.value | number }}</div>
+                <span class="stat-sub">Total units moved</span>
+              </div>
+            </div>
+
+            <!-- Total Customers -->
+            <div class="stat-card amber">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>people</mat-icon>
+                </span>
+                <span class="stat-title">Total Customers</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.totalCustomers.value | number }}</div>
+                <span class="stat-sub">Registered customers</span>
+              </div>
+            </div>
+
+            <!-- Total Suppliers -->
+            <div class="stat-card cyan">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>local_shipping</mat-icon>
+                </span>
+                <span class="stat-title">Total Suppliers</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.totalSuppliers.value | number }}</div>
+                <span class="stat-sub">Active vendors</span>
+              </div>
+            </div>
+
+            <!-- Low Stock Products -->
+            <div class="stat-card warning">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>warning</mat-icon>
+                </span>
+                <span class="stat-title">Low Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.lowStockProducts | number }}</div>
+                <span class="stat-sub warning-text">Requires replenishment</span>
+              </div>
+            </div>
+
+            <!-- Out of Stock Products -->
+            <div class="stat-card danger">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap">
+                  <mat-icon>remove_shopping_cart</mat-icon>
+                </span>
+                <span class="stat-title">Out of Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ dashboardData()!.outOfStockProducts | number }}</div>
+                <span class="stat-sub danger-text">Critical shortage</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="charts-row">
+            <div class="widget-card">
+              <h3 class="widget-title">Sales Trend</h3>
+              <app-report-line-chart
+                [data]="dashboardData()!.salesOverTime"
+                [color]="'var(--teal)'"
+              ></app-report-line-chart>
+            </div>
+            <div class="widget-card">
+              <h3 class="widget-title">Sales by Category</h3>
+              <app-report-donut-chart
+                [data]="dashboardData()!.salesByCategory"
+              ></app-report-donut-chart>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 2. SALES REPORT ================= -->
+      @if (activeTab() === 'sales' && salesData()) {
+        <div class="report-section">
+          <div class="summary-cards-grid four-cols">
+            <div class="stat-card teal">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>payments</mat-icon></span>
+                <span class="stat-title">Total Sales Amount</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ salesData()!.summary.totalSalesAmount | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+            <div class="stat-card blue">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>receipt</mat-icon></span>
+                <span class="stat-title">Number of Sales</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ salesData()!.summary.numberOfSales | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>inventory</mat-icon></span>
+                <span class="stat-title">Total Products Sold</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ salesData()!.summary.totalProductsSold | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>calculate</mat-icon></span>
+                <span class="stat-title">Avg Sale Value</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ salesData()!.summary.averageSaleValue | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-row">
+            <div class="widget-card">
+              <h3 class="widget-title">Sales Analytics</h3>
+              <app-report-line-chart [data]="salesData()!.salesByDay"></app-report-line-chart>
+            </div>
+            <div class="widget-card">
+              <h3 class="widget-title">Top Selling Products</h3>
+              <app-report-bar-chart
+                [data]="topProductsBarData()"
+                [horizontal]="true"
+                [barColor]="'var(--teal)'"
+                [formatAsCurrency]="false"
+              ></app-report-bar-chart>
+            </div>
+          </div>
+
+          <!-- Sales Table -->
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Sales Transactions</h3>
+              <span class="text-secondary">Showing {{ salesData()!.table.items.length }} of {{ salesData()!.table.totalCount }} invoices</span>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Invoice Number</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th class="text-center">Items</th>
+                    <th class="text-right">Total Amount</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of salesData()!.table.items; track row.id) {
+                    <tr>
+                      <td class="font-mono font-bold">{{ row.invoiceNumber }}</td>
+                      <td>{{ row.customer }}</td>
+                      <td>{{ row.date | date: 'medium' }}</td>
+                      <td class="text-center font-bold">{{ row.numberOfItems }}</td>
+                      <td class="text-right font-bold amount-cell">{{ row.totalAmount | number: '1.2-2' }} ETB</td>
+                      <td>
+                        <span class="payment-badge">{{ row.paymentMethod }}</span>
+                      </td>
+                      <td>
+                        <span class="status-badge status--active">{{ row.status }}</span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="7" class="table-empty text-center">No sales records found.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Material Paginator -->
+            <mat-paginator
+              [length]="salesData()!.table.totalCount"
+              [pageSize]="pageSize()"
+              [pageIndex]="page() - 1"
+              [pageSizeOptions]="[10, 15, 25, 50]"
+              (page)="onMatPageChange($event)"
+              showFirstLastButtons
+              class="no-print"
+            ></mat-paginator>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 3. PURCHASE REPORT ================= -->
+      @if (activeTab() === 'purchases' && purchasesData()) {
+        <div class="report-section">
+          <div class="summary-cards-grid four-cols">
+            <div class="stat-card blue">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>shopping_bag</mat-icon></span>
+                <span class="stat-title">Total Purchase Amount</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ purchasesData()!.summary.totalPurchaseAmount | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>inventory_2</mat-icon></span>
+                <span class="stat-title">Number of Purchases</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ purchasesData()!.summary.numberOfPurchases | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card cyan">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>widgets</mat-icon></span>
+                <span class="stat-title">Products Purchased</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ purchasesData()!.summary.totalProductsPurchased | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>bar_chart</mat-icon></span>
+                <span class="stat-title">Avg Purchase Value</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ purchasesData()!.summary.averagePurchaseValue | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-row">
+            <div class="widget-card">
+              <h3 class="widget-title">Purchases Over Time</h3>
+              <app-report-line-chart
+                [data]="purchasesData()!.purchasesOverTime"
+                [color]="'var(--primary)'"
+              ></app-report-line-chart>
+            </div>
+            <div class="widget-card">
+              <h3 class="widget-title">Purchases by Supplier</h3>
+              <app-report-bar-chart
+                [data]="salesBySupplierBarData()"
+                [horizontal]="true"
+                [barColor]="'var(--primary)'"
+              ></app-report-bar-chart>
+            </div>
+          </div>
+
+          <!-- Purchase Table -->
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Purchase Orders</h3>
+              <span class="text-secondary">Showing {{ purchasesData()!.table.items.length }} of {{ purchasesData()!.table.totalCount }} orders</span>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Purchase #</th>
+                    <th>Supplier</th>
+                    <th>Date</th>
+                    <th class="text-center">Items</th>
+                    <th class="text-right">Total Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of purchasesData()!.table.items; track row.id) {
+                    <tr>
+                      <td class="font-mono font-bold">{{ row.purchaseNumber }}</td>
+                      <td>{{ row.supplier }}</td>
+                      <td>{{ row.purchaseDate | date: 'medium' }}</td>
+                      <td class="text-center font-bold">{{ row.numberOfItems }}</td>
+                      <td class="text-right font-bold amount-cell">{{ row.totalAmount | number: '1.2-2' }} ETB</td>
+                      <td>
+                        <span class="status-badge" [class.status--active]="row.status === 'Completed'">{{ row.status }}</span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="table-empty text-center">No purchase records found.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Material Paginator -->
+            <mat-paginator
+              [length]="purchasesData()!.table.totalCount"
+              [pageSize]="pageSize()"
+              [pageIndex]="page() - 1"
+              [pageSizeOptions]="[10, 15, 25, 50]"
+              (page)="onMatPageChange($event)"
+              showFirstLastButtons
+              class="no-print"
+            ></mat-paginator>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 4. INVENTORY REPORT ================= -->
+      @if (activeTab() === 'inventory' && inventoryData()) {
+        <div class="report-section">
+          <div class="summary-cards-grid five-cols">
+            <div class="stat-card teal">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>inventory_2</mat-icon></span>
+                <span class="stat-title">Total Products</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ inventoryData()!.summary.totalProducts | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card blue">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>layers</mat-icon></span>
+                <span class="stat-title">Stock Quantity</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ inventoryData()!.summary.totalStockQuantity | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>monetization_on</mat-icon></span>
+                <span class="stat-title">Inventory Value</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ inventoryData()!.summary.inventoryValue | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>warning</mat-icon></span>
+                <span class="stat-title">Low Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ inventoryData()!.summary.lowStockProducts | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card danger">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>remove_shopping_cart</mat-icon></span>
+                <span class="stat-title">Out of Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ inventoryData()!.summary.outOfStockProducts | number }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Inventory Valuation & Status</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-center">Min Stock</th>
+                    <th class="text-right">Selling Price</th>
+                    <th class="text-right">Unit Cost</th>
+                    <th class="text-right">Inventory Value</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of inventoryData()!.table.items; track row.productId) {
+                    <tr>
+                      <td class="font-bold">{{ row.product }}</td>
+                      <td class="font-mono text-secondary">{{ row.sku }}</td>
+                      <td>{{ row.category }}</td>
+                      <td class="text-center font-bold" [class.danger-text]="row.currentStock === 0">{{ row.currentStock }}</td>
+                      <td class="text-center">{{ row.minimumStock }}</td>
+                      <td class="text-right">{{ row.sellingPrice | number: '1.2-2' }} ETB</td>
+                      <td class="text-right">{{ row.unitCost | number: '1.2-2' }} ETB</td>
+                      <td class="text-right font-bold amount-cell">{{ row.inventoryValue | number: '1.2-2' }} ETB</td>
+                      <td>
+                        <span
+                          class="status-badge"
+                          [class.status--active]="row.stockStatus === 'In Stock'"
+                          [class.status--low]="row.stockStatus === 'Low Stock' || row.stockStatus === 'Critical Stock'"
+                          [class.status--inactive]="row.stockStatus === 'Out of Stock'"
+                        >
+                          {{ row.stockStatus }}
+                        </span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="9" class="table-empty text-center">No inventory data available.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Material Paginator -->
+            <mat-paginator
+              [length]="inventoryData()!.table.totalCount"
+              [pageSize]="pageSize()"
+              [pageIndex]="page() - 1"
+              [pageSizeOptions]="[10, 15, 25, 50]"
+              (page)="onMatPageChange($event)"
+              showFirstLastButtons
+              class="no-print"
+            ></mat-paginator>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 5. LOW STOCK REPORT ================= -->
+      @if (activeTab() === 'low-stock' && lowStockData()) {
+        <div class="report-section">
+          <div class="summary-cards-grid three-cols">
+            <div class="stat-card danger">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>error</mat-icon></span>
+                <span class="stat-title">Out of Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ lowStockData()!.outOfStock | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>warning_amber</mat-icon></span>
+                <span class="stat-title">Critical Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ lowStockData()!.criticalStock | number }}</div>
+              </div>
+            </div>
+            <div class="stat-card amber">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>info</mat-icon></span>
+                <span class="stat-title">Low Stock</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ lowStockData()!.lowStock | number }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Low Stock Alert Items</h3>
+              <button type="button" class="btn btn--primary no-print" (click)="navigateToPurchase()">
+                <mat-icon>add_shopping_cart</mat-icon> Create Purchase Order
+              </button>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th class="text-center">Current Stock</th>
+                    <th class="text-center">Min Stock</th>
+                    <th>Stock Status</th>
+                    <th>Recommended Action</th>
+                    <th class="no-print text-center">Quick Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of lowStockData()!.table.items; track row.productId) {
+                    <tr>
+                      <td class="font-bold">{{ row.product }}</td>
+                      <td class="font-mono text-secondary">{{ row.sku }}</td>
+                      <td>{{ row.category }}</td>
+                      <td class="text-center font-bold" [class.danger-text]="row.currentStock === 0">{{ row.currentStock }}</td>
+                      <td class="text-center">{{ row.minimumStock }}</td>
+                      <td>
+                        <span
+                          class="status-badge"
+                          [class.status--inactive]="row.stockStatus === 'Out of Stock'"
+                          [class.status--low]="row.stockStatus === 'Critical Stock' || row.stockStatus === 'Low Stock'"
+                        >
+                          {{ row.stockStatus }}
+                        </span>
+                      </td>
+                      <td class="action-text">{{ row.recommendedAction }}</td>
+                      <td class="no-print text-center">
+                        <button type="button" class="btn btn--secondary" (click)="navigateToPurchase()">
+                          <mat-icon>local_mall</mat-icon> Order
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="8" class="table-empty text-center">No low stock items! All products well stocked.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 6. PRODUCT PERFORMANCE ================= -->
+      @if (activeTab() === 'products' && productPerfData()) {
+        <div class="report-section">
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Product Performance Matrix</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th class="text-center">Units Sold</th>
+                    <th class="text-right">Revenue</th>
+                    <th class="text-center">Purchased Qty</th>
+                    <th class="text-center">Current Stock</th>
+                    <th class="text-right">Gross Profit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of productPerfData()!.table.items; track row.productId) {
+                    <tr>
+                      <td class="font-bold">{{ row.productName }}</td>
+                      <td class="font-mono text-secondary">{{ row.sku }}</td>
+                      <td>{{ row.category }}</td>
+                      <td class="text-center font-bold">{{ row.unitsSold | number }}</td>
+                      <td class="text-right font-bold amount-cell">{{ row.salesRevenue | number: '1.2-2' }} ETB</td>
+                      <td class="text-center">{{ row.purchaseQuantity | number }}</td>
+                      <td class="text-center">{{ row.currentStock | number }}</td>
+                      <td class="text-right font-bold" [class.positive-text]="row.profit > 0" [class.negative-text]="row.profit < 0">
+                        {{ row.profit | number: '1.2-2' }} ETB
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="8" class="table-empty text-center">No product performance records found.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 7. CUSTOMER REPORT ================= -->
+      @if (activeTab() === 'customers' && customerData()) {
+        <div class="report-section">
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Customer Purchasing Intelligence</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Customer Name</th>
+                    <th>Phone</th>
+                    <th class="text-center">Purchases</th>
+                    <th class="text-right">Total Spent</th>
+                    <th class="text-right">Avg Purchase Value</th>
+                    <th>Last Purchase Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of customerData()!.table.items; track row.customerId) {
+                    <tr>
+                      <td class="font-bold">{{ row.customerName }}</td>
+                      <td>{{ row.phoneNumber || '—' }}</td>
+                      <td class="text-center font-bold">{{ row.numberOfPurchases }}</td>
+                      <td class="text-right font-bold amount-cell">{{ row.totalAmountSpent | number: '1.2-2' }} ETB</td>
+                      <td class="text-right">{{ row.averagePurchaseValue | number: '1.2-2' }} ETB</td>
+                      <td>{{ row.lastPurchaseDate ? (row.lastPurchaseDate | date: 'mediumDate') : 'Never' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="table-empty text-center">No customer records found.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 8. SUPPLIER REPORT ================= -->
+      @if (activeTab() === 'suppliers' && supplierData()) {
+        <div class="report-section">
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Supplier Performance & Procurement History</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Supplier Name</th>
+                    <th>Contact Person</th>
+                    <th class="text-center">Purchases</th>
+                    <th class="text-right">Total Amount</th>
+                    <th class="text-center">Products Supplied</th>
+                    <th>Last Purchase Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of supplierData()!.table.items; track row.supplierId) {
+                    <tr>
+                      <td class="font-bold">{{ row.supplierName }}</td>
+                      <td>{{ row.contactPerson || '—' }}</td>
+                      <td class="text-center font-bold">{{ row.numberOfPurchases }}</td>
+                      <td class="text-right font-bold amount-cell">{{ row.totalPurchaseAmount | number: '1.2-2' }} ETB</td>
+                      <td class="text-center">{{ row.productsSupplied }}</td>
+                      <td>{{ row.lastPurchaseDate ? (row.lastPurchaseDate | date: 'mediumDate') : 'Never' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="table-empty text-center">No supplier records found.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 9. PROFIT REPORT ================= -->
+      @if (activeTab() === 'profit' && profitData()) {
+        <div class="report-section">
+          <div class="summary-cards-grid four-cols">
+            <div class="stat-card teal">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>trending_up</mat-icon></span>
+                <span class="stat-title">Total Revenue</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ profitData()!.totalRevenue | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+            <div class="stat-card blue">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>shopping_cart</mat-icon></span>
+                <span class="stat-title">Cost of Goods Sold (COGS)</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ profitData()!.totalCogs | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>account_balance_wallet</mat-icon></span>
+                <span class="stat-title">Gross Profit</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ profitData()!.grossProfit | number: '1.2-2' }} ETB</div>
+              </div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-card-header">
+                <span class="stat-icon-wrap"><mat-icon>pie_chart</mat-icon></span>
+                <span class="stat-title">Gross Margin</span>
+              </div>
+              <div class="stat-card-body">
+                <div class="stat-value">{{ profitData()!.grossProfitMargin | number: '1.1-2' }}%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-banner">
+            <mat-icon>info</mat-icon>
+            <div>
+              <strong>Historical Cost Basis Strategy:</strong>
+              <p>{{ profitData()!.costBasis }}</p>
+            </div>
+          </div>
+
+          <div class="widget-card">
+            <h3 class="widget-title">Profitability Trend</h3>
+            <app-report-line-chart
+              [data]="profitData()!.profitOverTime"
+              [color]="'var(--teal)'"
+            ></app-report-line-chart>
+          </div>
+        </div>
+      }
+
+      <!-- ================= 10. STOCK MOVEMENTS ================= -->
+      @if (activeTab() === 'stock-transactions' && stockData()) {
+        <div class="report-section">
+          <div class="table-card">
+            <div class="table-header-title">
+              <h3>Inventory Stock Movements</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="app-table">
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th class="text-center">Qty Change</th>
+                    <th class="text-center">Prev Stock</th>
+                    <th class="text-center">New Stock</th>
+                    <th>Reference</th>
+                    <th>Performed By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of stockData()!.table.items; track row.id) {
+                    <tr>
+                      <td>{{ row.date | date: 'short' }}</td>
+                      <td class="font-bold">{{ row.product }}</td>
+                      <td>
+                        <span
+                          class="status-badge"
+                          [class.status--active]="row.transactionType === 'Sale' || row.transactionType === 'Purchase'"
+                          [class.status--draft]="row.transactionType === 'Adjustment'"
+                        >
+                          {{ row.transactionType }}
+                        </span>
+                      </td>
+                      <td class="text-center font-mono font-bold" [class.positive-text]="row.quantityChange > 0" [class.negative-text]="row.quantityChange < 0">
+                        {{ row.quantityChange > 0 ? '+' : '' }}{{ row.quantityChange }}
+                      </td>
+                      <td class="text-center">{{ row.previousStock }}</td>
+                      <td class="text-center font-bold">{{ row.newStock }}</td>
+                      <td>{{ row.referenceType }} {{ row.referenceNumber ? '#' + row.referenceNumber : '' }}</td>
+                      <td>{{ row.performedBy }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="8" class="table-empty text-center">No stock transaction logs recorded.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Material Paginator -->
+            <mat-paginator
+              [length]="stockData()!.table.totalCount"
+              [pageSize]="pageSize()"
+              [pageIndex]="page() - 1"
+              [pageSizeOptions]="[10, 15, 25, 50]"
+              (page)="onMatPageChange($event)"
+              showFirstLastButtons
+              class="no-print"
+            ></mat-paginator>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>
