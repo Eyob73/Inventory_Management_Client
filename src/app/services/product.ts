@@ -48,12 +48,42 @@ export class ProductService {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
 
-  create(product: Partial<Product>) {
-    return this.http.post<Product>(this.baseUrl, product);
+  create(product: Partial<Product>, image?: File) {
+    const formData = new FormData();
+    Object.keys(product).forEach((key) => {
+      const val = (product as any)[key];
+      if (val !== null && val !== undefined) {
+        if (val === '' && (key === 'categoryId' || key === 'supplierId' || key === 'id')) {
+          return;
+        }
+        formData.append(key, val.toString());
+      }
+    });
+    if (image) {
+      formData.append('image', image);
+    }
+    return this.http.post<Product>(this.baseUrl, formData);
   }
 
-  update(id: string, product: Partial<Product>) {
-    return this.http.put<Product>(`${this.baseUrl}/${id}`, { ...product, id });
+  update(id: string, product: Partial<Product>, image?: File, removeImage: boolean = false) {
+    const formData = new FormData();
+    Object.keys(product).forEach((key) => {
+      const val = (product as any)[key];
+      if (val !== null && val !== undefined) {
+        if (val === '' && (key === 'categoryId' || key === 'supplierId' || key === 'id')) {
+          return;
+        }
+        formData.append(key, val.toString());
+      }
+    });
+    formData.append('id', id);
+    if (image) {
+      formData.append('image', image);
+    }
+    if (removeImage) {
+      formData.append('removeImage', 'true');
+    }
+    return this.http.put<Product>(`${this.baseUrl}/${id}`, formData);
   }
 
   delete(id: string) {

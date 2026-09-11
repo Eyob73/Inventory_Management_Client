@@ -57,9 +57,21 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           );
         }
       } else {
-        console.error('API Error Response:', detailMessage);
+        let extractedMessage = detailMessage;
+        if (err.status === 400) {
+          if (typeof err.error === 'string') {
+            extractedMessage = err.error;
+          } else if (err.error?.errors) {
+            extractedMessage = Object.values(err.error.errors).flat().join(', ');
+          } else if (err.error?.title) {
+            extractedMessage = err.error.title;
+          }
+        }
+        
+        console.error('API Error Response:', extractedMessage);
+        const customErr = new Error(extractedMessage);
+        return throwError(() => customErr);
       }
-      return throwError(() => err);
     }),
   );
 };

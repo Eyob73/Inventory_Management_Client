@@ -28,6 +28,7 @@ import { CreateSaleRequest, Sale } from '../../models/sale.model';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import { CustomerDialogComponent } from '../customers/customer-dialog/customer-dialog';
+import { environment } from '../../../environments/environment.development';
 
 export interface CartItem {
   product: Product;
@@ -67,6 +68,8 @@ export class PosComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+
+  readonly baseUrl = environment.apiUrl.replace('/api', '');
 
   // State Signals
   products = signal<Product[]>([]);

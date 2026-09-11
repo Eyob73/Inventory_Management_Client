@@ -14,11 +14,14 @@ import { ProductStore } from "../../store/products.store";
 import { ProductService } from "../../services/product";
 import { CategoryService } from "../../services/category";
 import { SupplierService } from "../../services/supplier";
+import { environment } from "../../../environments/environment.development";
+
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: 'app-add-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatIconModule],
   templateUrl: './add-products.html',
   styleUrl: './add-products.scss',
 })
@@ -53,7 +56,7 @@ export class AddProducts implements OnInit {
     stock: [{ value: 0, disabled: true }],
     minimumStock: [0, [Validators.required, Validators.min(0)]],
     isActive: [true],
-    category: [''],
+    category: ['', Validators.required],
     supplierId: [''],
     sku: [''],
     variants: this.fb.array([
@@ -132,6 +135,33 @@ export class AddProducts implements OnInit {
     this.router.navigate(['/products']);
   }
 
+  selectedFile = signal<File | null>(null);
+  imagePreview = signal<string | null>(null);
+  removeImageFlag = signal<boolean>(false);
+
+  removeImage(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.selectedFile.set(null);
+    this.imagePreview.set(null);
+    this.removeImageFlag.set(true);
+    
+    // Reset the file input
+    const fileInput = document.getElementById('productImage') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  }
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.selectedFile.set(file);
+      this.removeImageFlag.set(false);
+      const reader = new FileReader();
+      reader.onload = () => this.imagePreview.set(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSubmit() {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
@@ -143,14 +173,25 @@ export class AddProducts implements OnInit {
     this.isError.set(false);
     this.submissionStatus.set(this.isEditMode() ? 'Updating product…' : 'Submitting product to store...');
 
+    const image = this.selectedFile() ?? undefined;
+
     if (this.isEditMode() && this.productId()) {
-      this.productStore.updateProduct({ id: this.productId()!, payload });
+      this.productStore.updateProduct({ 
+        id: this.productId()!, 
+        payload, 
+        image, 
+        removeImage: this.removeImageFlag() 
+      });
     } else {
-      this.productStore.createProduct(payload);
+      this.productStore.createProduct({ payload, image });
     }
   }
 
   private patchForm(product: Product): void {
+    if (product.imageUrl) {
+      const baseUrl = environment.apiUrl.replace('/api', '');
+      this.imagePreview.set(`${baseUrl}${product.imageUrl}`);
+    }
     this.productForm.patchValue({
       name: product.name || '',
       description: product.description || '',

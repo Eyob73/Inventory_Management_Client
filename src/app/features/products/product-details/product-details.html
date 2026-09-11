@@ -1,8 +1,17 @@
 <div class="pd">
+  <!-- Top Layer Dialog for fullscreen -->
+  <dialog #fullscreenDialog class="pd-fullscreen-overlay" (click)="closeDialog($event)" (close)="closeDialog()">
+    @if (imageUrl()) {
+      <button class="pd-fullscreen-close" (click)="closeDialog($event)" aria-label="Close fullscreen">
+        <mat-icon>close</mat-icon>
+      </button>
+      <img [src]="imageUrl()!" [alt]="product().name" class="pd-fullscreen-image" (click)="$event.stopPropagation()" />
+    }
+  </dialog>
   <header class="pd-hero">
     <div class="pd-hero__media">
       @if (imageUrl()) {
-      <img [src]="imageUrl()!" [alt]="product().name" class="pd-hero__image" />
+      <img [src]="imageUrl()!" [alt]="product().name" class="pd-hero__image clickable-image" (click)="toggleFullscreen()" />
       } @else {
       <div class="pd-hero__placeholder" aria-hidden="true">
         <mat-icon>inventory_2</mat-icon>

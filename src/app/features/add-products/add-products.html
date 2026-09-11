@@ -16,6 +16,28 @@
     }
 
     <section class="product-form__section">
+        <h2 class="product-form__section-title">Product image</h2>
+        <div class="form-group">
+            <label for="productImage" class="image-upload-label">
+                @if (imagePreview()) {
+                    <div class="image-preview-container">
+                        <img [src]="imagePreview()" alt="Preview" class="image-preview">
+                        <button type="button" class="btn btn-icon remove-image-btn" (click)="removeImage($event)" title="Remove image">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                } @else {
+                    <div class="image-placeholder">
+                        <span class="placeholder-text">Click to upload image</span>
+                        <span class="placeholder-hint">JPG, PNG, WEBP up to 5MB</span>
+                    </div>
+                }
+            </label>
+            <input type="file" id="productImage" class="visually-hidden" accept=".jpg,.jpeg,.png,.webp" (change)="onFileSelected($event)">
+        </div>
+    </section>
+
+    <section class="product-form__section">
         <h2 class="product-form__section-title">Basic information</h2>
 
         <div class="form-group">

@@ -203,3 +203,99 @@
     gap: 0.2rem;
   }
 }
+
+.clickable-image {
+  cursor: zoom-in;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.clickable-image:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+dialog.pd-fullscreen-overlay {
+  padding: 0;
+  border: none;
+  background: transparent;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+  overflow: hidden;
+}
+
+/* 
+ * The default display for a closed dialog is 'none'.
+ * When using display: flex, we must ensure it's only flex when open.
+ * Native dialog adds the 'open' attribute when shown.
+ */
+dialog.pd-fullscreen-overlay:not([open]) {
+  display: none;
+}
+
+dialog.pd-fullscreen-overlay::backdrop {
+  background-color: rgba(0, 0, 0, 0.9);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.pd-fullscreen-close {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  z-index: 10000;
+}
+
+.pd-fullscreen-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.pd-fullscreen-close mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.pd-fullscreen-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  cursor: default;
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+

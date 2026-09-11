@@ -20,6 +20,7 @@ import {
   canViewProductCost,
   getStockStatus,
 } from '../../utils/product-permissions';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-products',
@@ -44,6 +45,8 @@ export class Products implements OnInit {
   readonly authStore = inject(AuthStore);
   private router = inject(Router);
   private confirmDialog = inject(ConfirmDialogService);
+
+  readonly baseUrl = environment.apiUrl.replace('/api', '');
 
   readonly isSales = computed(() => !canViewProductCost(this.authStore.userRole()));
   readonly canAddProducts = computed(() => canAddProduct(this.authStore.userRole()));

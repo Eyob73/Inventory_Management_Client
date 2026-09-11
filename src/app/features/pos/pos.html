@@ -82,6 +82,16 @@
                     {{ product.quantityInStock > 0 ? product.quantityInStock + ' left' : 'Out of stock' }}
               </span>
             </div>
+            
+            <div class="tile-image-wrapper">
+                @if (product.imageUrl) {
+                    <img [src]="baseUrl + product.imageUrl" [alt]="product.name" class="tile-image">
+                } @else {
+                    <div class="tile-image-placeholder">
+                        <mat-icon>inventory_2</mat-icon>
+                    </div>
+                }
+            </div>
 
             <h4 class="tile-name">{{ product.name }}</h4>
             <span class="tile-sku">{{ product.sku }}</span>

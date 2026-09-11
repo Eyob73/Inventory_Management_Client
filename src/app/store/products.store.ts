@@ -100,11 +100,11 @@ export const ProductStore = signalStore(
             )
         ),
 
-        createProduct: rxMethod<Partial<Product>>(
+        createProduct: rxMethod<{ payload: Partial<Product>; image?: File }>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
-                exhaustMap((payload) =>
-                    api.create(payload).pipe(
+                exhaustMap(({ payload, image }) =>
+                    api.create(payload, image).pipe(
                         tap((newProduct) => {
                             patchState(store, addEntity(newProduct), { isLoading: false });
                         }),
@@ -120,11 +120,11 @@ export const ProductStore = signalStore(
             )
         ),
 
-        updateProduct: rxMethod<{ id: string; payload: Partial<Product> }>(
+        updateProduct: rxMethod<{ id: string; payload: Partial<Product>; image?: File; removeImage?: boolean }>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
-                exhaustMap(({ id, payload }) =>
-                    api.update(id, payload).pipe(
+                exhaustMap(({ id, payload, image, removeImage }) =>
+                    api.update(id, payload, image, removeImage).pipe(
                         tap((updated) => {
                             patchState(store, updateEntity({ id, changes: updated }), { isLoading: false });
                         }),
