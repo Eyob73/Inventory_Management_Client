@@ -59,8 +59,100 @@
   margin: 0;
 }
 
+// ── Stat Cards ───────────────────────────────────────────────────
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
 
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 12px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
 
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--moss);
+    transform: translateY(-2px);
+  }
+
+  .stat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .stat-icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--teal-soft);
+      color: var(--teal-dark);
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .stat-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--slate);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .stat-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+
+  &.teal .stat-icon-wrap    { background: var(--teal-soft);  color: var(--teal-dark);  }
+  &.blue .stat-icon-wrap    { background: var(--cobalt-soft); color: var(--cobalt);    }
+  &.green .stat-icon-wrap   { background: var(--moss-soft);  color: var(--moss);      }
+  &.purple .stat-icon-wrap  { background: color-mix(in srgb, #8b5cf6 12%, transparent); color: #8b5cf6; }
+  &.amber .stat-icon-wrap   { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+  &.warning .stat-icon-wrap { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+  &.danger .stat-icon-wrap  { background: var(--rose-soft);  color: var(--rose);      }
+}
 .mat-column-no {
   width: 55px;
   max-width: 55px;

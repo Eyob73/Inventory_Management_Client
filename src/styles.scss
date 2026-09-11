@@ -60,29 +60,47 @@ button {
 }
 
 /* ─── Global Custom Scrollbar Styles ── */
+:root {
+  --sb-track-color: rgba(148, 163, 184, 0.12);
+  --sb-thumb-color: var(--border-strong, #cfcfcd);
+  --sb-size: 8px;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: var(--sb-size);
+  height: var(--sb-size);
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(148, 163, 184, 0.12);
-  border-radius: 999px;
+  background: transparent;
+  border-radius: 9px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-strong, #cfcfcd);
-  border-radius: 999px;
-  transition: background 0.2s ease;
+  background: transparent;
+  border-radius: 9px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--slate, #6b6b6b);
+/* Auto-hide: Show scrollbar thumb and track only when hovering directly over it, or while scrolling */
+::-webkit-scrollbar-track:hover,
+*.is-scrolling::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong, #cfcfcd) rgba(148, 163, 184, 0.12);
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active,
+*.is-scrolling::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  *:hover {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+  }
 }
 
 

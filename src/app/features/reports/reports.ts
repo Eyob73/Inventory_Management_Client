@@ -58,7 +58,6 @@ type ReportTab =
   imports: [
     CommonModule,
     FormsModule,
-    CurrencyPipe,
     DatePipe,
     DecimalPipe,
     MatFormFieldModule,

@@ -5,78 +5,8 @@
       <p>No trend data available for selected period</p>
     </div>
   } @else {
-    <div class="chart-wrap">
-      <svg viewBox="0 0 600 220" preserveAspectRatio="none" class="chart-svg">
-        <defs>
-          <linearGradient id="lineFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" [attr.stop-color]="color()" stop-opacity="0.25" />
-            <stop offset="100%" [attr.stop-color]="color()" stop-opacity="0" />
-          </linearGradient>
-        </defs>
-
-        @for (g of [0, 1, 2, 3]; track g) {
-          <line
-            x1="0"
-            [attr.y1]="24 + g * 50"
-            x2="600"
-            [attr.y2]="24 + g * 50"
-            stroke="var(--border)"
-            stroke-width="1"
-            stroke-dasharray="4 4"
-          />
-        }
-
-        <path [attr.d]="areaPath()" fill="url(#lineFill)" />
-        <path
-          [attr.d]="linePath()"
-          fill="none"
-          [attr.stroke]="color()"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        @for (p of chartPoints(); track $index) {
-          <g (mouseenter)="hoveredPoint.set($index)" (mouseleave)="hoveredPoint.set(null)">
-            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="12" fill="transparent" />
-            <circle
-              [attr.cx]="p.x"
-              [attr.cy]="p.y"
-              r="4"
-              [attr.fill]="hoveredPoint() === $index ? 'var(--primary)' : color()"
-              stroke="var(--surface)"
-              stroke-width="2"
-            />
-          </g>
-        }
-      </svg>
-
-      @if (hoveredPoint() !== null) {
-        <div
-          class="chart-tooltip"
-          [style.left.%]="(chartPoints()[hoveredPoint()!].x / 600) * 100"
-        >
-          <p class="tt-label">{{ chartPoints()[hoveredPoint()!].label }}</p>
-          <p class="tt-value">
-            @if (formatAsCurrency()) {
-              {{ chartPoints()[hoveredPoint()!].value | currency: 'ETB' }}
-            } @else {
-              {{ chartPoints()[hoveredPoint()!].value | number }}
-            }
-          </p>
-          @if (chartPoints()[hoveredPoint()!].count > 0) {
-            <p class="tt-sub">{{ chartPoints()[hoveredPoint()!].count }} transactions</p>
-          }
-        </div>
-      }
-    </div>
-
-    <div class="chart-axis">
-      @for (p of chartPoints(); track $index) {
-        @if ($index % Math.max(1, Math.floor(chartPoints().length / 6)) === 0 || $index === chartPoints().length - 1) {
-          <span class="axis-label">{{ p.label }}</span>
-        }
-      }
+    <div style="position: relative; height: 250px; width: 100%;">
+      <canvas #chartCanvas></canvas>
     </div>
   }
 </div>

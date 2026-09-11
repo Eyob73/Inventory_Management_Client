@@ -33,51 +33,56 @@
     </div>
   }
 
-  <!-- Stats Row -->
+  <!-- Stats Cards Row -->
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-icon stat-icon--total">
-        <mat-icon>group</mat-icon>
+    <div class="stat-card teal">
+      <div class="stat-card-header">
+        <span class="stat-icon-wrap"><mat-icon>people</mat-icon></span>
+        <span class="stat-title">Total Users</span>
       </div>
-      <div class="stat-body">
+      <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().total }}</div>
-        <div class="stat-label">Total Users</div>
+        <span class="stat-sub">All system users</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon stat-icon--active">
-        <mat-icon>verified_user</mat-icon>
+    <div class="stat-card green">
+      <div class="stat-card-header">
+        <span class="stat-icon-wrap"><mat-icon>check_circle</mat-icon></span>
+        <span class="stat-title">Active</span>
       </div>
-      <div class="stat-body">
+      <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().active }}</div>
-        <div class="stat-label">Active</div>
+        <span class="stat-sub">Currently active</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon stat-icon--admin">
-        <mat-icon>shield</mat-icon>
+    <div class="stat-card danger">
+      <div class="stat-card-header">
+        <span class="stat-icon-wrap"><mat-icon>admin_panel_settings</mat-icon></span>
+        <span class="stat-title">Admins</span>
       </div>
-      <div class="stat-body">
+      <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().admin }}</div>
-        <div class="stat-label">Admins</div>
+        <span class="stat-sub">Administrator accounts</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon stat-icon--manager">
-        <mat-icon>manage_accounts</mat-icon>
+    <div class="stat-card amber">
+      <div class="stat-card-header">
+        <span class="stat-icon-wrap"><mat-icon>manage_accounts</mat-icon></span>
+        <span class="stat-title">Managers</span>
       </div>
-      <div class="stat-body">
+      <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().manager }}</div>
-        <div class="stat-label">Managers</div>
+        <span class="stat-sub">Manager accounts</span>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon stat-icon--sales">
-        <mat-icon>point_of_sale</mat-icon>
+    <div class="stat-card blue">
+      <div class="stat-card-header">
+        <span class="stat-icon-wrap"><mat-icon>point_of_sale</mat-icon></span>
+        <span class="stat-title">Sales</span>
       </div>
-      <div class="stat-body">
+      <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().sales }}</div>
-        <div class="stat-label">Sales</div>
+        <span class="stat-sub">Sales staff</span>
       </div>
     </div>
   </div>

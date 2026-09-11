@@ -2,57 +2,11 @@
   @if (!hasData()) {
     <div class="empty-chart">
       <span class="material-icons">pie_chart</span>
-      <p>No category breakdown available</p>
+      <p>No data available</p>
     </div>
   } @else {
-    <div class="donut-body">
-      <div class="donut-svg-wrap">
-        <svg viewBox="0 0 200 200" class="donut-svg">
-          @for (slice of slices(); track $index) {
-            <path
-              [attr.d]="slice.path"
-              [attr.fill]="slice.color"
-              [class.is-hovered]="hoveredIndex() === $index"
-              (mouseenter)="hoveredIndex.set($index)"
-              (mouseleave)="hoveredIndex.set(null)"
-            />
-          }
-        </svg>
-        <div class="donut-center">
-          <span class="center-label">Total</span>
-          <span class="center-val">
-            @if (formatAsCurrency()) {
-              {{ totalAmount() | currency: 'ETB' }}
-            } @else {
-              {{ totalAmount() | number }}
-            }
-          </span>
-        </div>
-      </div>
-
-      <div class="donut-legend">
-        @for (slice of slices(); track $index) {
-          <div
-            class="legend-item"
-            [class.is-active]="hoveredIndex() === $index"
-            (mouseenter)="hoveredIndex.set($index)"
-            (mouseleave)="hoveredIndex.set(null)"
-          >
-            <span class="color-dot" [style.background-color]="slice.color"></span>
-            <div class="legend-text">
-              <span class="item-name" [title]="slice.item.name">{{ slice.item.name }}</span>
-              <span class="item-meta">
-                @if (formatAsCurrency()) {
-                  {{ slice.item.amount | currency: 'ETB' }}
-                } @else {
-                  {{ slice.item.amount | number }}
-                }
-                ({{ slice.percentage }}%)
-              </span>
-            </div>
-          </div>
-        }
-      </div>
+    <div style="position: relative; height: 250px; width: 100%;">
+      <canvas #chartCanvas></canvas>
     </div>
   }
 </div>

@@ -37,6 +37,7 @@ import { ThemeService } from '../../services/theme-service';
 import { AuthStore } from '../../store/auth.store';
 import { NotificationService } from '../../services/notification.service';
 import { routeFadeAnimation } from '../../animations/fade.animation';
+import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-shell',
@@ -76,6 +77,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   protected authStore = inject(AuthStore);
   protected notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private confirmService = inject(ConfirmDialogService);
   private destroyRef = inject(DestroyRef);
 
   // ========== Computed User Details ==========
@@ -132,7 +134,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
 
   // computed
   readonly sidenavWidth = computed(() =>
-    this.isMobile() ? '100%' : this.isCollapsed() ? '48px' : '210px'
+    this.isMobile() ? '100%' : this.isCollapsed() ? '48px' : '250px'
   );
   readonly isCollapsedOrMobile = computed(() => this.isCollapsed() || this.isMobile());
   readonly mode = computed(() => (this.isMobile() ? 'over' : 'side'));
@@ -230,7 +232,19 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
-    this.authStore.logout();
+    this.confirmService.confirm({
+      title: 'Sign Out',
+      message: 'Are you sure you want to sign out?',
+      confirmText: 'Sign Out',
+      cancelText: 'Cancel',
+      type: 'warning',
+      icon: 'logout'
+    }).pipe(
+      filter(Boolean),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.authStore.logout();
+    });
   }
 
   getTimeAgo(date: Date): string {

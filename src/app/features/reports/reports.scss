@@ -105,14 +105,7 @@
   overflow-x: auto;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 
-  &::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-  }
 
   button {
     background: transparent;

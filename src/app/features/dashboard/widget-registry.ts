@@ -5,18 +5,17 @@ import { StockHealth } from './widgets/stock-health/stock-health';
 import { RecentOrders } from './widgets/recent-orders/recent-orders';
 import { LowStock } from './widgets/low-stock/low-stock';
 import { RecentActivities } from './widgets/recent-activities/recent-activities';
-import { DASHBOARD_KPIS } from './dashboard-data';
 
 export const WIDGET_REGISTRY: WidgetDefinition[] = [
   // ── KPI widgets (1x1 default) ──────────────────────────────────
   {
     id: 'kpi-revenue',
-    label: 'Revenue (7d)',
+    label: 'Revenue',
     icon: 'payments',
-    description: 'Total sales revenue generated in the last 7 days.',
+    description: 'Total sales revenue generated in the selected period.',
     category: 'kpi',
     content: KpiCard,
-    inputs: { kpi: DASHBOARD_KPIS[0] },
+    inputs: { kpiType: 'revenue' },
     defaultColumns: 1,
     defaultRows: 1,
     minColumns: 1,
@@ -27,12 +26,12 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   },
   {
     id: 'kpi-orders',
-    label: 'Orders (7d)',
+    label: 'Products Sold',
     icon: 'shopping_cart',
-    description: 'Number of orders placed in the last 7 days.',
+    description: 'Number of products sold in the selected period.',
     category: 'kpi',
     content: KpiCard,
-    inputs: { kpi: DASHBOARD_KPIS[1] },
+    inputs: { kpiType: 'orders' },
     defaultColumns: 1,
     defaultRows: 1,
     minColumns: 1,
@@ -42,13 +41,13 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultVisible: true,
   },
   {
-    id: 'kpi-inventory-value',
-    label: 'Inventory Value',
-    icon: 'inventory_2',
-    description: 'Current monetary value of all stock on hand.',
+    id: 'kpi-profit',
+    label: 'Total Profit',
+    icon: 'account_balance_wallet',
+    description: 'Net profit generated in the selected period.',
     category: 'kpi',
     content: KpiCard,
-    inputs: { kpi: DASHBOARD_KPIS[2] },
+    inputs: { kpiType: 'profit' },
     defaultColumns: 1,
     defaultRows: 1,
     minColumns: 1,
@@ -59,12 +58,12 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   },
   {
     id: 'kpi-low-stock',
-    label: 'Low Stock SKUs',
+    label: 'Out of Stock',
     icon: 'warning',
-    description: 'Number of SKUs currently below reorder threshold.',
+    description: 'Number of SKUs currently below minimum stock threshold.',
     category: 'kpi',
     content: KpiCard,
-    inputs: { kpi: DASHBOARD_KPIS[3] },
+    inputs: { kpiType: 'low-stock' },
     defaultColumns: 1,
     defaultRows: 1,
     minColumns: 1,
@@ -92,9 +91,9 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   },
   {
     id: 'stock-health',
-    label: 'Stock Health',
+    label: 'Sales by Category',
     icon: 'bar_chart',
-    description: 'Stock level percentage by category vs reorder capacity.',
+    description: 'Total sales revenue broken down by product category.',
     category: 'charts',
     content: StockHealth,
     defaultColumns: 1,
@@ -108,10 +107,10 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
 
   // ── Tables & Lists ─────────────────────────────────────────────
   {
-    id: 'recent-orders',
-    label: 'Recent Orders',
-    icon: 'receipt_long',
-    description: 'Latest sales order transactions with status and totals.',
+    id: 'top-products',
+    label: 'Top Products',
+    icon: 'star',
+    description: 'Best performing products by revenue in the selected period.',
     category: 'tables',
     content: RecentOrders,
     defaultColumns: 2,
@@ -140,8 +139,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   {
     id: 'recent-activities',
     label: 'Recent Activities',
-    icon: 'history',
-    description: 'Real-time audit log of inventory & order events.',
+    icon: 'notifications',
+    description: 'A timeline of the most recent system activities.',
     category: 'lists',
     content: RecentActivities,
     defaultColumns: 1,

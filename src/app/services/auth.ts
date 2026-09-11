@@ -32,10 +32,39 @@ export class AuthService {
     return normalized.includes(target);
   }
 
+  setToken(token: string) {
+    localStorage.setItem('accessToken', token);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('accessToken');
+  }
+
+  removeToken() {
+    localStorage.removeItem('accessToken');
+  }
+
+  private decodeToken(token: string): any {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload);
+      return JSON.parse(decoded);
+    } catch (e) {
+      return null;
+    }
+  }
+
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, credentials, {
       withCredentials: true,
-    });
+    }).pipe(
+      tap(res => {
+        const token = res.accessToken || res.token;
+        if (token) {
+          this.setToken(token);
+        }
+      })
+    );
   }
 
   register(credentials: RegisterCredentials): Observable<AuthResponse> {
@@ -44,12 +73,28 @@ export class AuthService {
     });
   }
 
+  refresh(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, { refreshToken: null }, {
+      withCredentials: true,
+    }).pipe(
+      tap(res => {
+        const token = res.accessToken || res.token;
+        if (token) {
+          this.setToken(token);
+          this.getCurrentUser().subscribe(); // Re-decode and set current user
+        }
+      })
+    );
+  }
+
   logout(): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
+        this.removeToken();
         this.currentUser.set(null);
       }),
       catchError(() => {
+        this.removeToken();
         this.currentUser.set(null);
         return of(undefined);
       }),
@@ -57,21 +102,34 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<User | null> {
-    return this.http.get<User>(`${this.baseUrl}/me`, { withCredentials: true }).pipe(
-      map((user) => {
-        if (!user) return null;
-        const u = user as any;
-        return {
-          ...user,
-          userName: user.userName || u.username || undefined,
-        };
-      }),
-      tap((user) => this.currentUser.set(user)),
-      catchError(() => {
-        this.currentUser.set(null);
-        return of(null);
-      }),
-    );
+    const token = this.getToken();
+    if (!token) {
+      this.currentUser.set(null);
+      return of(null);
+    }
+
+    const decoded = this.decodeToken(token);
+    if (!decoded) {
+      this.currentUser.set(null);
+      return of(null);
+    }
+
+    const user: User = {
+      id: decoded.nameid || decoded.sub || decoded.id || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '',
+      email: decoded.email || decoded.unique_name || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || '',
+      userName: decoded.unique_name || decoded.userName || decoded.email || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || '',
+      roles: decoded.role || decoded.roles || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [],
+      firstName: decoded.given_name || decoded.firstName || decoded.FirstName || decoded.firstname || '',
+      lastName: decoded.family_name || decoded.lastName || decoded.LastName || decoded.lastname || ''
+    };
+
+    // Ensure roles is always an array for consistency
+    if (typeof user.roles === 'string') {
+      user.roles = [user.roles];
+    }
+
+    this.currentUser.set(user);
+    return of(user);
   }
 
   changePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {

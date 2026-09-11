@@ -1,15 +1,15 @@
-<span class="alerts-count">{{ lowStockAlerts.length }}</span>
+<span class="alerts-count">{{ lowStockAlerts().length }}</span>
 
 <div class="alerts-list">
-  @for (a of lowStockAlerts; track a.sku) {
+  @for (a of lowStockAlerts(); track a.sku) {
     <div class="alert-row">
       <div class="alert-info">
-        <p class="alert-name">{{ a.name }}</p>
+        <p class="alert-name">{{ a.product }}</p>
         <p class="alert-sku mono">{{ a.sku }}</p>
       </div>
       <div class="alert-qty">
-        <p class="alert-onhand mono">{{ a.onHand }}</p>
-        <!-- <p class="alert-of">of {{ a.reorderPoint }}</p> -->
+        <p class="alert-onhand mono" [class.error]="a.currentStock === 0">{{ a.currentStock }}</p>
+        <!-- <p class="alert-of">of {{ a.minimumStock }}</p> -->
       </div>
     </div>
   }

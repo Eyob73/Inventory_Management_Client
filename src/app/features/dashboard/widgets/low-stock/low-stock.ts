@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { LOW_STOCK_ALERTS } from '../../dashboard-data';
+import { DashboardStore } from '../../../../store/dashboard.store';
 
 @Component({
   selector: 'app-low-stock',
@@ -12,5 +12,10 @@ import { LOW_STOCK_ALERTS } from '../../dashboard-data';
   styleUrl: './low-stock.scss',
 })
 export class LowStock {
-  lowStockAlerts = LOW_STOCK_ALERTS;
+  private readonly store = inject(DashboardStore);
+  
+  readonly lowStockAlerts = computed(() => {
+    const low = this.store.lowStock();
+    return low ? low.table.items : [];
+  });
 }

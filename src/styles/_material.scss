@@ -540,15 +540,6 @@
   .notification-list {
     max-height: 320px;
     overflow-y: auto;
-
-    &::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: 4px;
-    }
   }
 
   .notification-item {
@@ -755,34 +746,6 @@
   overflow-x: auto;
   overflow-y: visible;
   position: relative;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 999px;
-    transition: background 0.2s ease;
-  }
-
-  &:hover {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-strong, var(--border)) transparent;
-
-    &::-webkit-scrollbar-thumb {
-      background: var(--border-strong, var(--border));
-
-      &:hover {
-        background: var(--slate);
-      }
-    }
-  }
 }
 
 

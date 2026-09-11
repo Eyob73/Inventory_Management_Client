@@ -2,7 +2,7 @@ import { Injectable, signal, computed, effect } from '@angular/core';
 import { WidgetDefinition, UserWidgetConfig, DashboardWidget, WidgetSettings } from '../models/dashboard';
 import { WIDGET_REGISTRY } from '../features/dashboard/widget-registry';
 
-const STORAGE_KEY = 'dashboard_widget_config_v3';
+const STORAGE_KEY = 'dashboard_widget_config_v5';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {

@@ -1,27 +1,25 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { CurrencyPipe, NgClass } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { Order, RECENT_ORDERS } from '../../dashboard-data';
+import { DashboardStore } from '../../../../store/dashboard.store';
 
 @Component({
-  selector: 'app-recent-orders',
+  selector: 'app-top-products',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, NgClass, MatButtonModule, MatIconModule, MatTableModule],
+  imports: [CurrencyPipe, MatButtonModule, MatIconModule, MatTableModule],
   templateUrl: './recent-orders.html',
   styleUrl: './recent-orders.scss',
 })
 export class RecentOrders {
-  displayedColumns = ['id', 'customer', 'items', 'total', 'status'];
-  recentOrders = RECENT_ORDERS;
+  private readonly store = inject(DashboardStore);
+  
+  readonly topProducts = computed(() => {
+    const data = this.store.data();
+    return data ? data.topProducts : [];
+  });
 
-  statusClass(status: Order['status']): string {
-    return {
-      Fulfilled: 'status-fulfilled',
-      Processing: 'status-processing',
-      Backordered: 'status-backordered',
-    }[status];
-  }
+  displayedColumns = ['name', 'quantity', 'amount'];
 }

@@ -9,24 +9,6 @@
   color: var(--ink);
   font-family: 'Inter', system-ui, sans-serif;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 9999px;
-
-    &:hover {
-      background: var(--slate-soft);
-    }
-  }
 }
 
 .receipt-header {
@@ -127,15 +109,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
 
-  &::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
 
-  &::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-  }
 
   .receipt-items-table {
     width: 100%;

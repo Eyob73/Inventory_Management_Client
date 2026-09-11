@@ -1,52 +1,123 @@
-import { Component, ChangeDetectionStrategy, computed, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { REVENUE_TREND } from '../../dashboard-data';
+import { Component, ChangeDetectionStrategy, effect, ViewChild, ElementRef, OnDestroy, inject, computed } from '@angular/core';
+import { DashboardStore } from '../../../../store/dashboard.store';
+import Chart from 'chart.js/auto';
+
+function getCssVariable(name: string): string {
+  if (name.startsWith('var(')) {
+    const varName = name.match(/var\(([^),]+)/)?.[1];
+    if (varName) {
+      return getComputedStyle(document.documentElement).getPropertyValue(varName.trim()).trim() || '#14b8a6';
+    }
+  }
+  return name;
+}
 
 @Component({
   selector: 'app-revenue-chart',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe],
+  imports: [],
   templateUrl: './revenue-chart.html',
   styleUrl: './revenue-chart.scss',
 })
-export class RevenueChart {
-  private readonly chartW = 560;
-  private readonly chartH = 190;
-  private readonly padY = 16;
+export class RevenueChart implements OnDestroy {
+  private readonly store = inject(DashboardStore);
+  
+  readonly chartData = computed(() => {
+    const data = this.store.data();
+    if (!data) return [];
+    return data.salesOverTime;
+  });
 
-  private readonly data = REVENUE_TREND;
+  private chartInstance: Chart | null = null;
+  private canvasEl?: ElementRef<HTMLCanvasElement>;
 
-  private readonly maxRevenue = Math.max(...this.data.map((d) => d.revenue));
-  private readonly minRevenue = Math.min(...this.data.map((d) => d.revenue));
+  @ViewChild('chartCanvas') set canvas(el: ElementRef<HTMLCanvasElement> | undefined) {
+    this.canvasEl = el;
+    this.updateChart();
+  }
 
-  readonly chartPoints = computed(() => {
-    const max = this.maxRevenue;
-    const min = this.minRevenue;
-    const range = max - min || 1;
-    const stepX = this.chartW / (this.data.length - 1);
-    const usableH = this.chartH - this.padY * 2;
-
-    return this.data.map((d, i) => {
-      const x = i * stepX;
-      const y = this.padY + usableH - ((d.revenue - min) / range) * usableH;
-      return { x, y, ...d };
+  constructor() {
+    effect(() => {
+      this.updateChart();
     });
-  });
+  }
 
-  readonly linePath = computed(() =>
-    this.chartPoints()
-      .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
-      .join(' '),
-  );
+  private updateChart() {
+    const data = this.chartData(); // Read signal early to track dependencies
+    
+    if (!this.canvasEl) return;
+    const ctx = this.canvasEl.nativeElement.getContext('2d');
+    if (!ctx) return;
 
-  readonly areaPath = computed(() => {
-    const pts = this.chartPoints();
-    const line = this.linePath();
-    const last = pts[pts.length - 1];
-    const first = pts[0];
-    return `${line} L ${last.x.toFixed(1)} ${this.chartH} L ${first.x.toFixed(1)} ${this.chartH} Z`;
-  });
+    const resolvedColor = getCssVariable('var(--teal)');
 
-  hoveredPoint = signal<number | null>(null);
+    if (this.chartInstance) {
+      this.chartInstance.data.labels = data.map(d => new Date(d.label).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }));
+      this.chartInstance.data.datasets[0].data = data.map(d => d.value);
+      this.chartInstance.update();
+    } else {
+      this.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(d => new Date(d.label).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })),
+          datasets: [{
+            label: 'Revenue',
+            data: data.map(d => d.value),
+            borderColor: resolvedColor,
+            backgroundColor: resolvedColor + '40',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += new Intl.NumberFormat('en-ET', { style: 'currency', currency: 'ETB' }).format(context.parsed.y);
+                  }
+                  const point = this.chartData()[context.dataIndex];
+                  if (point && point.count > 0) {
+                    label += ` (${point.count} orders)`;
+                  }
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              border: { dash: [4, 4] },
+              grid: {
+                color: '#e2e8f0',
+                tickLength: 0
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+      this.chartInstance = null;
+    }
+  }
 }

@@ -4,32 +4,26 @@
     <div>
       <h1 class="dash-title">
         @if (isSales()) {
-          Sales Dashboard
+        Sales Dashboard
         } @else if (isAdmin()) {
-          Admin Overview
+        Admin Overview
         } @else {
-          Overview
+        Overview
         }
       </h1>
       <p class="dash-subtitle">
-        Welcome back, <strong>{{ userName() }}</strong> ·
         @if (isSales()) {
-          Track your sales, revenue, and customers.
+        Track your sales, revenue, and customers.
         } @else {
-          Sales, stock &amp; real-time inventory performance · updated 4 min ago
+        Sales, stock &amp; real-time inventory performance
         }
       </p>
     </div>
 
     @if (!isSales()) {
     <div class="dash-header-actions">
-      <button
-        mat-button
-        class="customize-btn"
-        (click)="openPanel()"
-        matTooltip="Add or remove widgets"
-        id="customize-dashboard-btn"
-      >
+      <button mat-button class="customize-btn" (click)="openPanel()" matTooltip="Add or remove widgets"
+        id="customize-dashboard-btn">
         <mat-icon>tune</mat-icon>
         Customize
       </button>
@@ -37,81 +31,73 @@
     }
   </div>
 
-  <!-- Sales Quick Actions (Sales role only) -->
-  @if (isSales()) {
-    <div class="quick-actions">
-      <a class="quick-action-card" routerLink="/sales">
-        <div class="qa-icon qa-icon--primary">
-          <mat-icon>add_shopping_cart</mat-icon>
-        </div>
-        <div class="qa-body">
-          <span class="qa-title">Create Sale</span>
-          <span class="qa-sub">Start a new transaction</span>
-        </div>
-        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
-      </a>
-      <a class="quick-action-card" routerLink="/products">
-        <div class="qa-icon qa-icon--blue">
-          <mat-icon>inventory_2</mat-icon>
-        </div>
-        <div class="qa-body">
-          <span class="qa-title">View Products</span>
-          <span class="qa-sub">Browse available catalog</span>
-        </div>
-        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
-      </a>
-      <a class="quick-action-card" routerLink="/customers">
-        <div class="qa-icon qa-icon--amber">
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="qa-body">
-          <span class="qa-title">View Customers</span>
-          <span class="qa-sub">Find or add customers</span>
-        </div>
-        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
-      </a>
+  <!-- Welcome Banner -->
+  <div class="welcome-banner animate-in">
+    <div class="welcome-text">
+      <h2>Welcome back, {{ userName() }}!</h2>
+      <p>
+        @if (isSales()) {
+        Ready to close some deals? You have new leads waiting for follow-up.
+        } @else if (isAdmin()) {
+        System overview looks good. You have 3 pending approvals today.
+        } @else {
+        Your inventory overview is up to date. Check recent stock movements.
+        }
+      </p>
+      <div class="welcome-actions">
+        @if (isSales()) {
+        <button class="welcome-btn welcome-btn-primary" routerLink="/sales">
+          <mat-icon
+            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add_shopping_cart</mat-icon>
+          New Sale
+        </button>
+        } @else {
+        <button class="welcome-btn welcome-btn-primary" routerLink="/products">
+          <mat-icon
+            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add</mat-icon>
+          Add Product
+        </button>
+        }
+        <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
+          <mat-icon
+            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">download</mat-icon>
+          Export Report
+        </button>
+      </div>
     </div>
-  }
+    <div class="welcome-illustration">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </div>
+  </div>
 
   <!-- Dashboard CSS Grid Layout with cdkDropListGroup -->
   <div class="dashboard-grid" cdkDropListGroup>
     @for (w of activeWidgets(); track w.id) {
-      <div
-        class="widget-slot"
-        [style.grid-column]="'span ' + w.columns"
-        [style.grid-row]="'span ' + w.rows"
-        cdkDropList
-        [cdkDropListData]="w"
-        (cdkDropListDropped)="onWidgetDrop($event)"
-      >
-        <app-widget
-          [widget]="w"
-          cdkDrag
-          [cdkDragData]="w"
-        />
-      </div>
+    <div class="widget-slot" [style.grid-column]="'span ' + w.columns" [style.grid-row]="'span ' + w.rows" cdkDropList
+      [cdkDropListData]="w" (cdkDropListDropped)="onWidgetDrop($event)">
+      <app-widget [widget]="w" cdkDrag [cdkDragData]="w" />
+    </div>
     }
 
     <!-- Empty State Banner -->
     @if (activeWidgets().length === 0) {
-      <div class="empty-state">
-        <mat-icon>dashboard_customize</mat-icon>
-        <h3>No active widgets</h3>
-        <p>Your dashboard is currently empty. Click Customize to choose which widgets to display.</p>
-        @if (!isSales()) {
-          <div class="empty-actions">
-            <button mat-flat-button class="empty-btn" (click)="openPanel()">
-              <mat-icon>tune</mat-icon>
-              Customize Dashboard
-            </button>
-            <button mat-stroked-button (click)="resetLayout()">
-              <mat-icon>restart_alt</mat-icon>
-              Restore Default Layout
-            </button>
-          </div>
-        }
+    <div class="empty-state">
+      <mat-icon>dashboard_customize</mat-icon>
+      <h3>No active widgets</h3>
+      <p>Your dashboard is currently empty. Click Customize to choose which widgets to display.</p>
+      @if (!isSales()) {
+      <div class="empty-actions">
+        <button mat-flat-button class="empty-btn" (click)="openPanel()">
+          <mat-icon>tune</mat-icon>
+          Customize Dashboard
+        </button>
+        <button mat-stroked-button (click)="resetLayout()">
+          <mat-icon>restart_alt</mat-icon>
+          Restore Default Layout
+        </button>
       </div>
+      }
+    </div>
     }
   </div>
 </div>
-

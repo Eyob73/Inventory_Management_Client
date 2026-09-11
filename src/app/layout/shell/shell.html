@@ -46,17 +46,19 @@
 
     <!-- User footer -->
     <div class="sidenav-footer">
-      <mat-divider />
-      <a mat-list-item routerLink="/profile" class="user-item" [matTooltip]="isCollapsedOrMobile() ? userName() : ''"
-        matTooltipPosition="right">
-        <span class="user-avatar" matListItemIcon>{{ userInitials() }}</span>
-        @if (!isCollapsedOrMobile()) {
-        <span matListItemTitle class="user-name">{{ userName() }}</span>
-        }
-        @if (!isCollapsedOrMobile()) {
-        <span matListItemLine class="user-role">{{ userRole() }}</span>
-        }
-      </a>
+      <div class="sidebar-user" [matTooltip]="isCollapsedOrMobile() ? userName() : ''" matTooltipPosition="right">
+        <div class="user-avatar-wrapper">
+          <div class="user-avatar">{{ userInitials() }}</div>
+          <span class="user-status-dot"></span>
+        </div>
+        <div class="user-info">
+          <h4>{{ userName() }}</h4>
+          <span>{{ userRole() }}</span>
+        </div>
+        <button class="logout-btn" type="button" title="Sign out" (click)="logout(); $event.preventDefault(); $event.stopPropagation()">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
     </div>
   </mat-sidenav>
 
