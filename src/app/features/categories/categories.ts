@@ -8,6 +8,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -34,6 +35,7 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatPaginatorModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -212,3 +214,4 @@ export class Categories implements OnInit {
     this.store.clearError();
   }
 }
+

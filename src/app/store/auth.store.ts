@@ -126,26 +126,22 @@ export const AuthStore = signalStore(
             ),
             catchError((err) => {
               let errorMsg = 'Invalid credentials';
-              if (err?.status === 401 || err?.status === 400 || err?.status === 403) {
+
+              // 403 = company suspended/deactivated — show the server message
+              if (err?.status === 403 && err?.error?.detail) {
+                errorMsg = err.error.detail;
+              } else if (err?.status === 423 && err?.error?.detail) {
+                errorMsg = err.error.detail;
+              } else if (err?.status === 401 || err?.status === 400) {
                 errorMsg = 'Invalid credentials';
-              } else if (err?.error?.message) {
-                const msg = String(err.error.message);
-                errorMsg = /invalid|credential|unauthorized|bad request|failed/i.test(msg)
-                  ? 'Invalid credentials'
-                  : msg;
               } else if (err?.error?.detail) {
                 const detail = String(err.error.detail);
-                errorMsg = /invalid|credential|unauthorized|bad request|failed/i.test(detail)
+                errorMsg = /invalid|credential|unauthorized/i.test(detail)
                   ? 'Invalid credentials'
                   : detail;
-              } else if (typeof err?.error === 'string' && err.error.trim()) {
-                const strErr = err.error.trim();
-                errorMsg = /invalid|credential|unauthorized|bad request|failed/i.test(strErr)
-                  ? 'Invalid credentials'
-                  : strErr;
-              } else if (err?.message) {
-                const msg = String(err.message);
-                errorMsg = /invalid|credential|unauthorized|bad request|401|400|failed/i.test(msg)
+              } else if (err?.error?.message) {
+                const msg = String(err.error.message);
+                errorMsg = /invalid|credential|unauthorized/i.test(msg)
                   ? 'Invalid credentials'
                   : msg;
               }
@@ -194,7 +190,7 @@ export const AuthStore = signalStore(
                 isLoading: false,
                 error: null,
               });
-              router.navigate(['/login']);
+              window.location.href = '/login';
             }),
             catchError(() => {
               localStorage.setItem('logged_out', 'true');
@@ -204,7 +200,7 @@ export const AuthStore = signalStore(
                 isLoading: false,
                 error: null,
               });
-              router.navigate(['/login']);
+              window.location.href = '/login';
               return EMPTY;
             })
           )

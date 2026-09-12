@@ -1,6 +1,6 @@
 <div class="page-header">
   <div class="header-content">
-    <button mat-icon-button routerLink="/system-admin/companies" class="back-btn">
+    <button class="action-btn" routerLink="/system-admin/companies">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="header-titles">
@@ -21,17 +21,17 @@
   @if (company()) {
     <div class="header-actions">
       @if (company()!.status !== 0) {
-        <button mat-button class="text-green" (click)="activate()">
+        <button class="btn btn--ghost text-green" (click)="activate()">
           <mat-icon>check_circle</mat-icon> Activate
         </button>
       }
       @if (company()!.status !== 1) {
-        <button mat-button class="text-amber" (click)="suspend()">
+        <button class="btn btn--ghost text-amber" (click)="suspend()">
           <mat-icon>pause_circle_outline</mat-icon> Suspend
         </button>
       }
       @if (company()!.status !== 2) {
-        <button mat-button class="text-red" (click)="deactivate()">
+        <button class="btn btn--ghost text-red" (click)="deactivate()">
           <mat-icon>block</mat-icon> Deactivate
         </button>
       }
@@ -47,7 +47,7 @@
   <div class="empty-state">
     <mat-icon class="empty-icon text-red">error_outline</mat-icon>
     <h3>{{ error() }}</h3>
-    <button mat-button (click)="loadCompany(route.snapshot.paramMap.get('id')!)">Try Again</button>
+    <button class="btn btn--primary" (click)="loadCompany(route.snapshot.paramMap.get('id')!)">Try Again</button>
   </div>
 } @else if (company()) {
   <div class="content-grid">
@@ -76,7 +76,7 @@
     <div class="detail-card">
       <h3 class="card-title">Quick Links</h3>
       <div class="actions-list">
-        <button mat-stroked-button routerLink="/system-admin/companies/{{ company()?.id }}/users">
+        <button class="btn btn--outline" routerLink="/system-admin/companies/{{ company()?.id }}/users">
           <mat-icon>people</mat-icon>
           Manage Users
         </button>

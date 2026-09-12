@@ -1,24 +1,57 @@
-<div class="page-header">
-  <div class="header-left">
-    <h1 class="page-title">System Users</h1>
-    <p class="page-subtitle">View all registered users across all companies.</p>
+<div class="products-container"><div class="products-header">
+  <div class="header-left-wrap">
+    <h1 class="products-title">System Users</h1>
+    <p class="products-subtitle">View all registered users across all companies.</p>
   </div>
   <div class="header-actions">
-    <button mat-button (click)="loadData()">
+    <button class="btn btn--ghost" (click)="loadUsers()">
       <mat-icon>refresh</mat-icon>
       Refresh
     </button>
   </div>
 </div>
 
-<div class="table-container">
+<div class="filters-card">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search Users</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="e.g. name or email..."
+        [ngModel]="searchQuery()"
+        (input)="onSearch($event)"
+      />
+      <mat-icon matPrefix>search</mat-icon>
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="clearSearch()" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="filter-form-field">
+      <mat-label>Company</mat-label>
+      <mat-select (selectionChange)="onTenantChange($event.value)" [value]="tenantFilter()">
+        <mat-option [value]="null">All Companies & System</mat-option>
+        <mat-option value="system">System Admins Only</mat-option>
+        <mat-divider></mat-divider>
+        @for (tenant of tenantsList(); track tenant.id) {
+          <mat-option [value]="tenant.id">{{ tenant.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="table-card"> <div class="table-wrapper">
   @if (loading()) {
     <app-table-skeleton [columns]="[{width:'30%'},{width:'25%'},{width:'15%'},{width:'30%'}]"></app-table-skeleton>
   } @else if (error()) {
     <div class="empty-state">
       <mat-icon class="empty-icon text-red">error_outline</mat-icon>
       <h3>{{ error() }}</h3>
-      <button mat-button (click)="loadData()">Try Again</button>
+      <button class="btn btn--primary" (click)="loadUsers()">Try Again</button>
     </div>
   } @else if (users().length === 0) {
     <div class="empty-state">
@@ -27,9 +60,9 @@
       <p>There are no users registered in the system yet.</p>
     </div>
   } @else {
-    <table mat-table [dataSource]="users()" class="modern-table">
+    <table mat-table [dataSource]="users()" class="modern-table" matSort (matSortChange)="onSort($event)">
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
         <td mat-cell *matCellDef="let element">
           <div class="user-cell">
             <div class="avatar">{{ getUserInitials(element) }}</div>
@@ -41,7 +74,7 @@
       </ng-container>
 
       <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
         <td mat-cell *matCellDef="let element"> {{element.email}} </td>
       </ng-container>
 
@@ -64,6 +97,14 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    
+    <mat-paginator [length]="totalLength()" [pageSize]="pageSize()" [pageSizeOptions]="pageSizeOptions"
+      (page)="onPage($event)" aria-label="Select page">
+    </mat-paginator>
   }
+  </div>
 </div>
+</div>
+
+
 

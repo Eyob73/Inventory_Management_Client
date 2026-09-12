@@ -1,19 +1,21 @@
-import { Component, input, computed, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, input, computed, signal, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Product } from '../../../models/products.model';
 import { getStockStatus } from '../../../utils/product-permissions';
 import { environment } from '../../../../environments/environment.development';
+import { ImagePreviewDialogComponent } from '../../../ui/image-preview-dialog/image-preview-dialog.component';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, DatePipe, MatIconModule],
+  imports: [CommonModule, DatePipe, MatIconModule, MatDialogModule],
   templateUrl: './product-details.html',
   styleUrl: './product-details.scss',
 })
 export class ProductDetails {
-  @ViewChild('fullscreenDialog') dialogRef!: ElementRef<HTMLDialogElement>;
+  private dialog = inject(MatDialog);
 
   readonly product = input.required<Product>();
   readonly categoryName = input<string | null>(null);
@@ -28,30 +30,16 @@ export class ProductDetails {
   });
   readonly minStock = computed(() => this.product().minimumStockLevel ?? null);
   
-  readonly isFullscreen = signal<boolean>(false);
-
   toggleFullscreen() {
-    const dialog = this.dialogRef?.nativeElement;
-    if (!dialog) return;
-
-    if (this.isFullscreen()) {
-      dialog.close();
-      this.isFullscreen.set(false);
-    } else {
-      dialog.showModal();
-      this.isFullscreen.set(true);
-    }
-  }
-
-  closeDialog(event?: Event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    const dialog = this.dialogRef?.nativeElement;
-    if (dialog) {
-      dialog.close();
-    }
-    this.isFullscreen.set(false);
+    if (!this.imageUrl()) return;
+    this.dialog.open(ImagePreviewDialogComponent, {
+      data: { imageUrl: this.imageUrl(), altText: this.product().name },
+      panelClass: 'fullscreen-image-dialog',
+      backdropClass: 'fullscreen-image-backdrop',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      height: '100%',
+      width: '100%',
+    });
   }
 }

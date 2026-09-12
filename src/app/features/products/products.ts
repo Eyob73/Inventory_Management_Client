@@ -1,12 +1,17 @@
-import { Component, inject, ViewChild, effect, OnInit, computed } from '@angular/core';
+import { Category } from '../../models/category.model';
+import { CategoryService } from '../../services/category';
+import { FormsModule } from '@angular/forms';
+import { signal, Component, inject, ViewChild, effect, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Product } from '../../models/products.model';
 import { ProductStore } from '../../store/products.store';
@@ -26,6 +31,7 @@ import { environment } from '../../../environments/environment.development';
   selector: 'app-products',
   standalone: true,
   imports: [
+    FormsModule,
     CommonModule,
     RouterLink,
     MatTableModule,
@@ -33,7 +39,9 @@ import { environment } from '../../../environments/environment.development';
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatIconModule,
+    MatButtonModule,
     MatTooltipModule,
     TableSkeleton,
   ],
@@ -42,6 +50,8 @@ import { environment } from '../../../environments/environment.development';
 })
 export class Products implements OnInit {
   readonly store = inject(ProductStore);
+  categoryService = inject(CategoryService);
+  categories = signal<Category[]>([]);
   readonly authStore = inject(AuthStore);
   private router = inject(Router);
   private confirmDialog = inject(ConfirmDialogService);
@@ -78,6 +88,8 @@ export class Products implements OnInit {
     }
   }
 
+  
+
   constructor() {
     effect(() => {
       const products = this.store.entities();
@@ -86,6 +98,7 @@ export class Products implements OnInit {
   }
 
   ngOnInit(): void {
+    this.categoryService.getAll().subscribe(cats => this.categories.set(cats));
     this.store.loadProducts({ pageIndex: 1, pageSize: 10 });
   }
 
@@ -97,9 +110,19 @@ export class Products implements OnInit {
     });
   }
 
-  applyFilter(event: Event) {
+  
+  onCategoryChange(categoryId: string): void {
+    this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: this.store.search(), categoryId });
+  }
+
+  applyFilter(event: Event): void {
     const search = (event.target as HTMLInputElement).value.trim();
     this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search });
+  }
+
+  clearSearch(input: HTMLInputElement): void {
+    input.value = '';
+    this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: '' });
   }
 
   viewDetails(product: Product): void {
@@ -123,3 +146,5 @@ export class Products implements OnInit {
     return getStockStatus(stock);
   }
 }
+
+

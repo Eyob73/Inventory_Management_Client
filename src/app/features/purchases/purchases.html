@@ -75,22 +75,32 @@
     </div>
   </div>
 
-  <div class="filter-panel">
-    <div class="toolbar">
-      <mat-form-field appearance="outline" class="search-form-field">
-        <mat-icon matPrefix class="search-icon">search</mat-icon>
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Purchases</mat-label>
         <input
           matInput
-          type="text"
-          placeholder="Search by PO number, supplier, or status…"
-          [value]="store.search()"
+          placeholder="e.g. PO number, supplier, or status…"
+          [ngModel]="store.search()"
           (input)="applyFilter($event)"
         />
+        <mat-icon matPrefix>search</mat-icon>
         @if (store.search()) {
           <button matSuffix mat-icon-button (click)="store.setSearch('')" aria-label="Clear search">
             <mat-icon>close</mat-icon>
           </button>
         }
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [ngModel]="store.statusFilter()" (ngModelChange)="store.setStatusFilter($event)">
+          <mat-option value="">All Statuses</mat-option>
+          <mat-option value="Draft">Draft</mat-option>
+          <mat-option value="Completed">Completed</mat-option>
+          <mat-option value="Cancelled">Cancelled</mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
   </div>
@@ -231,3 +241,5 @@
     </div>
   }
 </div>
+
+

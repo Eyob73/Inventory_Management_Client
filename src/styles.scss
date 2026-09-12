@@ -263,3 +263,12 @@ input[placeholder*="search" i] {
     }
   }
 }
+/* Fullscreen Image Dialog */
+.fullscreen-image-backdrop {
+  background: rgba(0, 0, 0, 0.9);
+}
+.fullscreen-image-dialog .mat-mdc-dialog-container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+

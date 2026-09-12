@@ -42,6 +42,7 @@ export class Dashboard {
   readonly userRole = computed(() => this.authStore.userRole());
   readonly isSales = computed(() => this.authStore.userRole()?.toLowerCase() === 'sales');
   readonly isAdmin = computed(() => this.authStore.userRole()?.toLowerCase() === 'admin');
+  readonly isSystemAdmin = computed(() => this.authStore.userRole()?.toLowerCase() === 'systemadmin');
   readonly userName = computed(() => {
     const u = this.authStore.user();
     return u?.firstName || u?.userName || 'there';

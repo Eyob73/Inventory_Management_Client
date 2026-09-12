@@ -1,13 +1,4 @@
 <div class="pd">
-  <!-- Top Layer Dialog for fullscreen -->
-  <dialog #fullscreenDialog class="pd-fullscreen-overlay" (click)="closeDialog($event)" (close)="closeDialog()">
-    @if (imageUrl()) {
-      <button class="pd-fullscreen-close" (click)="closeDialog($event)" aria-label="Close fullscreen">
-        <mat-icon>close</mat-icon>
-      </button>
-      <img [src]="imageUrl()!" [alt]="product().name" class="pd-fullscreen-image" (click)="$event.stopPropagation()" />
-    }
-  </dialog>
   <header class="pd-hero">
     <div class="pd-hero__media">
       @if (imageUrl()) {
@@ -107,3 +98,4 @@
     </section>
   </div>
 </div>
+

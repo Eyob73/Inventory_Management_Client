@@ -1,15 +1,25 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { WidgetDefinition, UserWidgetConfig, DashboardWidget, WidgetSettings } from '../models/dashboard';
-import { WIDGET_REGISTRY } from '../features/dashboard/widget-registry';
+import { WIDGET_REGISTRY, MANAGER_WIDGET_REGISTRY, SALES_WIDGET_REGISTRY } from '../features/dashboard/widget-registry';
+import { SYSTEM_WIDGET_REGISTRY } from '../features/dashboard/system-widget-registry';
+import { AuthStore } from '../store/auth.store';
 
-const STORAGE_KEY = 'dashboard_widget_config_v5';
+const STORAGE_KEY = 'dashboard_widget_config_v7';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  readonly availableDefinitions = WIDGET_REGISTRY;
+  private readonly authStore = inject(AuthStore);
+
+  readonly availableDefinitions = computed(() => {
+    const role = this.authStore.userRole()?.toLowerCase();
+    if (role === 'systemadmin') return SYSTEM_WIDGET_REGISTRY;
+    if (role === 'sales') return SALES_WIDGET_REGISTRY;
+    if (role === 'manager' || role === 'admin') return MANAGER_WIDGET_REGISTRY;
+    return WIDGET_REGISTRY;
+  });
 
   /** Raw widget user configurations signal */
-  private readonly _userConfigs = signal<UserWidgetConfig[]>(this._loadConfig());
+  private readonly _userConfigs = signal<UserWidgetConfig[]>([]);
 
   /** Loading state map for widgets */
   private readonly _loadingMap = signal<Record<string, boolean>>({});
@@ -18,13 +28,14 @@ export class DashboardService {
   private readonly _errorMap = signal<Record<string, string | null>>({});
 
   constructor() {
+    this._userConfigs.set(this._loadConfig(this.availableDefinitions()));
+
     // Automatically synchronize signal state with localStorage via Angular effect()
     effect(() => {
       const configs = this._userConfigs();
       this._saveConfig(configs);
     });
   }
-
   /**
    * Computed list of all registered widgets merged with user configs (active & inactive).
    */
@@ -33,7 +44,7 @@ export class DashboardService {
     const loading = this._loadingMap();
     const errors = this._errorMap();
 
-    return this.availableDefinitions.map((def) => {
+    return this.availableDefinitions().map((def) => {
       const saved = configs.find((c) => c.id === def.id);
       const visible = saved ? saved.visible : def.defaultVisible;
       const columns = saved ? saved.columns : def.defaultColumns;
@@ -84,7 +95,7 @@ export class DashboardService {
           c.id === id ? { ...c, visible: true, position: maxPos + 1 } : c,
         );
       } else {
-        const def = this.availableDefinitions.find((w) => w.id === id);
+        const def = this.availableDefinitions().find((w) => w.id === id);
         if (!def) return configs;
         return [
           ...configs,
@@ -109,7 +120,7 @@ export class DashboardService {
 
   /** Resize widget dimensions (columns and rows) */
   resizeWidget(id: string, columns: number, rows: number): void {
-    const def = this.availableDefinitions.find((w) => w.id === id);
+    const def = this.availableDefinitions().find((w) => w.id === id);
     if (!def) return;
 
     const clampedCols = Math.min(
@@ -194,21 +205,21 @@ export class DashboardService {
     } catch {
       // Ignore storage errors
     }
-    this._userConfigs.set(this._defaultConfig());
+    this._userConfigs.set(this._defaultConfig(this.availableDefinitions()));
   }
 
   // ──────────────────────────────────────────────────────────────
   // Private Helpers
   // ──────────────────────────────────────────────────────────────
 
-  private _loadConfig(): UserWidgetConfig[] {
+  private _loadConfig(defs: WidgetDefinition[]): UserWidgetConfig[] {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed: UserWidgetConfig[] = JSON.parse(raw);
-        // Merge saved configs with WIDGET_REGISTRY definitions
+        // Merge saved configs with definitions
         const merged: UserWidgetConfig[] = [];
-        this.availableDefinitions.forEach((def, index) => {
+        defs.forEach((def, index) => {
           const saved = parsed.find((c) => c.id === def.id);
           if (saved) {
             merged.push({
@@ -235,11 +246,11 @@ export class DashboardService {
     } catch {
       // Corrupted storage fallback
     }
-    return this._defaultConfig();
+    return this._defaultConfig(defs);
   }
 
-  private _defaultConfig(): UserWidgetConfig[] {
-    return this.availableDefinitions.map((def, index) => ({
+  private _defaultConfig(defs: WidgetDefinition[]): UserWidgetConfig[] {
+    return defs.map((def, index) => ({
       id: def.id,
       columns: def.defaultColumns,
       rows: def.defaultRows,

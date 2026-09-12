@@ -7,6 +7,8 @@
         Sales Dashboard
         } @else if (isAdmin()) {
         Admin Overview
+        } @else if (isSystemAdmin()) {
+        System Admin Dashboard
         } @else {
         Overview
         }
@@ -14,6 +16,8 @@
       <p class="dash-subtitle">
         @if (isSales()) {
         Track your sales, revenue, and customers.
+        } @else if (isSystemAdmin()) {
+        Manage tenants, instances, and platform health.
         } @else {
         Sales, stock &amp; real-time inventory performance
         }
@@ -39,7 +43,9 @@
         @if (isSales()) {
         Ready to close some deals? You have new leads waiting for follow-up.
         } @else if (isAdmin()) {
-        System overview looks good. You have 3 pending approvals today.
+        System overview looks good. Everything is running smoothly.
+        } @else if (isSystemAdmin()) {
+        Platform operations look good. All instances are running smoothly.
         } @else {
         Your inventory overview is up to date. Check recent stock movements.
         }
@@ -51,22 +57,32 @@
             style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add_shopping_cart</mat-icon>
           New Sale
         </button>
-        } @else {
+        } @else if (!isSystemAdmin()) {
         <button class="welcome-btn welcome-btn-primary" routerLink="/products">
           <mat-icon
             style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add</mat-icon>
           Add Product
         </button>
         }
+        @if (!isSystemAdmin()) {
         <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
           <mat-icon
             style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">download</mat-icon>
           Export Report
         </button>
+        }
       </div>
     </div>
     <div class="welcome-illustration">
+      @if (isSales()) {
+      <mat-icon>add_shopping_cart</mat-icon>
+      } @else if (isAdmin()) {
       <mat-icon>admin_panel_settings</mat-icon>
+      } @else if (isSystemAdmin()) {
+      <mat-icon>settings</mat-icon>
+      } @else {
+      <mat-icon>inventory</mat-icon>
+      }
     </div>
   </div>
 

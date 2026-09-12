@@ -5,11 +5,7 @@
       <h1 class="page-title">User Management</h1>
       <p class="page-subtitle">Manage system users, assign roles, and control access.</p>
     </div>
-    <button
-      class="btn btn--primary"
-      (click)="showCreateForm.set(true)"
-      [disabled]="showCreateForm()"
-    >
+    <button class="btn btn--primary" (click)="navigateToAddUser()">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
         <path
           d="M12 5v14M5 12h14"
@@ -87,129 +83,25 @@
     </div>
   </div>
 
-  <!-- Create User Form -->
-  @if (showCreateForm()) {
-    <div class="form-card">
-      <div class="form-card-header">
-        <mat-icon>person_add</mat-icon>
-        <h2>Create New User</h2>
-      </div>
-      <form [formGroup]="createForm" (ngSubmit)="createUser()" class="create-form">
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>First Name</mat-label>
-            <input
-              matInput
-              id="firstName"
-              formControlName="firstName"
-              placeholder="Enter first name"
-              required
-            />
-            @if (createForm.get('firstName')?.invalid && createForm.get('firstName')?.touched) {
-              <mat-error>First name is required</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Last Name</mat-label>
-            <input
-              matInput
-              id="lastName"
-              formControlName="lastName"
-              placeholder="Enter last name"
-            />
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Email</mat-label>
-            <input
-              matInput
-              id="userEmail"
-              type="email"
-              formControlName="email"
-              placeholder="user@example.com"
-              required
-            />
-            @if (
-              createForm.get('email')?.hasError('required') && createForm.get('email')?.touched
-            ) {
-              <mat-error>Email is required</mat-error>
-            } @else if (
-              createForm.get('email')?.hasError('email') && createForm.get('email')?.touched
-            ) {
-              <mat-error>Enter a valid email address</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Password</mat-label>
-            <input
-              matInput
-              id="userPassword"
-              [type]="hidePassword() ? 'password' : 'text'"
-              formControlName="password"
-              placeholder="Min 12 characters"
-              required
-            />
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hidePassword.set(!hidePassword())"
-              [attr.aria-label]="'Toggle password visibility'"
-            >
-              <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            @if (
-              createForm.get('password')?.hasError('required') &&
-              createForm.get('password')?.touched
-            ) {
-              <mat-error>Password is required</mat-error>
-            } @else if (
-              createForm.get('password')?.hasError('minlength') &&
-              createForm.get('password')?.touched
-            ) {
-              <mat-error>Password must be at least 12 characters</mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Username (Optional)</mat-label>
-            <input matInput id="userName" formControlName="userName" placeholder="e.g. AB123" />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Role</mat-label>
-            <mat-select id="userRole" formControlName="role">
-              @for (role of ROLES; track role) {
-                <mat-option [value]="role">{{ role }}</mat-option>
-              }
-            </mat-select>
-            @if (createForm.get('role')?.hasError('required') && createForm.get('role')?.touched) {
-              <mat-error>Role is required</mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn--ghost" (click)="cancelCreate()">Cancel</button>
-          <button type="submit" class="btn btn--primary" [disabled]="createForm.invalid">
-            Create User
-          </button>
-        </div>
-      </form>
-    </div>
-  }
-
   <!-- Search bar -->
-  <div class="filter-panel">
-    <div class="toolbar">
-      <mat-form-field appearance="outline" class="search-form-field">
-        <mat-icon matPrefix class="search-icon">search</mat-icon>
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Users</mat-label>
         <input
+          #searchInput
           matInput
           type="text"
-          placeholder="Search by name, email, or role…"
+          placeholder="e.g. name, email, or role…"
+          [ngModel]="store.search()"
           (keyup)="applyFilter($event)"
         />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchInput.value) {
+          <button matSuffix mat-icon-button (click)="clearSearch(searchInput)" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </mat-form-field>
     </div>
   </div>
@@ -338,3 +230,6 @@
     </div>
   }
 </div>
+
+
+

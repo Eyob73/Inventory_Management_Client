@@ -15,6 +15,7 @@ interface CategoryState {
   isLoading: boolean;
   error: string | null;
   search: string;
+    statusFilter: 'all' | 'active' | 'inactive';
   pageIndex: number;
   pageSize: number;
 }
@@ -26,6 +27,7 @@ export const CategoryStore = signalStore(
     isLoading: false,
     error: null,
     search: '',
+      statusFilter: 'all',
     pageIndex: 1,
     pageSize: 10,
   }),
@@ -65,6 +67,7 @@ export const CategoryStore = signalStore(
     };
   }),
   withMethods((store, api = inject(CategoryService)) => ({
+    setStatusFilter(statusFilter: 'all' | 'active' | 'inactive') { patchState(store, { statusFilter, pageIndex: 1 }); },
     setSearch(search: string) {
       patchState(store, { search, pageIndex: 1 });
     },
@@ -172,3 +175,6 @@ export const CategoryStore = signalStore(
     },
   }))
 );
+
+
+

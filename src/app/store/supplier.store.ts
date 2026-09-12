@@ -10,6 +10,7 @@ interface SupplierState {
   isLoading: boolean;
   error: string | null;
   search: string;
+    statusFilter: 'all' | 'active' | 'inactive';
   pageIndex: number;
   pageSize: number;
 }
@@ -25,6 +26,7 @@ export const SupplierStore = signalStore(
     isLoading: false,
     error: null,
     search: '',
+      statusFilter: 'all',
     pageIndex: 1,
     pageSize: 10,
   }),
@@ -62,6 +64,7 @@ export const SupplierStore = signalStore(
     };
   }),
   withMethods((store, api = inject(SupplierService)) => ({
+    setStatusFilter(statusFilter: 'all' | 'active' | 'inactive') { patchState(store, { statusFilter, pageIndex: 1 }); },
     setSearch(search: string) {
       patchState(store, { search, pageIndex: 1 });
     },
@@ -138,3 +141,6 @@ export const SupplierStore = signalStore(
     },
   }))
 );
+
+
+

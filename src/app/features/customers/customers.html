@@ -78,22 +78,31 @@
   </div>
 
   <!-- Toolbar / Search -->
-  <div class="filter-panel">
-    <div class="toolbar">
-      <mat-form-field appearance="outline" class="search-form-field">
-        <mat-icon matPrefix class="search-icon">search</mat-icon>
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Customers</mat-label>
         <input
           matInput
-          type="text"
-          placeholder="Search by name, phone, or email…"
-          [value]="store.search()"
+          placeholder="e.g. name, phone, or email…"
+          [ngModel]="store.search()"
           (input)="applyFilter($event)"
         />
+        <mat-icon matPrefix>search</mat-icon>
         @if (store.search()) {
           <button matSuffix mat-icon-button (click)="store.setSearch('')" aria-label="Clear search">
             <mat-icon>close</mat-icon>
           </button>
         }
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [ngModel]="store.statusFilter()" (ngModelChange)="store.setStatusFilter($event)">
+          <mat-option value="all">All Statuses</mat-option>
+          <mat-option value="active">Active</mat-option>
+          <mat-option value="inactive">Inactive</mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
   </div>
@@ -252,3 +261,5 @@
     </div>
   }
 </div>
+
+

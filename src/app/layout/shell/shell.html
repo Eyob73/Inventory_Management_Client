@@ -103,6 +103,7 @@
         <!-- Notifications -->
         <button mat-icon-button aria-label="Notifications" matTooltip="Notifications" class="toolbar-action-btn"
           [matMenuTriggerFor]="notificationMenu"
+          #notificationTrigger="matMenuTrigger"
           [matBadge]="notificationService.unreadCount()"
           [matBadgeHidden]="notificationService.unreadCount() === 0"
           matBadgeColor="warn" matBadgeSize="small" matBadgeOverlap="true">
@@ -187,6 +188,9 @@
         <div class="notification-list" (click)="$event.stopPropagation()">
           @for (item of notificationService.notifications(); track item.id) {
           <div class="notification-item" [class.unread]="!item.read" (click)="notificationService.markAsRead(item.id)">
+            @if (item.link) {
+              <a [routerLink]="item.link" class="notification-link-overlay" (click)="notificationTrigger.closeMenu()"></a>
+            }
             <div class="notification-icon-wrapper" [class]="'type-' + item.type">
               <mat-icon>{{ item.icon }}</mat-icon>
             </div>

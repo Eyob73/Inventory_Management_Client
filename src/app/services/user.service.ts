@@ -58,9 +58,14 @@ export class UserService {
     );
   }
 
-  getPagedUsers(page = 1, pageSize = 10, search?: string): Observable<PagedUserResponse> {
+  getPagedUsers(page = 1, pageSize = 10, search?: string, tenantId?: string, orderBy?: string, descending: boolean = false): Observable<PagedUserResponse> {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);
     if (search) params = params.set('search', search);
+    if (tenantId) params = params.set('tenantId', tenantId);
+    if (orderBy) {
+      params = params.set('orderBy', orderBy);
+      params = params.set('descending', descending);
+    }
     return this.http
       .get<PagedUserResponse>(`${this.baseUrl}/paged`, { params, withCredentials: true })
       .pipe(

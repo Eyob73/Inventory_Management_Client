@@ -5,9 +5,8 @@
 }
 
 .sales-history-container {
-  padding: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 8px 0px;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -110,3 +109,5 @@
   color: var(--ink);
   font-size: 0.95rem;
 }
+
+

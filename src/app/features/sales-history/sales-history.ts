@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 // Material Modules
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -112,6 +113,8 @@ export class SalesHistoryComponent implements OnInit {
     return this.authService.hasRole('Admin') || this.authService.hasRole('Manager');
   }
 
+  private route = inject(ActivatedRoute);
+
   ngOnInit(): void {
     this.dataSource.sortingDataAccessor = (item: Sale, property: string) => {
       switch (property) {
@@ -127,6 +130,23 @@ export class SalesHistoryComponent implements OnInit {
       }
     };
     this.loadSales();
+    this.checkRouteForSaleId();
+  }
+
+  private checkRouteForSaleId(): void {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.saleService.getSaleById(id).subscribe({
+          next: (sale) => {
+            this.viewDetails(sale);
+          },
+          error: (err) => {
+            this.snackBar.open('Sale details not found.', 'Close', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 
   loadSales(): void {

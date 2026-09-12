@@ -68,6 +68,12 @@ export const routes: Routes = [
         canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
       },
       {
+        path: 'sales-history/:id',
+        loadComponent: () =>
+          import('./features/sales-history/sales-history').then((m) => m.SalesHistoryComponent),
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
+      },
+      {
         path: 'sales',
         redirectTo: 'pos',
         pathMatch: 'full'
@@ -118,6 +124,12 @@ export const routes: Routes = [
         canActivate: [roleGuard('Admin')],
       },
       {
+        path: 'users/add',
+        loadComponent: () =>
+          import('./features/users/add-user/add-user').then((m) => m.AddUserComponent),
+        canActivate: [roleGuard('Admin')],
+      },
+      {
         path: 'users/edit/:id',
         loadComponent: () =>
           import('./features/users/edit-user/edit-user').then((m) => m.EditUserComponent),
@@ -157,7 +169,7 @@ export const routes: Routes = [
       // ── System Admin only ────────────────────────────────────────
       {
         path: 'system-admin/dashboard',
-        loadComponent: () => import('./features/system-admin/dashboard/system-dashboard/system-dashboard').then((m) => m.SystemDashboard),
+        loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
         canActivate: [roleGuard('SystemAdmin')],
       },
       {

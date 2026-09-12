@@ -15,6 +15,7 @@ interface CustomerState {
   isLoading: boolean;
   error: string | null;
   search: string;
+    statusFilter: 'all' | 'active' | 'inactive';
   pageIndex: number;
   pageSize: number;
 }
@@ -26,6 +27,7 @@ export const CustomerStore = signalStore(
     isLoading: false,
     error: null,
     search: '',
+      statusFilter: 'all',
     pageIndex: 1,
     pageSize: 10,
   }),
@@ -68,6 +70,7 @@ export const CustomerStore = signalStore(
     };
   }),
   withMethods((store, api = inject(CustomerService)) => ({
+    setStatusFilter(statusFilter: 'all' | 'active' | 'inactive') { patchState(store, { statusFilter, pageIndex: 1 }); },
     setSearch(search: string) {
       patchState(store, { search, pageIndex: 1 });
     },
@@ -177,3 +180,6 @@ export const CustomerStore = signalStore(
     },
   }))
 );
+
+
+

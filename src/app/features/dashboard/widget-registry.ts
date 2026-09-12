@@ -152,3 +152,9 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     defaultVisible: true,
   },
 ];
+
+export const MANAGER_WIDGET_REGISTRY: WidgetDefinition[] = [...WIDGET_REGISTRY];
+
+export const SALES_WIDGET_REGISTRY: WidgetDefinition[] = WIDGET_REGISTRY.filter(
+  w => !['kpi-profit', 'kpi-low-stock', 'low-stock'].includes(w.id)
+);

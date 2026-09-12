@@ -605,6 +605,16 @@
       }
     }
 
+    .notification-link-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      outline: none;
+    }
+
     .notification-body {
       flex: 1;
       min-width: 0;
@@ -656,6 +666,7 @@
       position: absolute;
       right: 10px;
       top: 10px;
+      z-index: 2;
       background: transparent;
       border: none;
       color: var(--slate);

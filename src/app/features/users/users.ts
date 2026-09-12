@@ -94,45 +94,17 @@ export class UsersComponent implements OnInit {
     this.store.loadUsers({ page: 1, pageSize: this.store.pageSize(), search });
   }
 
+  clearSearch(input: HTMLInputElement): void {
+    input.value = '';
+    this.store.loadUsers({ page: 1, pageSize: this.store.pageSize(), search: '' });
+  }
+
   readonly stats = this.store.stats;
 
-  createForm = this.fb.group({
-    firstName: ['', Validators.required],
-    lastName: [''],
-    userName: [''],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(12)]],
-    role: ['User', Validators.required],
-  });
+  // ... removed createForm logic ...
 
-  createUser() {
-    if (this.createForm.invalid) return;
-    const val = this.createForm.value;
-    this.userService
-      .createUser({
-        email: val.email!,
-        userName: val.userName || undefined,
-        password: val.password!,
-        firstName: val.firstName ?? undefined,
-        lastName: val.lastName ?? undefined,
-        role: val.role!,
-      })
-      .subscribe({
-        next: () => {
-          this.showCreateForm.set(false);
-          this.createForm.reset({ role: 'User' });
-          // Reload current page
-          this.store.loadUsers({ page: this.store.page(), pageSize: this.store.pageSize() });
-        },
-        error: (err) => {
-          const apiErrors = err?.error?.errors;
-          if (Array.isArray(apiErrors) && apiErrors.length > 0) {
-            this.error.set(apiErrors.join(' '));
-          } else {
-            this.error.set(err?.error?.detail || 'Failed to create user.');
-          }
-        },
-      });
+  navigateToAddUser() {
+    this.router.navigate(['/users/add']);
   }
 
   toggleStatus(user: SystemUser) {
@@ -204,11 +176,6 @@ export class UsersComponent implements OnInit {
 
   getPrimaryRole(user: SystemUser): string {
     return user.roles?.[0] ?? 'User';
-  }
-
-  cancelCreate() {
-    this.showCreateForm.set(false);
-    this.createForm.reset({ role: 'User' });
   }
 
   dismissError() {

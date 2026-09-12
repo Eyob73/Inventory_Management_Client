@@ -1,7 +1,6 @@
 .users-page {
-  padding: 1.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 8px 0px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -201,28 +200,6 @@
   &.amber .stat-icon-wrap   { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
   &.cyan .stat-icon-wrap    { background: var(--cobalt-soft); color: var(--cobalt);    }
   &.danger .stat-icon-wrap  { background: var(--rose-soft);  color: var(--rose);      }
-}
-
-.filter-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.875rem 1rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-
-  .search-form-field {
-    flex: 1 1 420px;
-    width: 100%;
-    max-width: 420px;
-    margin-bottom: 0;
-  }
 }
 
 // ── Create User Form Card ─────────────────────────────────────────
@@ -477,3 +454,60 @@
     color: #f87171;
   }
 }
+
+// ── Filter Panel / Search (matches sales-history) ────────────────
+.filters-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+
+  .filter-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
+    align-items: start;
+
+    mat-form-field {
+      width: 100%;
+      margin-bottom: -1.25em;
+
+      &.search-field {
+        grid-column: span 2;
+      }
+    }
+
+    .btn {
+      align-self: center;
+      height: 56px;
+      white-space: nowrap;
+      padding: 0 1rem;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .filters-card .filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    mat-form-field.search-field {
+      grid-column: span 2;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .filters-card .filter-row {
+    grid-template-columns: 1fr;
+
+    mat-form-field.search-field,
+    .btn {
+      grid-column: auto;
+    }
+  }
+}
+
+

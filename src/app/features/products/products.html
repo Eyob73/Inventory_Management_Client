@@ -66,16 +66,33 @@
   </div>
 
   <!-- Search / Filter toolbar -->
-  <div class="filter-panel">
-    <div class="toolbar">
-      <mat-form-field appearance="outline" class="search-form-field">
-        <mat-icon matPrefix class="search-icon">search</mat-icon>
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Products</mat-label>
         <input
+          #searchInput
           matInput
-          type="text"
-          placeholder="Search products by name, SKU, or category…"
+          placeholder="e.g. name, SKU, or category…"
+          [ngModel]="store.search()"
           (keyup)="applyFilter($event)"
         />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchInput.value) {
+          <button matSuffix mat-icon-button (click)="clearSearch(searchInput)" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select [ngModel]="store.categoryId()" (ngModelChange)="onCategoryChange($event)">
+          <mat-option value="ALL">All Categories</mat-option>
+          @for (cat of categories(); track cat.id) {
+            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
     </div>
   </div>
@@ -235,3 +252,5 @@
     </div>
   }
 </div>
+
+

@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -11,11 +12,19 @@ import { SystemService, TenantDto } from '../../../services/system';
 import { ConfirmDialogService } from '../../../ui/confirm-dialog/confirm-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-companies',
   standalone: true,
   imports: [
+    FormsModule,
     CommonModule, 
     RouterModule,
     MatTableModule, 
@@ -24,12 +33,17 @@ import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
     MatMenuModule,
     MatTooltipModule,
     MatDividerModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
     TableSkeleton
   ],
   templateUrl: './companies.html',
   styleUrl: './companies.scss',
 })
-export class Companies implements OnInit {
+export class Companies implements OnInit, OnDestroy {
   private systemService = inject(SystemService);
   private router = inject(Router);
   private confirmDialog = inject(ConfirmDialogService);
@@ -39,15 +53,67 @@ export class Companies implements OnInit {
   loading = signal<boolean>(true);
   displayedColumns = ['name', 'code', 'status', 'createdAt', 'actions'];
 
+  // Pagination state
+  totalLength = signal(0);
+  pageSize = signal(10);
+  pageIndex = signal(0);
+  pageSizeOptions = [5, 10, 25, 50, 100];
+
+  // Sorting state
+  sortActive = signal<string>('createdAt');
+  sortDirection = signal<'asc' | 'desc'>('desc');
+
+  // Filter state
+  searchQuery = signal<string>('');
+  statusFilter = signal<number | null>(null);
+  private searchSubject = new Subject<string>();
+
   ngOnInit() {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(query => {
+      this.searchQuery.set(query);
+      this.pageIndex.set(0);
+      this.loadCompanies();
+    });
+
+    this.loadCompanies();
+  }
+
+  ngOnDestroy() {
+    this.searchSubject.complete();
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(value);
+  }
+
+  clearSearch() {
+    this.searchSubject.next('');
+  }
+
+  onStatusChange(status: number | null) {
+    this.statusFilter.set(status);
+    this.pageIndex.set(0);
     this.loadCompanies();
   }
 
   loadCompanies() {
     this.loading.set(true);
-    this.systemService.getTenants().subscribe({
+    // pageIndex is 0-based in MatPaginator, API is 1-based
+    this.systemService.getPagedTenants(
+      this.pageIndex() + 1, 
+      this.pageSize(), 
+      this.searchQuery(),
+      this.statusFilter() ?? undefined,
+      this.sortActive(), 
+      this.sortDirection() === 'desc'
+    ).subscribe({
       next: (data) => {
-        this.companies.set(data);
+        this.companies.set(data.items);
+        this.totalLength.set(data.totalCount);
         this.loading.set(false);
       },
       error: (err) => {
@@ -55,6 +121,24 @@ export class Companies implements OnInit {
         this.snackBar.open('Failed to load companies.', 'Close', {duration: 3000});
       }
     });
+  }
+
+  onPage(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.loadCompanies();
+  }
+
+  onSort(sort: Sort) {
+    if (!sort.active || sort.direction === '') {
+      this.sortActive.set('createdAt');
+      this.sortDirection.set('desc');
+    } else {
+      this.sortActive.set(sort.active);
+      this.sortDirection.set(sort.direction);
+    }
+    this.pageIndex.set(0); // Reset to first page on sort
+    this.loadCompanies();
   }
 
   getStatusName(status: number): string {

@@ -10,6 +10,7 @@ interface PurchaseState {
   isLoading: boolean;
   error: string | null;
   search: string;
+    statusFilter: string;
   pageIndex: number;
   pageSize: number;
 }
@@ -25,6 +26,7 @@ export const PurchaseStore = signalStore(
     isLoading: false,
     error: null,
     search: '',
+      statusFilter: '',
     pageIndex: 1,
     pageSize: 10,
   }),
@@ -64,6 +66,7 @@ export const PurchaseStore = signalStore(
     };
   }),
   withMethods((store, api = inject(PurchaseService)) => ({
+    setStatusFilter(statusFilter: string) { patchState(store, { statusFilter, pageIndex: 1 }); },
     setSearch(search: string) {
       patchState(store, { search, pageIndex: 1 });
     },
@@ -89,3 +92,5 @@ export const PurchaseStore = signalStore(
     },
   }))
 );
+
+

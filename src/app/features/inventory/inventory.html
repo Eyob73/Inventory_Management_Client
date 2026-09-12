@@ -19,16 +19,22 @@
     </div>
   }
 
-  <div class="filter-panel">
-    <div class="toolbar toolbar--inventory">
-      <mat-form-field appearance="outline" class="search-form-field">
-        <mat-icon matPrefix class="search-icon">search</mat-icon>
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Inventory</mat-label>
         <input
           matInput
           [(ngModel)]="search"
-          placeholder="Search product, SKU, notes…"
+          placeholder="e.g. product, SKU, notes…"
           (keyup.enter)="applyFilters()"
         />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (search) {
+          <button matSuffix mat-icon-button (click)="search=''; applyFilters()" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Product</mat-label>
@@ -126,3 +132,5 @@
     </div>
   }
 </div>
+
+

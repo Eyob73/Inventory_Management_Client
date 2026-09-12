@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { Component, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -5,6 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,11 +24,13 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
   selector: 'app-purchases',
   standalone: true,
   imports: [
+    FormsModule,
     CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
     MatInputModule,
+    MatSelectModule,
     MatFormFieldModule,
     MatButtonModule,
     MatIconModule,
@@ -176,3 +180,4 @@ export class Purchases implements OnInit {
     return typeof err?.error === 'string' ? err.error : err?.error?.detail || err?.message || fallback;
   }
 }
+

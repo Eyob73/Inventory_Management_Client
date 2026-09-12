@@ -31,7 +31,7 @@ export const DashboardStore = signalStore(
         switchMap((filter) =>
           forkJoin({
             dash: reportsService.getDashboard(filter),
-            low: reportsService.getLowStock(filter),
+            low: reportsService.getLowStock(filter).pipe(catchError(() => of(null))),
             act: reportsService.getStockMovements({ ...filter, pageSize: 5, sortBy: 'date', descending: true })
           }).pipe(
             tap(({ dash, low, act }) => patchState(store, { data: dash, lowStock: low, activities: act, isLoading: false })),
