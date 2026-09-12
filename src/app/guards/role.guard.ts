@@ -27,7 +27,14 @@ export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
       }
 
       const normalizedUserRole = userRole.toLowerCase();
-      // Admin always has full access
+
+      // SystemAdmin should be strictly checked if requested
+      if (roles.some(r => r.toLowerCase() === 'systemadmin')) {
+         if (normalizedUserRole !== 'systemadmin') return false;
+         return true;
+      }
+
+      // Admin always has full access to other routes
       if (normalizedUserRole === 'admin' || normalizedUserRole === 'administrator') {
         return true;
       }

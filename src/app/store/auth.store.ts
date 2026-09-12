@@ -63,7 +63,12 @@ export const AuthStore = signalStore(
                   isLoading: false,
                 });
                 if (router.url.includes('/login')) {
-                  router.navigate(['/dashboard']);
+                  const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
+                  if (r?.toLowerCase() === 'systemadmin') {
+                    router.navigate(['/system-admin/dashboard']);
+                  } else {
+                    router.navigate(['/dashboard']);
+                  }
                 }
               } else {
                 patchState(store, {
@@ -102,7 +107,12 @@ export const AuthStore = signalStore(
                       isLoading: false,
                       error: null,
                     });
-                    router.navigate(['/dashboard']);
+                    const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
+                    if (r?.toLowerCase() === 'systemadmin') {
+                      router.navigate(['/system-admin/dashboard']);
+                    } else {
+                      router.navigate(['/dashboard']);
+                    }
                   } else {
                     patchState(store, {
                       user: null,

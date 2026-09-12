@@ -1,0 +1,86 @@
+<div class="page-header">
+  <div class="header-content">
+    <button mat-icon-button routerLink="/system-admin/companies" class="back-btn">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-titles">
+      @if (company()) {
+        <h1 class="page-title">{{ company()?.name }}</h1>
+        <div class="subtitle-row">
+          <span class="code">{{ company()?.code }}</span>
+          <span class="status-badge" [ngClass]="getStatusClass(company()!.status)">
+            <span class="status-dot"></span>
+            {{ getStatusName(company()!.status) }}
+          </span>
+        </div>
+      } @else {
+        <h1 class="page-title">Company Details</h1>
+      }
+    </div>
+  </div>
+  @if (company()) {
+    <div class="header-actions">
+      @if (company()!.status !== 0) {
+        <button mat-button class="text-green" (click)="activate()">
+          <mat-icon>check_circle</mat-icon> Activate
+        </button>
+      }
+      @if (company()!.status !== 1) {
+        <button mat-button class="text-amber" (click)="suspend()">
+          <mat-icon>pause_circle_outline</mat-icon> Suspend
+        </button>
+      }
+      @if (company()!.status !== 2) {
+        <button mat-button class="text-red" (click)="deactivate()">
+          <mat-icon>block</mat-icon> Deactivate
+        </button>
+      }
+    </div>
+  }
+</div>
+
+@if (loading()) {
+  <div class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+} @else if (error()) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon text-red">error_outline</mat-icon>
+    <h3>{{ error() }}</h3>
+    <button mat-button (click)="loadCompany(route.snapshot.paramMap.get('id')!)">Try Again</button>
+  </div>
+} @else if (company()) {
+  <div class="content-grid">
+    <div class="detail-card">
+      <h3 class="card-title">Company Information</h3>
+      <div class="info-list">
+        <div class="info-row">
+          <span class="info-label">Company Name</span>
+          <span class="info-value font-medium">{{ company()?.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Company Code</span>
+          <span class="info-value">{{ company()?.code }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Created Date</span>
+          <span class="info-value">{{ company()?.createdAt | date:'mediumDate' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Status</span>
+          <span class="info-value">{{ getStatusName(company()!.status) }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="detail-card">
+      <h3 class="card-title">Quick Links</h3>
+      <div class="actions-list">
+        <button mat-stroked-button routerLink="/system-admin/companies/{{ company()?.id }}/users">
+          <mat-icon>people</mat-icon>
+          Manage Users
+        </button>
+      </div>
+    </div>
+  </div>
+}

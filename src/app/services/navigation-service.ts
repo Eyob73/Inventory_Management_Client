@@ -47,6 +47,17 @@ const ALL_NAV_GROUPS: NavGroup[] = [
       { label: 'Settings', path: '/settings', icon: 'settings', roles: ['Admin', 'Manager', 'Sales'] },
     ],
   },
+  {
+    label: 'System Admin',
+    roles: ['SystemAdmin'],
+    items: [
+      { label: 'Dashboard', path: '/system-admin/dashboard', icon: 'dashboard', roles: ['SystemAdmin'] },
+      { label: 'Companies', path: '/system-admin/companies', icon: 'business', roles: ['SystemAdmin'] },
+      { label: 'Users', path: '/system-admin/users', icon: 'manage_accounts', roles: ['SystemAdmin'] },
+      { label: 'Activity', path: '/system-admin/activity', icon: 'local_activity', roles: ['SystemAdmin'] },
+      { label: 'Settings', path: '/system-admin/settings', icon: 'settings', roles: ['SystemAdmin'] },
+    ],
+  },
 ];
 
 const routeTitleMap: Record<string, string> = {
@@ -66,6 +77,12 @@ const routeTitleMap: Record<string, string> = {
   '/users': 'User Management',
   '/profile': 'My Profile',
   '/unauthorized': 'Access Denied',
+  '/system-admin/dashboard': 'System Dashboard',
+  '/system-admin/companies': 'Companies',
+  '/system-admin/companies/new': 'Add Company',
+  '/system-admin/users': 'System Users',
+  '/system-admin/activity': 'System Activity',
+  '/system-admin/settings': 'System Settings',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -76,19 +93,22 @@ export class NavigationService {
    * Pass role = 'Admin' | 'Manager' | 'Sales' (case-sensitive as returned by the API).
    */
   getNavGroups(role?: string): NavGroup[] {
-    const normalizedRole = role ?? '';
+    const normalizedRole = role?.toLowerCase() ?? '';
 
     return ALL_NAV_GROUPS
       .filter((group) => {
-        // Filter out entire groups if role-restricted and user doesn't qualify
-        if (!group.roles) return true;
-        return group.roles.some((r) => r.toLowerCase() === normalizedRole.toLowerCase());
+        if (!group.roles) {
+           return normalizedRole !== 'systemadmin';
+        }
+        return group.roles.some((r) => r.toLowerCase() === normalizedRole);
       })
       .map((group) => ({
         ...group,
         items: group.items.filter((item) => {
-          if (!item.roles) return true;
-          return item.roles.some((r) => r.toLowerCase() === normalizedRole.toLowerCase());
+          if (!item.roles) {
+            return normalizedRole !== 'systemadmin';
+          }
+          return item.roles.some((r) => r.toLowerCase() === normalizedRole);
         }),
       }))
       .filter((group) => group.items.length > 0);
@@ -102,6 +122,9 @@ export class NavigationService {
     if (path === '/purchases/new') return 'New Purchase';
     if (/^\/purchases\/[^/]+\/edit$/.test(path)) return 'Edit Purchase';
     if (/^\/purchases\/[^/]+$/.test(path)) return 'Purchase Details';
+    if (/^\/system-admin\/companies\/new$/.test(path)) return 'Add Company';
+    if (/^\/system-admin\/companies\/[^/]+\/users$/.test(path)) return 'Company Users';
+    if (/^\/system-admin\/companies\/[^/]+$/.test(path)) return 'Company Details';
     return this.formatTitle(url);
   }
 

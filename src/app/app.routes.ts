@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
 import { roleGuard, authGuard } from './guards/role.guard';
+import { AuthStore } from './store/auth.store';
 
 export const routes: Routes = [
   // ── Public ──────────────────────────────────────────────────────
@@ -19,7 +21,15 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { 
+        path: '', 
+        pathMatch: 'full',
+        redirectTo: () => {
+          const store = inject(AuthStore);
+          const role = store.userRole();
+          return role?.toLowerCase() === 'systemadmin' ? 'system-admin/dashboard' : 'dashboard';
+        }
+      },
 
       // ── All roles ────────────────────────────────────────────────
       {
@@ -142,6 +152,48 @@ export const routes: Routes = [
             (m) => m.PurchaseDetailsComponent
           ),
         canActivate: [roleGuard(['Admin', 'Manager'])],
+      },
+
+      // ── System Admin only ────────────────────────────────────────
+      {
+        path: 'system-admin/dashboard',
+        loadComponent: () => import('./features/system-admin/dashboard/system-dashboard/system-dashboard').then((m) => m.SystemDashboard),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/companies',
+        loadComponent: () => import('./features/system-admin/companies/companies').then((m) => m.Companies),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/companies/new',
+        loadComponent: () => import('./features/system-admin/add-company/add-company').then((m) => m.AddCompanyComponent),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/companies/:id/users',
+        loadComponent: () => import('./features/system-admin/company-users/company-users').then((m) => m.CompanyUsersComponent),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/companies/:id',
+        loadComponent: () => import('./features/system-admin/company-details/company-details').then((m) => m.CompanyDetailsComponent),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/users',
+        loadComponent: () => import('./features/system-admin/users/users').then((m) => m.SystemUsersComponent),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/activity',
+        loadComponent: () => import('./features/system-admin/activity/activity').then((m) => m.SystemActivityComponent),
+        canActivate: [roleGuard('SystemAdmin')],
+      },
+      {
+        path: 'system-admin/settings',
+        loadComponent: () => import('./features/system-admin/settings/settings').then((m) => m.SystemSettingsComponent),
+        canActivate: [roleGuard('SystemAdmin')],
       },
     ],
   },

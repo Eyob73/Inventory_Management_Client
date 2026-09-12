@@ -1,0 +1,62 @@
+<div class="page-header">
+  <div class="header-content">
+    <button mat-icon-button [routerLink]="['/system-admin/companies', company()?.id]" class="back-btn">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-titles">
+      @if (company()) {
+        <h1 class="page-title">{{ company()?.name }} Users</h1>
+      } @else {
+        <h1 class="page-title">Company Users</h1>
+      }
+      <p class="page-subtitle">Manage users registered under this tenant.</p>
+    </div>
+  </div>
+</div>
+
+<div class="table-container">
+  @if (loading()) {
+    <app-table-skeleton [columns]="[{width:'40%'},{width:'40%'},{width:'20%'}]"></app-table-skeleton>
+  } @else if (error()) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon text-red">error_outline</mat-icon>
+      <h3>{{ error() }}</h3>
+    </div>
+  } @else if (users().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">people_outline</mat-icon>
+      <h3>No users found.</h3>
+      <p>This company does not have any users yet.</p>
+    </div>
+  } @else {
+    <table mat-table [dataSource]="users()" class="modern-table">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="user-cell">
+            <div class="avatar">{{ getUserInitials(element) }}</div>
+            <div class="user-names">
+              <span class="user-fullname">{{ element.firstName }} {{ element.lastName }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef> Role </th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="role-badge">{{ element.role }}</span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  }
+</div>
+
