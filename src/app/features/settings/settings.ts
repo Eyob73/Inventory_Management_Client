@@ -8,7 +8,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthStore } from '../../store/auth.store';
+import { TenantApiService } from '../../services/tenant';
 
 export interface SettingsSection {
   id: string;
@@ -29,12 +31,14 @@ export interface SettingsSection {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class SettingsComponent implements OnInit {
   protected authStore = inject(AuthStore);
+  private tenantApi = inject(TenantApiService);
 
   readonly userRole = computed(() => this.authStore.userRole());
   readonly normalizedRole = computed(() => (this.userRole() || '').toLowerCase());
@@ -42,6 +46,7 @@ export class SettingsComponent implements OnInit {
   activeSection = signal<string>('');
   saveSuccess = signal<boolean>(false);
   resetSuccess = signal<boolean>(false);
+  isLoading = signal<boolean>(false);
 
   // ────────────────────────────────────────────────────────────────
   // Role-Based Sections Configuration
@@ -144,16 +149,16 @@ export class SettingsComponent implements OnInit {
 
   // --- Admin / General Settings ---
   company = {
-    name: 'Inventory Pro Platform',
-    address: 'Bole Road, Addis Ababa, Ethiopia',
-    phone: '+251 911 234 567',
-    email: 'contact@inventorypro.com',
-    website: 'https://inventorypro.com',
-    taxId: '100234987',
+    name: this.authStore.user()?.tenantName || '',
+    address: '',
+    phone: '',
+    email: '',
+    website: '',
+    taxId: '',
   };
 
   adminInventory = {
-    lowStockThreshold: 15,
+    lowStockThreshold: 0,
     criticalStockThreshold: 5,
     autoReorderEnabled: false,
     defaultReorderQty: 50,
@@ -232,8 +237,40 @@ export class SettingsComponent implements OnInit {
         if (data.adminNotifications) this.adminNotifications = { ...this.adminNotifications, ...data.adminNotifications };
         if (data.adminSecurity) this.adminSecurity = { ...this.adminSecurity, ...data.adminSecurity };
       }
+      
+      if (role === 'admin') {
+        this.tenantApi.getMyTenant().subscribe({
+          next: (tenant) => {
+            if (tenant) {
+              this.company = {
+                name: tenant.name || this.company.name,
+                address: tenant.address || this.company.address,
+                phone: tenant.phone || this.company.phone,
+                email: tenant.email || this.company.email,
+                website: tenant.website || this.company.website,
+                taxId: tenant.taxId || this.company.taxId,
+              };
+              if (tenant.lowStockThreshold !== undefined) {
+                this.adminInventory.lowStockThreshold = tenant.lowStockThreshold;
+              }
+              // Update local cache silently
+              const currentStored = localStorage.getItem(this.getStorageKey());
+              if (currentStored) {
+                const p = JSON.parse(currentStored);
+                p.company = this.company;
+                p.adminInventory = this.adminInventory;
+                localStorage.setItem(this.getStorageKey(), JSON.stringify(p));
+              }
+            }
+          },
+          error: (err) => {
+            console.error('Failed to load tenant profile', err);
+          },
+        });
+      }
     } catch (e) {
       console.warn('Could not parse stored settings', e);
+      this.isLoading.set(false);
     }
   }
 
@@ -278,6 +315,20 @@ export class SettingsComponent implements OnInit {
 
       this.saveSuccess.set(true);
       setTimeout(() => this.saveSuccess.set(false), 3000);
+
+      if (role === 'admin') {
+        this.tenantApi.updateMyTenant({
+          name: this.company.name,
+          address: this.company.address,
+          phone: this.company.phone,
+          email: this.company.email,
+          website: this.company.website,
+          taxId: this.company.taxId,
+          lowStockThreshold: this.adminInventory.lowStockThreshold,
+        }).subscribe({
+          error: (err) => console.error('Failed to update tenant profile', err)
+        });
+      }
     } catch (e) {
       console.error('Failed to save settings', e);
     }

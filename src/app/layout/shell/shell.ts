@@ -98,6 +98,10 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     return this.authStore.user()?.email || '';
   });
 
+  readonly tenantName = computed(() => {
+    return this.authStore.user()?.tenantName || 'INV-MGNT';
+  });
+
   readonly userInitials = computed(() => {
     const u = this.authStore.user();
     if (u?.firstName) {
