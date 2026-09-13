@@ -1,6 +1,130 @@
-@use '@angular/material' as mat;
+/* ─── SCSS Mixins & Component Utilities ─── */
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/* Tokens come from styles/_theme.scss (body / :root) */
+@mixin text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin square-size($size) {
+  width: $size;
+  height: $size;
+  min-width: $size !important;
+  min-height: $size !important;
+  max-width: $size !important;
+  max-height: $size !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+@mixin mat-icon-dim($size) {
+  font-size: $size !important;
+  width: $size !important;
+  height: $size !important;
+}
+
+@mixin avatar-badge($size: 35px, $font: 12.5px) {
+  @include flex-center;
+  @include square-size($size);
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  color: #ffffff;
+  font-size: $font;
+  border-radius: 50% !important;
+  font-weight: 700;
+  box-shadow: 0 2px 6px var(--teal-glow);
+}
+
+@mixin status-dot($size: 10px) {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  @include square-size($size);
+  background-color: #10b981;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
+}
+
+@mixin collapsed-item-layout {
+  --mdc-list-list-item-leading-space: 0;
+  --mdc-list-list-item-trailing-space: 0;
+  --mdc-list-list-item-one-line-container-height: 34px;
+  --mat-list-list-item-leading-icon-start-space: 0;
+  --mat-list-list-item-leading-icon-end-space: 0;
+
+  margin: 3px auto !important;
+  padding: 0 !important;
+  width: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+  height: 34px !important;
+  @include flex-center;
+
+  mat-icon {
+    margin: 0 !important;
+  }
+
+  &::after {
+    display: none !important;
+  }
+
+  ::ng-deep {
+
+    .mdc-list-item__content,
+    .mat-mdc-list-item-unscoped-content {
+      @include flex-center;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .mdc-list-item__start,
+    [matListItemIcon],
+    .mat-mdc-list-item-icon {
+      margin: 0 !important;
+      margin-inline-start: 0 !important;
+      margin-inline-end: 0 !important;
+      padding: 0 !important;
+      @include flex-center;
+      width: 100% !important;
+    }
+
+    .mdc-list-item__end {
+      display: none !important;
+    }
+  }
+}
+
+@mixin reset-ripple {
+
+  &::before,
+  &::after {
+    display: none !important;
+  }
+
+  ::ng-deep {
+
+    .mat-mdc-button-persistent-ripple::before,
+    .mdc-icon-button__ripple,
+    .mat-ripple,
+    .mat-mdc-focus-indicator,
+    .mdc-list-item__ripple,
+    .mdc-list-item__state-layer {
+      display: none !important;
+      opacity: 0 !important;
+    }
+  }
+}
+
+/* ─── Host & Outer Wrapper ───────────────────────────────────── */
 :host {
   display: flex;
   flex-direction: column;
@@ -9,7 +133,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Outer wrapper ──────────────────────────────────────────── */
 .shell-wrapper {
   display: flex;
   flex-direction: column;
@@ -63,9 +186,7 @@
   font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @include text-truncate;
   min-width: 0;
 }
 
@@ -96,9 +217,7 @@
   }
 
   .search-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    @include mat-icon-dim(18px);
     color: var(--slate-soft);
   }
 
@@ -123,21 +242,35 @@
 
 /* Notification button */
 .toolbar-action-btn {
+  position: relative !important;
   color: var(--slate) !important;
   border-radius: 50% !important;
   transition: all 0.2s var(--ease) !important;
-  background-color: none;
+  background-color: transparent;
 
   mat-icon {
-    font-size: 20px !important;
-    width: 20px !important;
-    height: 20px !important;
+    @include mat-icon-dim(20px);
   }
 
   ::ng-deep .mat-badge-content {
-    font-size: 15px !important;
+    position: absolute !important;
+    top: 10px !important;
+    left: 28px !important;
+    transform: none !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
+    color: #ffffff !important;
     background: #ef4444 !important;
+    @include flex-center;
+    line-height: 1 !important;
+    @include square-size(16px);
+    border-radius: 50% !important;
+    box-shadow: 0 0 0 2px var(--surface) !important;
+  }
+
+  ::ng-deep &.mat-badge-hidden .mat-badge-content,
+  ::ng-deep .mat-badge-hidden .mat-badge-content {
+    display: none !important;
   }
 }
 
@@ -146,72 +279,87 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 10px 4px 4px;
+  padding: 4px 10px 4px 5px;
   border: none;
   border-radius: 12px;
-  background: var(--sidenav-bg);
+  background: var(--surface);
   color: var(--ink);
   cursor: pointer;
-  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition: all 0.2s var(--ease);
 
-  &:hover {
-    transform: translateY(-1px);
+  &:hover,
+  &.mat-mdc-menu-trigger-opened {
+    background: var(--paper);
     border-color: var(--border-strong);
     box-shadow: var(--shadow-sm);
+
+    .chevron-icon {
+      transform: rotate(180deg);
+      color: var(--ink);
+    }
+
+    .avatar-initials {
+      box-shadow: 0 3px 10px var(--teal-glow);
+    }
   }
 
-  .avatar-initials {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--teal), var(--teal-dark));
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    border-radius: 11px;
-    box-shadow: 0 2px 6px rgba(14, 156, 138, 0.35);
+  &:focus-visible {
+    outline: none;
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+
+  .avatar-wrapper {
+    position: relative;
+    @include flex-center;
     flex-shrink: 0;
+
+    .avatar-initials {
+      @include avatar-badge(35px, 12.5px);
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+
+    .status-indicator {
+      @include status-dot(10px);
+    }
+  }
+
+  .toolbar-user-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    text-align: left;
+
+    .toolbar-user-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--ink);
+      @include text-truncate;
+      max-width: 120px;
+    }
+
+    .toolbar-user-role {
+      font-size: 9.5px;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--moss);
+      white-space: nowrap;
+    }
+  }
+
+  .chevron-icon {
+    @include mat-icon-dim(18px);
+    color: var(--slate-soft);
+    transition: transform 0.2s var(--ease), color 0.2s var(--ease);
+    margin-left: -2px;
   }
 }
 
-.toolbar-user-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-  text-align: left;
-}
-
-.toolbar-user-name {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.toolbar-user-role {
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--slate);
-  white-space: nowrap;
-}
-
-.logout-item {
-  color: #ef4444 !important;
-
-  mat-icon {
-    color: #ef4444 !important;
-  }
-}
-
-/* ─── Sidenav container ──────────────────────────────────────── */
+/* ─── Sidenav Container & Sidebar ────────────────────────────── */
 .shell-container {
   height: 100vh;
   width: 100vw;
@@ -224,7 +372,7 @@
 
   &:not(.shell-container--collapsed) {
     ::ng-deep .mat-sidenav-content {
-      margin-left: 210px !important;
+      margin-left: 250px !important;
     }
   }
 
@@ -235,7 +383,6 @@
   }
 }
 
-/* ─── Sidenav ────────────────────────────────────────────────── */
 .shell-sidenav {
   background: var(--sidenav-bg);
   border-right: 1px solid var(--border) !important;
@@ -254,7 +401,6 @@
   }
 }
 
-/* Sidebar brand header at top of full-height sidebar */
 .sidenav-brand-header {
   height: 64px;
   min-height: 64px;
@@ -273,15 +419,12 @@
   }
 
   .brand-mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     flex-shrink: 0;
     filter: drop-shadow(0 2px 4px rgba(14, 156, 138, 0.25));
 
     svg {
-      width: 26px;
-      height: 26px;
+      @include square-size(26px);
       display: block;
     }
   }
@@ -299,9 +442,7 @@
     padding: 0;
     height: 64px;
     min-height: 64px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex-center;
 
     .sidebar-brand {
       margin: 0;
@@ -317,20 +458,16 @@
   flex-shrink: 0;
   color: var(--slate) !important;
   background: transparent !important;
-  width: 32px !important;
-  height: 32px !important;
+  @include square-size(32px !important);
   padding: 0 !important;
   margin: auto 0 !important;
-  border-radius: 9px !important;
+  border-radius: 999px !important;
   transition: color 0.2s var(--ease) !important;
+  @include reset-ripple;
 
   mat-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    @include flex-center;
+    @include mat-icon-dim(20px);
   }
 
   &:hover,
@@ -339,26 +476,9 @@
     background: var(--paper) !important;
     color: var(--ink) !important;
   }
-
-  &::before,
-  &::after {
-    display: none !important;
-    background: transparent !important;
-  }
-
-  ::ng-deep {
-
-    .mat-mdc-button-persistent-ripple::before,
-    .mdc-icon-button__ripple,
-    .mat-ripple,
-    .mat-mdc-focus-indicator {
-      display: none !important;
-      opacity: 0 !important;
-    }
-  }
 }
 
-/* Navigation list */
+/* Navigation List */
 .sidenav-nav {
   flex: 1;
   overflow-y: auto;
@@ -366,23 +486,16 @@
   padding: 12px 0;
 
   .shell-container--collapsed & {
+    overflow: hidden;
     padding: 8px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    scrollbar-width: none;
   }
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--border-strong);
-    border-radius: 4px;
+  .shell-container--collapsed &::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -425,9 +538,7 @@
   mat-icon {
     color: var(--slate-soft) !important;
     transition: color var(--transition-fast);
-    font-size: 17px !important;
-    width: 17px !important;
-    height: 17px !important;
+    @include mat-icon-dim(17px);
     margin-right: 12px !important;
   }
 
@@ -477,7 +588,6 @@
       }
     }
 
-    // Keep the thin green accent indicator on the far left.
     &::after {
       content: '';
       position: absolute;
@@ -494,204 +604,128 @@
     }
   }
 
-  // Center icons perfectly when sidebar is collapsed
   .shell-container--collapsed & {
-    --mdc-list-list-item-leading-space: 0;
-    --mdc-list-list-item-trailing-space: 0;
-    --mdc-list-list-item-one-line-container-height: 34px;
-    --mat-list-list-item-leading-icon-start-space: 0;
-    --mat-list-list-item-leading-icon-end-space: 0;
-
-    margin: 3px auto !important;
-    padding: 0 !important;
-    width: 34px !important;
-    min-width: 34px !important;
-    max-width: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    mat-icon {
-      margin: 0 !important;
-    }
-
-    &::after {
-      display: none !important;
-    }
-
-    ::ng-deep {
-
-      .mdc-list-item__content,
-      .mat-mdc-list-item-unscoped-content {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        padding: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-      }
-
-      .mdc-list-item__start,
-      [matListItemIcon],
-      .mat-mdc-list-item-icon {
-        margin: 0 !important;
-        margin-inline-start: 0 !important;
-        margin-inline-end: 0 !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 100% !important;
-      }
-
-      .mdc-list-item__end {
-        display: none !important;
-      }
-    }
+    @include collapsed-item-layout;
   }
 }
 
-/* User footer */
+/* Sidenav User Footer */
 .sidenav-footer {
   flex-shrink: 0;
-  padding: 8px 0;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
 
   .shell-container--collapsed & {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 12px 0;
   }
 }
 
-.user-item {
-  margin: 4px 12px !important;
-  border-radius: 8px !important;
-  height: 52px !important;
-  color: var(--ink) !important;
-  transition: background var(--transition-fast) !important;
-  background: transparent !important;
-
-  &:hover {
-    background: var(--paper) !important;
-    cursor: pointer;
-  }
-
-  // Kill Material focus / pressed / activated background after click
-  &:focus,
-  &:focus-visible,
-  &:active,
-  &.mdc-list-item--activated,
-  &.mdc-list-item--selected,
-  &.mat-mdc-list-item-focus,
-  &.cdk-focused,
-  &.cdk-program-focused,
-  &.cdk-mouse-focused,
-  &.cdk-keyboard-focused {
-    background: transparent !important;
-    outline: none !important;
-    box-shadow: none !important;
-  }
-
-  &:focus:hover,
-  &:focus-visible:hover,
-  &.mdc-list-item--activated:hover,
-  &.mat-mdc-list-item-focus:hover {
-    background: var(--paper) !important;
-  }
-
-  // Material state overlay lives on ::before
-  &::before {
-    opacity: 0 !important;
-    background: transparent !important;
-  }
-
-  ::ng-deep {
-
-    .mdc-list-item__ripple,
-    .mat-ripple,
-    .mat-mdc-focus-indicator,
-    .mdc-list-item__state-layer {
-      display: none !important;
-      opacity: 0 !important;
-    }
-  }
-
-  .shell-container--collapsed & {
-    --mdc-list-list-item-leading-space: 0;
-    --mdc-list-list-item-trailing-space: 0;
-    --mdc-list-list-item-one-line-container-height: 34px;
-    --mat-list-list-item-leading-icon-start-space: 0;
-    --mat-list-list-item-leading-icon-end-space: 0;
-
-    margin: 4px auto !important;
-    padding: 0 !important;
-    width: 34px !important;
-    min-width: 34px !important;
-    max-width: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    .user-avatar {
-      margin: 0 !important;
-      width: 28px !important;
-      height: 28px !important;
-      min-width: 28px !important;
-      color: #ffffff !important;
-    }
-
-    ::ng-deep {
-
-      .mdc-list-item__content,
-      .mat-mdc-list-item-unscoped-content {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        padding: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-      }
-
-      .mdc-list-item__start,
-      [matListItemIcon] {
-        margin: 0 !important;
-        margin-inline-start: 0 !important;
-        margin-inline-end: 0 !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 100% !important;
-      }
-
-      .mdc-list-item__end {
-        display: none !important;
-      }
-    }
-  }
-}
-
-.user-avatar {
+.sidebar-user {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
+  gap: 12px;
+  padding: 8px 12px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
-  color: #ffffff !important;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px var(--teal-glow);
-  transition: transform var(--transition-fast);
+  transition: background var(--transition-fast) ease;
 
   &:hover {
-    transform: scale(1.05);
+    background: var(--paper);
+  }
+}
+
+.user-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--teal) 30%, transparent);
+}
+
+.user-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: -2px;
+  width: 11px;
+  height: 11px;
+  background: var(--teal);
+  border: 2px solid var(--sidenav-bg);
+  border-radius: 999px;
+
+  .sidebar-user:hover & {
+    border-color: var(--paper);
+  }
+}
+
+.user-info {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast) ease, width var(--transition-fast) ease;
+
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  span {
+    font-size: 11px;
+    color: var(--slate);
+    font-weight: 500;
+  }
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--slate);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast) ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: var(--warn);
+    background: color-mix(in srgb, var(--warn) 10%, transparent);
+  }
+}
+
+.shell-container--collapsed {
+
+  .user-info,
+  .logout-btn {
+    display: none;
+  }
+
+  .sidebar-user {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
   }
 }
 
@@ -706,13 +740,13 @@
   color: var(--slate) !important;
 }
 
-/* ─── Content area ───────────────────────────────────────────── */
+/* ─── Content Area & Responsive ──────────────────────────────── */
 .shell-content {
   background: var(--paper);
   display: flex !important;
   flex-direction: column;
   height: 100%;
-  overflow: hidden !important; // prevent second scrollbar — page-content scrolls
+  overflow: hidden !important;
 }
 
 .page-content {
@@ -723,7 +757,6 @@
   overflow-x: hidden;
 }
 
-/* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .toolbar-search {
     min-width: auto;
