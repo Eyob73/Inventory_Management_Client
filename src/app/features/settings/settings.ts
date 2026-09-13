@@ -215,30 +215,42 @@ export class SettingsComponent implements OnInit {
       }
 
       const stored = localStorage.getItem(this.getStorageKey());
-      if (!stored) return;
-
-      const data = JSON.parse(stored);
       const role = this.normalizedRole();
 
-      if (role === 'sales') {
-        if (data.salesPos) this.salesPos = { ...this.salesPos, ...data.salesPos };
-        if (data.salesTerminal) this.salesTerminal = { ...this.salesTerminal, ...data.salesTerminal };
-        if (data.salesAlerts) this.salesAlerts = { ...this.salesAlerts, ...data.salesAlerts };
-        if (data.salesTheme) this.salesTheme = { ...this.salesTheme, ...data.salesTheme };
-      } else if (role === 'manager') {
-        if (data.managerInventory) this.managerInventory = { ...this.managerInventory, ...data.managerInventory };
-        if (data.managerPolicies) this.managerPolicies = { ...this.managerPolicies, ...data.managerPolicies };
-        if (data.managerNotifications) this.managerNotifications = { ...this.managerNotifications, ...data.managerNotifications };
-        if (data.managerRegional) this.managerRegional = { ...this.managerRegional, ...data.managerRegional };
-      } else {
-        if (data.company) this.company = { ...this.company, ...data.company };
-        if (data.adminInventory) this.adminInventory = { ...this.adminInventory, ...data.adminInventory };
-        if (data.adminCurrency) this.adminCurrency = { ...this.adminCurrency, ...data.adminCurrency };
-        if (data.adminNotifications) this.adminNotifications = { ...this.adminNotifications, ...data.adminNotifications };
-        if (data.adminSecurity) this.adminSecurity = { ...this.adminSecurity, ...data.adminSecurity };
+      if (stored) {
+        const data = JSON.parse(stored);
+        
+        if (role === 'sales') {
+          if (data.salesPos) this.salesPos = { ...this.salesPos, ...data.salesPos };
+          if (data.salesTerminal) this.salesTerminal = { ...this.salesTerminal, ...data.salesTerminal };
+          if (data.salesAlerts) this.salesAlerts = { ...this.salesAlerts, ...data.salesAlerts };
+          if (data.salesTheme) this.salesTheme = { ...this.salesTheme, ...data.salesTheme };
+        } else if (role === 'manager') {
+          if (data.managerInventory) this.managerInventory = { ...this.managerInventory, ...data.managerInventory };
+          if (data.managerPolicies) this.managerPolicies = { ...this.managerPolicies, ...data.managerPolicies };
+          if (data.managerNotifications) this.managerNotifications = { ...this.managerNotifications, ...data.managerNotifications };
+          if (data.managerRegional) this.managerRegional = { ...this.managerRegional, ...data.managerRegional };
+        } else {
+          if (data.company) this.company = { ...this.company, ...data.company };
+          if (data.adminInventory) this.adminInventory = { ...this.adminInventory, ...data.adminInventory };
+          if (data.adminCurrency) this.adminCurrency = { ...this.adminCurrency, ...data.adminCurrency };
+          if (data.adminNotifications) this.adminNotifications = { ...this.adminNotifications, ...data.adminNotifications };
+          if (data.adminSecurity) this.adminSecurity = { ...this.adminSecurity, ...data.adminSecurity };
+        }
       }
       
       if (role === 'admin') {
+        const cachedTenant = localStorage.getItem('inv_tenant_cache');
+        if (cachedTenant) {
+          try {
+            const parsed = JSON.parse(cachedTenant);
+            this.company = { ...this.company, ...parsed.company };
+            if (parsed.lowStockThreshold !== undefined) {
+              this.adminInventory.lowStockThreshold = parsed.lowStockThreshold;
+            }
+          } catch (e) {}
+        }
+
         this.tenantApi.getMyTenant().subscribe({
           next: (tenant) => {
             if (tenant) {
@@ -255,12 +267,16 @@ export class SettingsComponent implements OnInit {
               }
               // Update local cache silently
               const currentStored = localStorage.getItem(this.getStorageKey());
-              if (currentStored) {
-                const p = JSON.parse(currentStored);
-                p.company = this.company;
-                p.adminInventory = this.adminInventory;
-                localStorage.setItem(this.getStorageKey(), JSON.stringify(p));
-              }
+              const p = currentStored ? JSON.parse(currentStored) : {};
+              p.company = this.company;
+              p.adminInventory = this.adminInventory;
+              localStorage.setItem(this.getStorageKey(), JSON.stringify(p));
+
+              // Update the specific tenant cache
+              localStorage.setItem('inv_tenant_cache', JSON.stringify({
+                company: this.company,
+                lowStockThreshold: this.adminInventory.lowStockThreshold
+              }));
             }
           },
           error: (err) => {
@@ -317,6 +333,11 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => this.saveSuccess.set(false), 3000);
 
       if (role === 'admin') {
+        localStorage.setItem('inv_tenant_cache', JSON.stringify({
+          company: this.company,
+          lowStockThreshold: this.adminInventory.lowStockThreshold
+        }));
+
         this.tenantApi.updateMyTenant({
           name: this.company.name,
           address: this.company.address,

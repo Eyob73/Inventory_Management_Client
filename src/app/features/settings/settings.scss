@@ -1,7 +1,6 @@
 .settings-page {
-  padding: 1.5rem;
-  max-width: 960px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 8px 0px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -70,7 +69,6 @@
   }
 }
 
-// ── Sidebar ───────────────────────────────────────────────────────
 .settings-nav {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -83,8 +81,15 @@
 
   @media (max-width: 768px) {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     position: static;
+    border-radius: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 
@@ -104,8 +109,19 @@
   transition: all 0.15s;
   width: 100%;
 
+  @media (max-width: 768px) {
+    width: auto;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+  }
+
   &:last-child {
     border-bottom: none;
+    @media (max-width: 768px) {
+      border-right: none;
+    }
   }
 
   .nav-icon {
@@ -127,8 +143,14 @@
     font-weight: 600;
 
     @media (max-width: 768px) {
-      border-right: none;
+      border-right: 1px solid var(--border);
       border-bottom: 2px solid var(--moss, #22c55e);
+    }
+    
+    &:last-child {
+      @media (max-width: 768px) {
+        border-right: none;
+      }
     }
   }
 }

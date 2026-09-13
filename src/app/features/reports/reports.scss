@@ -48,7 +48,7 @@
 
   @media (max-width: 580px) {
     width: 100%;
-    
+
     .btn {
       flex: 1;
       justify-content: center;
@@ -73,6 +73,7 @@
     mat-form-field {
       flex: 1;
       min-width: 160px;
+      margin-bottom: -1.25em;
 
       &.search-field {
         min-width: 220px;
@@ -290,14 +291,45 @@
   }
 
   // Color-coded icon pill backgrounds
-  &.teal .stat-icon-wrap    { background: var(--teal-soft);  color: var(--teal-dark);  }
-  &.blue .stat-icon-wrap    { background: var(--cobalt-soft); color: var(--cobalt);    }
-  &.green .stat-icon-wrap   { background: var(--moss-soft);  color: var(--moss);      }
-  &.purple .stat-icon-wrap  { background: color-mix(in srgb, #8b5cf6 12%, transparent); color: #8b5cf6; }
-  &.amber .stat-icon-wrap   { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-  &.cyan .stat-icon-wrap    { background: var(--cobalt-soft); color: var(--cobalt);    }
-  &.warning .stat-icon-wrap { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-  &.danger .stat-icon-wrap  { background: var(--rose-soft);  color: var(--rose);      }
+  &.teal .stat-icon-wrap {
+    background: var(--teal-soft);
+    color: var(--teal-dark);
+  }
+
+  &.blue .stat-icon-wrap {
+    background: var(--cobalt-soft);
+    color: var(--cobalt);
+  }
+
+  &.green .stat-icon-wrap {
+    background: var(--moss-soft);
+    color: var(--moss);
+  }
+
+  &.purple .stat-icon-wrap {
+    background: color-mix(in srgb, #8b5cf6 12%, transparent);
+    color: #8b5cf6;
+  }
+
+  &.amber .stat-icon-wrap {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+  }
+
+  &.cyan .stat-icon-wrap {
+    background: var(--cobalt-soft);
+    color: var(--cobalt);
+  }
+
+  &.warning .stat-icon-wrap {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+  }
+
+  &.danger .stat-icon-wrap {
+    background: var(--rose-soft);
+    color: var(--rose);
+  }
 }
 
 // ── Charts Layout ────────────────────────────────────────────────
@@ -394,6 +426,7 @@
 
   tr {
     transition: background 0.15s ease;
+
     &:hover td {
       background: var(--row-hover);
     }
@@ -447,13 +480,36 @@
 }
 
 // ── Report-specific utilities ────────────────────────────────────
-.amount-cell { color: var(--ink); font-weight: 700; }
-.positive-text { color: var(--moss); }
-.negative-text { color: var(--rose); }
-.danger-text   { color: var(--rose); font-weight: 700; }
-.warning-text  { color: #f59e0b; }
-.text-secondary { color: var(--slate); }
-.action-text   { font-size: 0.8125rem; color: var(--slate); }
+.amount-cell {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.positive-text {
+  color: var(--moss);
+}
+
+.negative-text {
+  color: var(--rose);
+}
+
+.danger-text {
+  color: var(--rose);
+  font-weight: 700;
+}
+
+.warning-text {
+  color: #f59e0b;
+}
+
+.text-secondary {
+  color: var(--slate);
+}
+
+.action-text {
+  font-size: 0.8125rem;
+  color: var(--slate);
+}
 
 // ── Print Media Query ────────────────────────────────────────────
 @media print {
@@ -465,7 +521,9 @@
     padding: 0;
   }
 
-  .widget-card, .stat-card, .table-card {
+  .widget-card,
+  .stat-card,
+  .table-card {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
   }
