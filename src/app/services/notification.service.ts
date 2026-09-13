@@ -63,43 +63,12 @@ export class NotificationService implements OnDestroy {
     this.hubConnection.on('ReceiveNotification', (notification: AppNotification) => {
       this.ngZone.run(() => {
         this.notificationsSignal.update(items => [notification, ...items]);
-        this.showNativeNotification(notification);
       });
     });
 
     this.hubConnection.start()
-      .then(() => {
-        console.log('SignalR Notifications Connected');
-      })
+      .then(() => console.log('SignalR Notifications Connected'))
       .catch(err => console.error('Error starting SignalR connection', err));
-  }
-
-  public async requestNotificationPermission() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Registration Failed', err));
-    }
-
-    if ('Notification' in window) {
-      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-        await Notification.requestPermission();
-      }
-    }
-  }
-
-  private showNativeNotification(notification: AppNotification) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const options: NotificationOptions = {
-        body: notification.message,
-      };
-      
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then(reg => {
-          reg.showNotification(notification.title || 'Inventory Update', options);
-        });
-      } else {
-        new Notification(notification.title || 'Inventory Update', options);
-      }
-    }
   }
 
   private stopSignalRConnection() {
