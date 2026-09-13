@@ -191,6 +191,8 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     // Initialize theme (dark/light) from stored preference
     this.themeService.initializeTheme();
+    // Always enable device notifications for authenticated users
+    this.notificationService.requestNotificationPermission();
   }
 
   ngAfterViewInit() {
