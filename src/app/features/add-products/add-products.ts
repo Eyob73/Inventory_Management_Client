@@ -18,6 +18,52 @@ import { environment } from "../../../environments/environment.development";
 
 import { MatIconModule } from "@angular/material/icon";
 
+let dbPromise: Promise<IDBDatabase> | null = null;
+function getDB(): Promise<IDBDatabase> {
+  if (!dbPromise) {
+    dbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open('InventoryDraftsDB', 1);
+      request.onupgradeneeded = () => request.result.createObjectStore('drafts');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+  return dbPromise;
+}
+
+async function setDraft(key: string, value: any) {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('drafts', 'readwrite');
+    tx.objectStore('drafts').put(value, key);
+  } catch (e) {
+    console.error('IndexedDB save failed', e);
+  }
+}
+
+async function getDraft(key: string): Promise<any> {
+  try {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('drafts', 'readonly');
+      const req = tx.objectStore('drafts').get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.error('IndexedDB read failed', e);
+    return null;
+  }
+}
+
+async function removeDraft(key: string) {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('drafts', 'readwrite');
+    tx.objectStore('drafts').delete(key);
+  } catch (e) {}
+}
+
 @Component({
   selector: 'app-add-products',
   standalone: true,
@@ -83,7 +129,8 @@ export class AddProducts implements OnInit {
         this.wasSubmitting = false;
         this.isError.set(false);
         if (isPlatformBrowser(this.platformId)) {
-          localStorage.removeItem('addProductDraft');
+          removeDraft('addProductDraft');
+          removeDraft('addProductDraftImage');
         }
         this.submissionStatus.set(
           this.isEditMode() ? 'Product updated successfully!' : 'Product saved successfully!'
@@ -109,28 +156,37 @@ export class AddProducts implements OnInit {
     } else {
       // Auto-restore draft for Add Mode
       if (isPlatformBrowser(this.platformId)) {
-        const draft = localStorage.getItem('addProductDraft');
-        if (draft) {
-          try {
-            const parsed = JSON.parse(draft);
-            // ensure variants array has enough controls before patching
-            if (parsed.variants && parsed.variants.length > 1) {
-              for (let i = 1; i < parsed.variants.length; i++) {
-                this.addVariant();
+        getDraft('addProductDraft').then(parsed => {
+          if (parsed) {
+            try {
+              // ensure variants array has enough controls before patching
+              if (parsed.variants && parsed.variants.length > 1) {
+                for (let i = 1; i < parsed.variants.length; i++) {
+                  this.addVariant();
+                }
               }
+              this.productForm.patchValue(parsed);
+            } catch (e) {
+              console.error('Failed to restore draft', e);
             }
-            this.productForm.patchValue(parsed);
-          } catch (e) {
-            console.error('Failed to restore draft', e);
           }
-        }
+        });
+
+        getDraft('addProductDraftImage').then((file: File | null) => {
+          if (file) {
+            this.selectedFile.set(file);
+            this.removeImageFlag.set(false);
+            const objectUrl = URL.createObjectURL(file);
+            this.imagePreview.set(objectUrl);
+          }
+        });
       }
     }
 
     // Auto-save form changes
     this.productForm.valueChanges.subscribe(val => {
       if (!this.isEditMode() && isPlatformBrowser(this.platformId)) {
-        localStorage.setItem('addProductDraft', JSON.stringify(val));
+        setDraft('addProductDraft', val);
       }
     });
   }
@@ -165,7 +221,8 @@ export class AddProducts implements OnInit {
 
   cancel() {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('addProductDraft');
+      removeDraft('addProductDraft');
+      removeDraft('addProductDraftImage');
     }
     this.router.navigate(['/products']);
   }
@@ -178,6 +235,9 @@ export class AddProducts implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     this.selectedFile.set(null);
+    if (isPlatformBrowser(this.platformId)) {
+      removeDraft('addProductDraftImage');
+    }
     const currentPreview = this.imagePreview();
     if (currentPreview && currentPreview.startsWith('blob:')) {
       URL.revokeObjectURL(currentPreview);
@@ -197,6 +257,11 @@ export class AddProducts implements OnInit {
     if (file) {
       this.selectedFile.set(file);
       this.removeImageFlag.set(false);
+      
+      // Save image to IndexedDB so it survives a reload
+      if (isPlatformBrowser(this.platformId)) {
+        setDraft('addProductDraftImage', file);
+      }
       
       // Clear any previous object URL to free memory
       const currentPreview = this.imagePreview();
