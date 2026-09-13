@@ -132,11 +132,10 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     return role === 'admin' || role === 'manager' || role === 'sales';
   });
 
-  // computed
   readonly sidenavWidth = computed(() =>
-    this.isMobile() ? '100%' : this.isCollapsed() ? '48px' : '250px'
+    this.isCollapsed() && !this.isMobile() ? '48px' : '250px'
   );
-  readonly isCollapsedOrMobile = computed(() => this.isCollapsed() || this.isMobile());
+  readonly isSidebarMini = computed(() => this.isCollapsed() && !this.isMobile());
   readonly mode = computed(() => (this.isMobile() ? 'over' : 'side'));
 
   private routerSub?: Subscription;

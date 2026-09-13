@@ -370,15 +370,21 @@
     transition: margin-left 0.25s var(--ease) !important;
   }
 
-  &:not(.shell-container--collapsed) {
+  &:not(.shell-container--collapsed):not(.shell-container--mobile) {
     ::ng-deep .mat-sidenav-content {
       margin-left: 250px !important;
     }
   }
 
-  &.shell-container--collapsed {
+  &.shell-container--collapsed:not(.shell-container--mobile) {
     ::ng-deep .mat-sidenav-content {
       margin-left: 48px !important;
+    }
+  }
+
+  &.shell-container--mobile {
+    ::ng-deep .mat-sidenav-content {
+      margin-left: 0 !important;
     }
   }
 }

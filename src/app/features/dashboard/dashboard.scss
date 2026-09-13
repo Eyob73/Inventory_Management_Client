@@ -61,6 +61,21 @@
       opacity: 0.03;
     }
   }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 16px;
+
+    .welcome-illustration {
+      display: none;
+    }
+
+    .welcome-actions {
+      flex-wrap: wrap;
+    }
+  }
 }
 
 .welcome-text {
@@ -189,8 +204,18 @@
 
 .dash-header-actions {
   display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+
+  @media (max-width: 580px) {
+    width: 100%;
+    
+    .btn, button {
+      flex: 1 1 calc(50% - 12px);
+      justify-content: center;
+    }
+  }
 }
 
 /* Header button */
@@ -230,13 +255,13 @@
 /* ─── Dashboard CSS Grid Layout ────────────────────────────────── */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-auto-rows: minmax(105px, auto);
   gap: 14px;
   align-items: stretch;
 
   @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     /* On tablet width, cap widgets spanning 3 or 4 columns to max 2 columns */
     .widget-slot[style*="span 3"],
@@ -246,11 +271,12 @@
   }
 
   @media (max-width: 580px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 440px;
+    margin: 0 auto;
 
     .widget-slot {
       grid-column: span 1 !important;
-      grid-row: span 1 !important;
     }
   }
 }

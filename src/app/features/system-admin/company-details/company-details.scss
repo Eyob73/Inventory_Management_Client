@@ -3,6 +3,8 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 
   .header-content {
     display: flex;
@@ -47,6 +49,16 @@
   .header-actions {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
+
+    @media (max-width: 580px) {
+      width: 100%;
+      
+      .btn {
+        flex: 1 1 calc(50% - 12px);
+        justify-content: center;
+      }
+    }
   }
 }
 

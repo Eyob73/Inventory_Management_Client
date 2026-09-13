@@ -6,6 +6,12 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
+
+  @media (max-width: 580px) {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 440px;
+    margin: 0 auto;
+  }
 }
 
 .stat-card {
