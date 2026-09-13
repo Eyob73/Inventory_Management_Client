@@ -390,7 +390,7 @@ export class Reports implements OnInit {
     };
   }
 
-  exportReport(format: 'csv' | 'xlsx'): void {
+  exportReport(format: 'xlsx' | 'pdf'): void {
     const reportType = this.activeTab() === 'dashboard' ? 'sales' : this.activeTab();
     const filter = this.buildFilterPayload();
     this.reportsService.exportReport(reportType, filter, format).subscribe({
@@ -398,7 +398,7 @@ export class Reports implements OnInit {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${reportType}-report-${new Date().toISOString().slice(0, 10)}.${format === 'xlsx' ? 'xlsx' : 'csv'}`;
+        a.download = `${reportType}-report-${new Date().toISOString().slice(0, 10)}.${format}`;
         a.click();
         window.URL.revokeObjectURL(url);
         this.snackBar.open(`Exported ${reportType} report successfully.`, 'Close', { duration: 3000 });

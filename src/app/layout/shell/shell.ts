@@ -30,14 +30,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
 
-// Services & Animations
+// Services
 import { NavigationService, NavGroup } from '../../services/navigation-service';
 import { SearchDialogComponent } from '../../component/search-dialog-component/search-dialog-component';
 import { ThemeService } from '../../services/theme-service';
 import { AuthStore } from '../../store/auth.store';
-import { NotificationService } from '../../services/notification.service';
-import { routeFadeAnimation } from '../../animations/fade.animation';
-import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-shell',
@@ -59,25 +56,17 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatMenuModule,
     MatProgressBarModule,
   ],
-  animations: [routeFadeAnimation],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })
 export class Shell implements OnInit, AfterViewInit, OnDestroy {
-  prepareRoute(outlet: RouterOutlet) {
-    return outlet && outlet.isActivated && outlet.activatedRoute
-      ? outlet.activatedRoute.snapshot.url.join('/') || outlet.activatedRoute.snapshot.routeConfig?.path || ''
-      : '';
-  }
   @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
 
   private router = inject(Router);
   private navigation = inject(NavigationService);
   protected themeService = inject(ThemeService);
   protected authStore = inject(AuthStore);
-  protected notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
-  private confirmService = inject(ConfirmDialogService);
   private destroyRef = inject(DestroyRef);
 
   // ========== Computed User Details ==========
@@ -91,11 +80,9 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   });
 
   readonly userRole = computed(() => {
-    return this.authStore.userRole();
-  });
-
-  readonly userEmail = computed(() => {
-    return this.authStore.user()?.email || '';
+    const u = this.authStore.user();
+    const role = u?.roles ? (Array.isArray(u.roles) ? u.roles[0] : u.roles) : null;
+    return role || this.authStore.userRole() || 'Administrator';
   });
 
   readonly userInitials = computed(() => {
@@ -119,22 +106,12 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   isScrolled = signal(false);
   isLoading = signal(false);
   pageTitle = signal('Dashboard');
+  navGroups = signal<NavGroup[]>(this.navigation.getNavGroups());
   isMobile = signal(false);
-
-  // Role-reactive nav groups: automatically updates when the role changes
-  readonly navGroups = computed(() =>
-    this.navigation.getNavGroups(this.authStore.userRole())
-  );
-
-  // Admin, Manager, and Sales can access Settings
-  readonly canAccessSettings = computed(() => {
-    const role = (this.authStore.userRole() || '').toLowerCase();
-    return role === 'admin' || role === 'manager' || role === 'sales';
-  });
 
   // computed
   readonly sidenavWidth = computed(() =>
-    this.isMobile() ? '100%' : this.isCollapsed() ? '48px' : '250px'
+    this.isMobile() ? '100%' : this.isCollapsed() ? '48px' : '210px'
   );
   readonly isCollapsedOrMobile = computed(() => this.isCollapsed() || this.isMobile());
   readonly mode = computed(() => (this.isMobile() ? 'over' : 'side'));
@@ -232,29 +209,6 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
-    this.confirmService.confirm({
-      title: 'Sign Out',
-      message: 'Are you sure you want to sign out?',
-      confirmText: 'Sign Out',
-      cancelText: 'Cancel',
-      type: 'warning',
-      icon: 'logout'
-    }).pipe(
-      filter(Boolean),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.authStore.logout();
-    });
-  }
-
-  getTimeAgo(date: Date): string {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return 'Just now';
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    this.authStore.logout();
   }
 }

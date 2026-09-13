@@ -102,9 +102,19 @@ export class ReportsService {
     });
   }
 
-  exportReport(reportType: string, filter: ReportFilter, format: 'csv' | 'xlsx' = 'csv'): Observable<Blob> {
-    const params = this.buildParams(filter).set('format', format);
+  exportReport(reportType: string, filter: ReportFilter, format: 'xlsx' | 'pdf' = 'xlsx'): Observable<Blob> {
+    let params = this.buildParams(filter);
+    params = params.set('format', format);
     return this.http.get(`${this.baseUrl}/export/${reportType}`, {
+      params,
+      responseType: 'blob',
+    });
+  }
+
+  exportComposite(filter: ReportFilter, format: 'xlsx' | 'pdf' = 'pdf'): Observable<Blob> {
+    let params = this.buildParams(filter);
+    params = params.set('format', format);
+    return this.http.get(`${this.baseUrl}/export/composite`, {
       params,
       responseType: 'blob',
     });

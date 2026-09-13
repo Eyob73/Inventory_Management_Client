@@ -120,7 +120,8 @@ export class AuthService {
       userName: decoded.unique_name || decoded.userName || decoded.email || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || '',
       roles: decoded.role || decoded.roles || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [],
       firstName: decoded.given_name || decoded.firstName || decoded.FirstName || decoded.firstname || '',
-      lastName: decoded.family_name || decoded.lastName || decoded.LastName || decoded.lastname || ''
+      lastName: decoded.family_name || decoded.lastName || decoded.LastName || decoded.lastname || '',
+      tenantName: decoded.TenantName || decoded.tenantName || ''
     };
 
     // Ensure roles is always an array for consistency

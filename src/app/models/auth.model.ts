@@ -5,6 +5,7 @@ export interface User {
   firstName?: string;
   lastName?: string;
   roles?: string[] | string;
+  tenantName?: string;
 }
 
 export interface LoginCredentials {

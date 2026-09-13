@@ -34,9 +34,9 @@ export class ThemeService {
   /** Readonly signal — use in templates with isDark() */
   isDark = this.isDarkSignal.asReadonly();
 
-  /** Observable that emits true when on a mobile/tablet-portrait viewport */
+  /** Observable that emits true when on a mobile or tablet viewport (up to 1024px) */
   isMobile$: Observable<boolean> = this.breakpointObserver
-    .observe([Breakpoints.Handset, Breakpoints.TabletPortrait])
+    .observe(['(max-width: 1024px)'])
     .pipe(
       map((result) => result.matches),
       shareReplay(1)
