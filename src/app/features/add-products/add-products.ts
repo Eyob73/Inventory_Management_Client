@@ -1,5 +1,5 @@
-import { Component, inject, signal, effect, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
+import { Component, inject, signal, effect, OnInit, PLATFORM_ID } from "@angular/core";
+import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   FormBuilder,
@@ -68,6 +68,8 @@ export class AddProducts implements OnInit {
     ]),
   });
 
+  private platformId = inject(PLATFORM_ID);
+
   constructor() {
     effect(() => {
       const isLoading = this.productStore.isLoading();
@@ -80,6 +82,9 @@ export class AddProducts implements OnInit {
       } else if (!isLoading && this.wasSubmitting && !error) {
         this.wasSubmitting = false;
         this.isError.set(false);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem('addProductDraft');
+        }
         this.submissionStatus.set(
           this.isEditMode() ? 'Product updated successfully!' : 'Product saved successfully!'
         );
@@ -90,16 +95,43 @@ export class AddProducts implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) return;
+    
+    if (id) {
+      this.isEditMode.set(true);
+      this.productId.set(id);
+      this.productService.getById(id).subscribe({
+        next: (product) => this.patchForm(product),
+        error: (err) => {
+          this.isError.set(true);
+          this.submissionStatus.set(err?.error?.detail || 'Failed to load product for editing.');
+        },
+      });
+    } else {
+      // Auto-restore draft for Add Mode
+      if (isPlatformBrowser(this.platformId)) {
+        const draft = localStorage.getItem('addProductDraft');
+        if (draft) {
+          try {
+            const parsed = JSON.parse(draft);
+            // ensure variants array has enough controls before patching
+            if (parsed.variants && parsed.variants.length > 1) {
+              for (let i = 1; i < parsed.variants.length; i++) {
+                this.addVariant();
+              }
+            }
+            this.productForm.patchValue(parsed);
+          } catch (e) {
+            console.error('Failed to restore draft', e);
+          }
+        }
+      }
+    }
 
-    this.isEditMode.set(true);
-    this.productId.set(id);
-    this.productService.getById(id).subscribe({
-      next: (product) => this.patchForm(product),
-      error: (err) => {
-        this.isError.set(true);
-        this.submissionStatus.set(err?.error?.detail || 'Failed to load product for editing.');
-      },
+    // Auto-save form changes
+    this.productForm.valueChanges.subscribe(val => {
+      if (!this.isEditMode() && isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('addProductDraft', JSON.stringify(val));
+      }
     });
   }
 
@@ -132,6 +164,9 @@ export class AddProducts implements OnInit {
   }
 
   cancel() {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('addProductDraft');
+    }
     this.router.navigate(['/products']);
   }
 
@@ -143,6 +178,10 @@ export class AddProducts implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     this.selectedFile.set(null);
+    const currentPreview = this.imagePreview();
+    if (currentPreview && currentPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(currentPreview);
+    }
     this.imagePreview.set(null);
     this.removeImageFlag.set(true);
     
@@ -158,9 +197,16 @@ export class AddProducts implements OnInit {
     if (file) {
       this.selectedFile.set(file);
       this.removeImageFlag.set(false);
-      const reader = new FileReader();
-      reader.onload = () => this.imagePreview.set(reader.result as string);
-      reader.readAsDataURL(file);
+      
+      // Clear any previous object URL to free memory
+      const currentPreview = this.imagePreview();
+      if (currentPreview && currentPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(currentPreview);
+      }
+      
+      // Use createObjectURL instead of FileReader to prevent mobile browser memory crashes
+      const objectUrl = URL.createObjectURL(file);
+      this.imagePreview.set(objectUrl);
     }
   }
 
