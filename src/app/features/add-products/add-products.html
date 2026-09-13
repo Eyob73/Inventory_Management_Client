@@ -18,7 +18,7 @@
     <section class="product-form__section">
         <h2 class="product-form__section-title">Product image</h2>
         <div class="form-group">
-            <label for="productImage" class="image-upload-label">
+            <div class="image-upload-container" [class.has-image]="!!imagePreview()">
                 @if (imagePreview()) {
                     <div class="image-preview-container">
                         <img [src]="imagePreview()" alt="Preview" class="image-preview">
@@ -28,12 +28,26 @@
                     </div>
                 } @else {
                     <div class="image-placeholder">
-                        <span class="placeholder-text">Click to upload image</span>
+                        <div class="placeholder-icon">
+                            <mat-icon>add_photo_alternate</mat-icon>
+                        </div>
+                        <span class="placeholder-text">Upload product image</span>
                         <span class="placeholder-hint">JPG, PNG, WEBP up to 5MB</span>
+                        <div class="upload-actions">
+                            <label for="productImage" class="upload-btn upload-btn--outline" title="Upload from files">
+                                <mat-icon>folder_open</mat-icon>
+                                <span>Browse files</span>
+                            </label>
+                            <label for="productImageCamera" class="upload-btn upload-btn--primary" title="Take a photo">
+                                <mat-icon>camera_alt</mat-icon>
+                                <span>Camera</span>
+                            </label>
+                        </div>
                     </div>
                 }
-            </label>
+            </div>
             <input type="file" id="productImage" class="visually-hidden" accept=".jpg,.jpeg,.png,.webp" (change)="onFileSelected($event)">
+            <input type="file" id="productImageCamera" class="visually-hidden" accept="image/*" capture="environment" (change)="onFileSelected($event)">
         </div>
     </section>
 

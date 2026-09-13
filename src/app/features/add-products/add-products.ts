@@ -146,9 +146,11 @@ export class AddProducts implements OnInit {
     this.imagePreview.set(null);
     this.removeImageFlag.set(true);
     
-    // Reset the file input
+    // Reset the file inputs
     const fileInput = document.getElementById('productImage') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
+    const fileInputCamera = document.getElementById('productImageCamera') as HTMLInputElement;
+    if (fileInputCamera) fileInputCamera.value = '';
   }
 
   onFileSelected(event: Event): void {
