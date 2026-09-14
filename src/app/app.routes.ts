@@ -15,12 +15,6 @@ export const routes: Routes = [
       import('./features/auth/unauthorized/unauthorized').then((m) => m.UnauthorizedComponent),
   },
 
-  // ── Standalone Print Routes ───────────────────────────────────────
-  {
-    path: 'print/report',
-    loadComponent: () => import('./features/reports/print-report/print-report').then((m) => m.PrintReportComponent),
-    canActivate: [authGuard],
-  },
 
   // ── Authenticated Shell (requires any logged-in user) ───────────
   {

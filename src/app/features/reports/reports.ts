@@ -391,22 +391,40 @@ export class Reports implements OnInit {
   }
 
   exportReport(format: 'xlsx' | 'pdf'): void {
-    const reportType = this.activeTab() === 'dashboard' ? 'sales' : this.activeTab();
     const filter = this.buildFilterPayload();
-    this.reportsService.exportReport(reportType, filter, format).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${reportType}-report-${new Date().toISOString().slice(0, 10)}.${format}`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        this.snackBar.open(`Exported ${reportType} report successfully.`, 'Close', { duration: 3000 });
-      },
-      error: () => {
-        this.snackBar.open('Failed to export report.', 'Close', { duration: 3000 });
-      },
-    });
+    
+    if (this.activeTab() === 'dashboard') {
+      this.reportsService.exportComposite(filter, format).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `dashboard-report-${new Date().toISOString().slice(0, 10)}.${format}`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          this.snackBar.open('Exported dashboard report successfully.', 'Close', { duration: 3000 });
+        },
+        error: () => {
+          this.snackBar.open('Failed to export dashboard report.', 'Close', { duration: 3000 });
+        },
+      });
+    } else {
+      const reportType = this.activeTab();
+      this.reportsService.exportReport(reportType, filter, format).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${reportType}-report-${new Date().toISOString().slice(0, 10)}.${format}`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          this.snackBar.open(`Exported ${reportType} report successfully.`, 'Close', { duration: 3000 });
+        },
+        error: () => {
+          this.snackBar.open('Failed to export report.', 'Close', { duration: 3000 });
+        },
+      });
+    }
   }
 
   printReport(): void {
