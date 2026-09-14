@@ -1,27 +1,29 @@
 <div class="pdp">
+<ng-container *transloco="let t">
   <div class="pdp-header">
     <div>
       <a routerLink="/products" class="pdp-back">
         <mat-icon>arrow_back</mat-icon>
-        Products
+        {{ t('products.page.back') }}
       </a>
-      <h1 class="pdp-title">Product details</h1>
-      <p class="pdp-subtitle">Complete catalog information for this item.</p>
+      <h1 class="pdp-title">{{ t('products.page.title') }}</h1>
+      <p class="pdp-subtitle">{{ t('products.page.subtitle') }}</p>
     </div>
     @if (canEdit() && product()) {
     <button type="button" class="btn btn--primary" (click)="editProduct()">
       <mat-icon>edit</mat-icon>
-      Edit
+      {{ t('products.page.edit') }}
     </button>
     }
   </div>
 
   @if (isLoading()) {
-  <div class="pdp-state">Loading product…</div>
+  <div class="pdp-state">{{ t('products.page.loading') }}</div>
   } @else if (error()) {
   <div class="pdp-state pdp-state--error">{{ error() }}</div>
   } @else if (product()) {
   <app-product-details [product]="product()!" [categoryName]="categoryName()" [supplierName]="supplierName()"
     [showCost]="showCost()" />
   }
+</ng-container>
 </div>

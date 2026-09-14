@@ -6,6 +6,7 @@ export interface User {
   lastName?: string;
   roles?: string[] | string;
   tenantName?: string;
+  preferredLanguage?: string;
 }
 
 export interface LoginCredentials {

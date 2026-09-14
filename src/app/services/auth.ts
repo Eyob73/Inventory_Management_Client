@@ -1,14 +1,16 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, catchError, map, tap } from 'rxjs';
+import { Observable, of, catchError, tap } from 'rxjs';
 import { LoginCredentials, RegisterCredentials, User, AuthResponse } from '../models/auth.model';
 import { environment } from '../../environments/environment';
+import { LanguageService } from './language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private languageService = inject(LanguageService);
   private baseUrl = `${environment.apiUrl}/Auth`;
   currentUser = signal<User | null>(null);
 
@@ -42,6 +44,7 @@ export class AuthService {
 
   removeToken() {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('inventory-language');
   }
 
   private decodeToken(token: string): any {
@@ -121,7 +124,8 @@ export class AuthService {
       roles: decoded.role || decoded.roles || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [],
       firstName: decoded.given_name || decoded.firstName || decoded.FirstName || decoded.firstname || '',
       lastName: decoded.family_name || decoded.lastName || decoded.LastName || decoded.lastname || '',
-      tenantName: decoded.TenantName || decoded.tenantName || ''
+      tenantName: decoded.TenantName || decoded.tenantName || '',
+      preferredLanguage: decoded.PreferredLanguage || decoded.preferredLanguage
     };
 
     // Ensure roles is always an array for consistency
@@ -130,6 +134,7 @@ export class AuthService {
     }
 
     this.currentUser.set(user);
+    this.languageService.initLanguage(user);
     return of(user);
   }
 

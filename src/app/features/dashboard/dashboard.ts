@@ -15,6 +15,7 @@ import { WidgetPanel } from './widget-panel/widget-panel';
 import { DashboardService } from '../../services/dashboard';
 import { DashboardWidget } from '../../models/dashboard';
 import { AuthStore } from '../../store/auth.store';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,6 +29,7 @@ import { AuthStore } from '../../store/auth.store';
     MatDialogModule,
     DragDropModule,
     Widget,
+    TranslocoDirective,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

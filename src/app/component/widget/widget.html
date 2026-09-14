@@ -1,4 +1,5 @@
 <div class="container" [class.is-loading]="widget().loading">
+  <ng-container *transloco="let t">
   <!-- Placeholder shown in grid slot while widget is being dragged -->
   <div *cdkDragPlaceholder class="widget-placeholder"></div>
 
@@ -9,7 +10,7 @@
       type="button"
       class="drag-handle widget-drag-handle"
       cdkDragHandle
-      matTooltip="Drag widget to reposition"
+      [matTooltip]="t('dashboard.widgetUI.dragTooltip')"
       matTooltipPosition="above"
       aria-label="Drag widget handle"
     >
@@ -22,8 +23,8 @@
     </span>
 
     <h2 class="widget-label">
-      {{ widget().settings.customTitle || widget().label }}
-    </h2>
+        {{ widget().settings.customTitle || t('dashboard.widgets.' + widget().id) }}
+      </h2>
 
     <span class="spacer"></span>
 
@@ -34,7 +35,7 @@
         mat-icon-button
         class="widget-action-btn"
         [matMenuTriggerFor]="settingsMenu"
-        matTooltip="Widget settings & size"
+        [matTooltip]="t('dashboard.widgetUI.settingsTooltip')"
         matTooltipPosition="above"
       >
         <mat-icon>settings</mat-icon>
@@ -44,7 +45,7 @@
       <button
         mat-icon-button
         class="widget-action-btn remove-btn"
-        matTooltip="Remove widget"
+        [matTooltip]="t('dashboard.widgetUI.removeTooltip')"
         matTooltipPosition="above"
         (click)="remove()"
       >
@@ -55,11 +56,11 @@
 
   <!-- Settings Dropdown Menu -->
   <mat-menu #settingsMenu="matMenu" class="widget-settings-menu">
-    <div class="menu-header">Widget Customization</div>
+    <div class="menu-header">{{ t('dashboard.widgetUI.customization') }}</div>
 
     <!-- Width / Columns Selector -->
     <div class="menu-section">
-      <span class="menu-section-label">Columns (Width)</span>
+      <span class="menu-section-label">{{ t('dashboard.widgetUI.columns') }}</span>
       <div class="size-btn-group">
         @for (c of [1, 2, 3, 4]; track c) {
           @if (c >= widget().minColumns && c <= widget().maxColumns) {
@@ -69,7 +70,7 @@
               [class.active]="widget().columns === c"
               (click)="resize(c, widget().rows)"
             >
-              {{ c }} Col
+              {{ c }} {{ t('dashboard.widgetUI.col') }}
             </button>
           }
         }
@@ -78,7 +79,7 @@
 
     <!-- Height / Rows Selector -->
     <div class="menu-section">
-      <span class="menu-section-label">Rows (Height)</span>
+      <span class="menu-section-label">{{ t('dashboard.widgetUI.rows') }}</span>
       <div class="size-btn-group">
         @for (r of [1, 2, 3, 4]; track r) {
           @if (r >= widget().minRows && r <= widget().maxRows) {
@@ -88,7 +89,7 @@
               [class.active]="widget().rows === r"
               (click)="resize(widget().columns, r)"
             >
-              {{ r }} Row
+              {{ r }} {{ t('dashboard.widgetUI.row') }}
             </button>
           }
         }
@@ -97,7 +98,7 @@
 
     <!-- Card Background Style -->
     <div class="menu-section">
-      <span class="menu-section-label">Card Style</span>
+      <span class="menu-section-label">{{ t('dashboard.widgetUI.cardStyle') }}</span>
       <div class="size-btn-group">
         <button
           type="button"
@@ -105,7 +106,7 @@
           [class.active]="(widget().settings.bgStyle || 'default') === 'default'"
           (click)="setBgStyle('default')"
         >
-          Default
+          {{ t('dashboard.widgetUI.default') }}
         </button>
         <button
           type="button"
@@ -113,7 +114,7 @@
           [class.active]="widget().settings.bgStyle === 'surface'"
           (click)="setBgStyle('surface')"
         >
-          Card
+          {{ t('dashboard.widgetUI.card') }}
         </button>
         <button
           type="button"
@@ -121,7 +122,7 @@
           [class.active]="widget().settings.bgStyle === 'glass'"
           (click)="setBgStyle('glass')"
         >
-          Glass
+          {{ t('dashboard.widgetUI.glass') }}
         </button>
         <button
           type="button"
@@ -129,7 +130,7 @@
           [class.active]="widget().settings.bgStyle === 'accent'"
           (click)="setBgStyle('accent')"
         >
-          Accent
+          {{ t('dashboard.widgetUI.accent') }}
         </button>
       </div>
     </div>
@@ -138,7 +139,7 @@
 
     <button mat-menu-item (click)="remove()">
       <mat-icon class="menu-icon-danger">visibility_off</mat-icon>
-      <span>Hide Widget</span>
+      <span>{{ t('dashboard.widgetUI.hide') }}</span>
     </button>
   </mat-menu>
 
@@ -148,7 +149,7 @@
     @if (widget().loading) {
       <div class="widget-loading-overlay">
         <mat-spinner diameter="32" color="accent" />
-        <span>Updating widget...</span>
+        <span>{{ t('dashboard.widgetUI.updating') }}</span>
       </div>
     }
 
@@ -158,7 +159,7 @@
         <mat-icon class="error-icon">error_outline</mat-icon>
         <p class="error-msg">{{ widget().error }}</p>
         <button mat-button class="retry-btn" (click)="refresh()">
-          <mat-icon>refresh</mat-icon> Retry
+          <mat-icon>refresh</mat-icon> {{ t('dashboard.widgetUI.retry') }}
         </button>
       </div>
     } @else {
@@ -169,4 +170,5 @@
       />
     }
   </div>
+  </ng-container>
 </div>

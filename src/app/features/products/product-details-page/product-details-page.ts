@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -15,7 +16,8 @@ import { ProductDetails } from '../product-details/product-details';
 @Component({
   selector: 'app-product-details-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, ProductDetails],
+  imports: [CommonModule, RouterLink, MatIconModule, ProductDetails,
+    TranslocoDirective],
   templateUrl: './product-details-page.html',
   styleUrl: './product-details-page.scss',
 })

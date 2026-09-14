@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZonelessChangeDetection, isDevMode } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
@@ -11,6 +11,10 @@ import { routes } from './app.routes';
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
 import { jwtInterceptor } from './interceptors/jwt.interceptor';
+import { provideTransloco } from '@jsverse/transloco';
+import { TranslocoHttpLoader } from './core/transloco-loader';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { CustomPaginatorIntl } from './core/custom-paginator-intl';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,5 +29,16 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimations(),
     provideRouter(routes, withComponentInputBinding()),
+    { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl },
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'am', 'om'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+      },
+      loader: TranslocoHttpLoader
+    }),
   ],
 };

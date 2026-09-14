@@ -63,7 +63,7 @@ button {
 :root {
   --sb-track-color: rgba(148, 163, 184, 0.12);
   --sb-thumb-color: var(--border-strong, #cfcfcd);
-  --sb-size: 8px;
+  --sb-size: 5px;
 }
 
 ::-webkit-scrollbar {
@@ -98,6 +98,7 @@ button {
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
   }
+
   *:hover {
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
   }
@@ -263,13 +264,13 @@ input[placeholder*="search" i] {
     }
   }
 }
+
 /* Fullscreen Image Dialog */
 .fullscreen-image-backdrop {
   background: rgba(0, 0, 0, 0.9);
 }
+
 .fullscreen-image-dialog .mat-mdc-dialog-container {
   background: transparent !important;
   box-shadow: none !important;
 }
-
-

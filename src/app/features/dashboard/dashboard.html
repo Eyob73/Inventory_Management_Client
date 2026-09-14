@@ -3,24 +3,28 @@
   <div class="dash-header">
     <div>
       <h1 class="dash-title">
-        @if (isSales()) {
-        Sales Dashboard
-        } @else if (isAdmin()) {
-        Admin Overview
-        } @else if (isSystemAdmin()) {
-        System Admin Dashboard
-        } @else {
-        Overview
-        }
+        <ng-container *transloco="let t">
+          @if (isSales()) {
+          {{ t('dashboard.title.sales') }}
+          } @else if (isAdmin()) {
+          {{ t('dashboard.title.admin') }}
+          } @else if (isSystemAdmin()) {
+          {{ t('dashboard.title.sysadmin') }}
+          } @else {
+          {{ t('dashboard.title.overview') }}
+          }
+        </ng-container>
       </h1>
       <p class="dash-subtitle">
-        @if (isSales()) {
-        Track your sales, revenue, and customers.
-        } @else if (isSystemAdmin()) {
-        Manage tenants, instances, and platform health.
-        } @else {
-        Sales, stock &amp; real-time inventory performance
-        }
+        <ng-container *transloco="let t">
+          @if (isSales()) {
+          {{ t('dashboard.subtitle.sales') }}
+          } @else if (isSystemAdmin()) {
+          {{ t('dashboard.subtitle.sysadmin') }}
+          } @else {
+          {{ t('dashboard.subtitle.overview') }}
+          }
+        </ng-container>
       </p>
     </div>
 
@@ -36,38 +40,45 @@
   <!-- Welcome Banner -->
   <div class="welcome-banner animate-in">
     <div class="welcome-text">
-      <h2>Welcome back, {{ userName() }}!</h2>
+      <ng-container *transloco="let t">
+        <h2>{{ t('dashboard.welcome.title', { name: userName() }) }}</h2>
+      </ng-container>
       <p>
-        @if (isSales()) {
-        Ready to close some deals? You have new leads waiting for follow-up.
-        } @else if (isAdmin()) {
-        System overview looks good. Everything is running smoothly.
-        } @else if (isSystemAdmin()) {
-        Platform operations look good. All instances are running smoothly.
-        } @else {
-        Your inventory overview is up to date. Check recent stock movements.
-        }
+        <ng-container *transloco="let t">
+          @if (isSales()) {
+          {{ t('dashboard.welcome.sales') }}
+          } @else if (isAdmin()) {
+          {{ t('dashboard.welcome.admin') }}
+          } @else if (isSystemAdmin()) {
+          {{ t('dashboard.welcome.sysadmin') }}
+          } @else {
+          {{ t('dashboard.welcome.overview') }}
+          }
+        </ng-container>
       </p>
       <div class="welcome-actions">
         @if (isSales()) {
-        <button class="welcome-btn welcome-btn-primary" routerLink="/sales">
-          <mat-icon
-            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add_shopping_cart</mat-icon>
-          New Sale
-        </button>
+        <ng-container *transloco="let t">
+          <button class="welcome-btn welcome-btn-primary" routerLink="/sales">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add_shopping_cart</mat-icon>
+            {{ t('dashboard.actions.newSale') }}
+          </button>
+        </ng-container>
         } @else if (!isSystemAdmin()) {
-        <button class="welcome-btn welcome-btn-primary" routerLink="/products">
-          <mat-icon
-            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add</mat-icon>
-          Add Product
-        </button>
+        <ng-container *transloco="let t">
+          <button class="welcome-btn welcome-btn-primary" routerLink="/products">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add</mat-icon>
+            {{ t('dashboard.actions.addProduct') }}
+          </button>
+        </ng-container>
         }
         @if (!isSystemAdmin()) {
-        <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
-          <mat-icon
-            style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">download</mat-icon>
-          Export Report
-        </button>
+        <ng-container *transloco="let t">
+          <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">download</mat-icon>
+            {{ t('dashboard.actions.exportReport') }}
+          </button>
+        </ng-container>
         }
       </div>
     </div>
@@ -97,18 +108,26 @@
     @if (activeWidgets().length === 0) {
     <div class="empty-state">
       <mat-icon>dashboard_customize</mat-icon>
-      <h3>No active widgets</h3>
-      <p>Your dashboard is currently empty. Click Customize to choose which widgets to display.</p>
+      <ng-container *transloco="let t">
+        <h3>{{ t('dashboard.empty.title') }}</h3>
+      </ng-container>
+      <ng-container *transloco="let t">
+        <p>{{ t('dashboard.empty.desc') }}</p>
+      </ng-container>
       @if (!isSales()) {
       <div class="empty-actions">
-        <button mat-flat-button class="empty-btn" (click)="openPanel()">
-          <mat-icon>tune</mat-icon>
-          Customize Dashboard
-        </button>
-        <button mat-stroked-button (click)="resetLayout()">
-          <mat-icon>restart_alt</mat-icon>
-          Restore Default Layout
-        </button>
+        <ng-container *transloco="let t">
+          <button mat-flat-button class="empty-btn" (click)="openPanel()">
+            <mat-icon>tune</mat-icon>
+            {{ t('dashboard.actions.customizeDash') }}
+          </button>
+        </ng-container>
+        <ng-container *transloco="let t">
+          <button mat-stroked-button (click)="resetLayout()">
+            <mat-icon>restart_alt</mat-icon>
+            {{ t('dashboard.actions.restoreLayout') }}
+          </button>
+        </ng-container>
       </div>
       }
     </div>

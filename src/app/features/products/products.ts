@@ -2,6 +2,7 @@ import { Category } from '../../models/category.model';
 import { CategoryService } from '../../services/category';
 import { FormsModule } from '@angular/forms';
 import { signal, Component, inject, ViewChild, effect, OnInit, computed } from '@angular/core';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -44,7 +45,7 @@ import { environment } from '../../../environments/environment.development';
     MatButtonModule,
     MatTooltipModule,
     TableSkeleton,
-  ],
+    TranslocoDirective],
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })

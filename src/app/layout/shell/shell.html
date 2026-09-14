@@ -29,11 +29,11 @@
         }
         @for (item of group.items; track item.path) {
         <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link" class="nav-item"
-          [matTooltip]="isSidebarMini() ? item.label : ''" matTooltipPosition="right"
+          [matTooltip]="isSidebarMini() ? ('navigation.' + getNavKey(item.label) | transloco) : ''" matTooltipPosition="right"
           (click)="isMobile() && sidenav.close()">
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           @if (!isSidebarMini()) {
-          <span class="mat-list-item-content" matListItemTitle>{{ item.label }}</span>
+          <span class="mat-list-item-content" matListItemTitle>{{ 'navigation.' + getNavKey(item.label) | transloco }}</span>
           }
         </a>
         }
@@ -82,7 +82,11 @@
           <mat-icon>menu</mat-icon>
         </button>
         }
-        <span class="toolbar-title">{{ pageTitle() }}</span>
+        <span class="toolbar-title">
+          <ng-container *transloco="let t">
+            {{ t('navigation.' + getNavKey(pageTitle())) !== 'navigation.' + getNavKey(pageTitle()) ? t('navigation.' + getNavKey(pageTitle())) : pageTitle() }}
+          </ng-container>
+        </span>
       </div>
 
       <span class="toolbar-spacer"></span>
@@ -91,7 +95,7 @@
         <!-- Search pill -->
         <div class="toolbar-search" role="search" (click)="openSearch($event)">
           <mat-icon class="search-icon">search</mat-icon>
-          <span class="search-text">Search…</span>
+          <span class="search-text">{{ 'common.search' | transloco }}…</span>
           <kbd class="search-kbd">⌘K</kbd>
         </div>
 

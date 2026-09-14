@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { DashboardWidget, WidgetSettings } from '../../models/dashboard';
 import { DashboardService } from '../../services/dashboard';
+import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-widget',
@@ -27,6 +28,7 @@ import { DashboardService } from '../../services/dashboard';
     MatProgressSpinnerModule,
     CdkDragHandle,
     CdkDragPlaceholder,
+    TranslocoDirective,
   ],
   templateUrl: './widget.html',
   styleUrl: './widget.scss',

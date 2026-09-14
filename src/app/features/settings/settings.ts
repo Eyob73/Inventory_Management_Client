@@ -11,6 +11,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthStore } from '../../store/auth.store';
 import { TenantApiService } from '../../services/tenant';
+import { LanguageService } from '../../services/language.service';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 export interface SettingsSection {
   id: string;
@@ -32,6 +34,7 @@ export interface SettingsSection {
     MatSelectModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
+    TranslocoPipe
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
@@ -39,6 +42,7 @@ export interface SettingsSection {
 export class SettingsComponent implements OnInit {
   protected authStore = inject(AuthStore);
   private tenantApi = inject(TenantApiService);
+  public languageService = inject(LanguageService);
 
   readonly userRole = computed(() => this.authStore.userRole());
   readonly normalizedRole = computed(() => (this.userRole() || '').toLowerCase());
@@ -48,16 +52,25 @@ export class SettingsComponent implements OnInit {
   resetSuccess = signal<boolean>(false);
   isLoading = signal<boolean>(false);
 
+  preferredLanguage = 'en';
+
   // ────────────────────────────────────────────────────────────────
   // Role-Based Sections Configuration
   // ────────────────────────────────────────────────────────────────
   readonly sections = computed<SettingsSection[]>(() => {
     const role = this.normalizedRole();
+    const isSales = role === 'sales';
+    const commonSection = { 
+      id: 'localization', 
+      label: isSales ? 'Language' : 'Language & Currency', 
+      icon: 'language' 
+    };
 
     if (role === 'sales') {
       return [
         { id: 'pos', label: 'POS & Fast Checkout', icon: 'point_of_sale' },
         { id: 'terminal', label: 'Sales Terminal Display', icon: 'desktop_windows' },
+        commonSection,
         { id: 'salesAlerts', label: 'Targets & Alerts', icon: 'track_changes' },
         { id: 'theme', label: 'Display & Preferences', icon: 'palette' },
       ];
@@ -67,8 +80,8 @@ export class SettingsComponent implements OnInit {
       return [
         { id: 'inventory', label: 'Stock & Reorder Rules', icon: 'inventory_2' },
         { id: 'salesPolicies', label: 'Sales & Discount Policies', icon: 'local_offer' },
-        { id: 'managerNotifications', label: 'Notifications & Digests', icon: 'notifications' },
-        { id: 'regionalView', label: 'Display & Region', icon: 'display_settings' },
+        commonSection,
+        { id: 'managerNotifications', label: 'Notifications & Digests', icon: 'notifications' }
       ];
     }
 
@@ -76,7 +89,7 @@ export class SettingsComponent implements OnInit {
     return [
       { id: 'company', label: 'Company Profile', icon: 'business' },
       { id: 'inventory', label: 'Inventory Alerts', icon: 'inventory_2' },
-      { id: 'currency', label: 'Currency & Language', icon: 'payments' },
+      commonSection,
       { id: 'notifications', label: 'Notifications', icon: 'notifications' },
       { id: 'security', label: 'Security', icon: 'security' },
     ];
@@ -185,6 +198,7 @@ export class SettingsComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.preferredLanguage = this.languageService.getCurrentLanguage();
     // Set initial active section
     const currentSections = this.sections();
     if (currentSections.length > 0) {
@@ -321,13 +335,12 @@ export class SettingsComponent implements OnInit {
 
       localStorage.setItem(this.getStorageKey(), JSON.stringify(payload));
 
-      // Synchronize active user language globally
-      let selectedLang = 'en-US';
-      if (role === 'sales') selectedLang = this.salesTheme.language;
-      else if (role === 'manager') selectedLang = this.managerRegional.language;
-      else selectedLang = this.adminCurrency.language;
-
-      localStorage.setItem('inv_user_language', selectedLang);
+      if (this.languageService.getCurrentLanguage() !== this.preferredLanguage) {
+        this.languageService.setLanguage(this.preferredLanguage).subscribe({
+          next: () => console.log('Language updated successfully on server'),
+          error: (err) => console.error('Failed to update language', err)
+        });
+      }
 
       this.saveSuccess.set(true);
       setTimeout(() => this.saveSuccess.set(false), 3000);

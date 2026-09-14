@@ -38,6 +38,7 @@ import { AuthStore } from '../../store/auth.store';
 import { NotificationService } from '../../services/notification.service';
 import { routeFadeAnimation } from '../../animations/fade.animation';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-shell',
@@ -58,6 +59,8 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatDividerModule,
     MatMenuModule,
     MatProgressBarModule,
+    TranslocoDirective,
+    TranslocoPipe
   ],
   animations: [routeFadeAnimation],
   templateUrl: './shell.html',
@@ -79,6 +82,25 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   private dialog = inject(MatDialog);
   private confirmService = inject(ConfirmDialogService);
   private destroyRef = inject(DestroyRef);
+  private translocoService = inject(TranslocoService);
+
+  getNavKey(label: string): string {
+    const map: Record<string, string> = {
+      'Dashboard': 'dashboard',
+      'Products': 'products',
+      'Categories': 'categories',
+      'Inventory': 'inventory',
+      'POS Terminal': 'pos',
+      'Sales History': 'sales',
+      'Customers': 'customers',
+      'Suppliers': 'suppliers',
+      'Purchases': 'purchases',
+      'Reports': 'reports',
+      'Users': 'users',
+      'Settings': 'settings',
+    };
+    return map[label] || label.toLowerCase().replace(/ /g, '');
+  }
 
   // ========== Computed User Details ==========
   readonly userName = computed(() => {

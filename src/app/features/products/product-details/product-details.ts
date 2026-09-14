@@ -1,4 +1,5 @@
 import { Component, input, computed, signal, inject } from '@angular/core';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -10,7 +11,8 @@ import { ImagePreviewDialogComponent } from '../../../ui/image-preview-dialog/im
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, DatePipe, MatIconModule, MatDialogModule],
+  imports: [CommonModule, DatePipe, MatIconModule, MatDialogModule,
+    TranslocoDirective],
   templateUrl: './product-details.html',
   styleUrl: './product-details.scss',
 })
