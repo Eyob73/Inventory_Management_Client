@@ -1,10 +1,10 @@
+<ng-container *transloco="let t">
 <div class="dash">
   <!-- Header -->
   <div class="dash-header">
     <div>
       <h1 class="dash-title">
-        <ng-container *transloco="let t">
-          @if (isSales()) {
+        @if (isSales()) {
           {{ t('dashboard.title.sales') }}
           } @else if (isAdmin()) {
           {{ t('dashboard.title.admin') }}
@@ -13,26 +13,23 @@
           } @else {
           {{ t('dashboard.title.overview') }}
           }
-        </ng-container>
       </h1>
       <p class="dash-subtitle">
-        <ng-container *transloco="let t">
-          @if (isSales()) {
+        @if (isSales()) {
           {{ t('dashboard.subtitle.sales') }}
           } @else if (isSystemAdmin()) {
           {{ t('dashboard.subtitle.sysadmin') }}
           } @else {
           {{ t('dashboard.subtitle.overview') }}
           }
-        </ng-container>
       </p>
     </div>
 
     <div class="dash-header-actions">
-      <button mat-button class="customize-btn" (click)="openPanel()" matTooltip="Add or remove widgets"
+      <button mat-button class="customize-btn" (click)="openPanel()" [matTooltip]="t('dashboardCustomize.btnTooltip')"
         id="customize-dashboard-btn">
         <mat-icon>tune</mat-icon>
-        Customize
+        {{ t('dashboardCustomize.btnText') }}
       </button>
     </div>
   </div>
@@ -40,12 +37,9 @@
   <!-- Welcome Banner -->
   <div class="welcome-banner animate-in">
     <div class="welcome-text">
-      <ng-container *transloco="let t">
-        <h2>{{ t('dashboard.welcome.title', { name: userName() }) }}</h2>
-      </ng-container>
+      <h2>{{ t('dashboard.welcome.title', { name: userName() }) }}</h2>
       <p>
-        <ng-container *transloco="let t">
-          @if (isSales()) {
+        @if (isSales()) {
           {{ t('dashboard.welcome.sales') }}
           } @else if (isAdmin()) {
           {{ t('dashboard.welcome.admin') }}
@@ -54,31 +48,24 @@
           } @else {
           {{ t('dashboard.welcome.overview') }}
           }
-        </ng-container>
       </p>
       <div class="welcome-actions">
         @if (isSales()) {
-        <ng-container *transloco="let t">
-          <button class="welcome-btn welcome-btn-primary" routerLink="/sales">
+        <button class="welcome-btn welcome-btn-primary" routerLink="/sales">
             <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add_shopping_cart</mat-icon>
             {{ t('dashboard.actions.newSale') }}
           </button>
-        </ng-container>
         } @else if (!isSystemAdmin()) {
-        <ng-container *transloco="let t">
-          <button class="welcome-btn welcome-btn-primary" routerLink="/products">
+        <button class="welcome-btn welcome-btn-primary" routerLink="/products">
             <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add</mat-icon>
             {{ t('dashboard.actions.addProduct') }}
           </button>
-        </ng-container>
         }
         @if (!isSystemAdmin()) {
-        <ng-container *transloco="let t">
-          <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
+        <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
             <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">download</mat-icon>
             {{ t('dashboard.actions.exportReport') }}
           </button>
-        </ng-container>
         }
       </div>
     </div>
@@ -100,7 +87,7 @@
     @for (w of activeWidgets(); track w.id) {
     <div class="widget-slot" [style.grid-column]="'span ' + w.columns" [style.grid-row]="'span ' + w.rows" cdkDropList
       [cdkDropListData]="w" (cdkDropListDropped)="onWidgetDrop($event)">
-      <app-widget [widget]="w" cdkDrag [cdkDragData]="w" />
+      <app-widget [widget]="w" cdkDrag [cdkDragData]="w" [attr.aria-label]="t('dashboardWidgets.' + w.id + '.label')" />
     </div>
     }
 
@@ -108,29 +95,22 @@
     @if (activeWidgets().length === 0) {
     <div class="empty-state">
       <mat-icon>dashboard_customize</mat-icon>
-      <ng-container *transloco="let t">
-        <h3>{{ t('dashboard.empty.title') }}</h3>
-      </ng-container>
-      <ng-container *transloco="let t">
-        <p>{{ t('dashboard.empty.desc') }}</p>
-      </ng-container>
+      <h3>{{ t('dashboard.empty.title') }}</h3>
+      <p>{{ t('dashboard.empty.desc') }}</p>
       @if (!isSales()) {
       <div class="empty-actions">
-        <ng-container *transloco="let t">
-          <button mat-flat-button class="empty-btn" (click)="openPanel()">
+        <button mat-flat-button class="empty-btn" (click)="openPanel()">
             <mat-icon>tune</mat-icon>
             {{ t('dashboard.actions.customizeDash') }}
           </button>
-        </ng-container>
-        <ng-container *transloco="let t">
-          <button mat-stroked-button (click)="resetLayout()">
+        <button mat-stroked-button (click)="resetLayout()">
             <mat-icon>restart_alt</mat-icon>
             {{ t('dashboard.actions.restoreLayout') }}
           </button>
-        </ng-container>
       </div>
       }
     </div>
     }
   </div>
 </div>
+</ng-container>

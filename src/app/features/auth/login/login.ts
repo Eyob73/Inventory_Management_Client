@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { AuthStore } from '../../../store/auth.store';
 
 @Component({
@@ -23,6 +24,7 @@ import { AuthStore } from '../../../store/auth.store';
     MatCheckboxModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    TranslocoDirective,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -30,6 +32,7 @@ import { AuthStore } from '../../../store/auth.store';
 export class LoginComponent implements OnInit, OnDestroy {
   protected authStore = inject(AuthStore);
   private router = inject(Router);
+  private transloco = inject(TranslocoService);
 
   form: FormGroup;
   hidePassword = true;
@@ -66,14 +69,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   emailErrorText(): string {
-    if (this.emailControl.hasError('required')) return 'Enter your work email';
-    if (this.emailControl.hasError('email')) return "Enter a valid email";
+    if (this.emailControl.hasError('required')) return this.transloco.translate('loginFull.errEmailReq');
+    if (this.emailControl.hasError('email')) return this.transloco.translate('loginFull.errEmailValid');
     return '';
   }
 
   passwordErrorText(): string {
-    if (this.passwordControl.hasError('required')) return 'Enter your password';
-    if (this.passwordControl.hasError('minlength')) return 'Password must be at least 8 characters';
+    if (this.passwordControl.hasError('required')) return this.transloco.translate('loginFull.errPassReq');
+    if (this.passwordControl.hasError('minlength')) return this.transloco.translate('loginFull.errPassMin');
     return '';
   }
 

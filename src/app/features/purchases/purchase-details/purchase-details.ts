@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -22,8 +23,7 @@ import { ConfirmDialogService } from '../../../ui/confirm-dialog/confirm-dialog.
     MatButtonModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
-  ],
+    MatSnackBarModule, TranslocoDirective],
   templateUrl: './purchase-details.html',
   styleUrl: './purchase-details.scss',
 })

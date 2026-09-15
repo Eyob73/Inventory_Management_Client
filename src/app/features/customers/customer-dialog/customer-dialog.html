@@ -1,8 +1,9 @@
+<ng-container *transloco="let t">
 <div class="customer-dialog">
   <div class="dialog-header">
     <div class="header-title">
       <mat-icon class="header-icon">{{ isEditMode ? 'edit_note' : 'person_add' }}</mat-icon>
-      <h2>{{ isEditMode ? 'Edit Customer' : 'Add New Customer' }}</h2>
+      <h2>{{ isEditMode ? t('customers.dialog.editTitle') : t('customers.dialog.createTitle') }}</h2>
     </div>
     <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
@@ -19,73 +20,75 @@
   <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="dialog-form">
     <!-- Full Name -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Full Name</mat-label>
+      <mat-label>{{ t('customers.dialog.name') }}</mat-label>
       <mat-icon matPrefix>person</mat-icon>
-      <input matInput formControlName="name" placeholder="e.g. Abebe Bikila" />
+      <input matInput formControlName="name" [placeholder]="t('customers.dialog.namePlaceholder')" />
       @if (customerForm.get('name')?.hasError('required')) {
-        <mat-error>Customer name is required.</mat-error>
+        <mat-error>{{ t('customers.dialog.nameReq') }}</mat-error>
       }
       @if (customerForm.get('name')?.hasError('minlength')) {
-        <mat-error>Must be at least 2 characters.</mat-error>
+        <mat-error>{{ t('customers.dialog.nameMinLen') }}</mat-error>
       }
     </mat-form-field>
 
     <!-- Phone Number & Email Row -->
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
-        <mat-label>Phone Number</mat-label>
+        <mat-label>{{ t('customers.dialog.phone') }}</mat-label>
         <mat-icon matPrefix>phone</mat-icon>
-        <input matInput formControlName="phoneNumber" placeholder="+251 91 123 4567" />
+        <input matInput formControlName="phoneNumber" [placeholder]="t('customers.dialog.phonePlaceholder')" />
         @if (customerForm.get('phoneNumber')?.hasError('required')) {
-          <mat-error>Phone number is required.</mat-error>
+          <mat-error>{{ t('customers.dialog.phoneReq') }}</mat-error>
         }
         @if (customerForm.get('phoneNumber')?.hasError('pattern')) {
-          <mat-error>Enter a valid phone number.</mat-error>
+          <mat-error>{{ t('customers.dialog.phoneInvalid') }}</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="half-width">
-        <mat-label>Email Address</mat-label>
+        <mat-label>{{ t('customers.dialog.email') }}</mat-label>
         <mat-icon matPrefix>email</mat-icon>
-        <input matInput type="email" formControlName="email" placeholder="customer@example.com" />
+        <input matInput type="email" formControlName="email" [placeholder]="t('customers.dialog.emailPlaceholder')" />
         @if (customerForm.get('email')?.hasError('email')) {
-          <mat-error>Enter a valid email address.</mat-error>
+          <mat-error>{{ t('customers.dialog.emailInvalid') }}</mat-error>
         }
       </mat-form-field>
     </div>
 
     <!-- Address -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Address / Location</mat-label>
+      <mat-label>{{ t('customers.dialog.addressLabel') }}</mat-label>
       <mat-icon matPrefix>place</mat-icon>
-      <textarea matInput formControlName="address" rows="2" placeholder="Street address, City, Building..."></textarea>
+      <textarea matInput formControlName="address" rows="2" [placeholder]="t('customers.dialog.addressPlaceholder')"></textarea>
     </mat-form-field>
 
     <!-- Status Toggle -->
     <div class="status-toggle-row">
       <div class="toggle-info">
-        <span class="toggle-label">Account Status</span>
-        <span class="toggle-sub">{{ customerForm.get('isActive')?.value ? 'Active — can make purchases' : 'Inactive — account suspended' }}</span>
+        <span class="toggle-label">{{ t('customers.dialog.status') }}</span>
+        <span class="toggle-sub">{{ customerForm.get('isActive')?.value ? t('customers.dialog.activeSub') : t('customers.dialog.inactiveSub') }}</span>
       </div>
       <mat-slide-toggle formControlName="isActive" color="primary">
-        {{ customerForm.get('isActive')?.value ? 'Active' : 'Inactive' }}
+        {{ customerForm.get('isActive')?.value ? t('customers.dialog.active') : t('customers.dialog.inactive') }}
       </mat-slide-toggle>
     </div>
 
     <!-- Actions -->
     <div class="dialog-actions">
       <button type="button" class="btn btn--secondary" (click)="onCancel()" [disabled]="isSubmitting()">
-        Cancel
+        {{ t('customers.dialog.cancel') }}
       </button>
       <button type="submit" class="btn btn--primary" [disabled]="isSubmitting() || customerForm.invalid">
         @if (isSubmitting()) {
           <mat-spinner diameter="18"></mat-spinner>
-          <span>Saving…</span>
+          <span>{{ t('customers.dialog.saving') }}</span>
         } @else {
           <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
-          <span>{{ isEditMode ? 'Update Customer' : 'Save Customer' }}</span>
+          <span>{{ isEditMode ? t('customers.dialog.saveChanges') : t('customers.dialog.createCustomer') }}</span>
         }
       </button>
     </div>
   </form>
 </div>
+
+</ng-container>

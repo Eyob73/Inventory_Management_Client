@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, inject, signal, effect, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,8 +42,7 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule,
-    TableSkeleton,
-  ],
+    TableSkeleton, TranslocoDirective],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })

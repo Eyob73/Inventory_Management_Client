@@ -85,7 +85,7 @@
       <dl class="pd-dl">
         <div class="pd-dl__row">
           <dt>{{ t('products.details.supplier') }}</dt>
-          <dd>{{ supplierName() || '—' }}</dd>
+          <dd>{{ supplierName() === 'No supplier' || supplierName() === 'No Supplier' || supplierName() === 'Unknown Supplier' ? t('purchases.details.noSupplier') : (supplierName() || '—') }}</dd>
         </div>
         <div class="pd-dl__row">
           <dt>{{ t('products.details.createdDate') }}</dt>

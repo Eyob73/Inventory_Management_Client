@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, Inject, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -27,8 +28,7 @@ export interface SupplierDialogData {
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule, TranslocoDirective],
   templateUrl: './supplier-dialog.html',
   styleUrl: './supplier-dialog.scss',
 })

@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="pos-terminal">
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -9,9 +10,9 @@
     <header class="catalog-topbar">
       <mat-form-field appearance="outline" class="search-form-field catalog-search">
         <mat-icon matPrefix class="search-icon">search</mat-icon>
-        <input matInput type="text" placeholder="Search products…" [ngModel]="searchTerm()"
+        <input matInput type="text" [placeholder]="t('pos.search')" [ngModel]="searchTerm()"
           (ngModelChange)="onSearchChange($event)" />
-        <button *ngIf="searchTerm()" matSuffix mat-icon-button (click)="onSearchChange('')" aria-label="Clear search">
+        <button *ngIf="searchTerm()" matSuffix mat-icon-button (click)="onSearchChange('')" [attr.aria-label]="t('pos.clearSearch')">
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
@@ -20,7 +21,7 @@
         <button class="cat-pill" [class.cat-pill--active]="selectedCategoryId() === 'ALL'"
           (click)="onCategorySelect('ALL')">
           <mat-icon>grid_view</mat-icon>
-          <span>All</span>
+          <span>{{ t('pos.all') }}</span>
         </button>
         <button *ngFor="let cat of categories()" class="cat-pill"
           [class.cat-pill--active]="selectedCategoryId() === cat.id" [style.--cat-accent]="categoryColor(cat.id)"
@@ -34,10 +35,10 @@
     <!-- Product count indicator -->
     <div class="catalog-meta" *ngIf="!isLoadingProducts()">
       <span class="catalog-count">
-        Showing {{ products().length }} of {{ totalCount() }} product{{ totalCount() !== 1 ? 's' : '' }}
+        {{ t('pos.showing') }} {{ products().length }} {{ t('pos.of') }} {{ totalCount() }} {{ totalCount() !== 1 ? t('pos.productsStr') : t('pos.productStr') }}
       </span>
       <span class="catalog-page-info" *ngIf="totalCount() > 0">
-        Page {{ currentPage() + 1 }} of {{ totalPages() }}
+        {{ t('pos.page') }} {{ currentPage() + 1 }} {{ t('pos.of') }} {{ totalPages() }}
       </span>
     </div>
 
@@ -47,14 +48,14 @@
       <!-- Loading -->
       <div *ngIf="isLoadingProducts()" class="catalog-placeholder">
         <mat-spinner diameter="36"></mat-spinner>
-        <p>Loading catalog…</p>
+        <p>{{ t('pos.loading') }}</p>
       </div>
 
       <!-- Empty state -->
       <div *ngIf="!isLoadingProducts() && totalCount() === 0" class="catalog-placeholder">
         <mat-icon class="placeholder-icon">inventory_2</mat-icon>
-        <p class="placeholder-title">No products found</p>
-        <p class="placeholder-sub">Try a different search or category.</p>
+        <p class="placeholder-title">{{ t('pos.noProducts') }}</p>
+        <p class="placeholder-sub">{{ t('pos.tryDiff') }}</p>
       </div>
 
       <!-- Grid -->
@@ -79,7 +80,7 @@
                 <mat-icon>{{
                   product.quantityInStock <= 0 ? 'remove_circle_outline' : product.quantityInStock <=5 ? 'warning_amber'
                     : 'check_circle' }}</mat-icon>
-                    {{ product.quantityInStock > 0 ? product.quantityInStock + ' left' : 'Out of stock' }}
+                    {{ product.quantityInStock > 0 ? product.quantityInStock + ' ' + t('pos.left') : t('pos.outOfStock') }}
               </span>
             </div>
             
@@ -111,7 +112,7 @@
     <!-- Catalog Pagination -->
     <mat-paginator *ngIf="!isLoadingProducts() && totalCount() > 0" class="pos-paginator" [length]="totalCount()"
       [pageSize]="pageSize()" [pageIndex]="currentPage()" [pageSizeOptions]="[5, 10, 15, 20, 30, 50]"
-      [showFirstLastButtons]="true" (page)="onPageChange($event)" aria-label="Select page of products">
+      [showFirstLastButtons]="true" (page)="onPageChange($event)" [attr.aria-label]="t('pos.ariaPaginator')">
     </mat-paginator>
   </section>
 
@@ -123,16 +124,16 @@
     <!-- Panel header -->
     <header class="order-header">
       <div class="order-header-left">
-        <span class="order-label">Order Ticket</span>
+        <span class="order-label">{{ t('pos.orderTicket') }}</span>
         <div class="order-title-row">
-          <h2 class="order-heading">Current Order</h2>
+          <h2 class="order-heading">{{ t('pos.currentOrder') }}</h2>
           <span class="order-badge" *ngIf="cartItemCount() > 0">
-            {{ cartItemCount() }} {{ cartItemCount() === 1 ? 'item' : 'items' }}
+            {{ cartItemCount() }} {{ cartItemCount() === 1 ? t('pos.item') : t('pos.items') }}
           </span>
         </div>
       </div>
       <div class="order-header-right">
-        <button mat-icon-button class="order-clear-btn" *ngIf="cart().length > 0" matTooltip="Clear order"
+        <button mat-icon-button class="order-clear-btn" *ngIf="cart().length > 0" [matTooltip]="t('pos.clearOrder')"
           (click)="clearCart()">
           <mat-icon>delete_sweep</mat-icon>
         </button>
@@ -150,7 +151,7 @@
           <span class="chip-name">{{ cust.name }}</span>
           <span class="chip-phone" *ngIf="cust.phoneNumber">{{ cust.phoneNumber }}</span>
         </div>
-        <button mat-icon-button class="chip-remove" (click)="clearCustomer()" matTooltip="Clear customer">
+        <button mat-icon-button class="chip-remove" (click)="clearCustomer()" [matTooltip]="t('pos.clearCustomer')">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -159,14 +160,14 @@
       <ng-container *ngIf="!selectedCustomer()">
         <mat-form-field appearance="outline" class="customer-field">
           <mat-icon matPrefix>person_outline</mat-icon>
-          <mat-label>Customer</mat-label>
+          <mat-label>{{ t('pos.customer') }}</mat-label>
           <mat-select [ngModel]="selectedCustomerId()" (ngModelChange)="selectedCustomerId.set($event)">
-            <mat-option [value]="null">— Walk-in —</mat-option>
+            <mat-option [value]="null">{{ t('pos.walkIn') }}</mat-option>
             <mat-option *ngFor="let cust of customers()" [value]="cust.id">
               {{ cust.name }}{{ cust.phoneNumber ? ' · ' + cust.phoneNumber : '' }}
             </mat-option>
           </mat-select>
-          <button matSuffix mat-icon-button type="button" (click)="$event.stopPropagation(); openAddCustomerDialog()" matTooltip="Create new customer" aria-label="Add customer">
+          <button matSuffix mat-icon-button type="button" (click)="$event.stopPropagation(); openAddCustomerDialog()" [matTooltip]="t('pos.createNewCustomer')" [attr.aria-label]="t('pos.addCustomer')">
             <mat-icon>person_add</mat-icon>
           </button>
         </mat-form-field>
@@ -180,15 +181,15 @@
         <div class="order-empty-icon-wrap">
           <mat-icon>receipt_long</mat-icon>
         </div>
-        <p class="order-empty-title">No items yet</p>
-        <p class="order-empty-sub">Tap a product to add it to the order.</p>
+        <p class="order-empty-title">{{ t('pos.noItems') }}</p>
+        <p class="order-empty-sub">{{ t('pos.tapProduct') }}</p>
       </div>
 
       <!-- Item rows -->
       <div *ngFor="let item of cart(); let i = index" class="order-line">
         <div class="line-info">
           <span class="line-name">{{ item.product.name }}</span>
-          <span class="line-price">{{ item.product.price | number:'1.2-2' }} ETB ea.</span>
+          <span class="line-price">{{ item.product.price | number:'1.2-2' }} ETB {{ t('pos.ea') }}</span>
         </div>
         <div class="line-controls">
           <div class="qty-group">
@@ -201,7 +202,7 @@
             </button>
           </div>
           <span class="line-total">{{ (item.product.price * item.quantity) | number:'1.2-2' }} ETB</span>
-          <button class="line-remove" (click)="removeItem(i)" matTooltip="Remove">
+          <button class="line-remove" (click)="removeItem(i)" [matTooltip]="t('pos.remove')">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -217,29 +218,29 @@
       <!-- Totals block -->
       <div class="totals-block">
         <div class="totals-row">
-          <span>Subtotal</span>
+          <span>{{ t('pos.subtotal') }}</span>
           <span>{{ cartSubtotal() | number:'1.2-2' }} ETB</span>
         </div>
         <div class="totals-row" *ngIf="itemDiscountsTotal() > 0">
-          <span>Item discounts</span>
+          <span>{{ t('pos.itemDiscounts') }}</span>
           <span class="totals-deduct">&minus;{{ itemDiscountsTotal() | number:'1.2-2' }} ETB</span>
         </div>
         <div class="totals-row totals-input-row">
-          <span>Discount (ETB)</span>
+          <span>{{ t('pos.discount') }}</span>
           <input type="number" min="0" class="totals-input" [ngModel]="discountAmount()"
             (ngModelChange)="discountAmount.set(+$event)" />
         </div>
         <div class="totals-row totals-input-row">
-          <span>Tax (%)</span>
+          <span>{{ t('pos.taxPercent') }}</span>
           <input type="number" min="0" max="100" class="totals-input" [ngModel]="taxRatePercent()"
             (ngModelChange)="taxRatePercent.set(+$event)" />
         </div>
         <div class="totals-row" *ngIf="calculatedTax() > 0">
-          <span>Tax amount</span>
+          <span>{{ t('pos.taxAmount') }}</span>
           <span>{{ calculatedTax() | number:'1.2-2' }} ETB</span>
         </div>
         <div class="totals-row totals-grand">
-          <span>Total</span>
+          <span>{{ t('pos.total') }}</span>
           <span class="grand-amount">{{ grandTotal() | number:'1.2-2' }} ETB</span>
         </div>
       </div>
@@ -249,22 +250,22 @@
         <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Cash'"
           (click)="setPaymentMethod('Cash')">
           <mat-icon>payments</mat-icon>
-          <span>Cash</span>
+          <span>{{ t('pos.cash') }}</span>
         </button>
         <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Mobile Banking'"
           (click)="setPaymentMethod('Mobile Banking')">
           <mat-icon>account_balance</mat-icon>
-          <span>Mobile Banking</span>
+          <span>{{ t('pos.mobileBanking') }}</span>
         </button>
         <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Telebirr'"
           (click)="setPaymentMethod('Telebirr')">
           <mat-icon>phone_android</mat-icon>
-          <span>Telebirr</span>
+          <span>{{ t('pos.telebirr') }}</span>
         </button>
         <button type="button" class="pay-tab" [class.pay-tab--active]="paymentMethod() === 'Card'"
           (click)="setPaymentMethod('Card')">
           <mat-icon>credit_card</mat-icon>
-          <span>Card</span>
+          <span>{{ t('pos.card') }}</span>
         </button>
       </div>
 
@@ -272,9 +273,9 @@
       <!-- Notes toggle -->
       <button type="button" class="notes-btn" (click)="showNotes.set(!showNotes())">
         <mat-icon>{{ showNotes() ? 'sticky_note_2' : 'add_comment' }}</mat-icon>
-        <span>{{ showNotes() ? 'Hide note' : 'Add order note' }}</span>
+        <span>{{ showNotes() ? t('pos.hideNote') : t('pos.addNote') }}</span>
       </button>
-      <textarea *ngIf="showNotes()" class="notes-area" rows="2" placeholder="Gift wrap, special instructions…"
+      <textarea *ngIf="showNotes()" class="notes-area" rows="2" [placeholder]="t('pos.notePlaceholder')"
         [ngModel]="saleNotes()" (ngModelChange)="saleNotes.set($event)"></textarea>
 
       <!-- Submit -->
@@ -282,11 +283,11 @@
         (click)="completeSale()">
         <ng-container *ngIf="isSubmitting(); else btnLabel">
           <mat-spinner diameter="18"></mat-spinner>
-          <span>Processing…</span>
+          <span>{{ t('pos.processing') }}</span>
         </ng-container>
         <ng-template #btnLabel>
           <mat-icon>point_of_sale</mat-icon>
-          <span>Submit &nbsp;{{ grandTotal() | number:'1.2-2' }} ETB</span>
+          <span>{{ t('pos.submit') }} &nbsp;{{ grandTotal() | number:'1.2-2' }} ETB</span>
         </ng-template>
       </button>
 
@@ -295,3 +296,4 @@
   </aside>
 
 </div>
+</ng-container>

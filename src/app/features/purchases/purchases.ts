@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
 import { Component, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -36,8 +37,7 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    TableSkeleton,
-  ],
+    TableSkeleton, TranslocoDirective],
   templateUrl: './purchases.html',
   styleUrl: './purchases.scss',
 })

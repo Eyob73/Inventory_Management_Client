@@ -1,9 +1,10 @@
+<ng-container *transloco="let t">
 <div class="edit-user-page">
   <!-- Header with Back Button -->
   <div class="page-header">
     <button class="back-btn" (click)="goBack()">
       <mat-icon>arrow_back</mat-icon>
-      Back to Users
+      {{ t('users.backToUsers') }}
     </button>
 
     <div class="header-main">
@@ -11,8 +12,8 @@
         <mat-icon style="font-size: 24px; width: 24px; height: 24px;">person_add</mat-icon>
       </div>
       <div>
-        <h1 class="page-title">Create New User</h1>
-        <p class="page-subtitle">Add a new user to the system.</p>
+        <h1 class="page-title">{{ t('users.createUser') }}</h1>
+        <p class="page-subtitle">{{ t('users.addUserSubtitle') }}</p>
       </div>
     </div>
   </div>
@@ -43,45 +44,45 @@
       <div class="form-section">
         <div class="section-title">
           <mat-icon>person</mat-icon>
-          <span>Personal Information</span>
+          <span>{{ t('users.personalInfo') }}</span>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>First Name</mat-label>
-            <input matInput id="firstName" formControlName="firstName" placeholder="Enter first name" required />
+            <mat-label>{{ t('users.firstName') }}</mat-label>
+            <input matInput id="firstName" formControlName="firstName" [placeholder]="t('users.enterFirstName')" required />
             @if (addForm.get('firstName')?.invalid && addForm.get('firstName')?.touched) {
-            <mat-error>First name is required</mat-error>
+            <mat-error>{{ t('users.firstNameReq') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Last Name</mat-label>
-            <input matInput id="lastName" formControlName="lastName" placeholder="Enter last name" />
+            <mat-label>{{ t('users.lastName') }}</mat-label>
+            <input matInput id="lastName" formControlName="lastName" [placeholder]="t('users.enterLastName')" />
           </mat-form-field>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Email Address</mat-label>
-            <input matInput id="email" type="email" formControlName="email" placeholder="user@example.com" required />
+            <mat-label>{{ t('users.emailAddress') }}</mat-label>
+            <input matInput id="email" type="email" formControlName="email" [placeholder]="t('users.emailPlaceholder')" required />
             @if (addForm.get('email')?.hasError('required') && addForm.get('email')?.touched) {
-            <mat-error>Email is required</mat-error>
+            <mat-error>{{ t('users.emailReq') }}</mat-error>
             } @else if (addForm.get('email')?.hasError('email') && addForm.get('email')?.touched) {
-            <mat-error>Valid email is required</mat-error>
+            <mat-error>{{ t('users.emailInvalid') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Username (Optional)</mat-label>
-            <input matInput id="userName" formControlName="userName" placeholder="e.g. AB123" />
+            <mat-label>{{ t('users.usernameOptional') }}</mat-label>
+            <input matInput id="userName" formControlName="userName" [placeholder]="t('users.usernamePlaceholder')" />
           </mat-form-field>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Phone Number</mat-label>
-            <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="+1 (555) 000-0000" />
+            <mat-label>{{ t('users.phoneNumber') }}</mat-label>
+            <input matInput id="phoneNumber" formControlName="phoneNumber" [placeholder]="t('users.phonePlaceholder')" />
           </mat-form-field>
         </div>
       </div>
@@ -90,33 +91,33 @@
       <div class="form-section">
         <div class="section-title">
           <mat-icon>lock</mat-icon>
-          <span>Security</span>
+          <span>{{ t('users.security') }}</span>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Password</mat-label>
+            <mat-label>{{ t('users.password') }}</mat-label>
             <input matInput id="password" [type]="hidePassword() ? 'password' : 'text'" formControlName="password" required />
             <button mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" type="button">
               <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             @if (addForm.get('password')?.hasError('required') && addForm.get('password')?.touched) {
-              <mat-error>Password is required</mat-error>
+              <mat-error>{{ t('users.passwordReq') }}</mat-error>
             } @else if (addForm.get('password')?.hasError('minlength') && addForm.get('password')?.touched) {
-              <mat-error>Minimum 12 characters</mat-error>
+              <mat-error>{{ t('users.passwordMinLength') }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>Confirm Password</mat-label>
+            <mat-label>{{ t('users.confirmPassword') }}</mat-label>
             <input matInput id="confirmPassword" [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword" required />
             <button mat-icon-button matSuffix (click)="hideConfirmPassword.set(!hideConfirmPassword())" type="button">
               <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             @if (addForm.get('confirmPassword')?.hasError('mismatch') && addForm.get('confirmPassword')?.touched) {
-              <mat-error>Passwords do not match</mat-error>
+              <mat-error>{{ t('users.passwordsMismatch') }}</mat-error>
             } @else if (addForm.get('confirmPassword')?.hasError('required') && addForm.get('confirmPassword')?.touched) {
-              <mat-error>Please confirm password</mat-error>
+              <mat-error>{{ t('users.confirmPasswordReq') }}</mat-error>
             }
           </mat-form-field>
         </div>
@@ -126,15 +127,15 @@
       <div class="form-section">
         <div class="section-title">
           <mat-icon>admin_panel_settings</mat-icon>
-          <span>Role Permissions</span>
+          <span>{{ t('users.rolePermissions') }}</span>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline" class="user-form-field">
-            <mat-label>System Role</mat-label>
+            <mat-label>{{ t('users.systemRole') }}</mat-label>
             <mat-select id="role" formControlName="role">
               @for (role of ROLES; track role) {
-              <mat-option [value]="role">{{ role }}</mat-option>
+              <mat-option [value]="role">{{ t('users.' + role.toLowerCase()) }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -144,15 +145,15 @@
       <!-- Form Actions -->
       <div class="form-actions">
         <button type="button" class="btn btn--ghost" (click)="goBack()" [disabled]="isSaving()">
-          Cancel
+          {{ t('users.cancel') }}
         </button>
         <button type="submit" class="btn btn--primary" [disabled]="addForm.invalid || isSaving()">
           @if (isSaving()) {
           <div class="btn-spinner"></div>
-          <span>Creating...</span>
+          <span>{{ t('users.creating') }}</span>
           } @else {
           <mat-icon>person_add</mat-icon>
-          <span>Create User</span>
+          <span>{{ t('users.btnCreateUser') }}</span>
           }
         </button>
       </div>
@@ -161,3 +162,5 @@
   </div>
 </div>
 
+
+</ng-container>

@@ -1,3 +1,4 @@
+import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +23,8 @@ interface ActivityItem {
   selector: 'app-profile',
   standalone: true,
   imports: [
+    TranslocoDirective,
+    TranslocoPipe,
     CommonModule,
     FormsModule,
     MatIconModule,
@@ -34,6 +37,7 @@ interface ActivityItem {
   styleUrl: './profile.scss',
 })
 export class ProfileComponent {
+  private translocoService = inject(TranslocoService);
   readonly authStore = inject(AuthStore);
   private userService = inject(UserService);
   private authService = inject(AuthService);
@@ -175,7 +179,7 @@ export class ProfileComponent {
           if (Array.isArray(apiErrors) && apiErrors.length > 0) {
             this.profileError.set(apiErrors.join(' '));
           } else {
-            this.profileError.set(err?.error?.detail || 'Failed to update profile.');
+            this.profileError.set(err?.error?.detail || this.translocoService.translate('profile.errUpdateProfile'));
           }
         },
       });
@@ -193,15 +197,15 @@ export class ProfileComponent {
   changePassword(): void {
     this.passwordError.set(null);
     if (!this.currentPassword) {
-      this.passwordError.set('Please enter your current password.');
+      this.passwordError.set(this.translocoService.translate('profile.errEnterCurrentPass'));
       return;
     }
     if (this.newPassword.length < 6) {
-      this.passwordError.set('New password must be at least 6 characters.');
+      this.passwordError.set(this.translocoService.translate('profile.errNewPassMin6'));
       return;
     }
     if (this.newPassword !== this.confirmPassword) {
-      this.passwordError.set('New password confirmation does not match.');
+      this.passwordError.set(this.translocoService.translate('profile.errPassMismatch'));
       return;
     }
 
@@ -221,7 +225,7 @@ export class ProfileComponent {
         if (Array.isArray(apiErrors) && apiErrors.length > 0) {
           this.passwordError.set(apiErrors.join(' '));
         } else {
-          this.passwordError.set(err?.error?.detail || err?.error?.message || 'Failed to update password. Please verify your current password.');
+          this.passwordError.set(err?.error?.detail || err?.error?.message || this.translocoService.translate('profile.errUpdatePass'));
         }
       },
     });

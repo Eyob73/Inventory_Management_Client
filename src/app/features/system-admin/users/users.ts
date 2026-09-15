@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Subject } from 'rxjs';
+import { TranslocoService, TranslocoModule } from '@jsverse/transloco';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { MatDividerModule } from '@angular/material/divider';
@@ -23,6 +24,7 @@ import { MatDividerModule } from '@angular/material/divider';
   selector: 'app-system-users',
   standalone: true,
   imports: [
+    TranslocoModule,
     FormsModule,
     CommonModule,
     RouterModule,
@@ -44,6 +46,7 @@ import { MatDividerModule } from '@angular/material/divider';
 export class SystemUsersComponent implements OnInit, OnDestroy {
   private systemService = inject(SystemService);
   private userService = inject(UserService);
+  private transloco = inject(TranslocoService);
 
   users = signal<SystemUser[]>([]);
   companies = signal<Map<string, string>>(new Map());
@@ -123,7 +126,7 @@ export class SystemUsersComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load users data.');
+        this.error.set(this.transloco.translate('systemAdmin.users.loadFailed'));
         this.loading.set(false);
       }
     });
@@ -148,8 +151,8 @@ export class SystemUsersComponent implements OnInit, OnDestroy {
   }
 
   getCompanyName(tenantId?: string): string {
-    if (!tenantId) return 'System Admin';
-    return this.companies().get(tenantId.toLowerCase()) || 'Unknown Company';
+    if (!tenantId) return this.transloco.translate('systemAdmin.users.systemAdmin');
+    return this.companies().get(tenantId.toLowerCase()) || this.transloco.translate('systemAdmin.users.unknownCompany');
   }
 
   getUserInitials(user: SystemUser): string {

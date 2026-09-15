@@ -1,9 +1,10 @@
+<ng-container *transloco="let t">
 <div class="purchases-page">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Purchase Orders</h1>
+      <h1 class="page-title">{{ t('purchases.title') }}</h1>
       <p class="page-subtitle">
-        Create drafts, receive stock, and keep a history of supplier purchases.
+        {{ t('purchases.subtitle') }}
       </p>
     </div>
     @if (canManage) {
@@ -16,7 +17,7 @@
             stroke-linecap="round"
           />
         </svg>
-        New Purchase
+        {{ t('purchases.newPurchase') }}
       </button>
     }
   </div>
@@ -36,41 +37,41 @@
     <div class="stat-card teal">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>shopping_cart</mat-icon></span>
-        <span class="stat-title">All Purchases</span>
+        <span class="stat-title">{{ t('purchases.stats.total') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().total }}</div>
-        <span class="stat-sub">Total purchase orders</span>
+        <span class="stat-sub">{{ t('purchases.stats.totalSub') }}</span>
       </div>
     </div>
     <div class="stat-card amber">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>edit_note</mat-icon></span>
-        <span class="stat-title">Drafts</span>
+        <span class="stat-title">{{ t('purchases.stats.drafts') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().drafts }}</div>
-        <span class="stat-sub">Pending approval</span>
+        <span class="stat-sub">{{ t('purchases.stats.draftsSub') }}</span>
       </div>
     </div>
     <div class="stat-card green">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>check_circle</mat-icon></span>
-        <span class="stat-title">Completed</span>
+        <span class="stat-title">{{ t('purchases.stats.completed') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().completed }}</div>
-        <span class="stat-sub">Fulfilled orders</span>
+        <span class="stat-sub">{{ t('purchases.stats.completedSub') }}</span>
       </div>
     </div>
     <div class="stat-card blue">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>payments</mat-icon></span>
-        <span class="stat-title">Completed Value</span>
+        <span class="stat-title">{{ t('purchases.stats.totalValue') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().totalAmount | number: '1.0-0' }} ETB</div>
-        <span class="stat-sub">Total spend</span>
+        <span class="stat-sub">{{ t('purchases.stats.totalValueSub') }}</span>
       </div>
     </div>
   </div>
@@ -78,28 +79,28 @@
   <div class="filters-card">
     <div class="filter-row">
       <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Search Purchases</mat-label>
+        <mat-label>{{ t('purchases.search') }}</mat-label>
         <input
           matInput
-          placeholder="e.g. PO number, supplier, or status…"
+          [placeholder]="t('purchases.searchPlaceholder')"
           [ngModel]="store.search()"
           (input)="applyFilter($event)"
         />
         <mat-icon matPrefix>search</mat-icon>
         @if (store.search()) {
-          <button matSuffix mat-icon-button (click)="store.setSearch('')" aria-label="Clear search">
+          <button matSuffix mat-icon-button (click)="store.setSearch('')" [attr.aria-label]="t('purchases.clearSearch')">
             <mat-icon>close</mat-icon>
           </button>
         }
       </mat-form-field>
       
       <mat-form-field appearance="outline">
-        <mat-label>Status</mat-label>
+        <mat-label>{{ t('purchases.status') }}</mat-label>
         <mat-select [ngModel]="store.statusFilter()" (ngModelChange)="store.setStatusFilter($event)">
-          <mat-option value="">All Statuses</mat-option>
-          <mat-option value="Draft">Draft</mat-option>
-          <mat-option value="Completed">Completed</mat-option>
-          <mat-option value="Cancelled">Cancelled</mat-option>
+          <mat-option value="">{{ t('purchases.allStatuses') }}</mat-option>
+          <mat-option value="Draft">{{ t('purchases.draft') }}</mat-option>
+          <mat-option value="Completed">{{ t('purchases.stats.completed') }}</mat-option>
+          <mat-option value="Cancelled">{{ t('purchases.cancelledStatus') }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -112,13 +113,13 @@
       <div class="table-wrapper">
         <table mat-table [dataSource]="dataSource" matSort class="app-table">
           <ng-container matColumnDef="no">
-            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <th mat-header-cell *matHeaderCellDef>{{ t('purchases.table.no') }}</th>
             <td mat-cell *matCellDef="let row; let i = index" class="font-mono text-secondary">
               {{ (store.pageIndex() - 1) * store.pageSize() + i + 1 }}
             </td>
           </ng-container>
           <ng-container matColumnDef="purchaseNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>PO #</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('purchases.table.poNo') }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="customer-name-cell" (click)="openDetails(row)">{{
                 row.purchaseNumber
@@ -126,41 +127,41 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="supplierName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Supplier</th>
-            <td mat-cell *matCellDef="let row">{{ row.supplierName || '—' }}</td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('purchases.table.supplier') }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.supplierName === 'No supplier' || row.supplierName === 'No Supplier' ? t('purchases.details.noSupplier') : (row.supplierName || '—') }}</td>
           </ng-container>
           <ng-container matColumnDef="purchaseDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('purchases.table.date') }}</th>
             <td mat-cell *matCellDef="let row" class="text-secondary">
               {{ row.purchaseDate | date: 'mediumDate' }}
             </td>
           </ng-container>
           <ng-container matColumnDef="items">
-            <th mat-header-cell *matHeaderCellDef class="text-center">Lines</th>
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('purchases.table.lines') }}</th>
             <td mat-cell *matCellDef="let row" class="text-center">{{ row.items?.length || 0 }}</td>
           </ng-container>
           <ng-container matColumnDef="totalAmount">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('purchases.table.totalAmount') }}</th>
             <td mat-cell *matCellDef="let row" class="font-bold">
               {{ row.totalAmount | number: '1.2-2' }} ETB
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('purchases.table.status') }}</th>
             <td mat-cell *matCellDef="let row">
-              <span class="status-badge" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+              <span class="status-badge" [ngClass]="statusClass(row.status)">{{ row.status === 'Completed' ? t('purchases.stats.completed') : (row.status === 'Cancelled' ? t('purchases.cancelledStatus') : (row.status === 'Draft' ? t('purchases.draft') : row.status)) }}</span>
             </td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('purchases.table.actions') }}</th>
             <td mat-cell *matCellDef="let row">
               <div class="actions-cell">
                 <button
                   type="button"
                   class="action-btn action-btn--view"
                   (click)="openDetails(row)"
-                  matTooltip="View details"
-                  aria-label="View details"
+                  [matTooltip]="t('purchases.table.viewTooltip')"
+                  [attr.aria-label]="t('purchases.table.viewTooltip')"
                 >
                   <mat-icon>visibility</mat-icon>
                 </button>
@@ -169,8 +170,8 @@
                     type="button"
                     class="action-btn action-btn--edit"
                     (click)="openEdit(row)"
-                    matTooltip="Edit draft"
-                    aria-label="Edit draft"
+                    [matTooltip]="t('purchases.table.editTooltip')"
+                    [attr.aria-label]="t('purchases.table.editTooltip')"
                   >
                     <mat-icon>edit</mat-icon>
                   </button>
@@ -178,8 +179,8 @@
                     type="button"
                     class="action-btn action-btn--view"
                     (click)="complete(row)"
-                    matTooltip="Complete and receive stock"
-                    aria-label="Complete purchase"
+                    [matTooltip]="t('purchases.table.completeTooltip')"
+                    [attr.aria-label]="t('purchases.table.completeLabel')"
                   >
                     <mat-icon>inventory</mat-icon>
                   </button>
@@ -189,8 +190,8 @@
                     type="button"
                     class="action-btn action-btn--delete"
                     (click)="cancel(row)"
-                    matTooltip="Cancel purchase"
-                    aria-label="Cancel purchase"
+                    [matTooltip]="t('purchases.table.cancelTooltip')"
+                    [attr.aria-label]="t('purchases.table.cancelTooltip')"
                   >
                     <mat-icon>cancel</mat-icon>
                   </button>
@@ -200,8 +201,8 @@
                     type="button"
                     class="action-btn action-btn--delete"
                     (click)="deleteDraft(row)"
-                    matTooltip="Delete draft"
-                    aria-label="Delete draft"
+                    [matTooltip]="t('purchases.table.deleteTooltip')"
+                    [attr.aria-label]="t('purchases.table.deleteTooltip')"
                   >
                     <mat-icon>delete_outline</mat-icon>
                   </button>
@@ -215,7 +216,7 @@
             <td class="table-empty" [attr.colspan]="displayedColumns.length">
               <div class="empty-state">
                 <mat-icon class="empty-icon">local_mall</mat-icon>
-                <p class="empty-title">No purchases found</p>
+                <p class="empty-title">{{ t('purchases.table.noMatch') }}</p>
                 <p class="empty-subtitle">
                   @if (store.search()) {
                     No purchases match your search.
@@ -243,3 +244,5 @@
 </div>
 
 
+
+</ng-container>

@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="settings-page">
 
   <!-- Header -->
@@ -6,11 +7,11 @@
       <div class="header-title-row">
         <h1 class="page-title">
           @if (normalizedRole() === 'sales') {
-          Sales Preferences
+          {{ t('settingsFull.headerSales') }}
           } @else if (normalizedRole() === 'manager') {
-          Manager Control & Store Settings
+          {{ t('settingsFull.headerManager') }}
           } @else {
-          System & Administration Settings
+          {{ t('settingsFull.headerAdmin') }}
           }
         </h1>
         <span class="role-badge" [class]="'role-badge--' + (normalizedRole() || 'default')">
@@ -19,17 +20,16 @@
             @else if (normalizedRole() === 'manager') { supervisor_account }
             @else { admin_panel_settings }
           </mat-icon>
-          {{ userRole() }} Role
+          {{ t('settingsFull.roleBadge', { role: userRole() }) }}
         </span>
       </div>
       <p class="page-subtitle">
         @if (normalizedRole() === 'sales') {
-        Customize point-of-sale checkout behaviors, terminal display settings, personal target alerts, and quick
-        actions.
+        {{ t('settingsFull.subSales') }}
         } @else if (normalizedRole() === 'manager') {
-        Configure inventory reorder rules, sales discount thresholds, manager alerts, and store preferences.
+        {{ t('settingsFull.subManager') }}
         } @else {
-        Configure company details, inventory thresholds, security policies, and system defaults.
+        {{ t('settingsFull.subAdmin') }}
         }
       </p>
     </div>
@@ -39,14 +39,14 @@
   @if (saveSuccess()) {
   <div class="success-banner">
     <mat-icon>check_circle</mat-icon>
-    <span>Settings saved successfully!</span>
+    <span>{{ t('settingsFull.savedSuccess') }}</span>
   </div>
   }
 
   @if (resetSuccess()) {
   <div class="info-banner">
     <mat-icon>info</mat-icon>
-    <span>Settings restored to default role values.</span>
+    <span>{{ t('settingsFull.restoredSuccess') }}</span>
   </div>
   }
 
@@ -58,7 +58,7 @@
       <button type="button" class="nav-item" [class.active]="activeSection() === section.id"
         (click)="setSection(section.id)">
         <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
-        <span class="nav-label">{{ section.label }}</span>
+        <span class="nav-label">{{ t(section.label) }}</span>
       </button>
       }
     </nav>
@@ -74,18 +74,18 @@
         <div class="card-header">
           <mat-icon>language</mat-icon>
           <div>
-            <h2>{{ 'settings.language' | transloco }}</h2>
-            <p class="card-desc">{{ 'settings.chooseLanguage' | transloco }}</p>
+            <h2>{{ t('settings.language') }}</h2>
+            <p class="card-desc">{{ t('settings.chooseLanguage') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>{{ 'settings.preferredLanguage' | transloco }}</mat-label>
+              <mat-label>{{ t('settings.preferredLanguage') }}</mat-label>
               <mat-select [(ngModel)]="preferredLanguage">
-                <mat-option value="en">English</mat-option>
+                <mat-option value="en">{{ t('settings.english') }}</mat-option>
                 <mat-option value="am">አማርኛ</mat-option>
-                <mat-option value="om">Afaan Oromoo</mat-option>
+                <mat-option value="om">{{ t('settings.oromo') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -97,46 +97,46 @@
         <div class="card-header">
           <mat-icon>display_settings</mat-icon>
           <div>
-            <h2>Store Currency & Table View Preferences</h2>
-            <p class="card-desc">Customize store currency display and default data grid density.</p>
+            <h2>{{ t('settingsFull.headingStoreCurrencyPref') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.storePrefDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Symbol</mat-label>
+              <mat-label>{{ t('settingsFull.currencySymbol') }}</mat-label>
               <input matInput id="currencySymbol" type="text" [(ngModel)]="managerRegional.currencySymbol"
-                placeholder="Br" />
+                [placeholder]="t('settings.placeholders.br')" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Code</mat-label>
+              <mat-label>{{ t('settingsFull.currencyCode') }}</mat-label>
               <input matInput id="currencyCode" type="text" [(ngModel)]="managerRegional.currencyCode"
-                placeholder="ETB" />
+                [placeholder]="t('settings.placeholders.etb')" />
             </mat-form-field>
           </div>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Decimal Places</mat-label>
+              <mat-label>{{ t('settingsFull.decimalPlaces') }}</mat-label>
               <mat-select [(ngModel)]="managerRegional.decimalPlaces">
-                <mat-option [value]="0">0 (e.g., 1,500 ETB)</mat-option>
-                <mat-option [value]="2">2 (e.g., 1,500.00 ETB)</mat-option>
+                <mat-option [value]="0">{{ t('settings.dropdowns.decimals0_1500') }}</mat-option>
+                <mat-option [value]="2">{{ t('settings.dropdowns.decimals2_1500') }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Data Table Row Density</mat-label>
+              <mat-label>{{ t('settingsFull.dataTableDensity') }}</mat-label>
               <mat-select [(ngModel)]="managerRegional.tableDensity">
-                <mat-option value="compact">Compact (More items per screen)</mat-option>
-                <mat-option value="comfortable">Comfortable (Standard)</mat-option>
-                <mat-option value="spacious">Spacious (Easier viewing)</mat-option>
+                <mat-option value="compact">{{ t('settings.dropdowns.densityCompact') }}</mat-option>
+                <mat-option value="comfortable">{{ t('settings.dropdowns.densityComfortable') }}</mat-option>
+                <mat-option value="spacious">{{ t('settings.dropdowns.densitySpacious') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
 
           <div class="currency-preview">
-            <span class="preview-label">Price Display Format:</span>
+            <span class="preview-label">{{ t('settingsFull.priceDisplayPreview') }}</span>
             <span class="preview-value">{{ managerRegional.currencySymbol }} 1,234{{ managerRegional.decimalPlaces === 2
               ? '.00' : '' }} {{ managerRegional.currencyCode }}</span>
           </div>
@@ -149,30 +149,30 @@
         <div class="card-header">
           <mat-icon>payments</mat-icon>
           <div>
-            <h2>Currency & System Language</h2>
-            <p class="card-desc">Default regional localization settings for the entire application.</p>
+            <h2>{{ t('settingsFull.currencyLanguage') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.currencyLangDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Code</mat-label>
-              <input matInput id="adminCurrencyCode" type="text" [(ngModel)]="adminCurrency.code" placeholder="ETB" />
+              <mat-label>{{ t('settingsFull.currencyCode') }}</mat-label>
+              <input matInput id="adminCurrencyCode" type="text" [(ngModel)]="adminCurrency.code" [placeholder]="t('settings.placeholders.etb')" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Symbol</mat-label>
+              <mat-label>{{ t('settingsFull.currencySymbol') }}</mat-label>
               <input matInput id="adminCurrencySymbol" type="text" [(ngModel)]="adminCurrency.symbol"
-                placeholder="Br" />
+                [placeholder]="t('settings.placeholders.br')" />
             </mat-form-field>
           </div>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Decimal Places</mat-label>
+              <mat-label>{{ t('settingsFull.decimalPlaces') }}</mat-label>
               <mat-select [(ngModel)]="adminCurrency.decimalPlaces">
-                <mat-option [value]="0">0 (e.g., 1,000 ETB)</mat-option>
-                <mat-option [value]="2">2 (e.g., 1,000.00 ETB)</mat-option>
+                <mat-option [value]="0">{{ t('settings.dropdowns.decimals0_1000') }}</mat-option>
+                <mat-option [value]="2">{{ t('settings.dropdowns.decimals2_1000') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -186,62 +186,62 @@
       <!-- =================================================================== -->
       @if (normalizedRole() === 'sales') {
 
-      <!-- POS & Fast Checkout -->
+      <!-- {{ t('settingsFull.posTerminal') }} -->
       @if (activeSection() === 'pos') {
       <div class="settings-card">
         <div class="card-header">
           <mat-icon>point_of_sale</mat-icon>
           <div>
-            <h2>POS & Fast Checkout</h2>
-            <p class="card-desc">Set default checkout options and printing behaviors for rapid transactions.</p>
+            <h2>{{ t('settingsFull.posTerminal') }}</h2>
+            <p class="card-desc">{{ t('settings.sales.posDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Default Payment Method</mat-label>
+              <mat-label>{{ t('settingsFull.defaultPaymentMethod') }}</mat-label>
               <mat-select [(ngModel)]="salesPos.defaultPaymentMethod">
-                <mat-option value="Cash">Cash</mat-option>
-                <mat-option value="Card">Card / POS Terminal</mat-option>
-                <mat-option value="Mobile Transfer">Mobile Transfer (Telebirr/CBE)</mat-option>
-                <mat-option value="Credit">Customer Account Credit</mat-option>
+                <mat-option value="Cash">{{ t('settings.dropdowns.paymentCash') }}</mat-option>
+                <mat-option value="Card">{{ t('settings.dropdowns.paymentCard') }}</mat-option>
+                <mat-option value="Mobile Transfer">{{ t('settings.dropdowns.paymentMobile') }}</mat-option>
+                <mat-option value="Credit">{{ t('settings.dropdowns.paymentCredit') }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Default Customer Group</mat-label>
+              <mat-label>{{ t('settingsFull.defaultCustomerGroup') }}</mat-label>
               <mat-select [(ngModel)]="salesPos.defaultCustomerGroup">
-                <mat-option value="Retail">Retail Walk-in Customer</mat-option>
-                <mat-option value="Wholesale">Wholesale Customer</mat-option>
-                <mat-option value="VIP">VIP / Regular Customer</mat-option>
+                <mat-option value="Retail">{{ t('settings.dropdowns.groupRetail') }}</mat-option>
+                <mat-option value="Wholesale">{{ t('settings.dropdowns.groupWholesale') }}</mat-option>
+                <mat-option value="VIP">{{ t('settings.dropdowns.groupVip') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Quick Quantity Step Increment</mat-label>
+              <mat-label>{{ t('settingsFull.quickQtyStep') }}</mat-label>
               <mat-select [(ngModel)]="salesPos.quickQtyStep">
-                <mat-option [value]="1">+1 unit step</mat-option>
-                <mat-option [value]="5">+5 units step</mat-option>
-                <mat-option [value]="10">+10 units step</mat-option>
+                <mat-option [value]="1">{{ t('settings.dropdowns.step1') }}</mat-option>
+                <mat-option [value]="5">{{ t('settings.dropdowns.step5') }}</mat-option>
+                <mat-option [value]="10">{{ t('settings.dropdowns.step10') }}</mat-option>
               </mat-select>
-              <mat-hint>Used for quick-add buttons in POS product list.</mat-hint>
+              <mat-hint>{{ t('settingsFull.quickQtyStepHint') }}</mat-hint>
             </mat-form-field>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Auto-Print Receipt on Sale Complete</span>
-              <span class="toggle-hint">Automatically send receipt to receipt printer after completing sale.</span>
+              <span class="toggle-label">{{ t('settings.sales.autoPrintLabel') }}</span>
+              <span class="toggle-hint">{{ t('settings.sales.autoPrintHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="salesPos.autoPrintReceipt" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Print Duplicate Customer Copy</span>
-              <span class="toggle-hint">Print two receipt copies (Merchant copy + Customer copy).</span>
+              <span class="toggle-label">{{ t('settings.sales.printCustomerLabel') }}</span>
+              <span class="toggle-hint">{{ t('settings.sales.printCustomerHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="salesPos.printCustomerCopy" color="primary"></mat-slide-toggle>
           </div>
@@ -255,24 +255,24 @@
         <div class="card-header">
           <mat-icon>desktop_windows</mat-icon>
           <div>
-            <h2>Sales Terminal Display</h2>
-            <p class="card-desc">Tailor product layouts and barcode scanner responsiveness for your register.</p>
+            <h2>{{ t('settingsFull.navSalesTerminalDisplay') }}</h2>
+            <p class="card-desc">{{ t('settings.sales.terminalDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>POS Grid Display Mode</mat-label>
+              <mat-label>{{ t('settingsFull.posGridDisplayMode') }}</mat-label>
               <mat-select [(ngModel)]="salesTerminal.layoutMode">
-                <mat-option value="grid">Product Cards Grid (Visual)</mat-option>
-                <mat-option value="list">Compact List View (High Density)</mat-option>
+                <mat-option value="grid">{{ t('settings.dropdowns.layoutGrid') }}</mat-option>
+                <mat-option value="list">{{ t('settings.dropdowns.layoutList') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Show Product Images in POS</span>
+              <span class="toggle-label">{{ t('settingsFull.showImagesLabel') }}</span>
               <span class="toggle-hint">Display product thumbnail images in the search grid. Disable for faster
                 performance.</span>
             </div>
@@ -281,15 +281,15 @@
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Barcode Scanner Audio Feedback</span>
-              <span class="toggle-hint">Play a quick sound chime when a product barcode is scanned.</span>
+              <span class="toggle-label">{{ t('settingsFull.barcodeAudioLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.barcodeAudioHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="salesTerminal.barcodeSound" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Show Quick Keyboard Shortcuts Bar</span>
+              <span class="toggle-label">{{ t('settingsFull.keyboardShortLabel') }}</span>
               <span class="toggle-hint">Keep shortcut hints (F1 for search, F9 for checkout) visible on register
                 screen.</span>
             </div>
@@ -305,39 +305,39 @@
         <div class="card-header">
           <mat-icon>track_changes</mat-icon>
           <div>
-            <h2>Sales Targets & Ring-Up Alerts</h2>
-            <p class="card-desc">Stay informed about low stock items while ringing up orders and track daily progress.
+            <h2>{{ t('settingsFull.salesTargets') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.salesTargetsDesc') }}
             </p>
           </div>
         </div>
         <div class="card-body">
           <mat-form-field appearance="outline" class="settings-form-field">
-            <mat-label>Personal Daily Sales Goal (ETB)</mat-label>
+            <mat-label>{{ t('settingsFull.personalDailyTarget') }}</mat-label>
             <input matInput id="personalTargetGoal" type="number" [(ngModel)]="salesAlerts.personalTargetGoal"
               min="1000" step="5000" />
-            <mat-hint>Your target sales volume per shift.</mat-hint>
+            <mat-hint>{{ t('settingsFull.personalDailyTargetHint') }}</mat-hint>
           </mat-form-field>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Daily Target Progress Popups</span>
-              <span class="toggle-hint">Get notified when you hit 50%, 75%, and 100% of daily target.</span>
+              <span class="toggle-label">{{ t('settingsFull.dailyTargetPopupsLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.dailyTargetPopupsHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="salesAlerts.dailyTargetAlert" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Low Stock Warning On Scan</span>
-              <span class="toggle-hint">Show a warning popup if scanned product has less than 5 units left.</span>
+              <span class="toggle-label">{{ t('settingsFull.lowStockPopupLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.lowStockPopupHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="salesAlerts.lowStockScanWarning" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Sale Success Audio Notification</span>
-              <span class="toggle-hint">Play confirmation sound when cash register completes transaction.</span>
+              <span class="toggle-label">{{ t('settingsFull.saleAudioLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.saleAudioHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="salesAlerts.saleSuccessSound" color="primary"></mat-slide-toggle>
           </div>
@@ -351,37 +351,37 @@
         <div class="card-header">
           <mat-icon>palette</mat-icon>
           <div>
-            <h2>Display & Terminal Theme</h2>
-            <p class="card-desc">Adjust UI contrast and text readability for your register screen.</p>
+            <h2>{{ t('settingsFull.displayTheme') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.displayThemeDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Preferred Language</mat-label>
+              <mat-label>{{ t('settings.sales.preferredLanguageLabel') }}</mat-label>
               <mat-select [(ngModel)]="salesTheme.language">
-                <mat-option value="en-US">English (US)</mat-option>
-                <mat-option value="am-ET">Amharic (አማርኛ)</mat-option>
-                <mat-option value="om-ET">Afaan Oromoo</mat-option>
-                <mat-option value="ti-ET">Tigrinya (ትግርኛ)</mat-option>
-                <mat-option value="en-GB">English (UK)</mat-option>
+                <mat-option value="en-US">{{ t('settings.dropdowns.langEnUS') }}</mat-option>
+                <mat-option value="am-ET">{{ t('settings.dropdowns.langAmET') }}</mat-option>
+                <mat-option value="om-ET">{{ t('settings.dropdowns.langOmET') }}</mat-option>
+                <mat-option value="ti-ET">{{ t('settings.dropdowns.langTiET') }}</mat-option>
+                <mat-option value="en-GB">{{ t('settings.dropdowns.langEnGB') }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Interface Theme</mat-label>
+              <mat-label>{{ t('settingsFull.interfaceTheme') }}</mat-label>
               <mat-select [(ngModel)]="salesTheme.colorMode">
-                <mat-option value="system">Follow System Theme</mat-option>
-                <mat-option value="light">Light Mode</mat-option>
-                <mat-option value="dark">Dark Mode (High Contrast)</mat-option>
+                <mat-option value="system">{{ t('settings.dropdowns.themeSystem') }}</mat-option>
+                <mat-option value="light">{{ t('settings.dropdowns.themeLight') }}</mat-option>
+                <mat-option value="dark">{{ t('settings.dropdowns.themeDark') }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>POS Font Size Scale</mat-label>
+              <mat-label>{{ t('settingsFull.posFontSize') }}</mat-label>
               <mat-select [(ngModel)]="salesTheme.fontSize">
-                <mat-option value="normal">Standard Font Size</mat-option>
-                <mat-option value="large">Large Font Size (Touchscreen Friendly)</mat-option>
+                <mat-option value="normal">{{ t('settings.dropdowns.fontNormal') }}</mat-option>
+                <mat-option value="large">{{ t('settings.dropdowns.fontLarge') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -401,30 +401,30 @@
         <div class="card-header">
           <mat-icon>inventory_2</mat-icon>
           <div>
-            <h2>Stock Thresholds & Reorder Rules</h2>
-            <p class="card-desc">Define store-wide stock thresholds and automated reordering quantities.</p>
+            <h2>{{ t('settingsFull.inventoryReorder') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.invReorderDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Low Stock Warning Threshold</mat-label>
+              <mat-label>{{ t('settingsFull.lowStockThreshold') }}</mat-label>
               <input matInput id="lowStockThreshold" type="number" [(ngModel)]="managerInventory.lowStockThreshold"
                 min="1" />
-              <mat-hint>Triggers yellow low stock status on products list.</mat-hint>
+              <mat-hint>{{ t('settingsFull.lowStockWarningHint') }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Critical Stock Threshold</mat-label>
+              <mat-label>{{ t('settingsFull.criticalStockThreshold') }}</mat-label>
               <input matInput id="criticalStockThreshold" type="number"
                 [(ngModel)]="managerInventory.criticalStockThreshold" min="0" />
-              <mat-hint>Triggers urgent red stock status on products list.</mat-hint>
+              <mat-hint>{{ t('settingsFull.criticalStockWarningHint') }}</mat-hint>
             </mat-form-field>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Auto-Reorder Generation</span>
+              <span class="toggle-label">{{ t('settingsFull.autoReorderGenLabel') }}</span>
               <span class="toggle-hint">Draft purchase orders automatically when items breach low stock
                 threshold.</span>
             </div>
@@ -434,16 +434,16 @@
           @if (managerInventory.autoReorderEnabled) {
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Default Reorder Quantity</mat-label>
+              <mat-label>{{ t('settingsFull.defaultReorderQty') }}</mat-label>
               <input matInput id="defaultReorderQty" type="number" [(ngModel)]="managerInventory.defaultReorderQty"
                 min="1" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Fast-Moving Multiplier</mat-label>
+              <mat-label>{{ t('settingsFull.fastMovingMulti') }}</mat-label>
               <input matInput id="fastMovingMultiplier" type="number"
                 [(ngModel)]="managerInventory.fastMovingMultiplier" step="0.1" min="1.0" max="3.0" />
-              <mat-hint>Multiplies reorder quantity for high-velocity items.</mat-hint>
+              <mat-hint>{{ t('settingsFull.fastMovingMultiHint') }}</mat-hint>
             </mat-form-field>
           </div>
           }
@@ -457,39 +457,39 @@
         <div class="card-header">
           <mat-icon>local_offer</mat-icon>
           <div>
-            <h2>Sales & Discount Control Policies</h2>
-            <p class="card-desc">Control discount limits and supervisor approval requirements for store operations.</p>
+            <h2>{{ t('settingsFull.salesControl') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.salesControlDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Maximum Allowed Sales Discount (%)</mat-label>
+              <mat-label>{{ t('settingsFull.maxDiscount') }}</mat-label>
               <input matInput id="maxDiscountPercent" type="number" [(ngModel)]="managerPolicies.maxDiscountPercent"
                 min="0" max="100" />
-              <mat-hint>Discounts above this percentage require manager override key.</mat-hint>
+              <mat-hint>{{ t('settingsFull.maxDiscountHint') }}</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Default Tax Rate (%)</mat-label>
+              <mat-label>{{ t('settingsFull.defaultTaxRate') }}</mat-label>
               <input matInput id="defaultTaxRate" type="number" [(ngModel)]="managerPolicies.defaultTaxRate" min="0"
                 max="50" />
-              <mat-hint>Standard VAT applied to commercial invoices.</mat-hint>
+              <mat-hint>{{ t('settingsFull.defaultTaxRateHint') }}</mat-hint>
             </mat-form-field>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Allow Custom Sales Rep Discounts</span>
-              <span class="toggle-hint">Permit sales reps to apply manually specified percentage discounts.</span>
+              <span class="toggle-label">{{ t('settingsFull.allowCustomDiscLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.allowCustomDiscHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="managerPolicies.allowCustomDiscounts" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Require Manager Approval for Item Returns / Voids</span>
-              <span class="toggle-hint">Mandate supervisor pin authorization before processing item refunds.</span>
+              <span class="toggle-label">{{ t('settingsFull.requireMgrApprovLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.requireMgrApprovHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="managerPolicies.requireApprovalForReturn" color="primary"></mat-slide-toggle>
           </div>
@@ -503,39 +503,39 @@
         <div class="card-header">
           <mat-icon>notifications</mat-icon>
           <div>
-            <h2>Manager Notifications & Alerts</h2>
+            <h2>{{ t('settingsFull.managerNotifications') }}</h2>
             <p class="card-desc">Configure automated store digests, high-value transaction alerts, and supplier
               warnings.</p>
           </div>
         </div>
         <div class="card-body">
           <mat-form-field appearance="outline" class="settings-form-field">
-            <mat-label>High-Value Transaction Threshold (ETB)</mat-label>
+            <mat-label>{{ t('settingsFull.highValueThresh') }}</mat-label>
             <input matInput id="highValueAlertThreshold" type="number"
               [(ngModel)]="managerNotifications.highValueAlertThreshold" min="1000" step="5000" />
-            <mat-hint>Receive instant alert when any sale exceeds this value.</mat-hint>
+            <mat-hint>{{ t('settingsFull.highValueThreshHint') }}</mat-hint>
           </mat-form-field>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Daily Inventory & Sales Email Digest</span>
-              <span class="toggle-hint">Receive an automated summary report every evening at 18:00.</span>
+              <span class="toggle-label">{{ t('settingsFull.dailyDigestLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.dailyDigestHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="managerNotifications.dailyDigestEmail" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">New Purchase Order Received Alerts</span>
-              <span class="toggle-hint">Notify when suppliers fulfill or update pending purchase orders.</span>
+              <span class="toggle-label">{{ t('settingsFull.newPoLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.newPoHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="managerNotifications.purchaseOrderAlerts" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Supplier Delivery Delay Warnings</span>
-              <span class="toggle-hint">Get alerted if expected stock shipment is overdue.</span>
+              <span class="toggle-label">{{ t('settingsFull.supplierDelayLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.supplierDelayHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="managerNotifications.supplierDelayWarnings"
               color="primary"></mat-slide-toggle>
@@ -550,46 +550,46 @@
         <div class="card-header">
           <mat-icon>display_settings</mat-icon>
           <div>
-            <h2>Store Currency & Table View Preferences</h2>
-            <p class="card-desc">Customize store currency display and default data grid density.</p>
+            <h2>{{ t('settingsFull.headingStoreCurrencyPref') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.storePrefDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Symbol</mat-label>
+              <mat-label>{{ t('settingsFull.currencySymbol') }}</mat-label>
               <input matInput id="currencySymbol" type="text" [(ngModel)]="managerRegional.currencySymbol"
-                placeholder="Br" />
+                [placeholder]="t('settings.placeholders.br')" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Code</mat-label>
+              <mat-label>{{ t('settingsFull.currencyCode') }}</mat-label>
               <input matInput id="currencyCode" type="text" [(ngModel)]="managerRegional.currencyCode"
-                placeholder="ETB" />
+                [placeholder]="t('settings.placeholders.etb')" />
             </mat-form-field>
           </div>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Decimal Places</mat-label>
+              <mat-label>{{ t('settingsFull.decimalPlaces') }}</mat-label>
               <mat-select [(ngModel)]="managerRegional.decimalPlaces">
-                <mat-option [value]="0">0 (e.g., 1,500 ETB)</mat-option>
-                <mat-option [value]="2">2 (e.g., 1,500.00 ETB)</mat-option>
+                <mat-option [value]="0">{{ t('settings.dropdowns.decimals0_1500') }}</mat-option>
+                <mat-option [value]="2">{{ t('settings.dropdowns.decimals2_1500') }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Data Table Row Density</mat-label>
+              <mat-label>{{ t('settingsFull.dataTableDensity') }}</mat-label>
               <mat-select [(ngModel)]="managerRegional.tableDensity">
-                <mat-option value="compact">Compact (More items per screen)</mat-option>
-                <mat-option value="comfortable">Comfortable (Standard)</mat-option>
-                <mat-option value="spacious">Spacious (Easier viewing)</mat-option>
+                <mat-option value="compact">{{ t('settings.dropdowns.densityCompact') }}</mat-option>
+                <mat-option value="comfortable">{{ t('settings.dropdowns.densityComfortable') }}</mat-option>
+                <mat-option value="spacious">{{ t('settings.dropdowns.densitySpacious') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
 
           <div class="currency-preview">
-            <span class="preview-label">Price Display Format:</span>
+            <span class="preview-label">{{ t('settingsFull.priceDisplayPreview') }}</span>
             <span class="preview-value">{{ managerRegional.currencySymbol }} 1,234{{ managerRegional.decimalPlaces === 2
               ? '.00' : '' }} {{ managerRegional.currencyCode }}</span>
           </div>
@@ -603,51 +603,51 @@
       <!-- =================================================================== -->
       @if (normalizedRole() !== 'sales' && normalizedRole() !== 'manager') {
 
-      <!-- Company Profile -->
+      <!-- {{ t('settingsFull.companyProfile') }} -->
       @if (activeSection() === 'company') {
       <div class="settings-card">
         <div class="card-header">
           <mat-icon>business</mat-icon>
           <div>
-            <h2>Company Profile</h2>
-            <p class="card-desc">System-wide organization profile information used in receipts and reports.</p>
+            <h2>{{ t('settingsFull.companyProfile') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.companyProfileDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <mat-form-field appearance="outline" class="settings-form-field">
-            <mat-label>Company Name</mat-label>
-            <input matInput id="companyName" type="text" [(ngModel)]="company.name" placeholder="Company Name" />
+            <mat-label>{{ t('settingsFull.companyName') }}</mat-label>
+            <input matInput id="companyName" type="text" [(ngModel)]="company.name" [placeholder]="t('settings.placeholders.companyName')" />
           </mat-form-field>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Phone</mat-label>
-              <input matInput id="companyPhone" type="tel" [(ngModel)]="company.phone" placeholder="+251 9XX XXX XXX" />
+              <mat-label>{{ t('settingsFull.phone') }}</mat-label>
+              <input matInput id="companyPhone" type="tel" [(ngModel)]="company.phone" [placeholder]="t('settings.placeholders.phone')" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Email</mat-label>
+              <mat-label>{{ t('settingsFull.email') }}</mat-label>
               <input matInput id="companyEmail" type="email" [(ngModel)]="company.email"
-                placeholder="contact@company.com" />
+                [placeholder]="t('settings.placeholders.email')" />
             </mat-form-field>
           </div>
 
           <mat-form-field appearance="outline" class="settings-form-field">
-            <mat-label>Address</mat-label>
+            <mat-label>{{ t('settingsFull.address') }}</mat-label>
             <input matInput id="companyAddress" type="text" [(ngModel)]="company.address"
-              placeholder="Location address" />
+              [placeholder]="t('settings.placeholders.address')" />
           </mat-form-field>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Website</mat-label>
+              <mat-label>{{ t('settingsFull.website') }}</mat-label>
               <input matInput id="companyWebsite" type="url" [(ngModel)]="company.website"
-                placeholder="https://example.com" />
+                [placeholder]="t('settings.placeholders.website')" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Tax ID / TIN Number</mat-label>
-              <input matInput id="companyTaxId" type="text" [(ngModel)]="company.taxId" placeholder="TIN Number" />
+              <mat-label>{{ t('settingsFull.taxId') }}</mat-label>
+              <input matInput id="companyTaxId" type="text" [(ngModel)]="company.taxId" [placeholder]="t('settings.placeholders.tinNumber')" />
             </mat-form-field>
           </div>
         </div>
@@ -660,20 +660,20 @@
         <div class="card-header">
           <mat-icon>inventory_2</mat-icon>
           <div>
-            <h2>Global Inventory Defaults</h2>
-            <p class="card-desc">System default alert thresholds for new inventory items.</p>
+            <h2>{{ t('settingsFull.globalInventory') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.globalInvDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Low Stock Threshold</mat-label>
+              <mat-label>{{ t('settingsFull.lowStockThreshold') }}</mat-label>
               <input matInput id="adminLowStockThreshold" type="number" [(ngModel)]="adminInventory.lowStockThreshold"
                 min="1" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Critical Stock Threshold</mat-label>
+              <mat-label>{{ t('settingsFull.criticalStockThreshold') }}</mat-label>
               <input matInput id="adminCriticalStockThreshold" type="number"
                 [(ngModel)]="adminInventory.criticalStockThreshold" min="0" />
             </mat-form-field>
@@ -681,8 +681,8 @@
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Auto-Reorder System Default</span>
-              <span class="toggle-hint">Enable automatic reorder drafting by default across all stores.</span>
+              <span class="toggle-label">{{ t('settingsFull.autoReorderLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.autoReorderHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="adminInventory.autoReorderEnabled" color="primary"></mat-slide-toggle>
           </div>
@@ -696,30 +696,30 @@
         <div class="card-header">
           <mat-icon>payments</mat-icon>
           <div>
-            <h2>Currency & System Language</h2>
-            <p class="card-desc">Default regional localization settings for the entire application.</p>
+            <h2>{{ t('settingsFull.currencyLanguage') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.currencyLangDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Code</mat-label>
-              <input matInput id="adminCurrencyCode" type="text" [(ngModel)]="adminCurrency.code" placeholder="ETB" />
+              <mat-label>{{ t('settingsFull.currencyCode') }}</mat-label>
+              <input matInput id="adminCurrencyCode" type="text" [(ngModel)]="adminCurrency.code" [placeholder]="t('settings.placeholders.etb')" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Currency Symbol</mat-label>
+              <mat-label>{{ t('settingsFull.currencySymbol') }}</mat-label>
               <input matInput id="adminCurrencySymbol" type="text" [(ngModel)]="adminCurrency.symbol"
-                placeholder="Br" />
+                [placeholder]="t('settings.placeholders.br')" />
             </mat-form-field>
           </div>
 
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>Decimal Places</mat-label>
+              <mat-label>{{ t('settingsFull.decimalPlaces') }}</mat-label>
               <mat-select [(ngModel)]="adminCurrency.decimalPlaces">
-                <mat-option [value]="0">0 (e.g., 1,000 ETB)</mat-option>
-                <mat-option [value]="2">2 (e.g., 1,000.00 ETB)</mat-option>
+                <mat-option [value]="0">{{ t('settings.dropdowns.decimals0_1000') }}</mat-option>
+                <mat-option [value]="2">{{ t('settings.dropdowns.decimals2_1000') }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -733,31 +733,31 @@
         <div class="card-header">
           <mat-icon>notifications</mat-icon>
           <div>
-            <h2>System Notification Preferences</h2>
-            <p class="card-desc">Configure system-wide triggers and broadcast alerts.</p>
+            <h2>{{ t('settingsFull.systemNotifications') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.systemNotifDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Low Stock Global Alerts</span>
-              <span class="toggle-hint">Send alerts when products drop below threshold.</span>
+              <span class="toggle-label">{{ t('settingsFull.lowStockAlertsLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.lowStockAlertsHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="adminNotifications.lowStockAlerts" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Sale Completed Alerts</span>
-              <span class="toggle-hint">Notify system admins on high value transactions.</span>
+              <span class="toggle-label">{{ t('settingsFull.saleAlertsLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.saleAlertsHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="adminNotifications.saleCompletedAlerts" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">User Login Alerts</span>
-              <span class="toggle-hint">Log and alert on new user sessions.</span>
+              <span class="toggle-label">{{ t('settingsFull.loginAlertsLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.loginAlertsHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="adminNotifications.userLoginAlerts" color="primary"></mat-slide-toggle>
           </div>
@@ -771,30 +771,30 @@
         <div class="card-header">
           <mat-icon>security</mat-icon>
           <div>
-            <h2>Security & Session Policies</h2>
-            <p class="card-desc">Global security controls, session timeout, and authentication policies.</p>
+            <h2>{{ t('settingsFull.securityPolicies') }}</h2>
+            <p class="card-desc">{{ t('settingsFull.securityDesc') }}</p>
           </div>
         </div>
         <div class="card-body">
           <mat-form-field appearance="outline" class="settings-form-field">
-            <mat-label>Session Timeout (minutes)</mat-label>
+            <mat-label>{{ t('settingsFull.sessionTimeout') }}</mat-label>
             <input matInput id="sessionTimeout" type="number" [(ngModel)]="adminSecurity.sessionTimeout" min="5"
               max="480" />
-            <mat-hint>Automatically log out inactive users.</mat-hint>
+            <mat-hint>{{ t('settingsFull.sessionTimeoutHint') }}</mat-hint>
           </mat-form-field>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Require Periodic Password Change</span>
-              <span class="toggle-hint">Force users to change password every 90 days.</span>
+              <span class="toggle-label">{{ t('settingsFull.requirePassChangeLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.requirePassChangeHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="adminSecurity.requirePasswordChange" color="primary"></mat-slide-toggle>
           </div>
 
           <div class="toggle-item">
             <div class="toggle-info">
-              <span class="toggle-label">Two-Factor Authentication (2FA)</span>
-              <span class="toggle-hint">Enforce 2FA verification for privileged users.</span>
+              <span class="toggle-label">{{ t('settingsFull.twoFactorLabel') }}</span>
+              <span class="toggle-hint">{{ t('settingsFull.twoFactorHint') }}</span>
             </div>
             <mat-slide-toggle [(ngModel)]="adminSecurity.twoFactorEnabled" color="primary"></mat-slide-toggle>
           </div>
@@ -807,15 +807,16 @@
       <div class="save-area">
         <button type="button" class="btn btn--outline" (click)="resetDefaults()">
           <mat-icon>restart_alt</mat-icon>
-          Reset Role Defaults
+          {{ t('settingsFull.resetDefaults') }}
         </button>
 
         <button type="button" class="btn btn--primary" (click)="saveSettings()">
           <mat-icon>save</mat-icon>
-          Save {{ userRole() }} Settings
+          {{ t('settingsFull.saveRoleSettings', { role: t('profile.roles.' + (userRole() || '').toLowerCase() + '.name') }) }}
         </button>
       </div>
 
     </div>
   </div>
 </div>
+</ng-container>

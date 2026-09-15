@@ -3,13 +3,14 @@ import { CurrencyPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { DashboardStore } from '../../../../store/dashboard.store';
 
 @Component({
   selector: 'app-top-products',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, MatButtonModule, MatIconModule, MatTableModule],
+  imports: [CurrencyPipe, MatButtonModule, MatIconModule, MatTableModule, TranslocoDirective],
   templateUrl: './recent-orders.html',
   styleUrl: './recent-orders.scss',
 })

@@ -1,419 +1,425 @@
-<div class="profile-page">
+<ng-container *transloco="let t">
+  <div class="profile-page">
 
-  @if (profileError()) {
-  <div class="toast-banner toast--error">
-    <mat-icon>error_outline</mat-icon>
-    <span>{{ profileError() }}</span>
-  </div>
-  }
+    @if (profileError()) {
+    <div class="toast-banner toast--error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ profileError() }}</span>
+    </div>
+    }
 
-  @if (saveSuccess()) {
-  <div class="toast-banner toast--success">
-    <mat-icon>check_circle</mat-icon>
-    <span>Profile updated successfully!</span>
-  </div>
-  }
+    @if (saveSuccess()) {
+    <div class="toast-banner toast--success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ t('profile.profileUpdateSuccess') }}</span>
+    </div>
+    }
 
-  @if (passwordChangeSuccess()) {
-  <div class="toast-banner toast--success">
-    <mat-icon>check_circle</mat-icon>
-    <span>Password updated successfully!</span>
-  </div>
-  }
+    @if (passwordChangeSuccess()) {
+    <div class="toast-banner toast--success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ t('profile.passwordUpdateSuccess') }}</span>
+    </div>
+    }
 
-  <!-- Header / Hero Card -->
-  <div class="profile-hero">
-    <div class="hero-content">
-      <div class="avatar-section">
-        <div class="avatar-ring">
-          <div class="avatar-circle">{{ initials() }}</div>
-          <div class="avatar-status-dot" matTooltip="Status: Active"></div>
+    <!-- Header / Hero Card -->
+    <div class="profile-hero">
+      <div class="hero-content">
+        <div class="avatar-section">
+          <div class="avatar-ring">
+            <div class="avatar-circle">{{ initials() }}</div>
+            <div class="avatar-status-dot" [matTooltip]="t('profile.statusActive')"></div>
+          </div>
+        </div>
+
+        <div class="hero-main">
+          <div class="hero-identity">
+            <h1 class="hero-name">{{ fullName() === 'User' ? t('profile.defaultName') : fullName() }}</h1>
+            @if (user()?.userName && user()?.userName !== user()?.email) {
+            <span class="hero-username">&#64;{{ user()?.userName }}</span>
+            }
+          </div>
+
+          @if (user()?.email) {
+          <div class="hero-email-row">
+            <mat-icon class="email-icon">mail_outline</mat-icon>
+            <span class="hero-email">{{ user()?.email }}</span>
+            <button class="copy-btn" [class.copied]="emailCopied()" type="button"
+              [matTooltip]="emailCopied() ? t('profile.copiedClipboard') : t('profile.copyEmail')"
+              (click)="copyEmail()">
+              <mat-icon>{{ emailCopied() ? 'check' : 'content_copy' }}</mat-icon>
+            </button>
+          </div>
+          }
+
+          <div class="hero-badges">
+            <div class="hero-role-badge" [class]="roleColor()">
+              <mat-icon class="badge-icon">{{ roleIcon() }}</mat-icon>
+              {{ t('profile.roles.' + (role()?.toLowerCase() || 'default') + '.name') }}
+            </div>
+            <div class="status-pill status-pill--active">
+              <span class="pulse-dot"></span>
+              {{ t('profile.activeSession') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="hero-actions">
+          @if (!isEditing()) {
+          <button class="btn btn--primary" (click)="startEditing()">
+            <mat-icon>edit</mat-icon>
+            {{ t('profile.editProfileBtn') }}
+          </button>
+          } @else {
+          <button class="btn btn--ghost" (click)="cancelEditing()">
+            {{ t('profile.cancelBtn') }}
+          </button>
+          }
         </div>
       </div>
 
-      <div class="hero-main">
-        <div class="hero-identity">
-          <h1 class="hero-name">{{ fullName() }}</h1>
-          @if (user()?.userName && user()?.userName !== user()?.email) {
-          <span class="hero-username">&#64;{{ user()?.userName }}</span>
+      <!-- Navigation Tabs -->
+      <div class="hero-tabs">
+        <button class="tab-btn" [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">
+          <mat-icon class="tab-icon">person</mat-icon>
+          {{ t('profile.tabOverview') }}
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'security'" (click)="setTab('security')">
+          <mat-icon class="tab-icon">security</mat-icon>
+          {{ t('profile.tabSecurity') }}
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'activity'" (click)="setTab('activity')">
+          <mat-icon class="tab-icon">history</mat-icon>
+          {{ t('profile.tabActivity') }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab 1: OVERVIEW -->
+    @if (activeTab() === 'overview') {
+    <div class="profile-grid">
+
+      <!-- Personal Information Card -->
+      <div class="profile-card">
+        <div class="card-header">
+          <div class="card-icon-wrap">
+            <mat-icon class="card-icon">badge</mat-icon>
+          </div>
+          <div class="card-header-text">
+            <h2 class="card-title">{{ t('profile.personalDetailsTitle') }}</h2>
+            <p class="card-subtitle">{{ t('profile.personalDetailsSub') }}</p>
+          </div>
+          @if (!isEditing()) {
+          <button class="icon-action-btn" [matTooltip]="t('profile.editDetails')" (click)="startEditing()">
+            <mat-icon>edit_note</mat-icon>
+          </button>
           }
         </div>
 
-        @if (user()?.email) {
-        <div class="hero-email-row">
-          <mat-icon class="email-icon">mail_outline</mat-icon>
-          <span class="hero-email">{{ user()?.email }}</span>
-          <button class="copy-btn" [class.copied]="emailCopied()" type="button"
-            [matTooltip]="emailCopied() ? 'Copied to clipboard' : 'Copy email'" (click)="copyEmail()">
-            <mat-icon>{{ emailCopied() ? 'check' : 'content_copy' }}</mat-icon>
-          </button>
-        </div>
-        }
-
-        <div class="hero-badges">
-          <div class="hero-role-badge" [class]="roleColor()">
-            <mat-icon class="badge-icon">{{ roleIcon() }}</mat-icon>
-            {{ role() }}
-          </div>
-          <div class="status-pill status-pill--active">
-            <span class="pulse-dot"></span>
-            Active Session
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Action Buttons -->
-      <div class="hero-actions">
-        @if (!isEditing()) {
-        <button class="btn btn--primary" (click)="startEditing()">
-          <mat-icon>edit</mat-icon>
-          Edit Profile
-        </button>
-        } @else {
-        <button class="btn btn--ghost" (click)="cancelEditing()">
-          Cancel
-        </button>
-        }
-      </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="hero-tabs">
-      <button class="tab-btn" [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">
-        <mat-icon class="tab-icon">person</mat-icon>
-        Overview
-      </button>
-      <button class="tab-btn" [class.active]="activeTab() === 'security'" (click)="setTab('security')">
-        <mat-icon class="tab-icon">security</mat-icon>
-        Security & Password
-      </button>
-      <button class="tab-btn" [class.active]="activeTab() === 'activity'" (click)="setTab('activity')">
-        <mat-icon class="tab-icon">history</mat-icon>
-        Activity Log
-      </button>
-    </div>
-  </div>
-
-  <!-- Tab 1: OVERVIEW -->
-  @if (activeTab() === 'overview') {
-  <div class="profile-grid">
-
-    <!-- Personal Information Card -->
-    <div class="profile-card">
-      <div class="card-header">
-        <div class="card-icon-wrap">
-          <mat-icon class="card-icon">badge</mat-icon>
-        </div>
-        <div class="card-header-text">
-          <h2 class="card-title">Personal Details</h2>
-          <p class="card-subtitle">Manage your personal account information.</p>
-        </div>
-        @if (!isEditing()) {
-        <button class="icon-action-btn" matTooltip="Edit details" (click)="startEditing()">
-          <mat-icon>edit_note</mat-icon>
-        </button>
-        }
-      </div>
-
-      <div class="card-body">
-        @if (!isEditing()) {
-        <!-- Read-only View -->
-        <div class="detail-rows">
-          <div class="detail-item">
-            <span class="detail-label">Full Name</span>
-            <span class="detail-value">{{ fullName() }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">First Name</span>
-            <span class="detail-value">{{ user()?.firstName || 'Not set' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Last Name</span>
-            <span class="detail-value">{{ user()?.lastName || 'Not set' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Email Address</span>
-            <span class="detail-value">{{ user()?.email || '—' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Username</span>
-            <span class="detail-value">
-              @if (user()?.userName && user()?.userName !== user()?.email) {
-              &#64;{{ user()?.userName }}
-              } @else {
-              Not set
-              }
-            </span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">User ID</span>
-            <span class="detail-value font-mono">{{ user()?.id || '—' }}</span>
-          </div>
-        </div>
-        } @else {
-        <!-- Edit Form View -->
-        <form class="edit-form" (ngSubmit)="saveProfile()">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="profile-form-field">
-              <mat-label>First Name</mat-label>
-              <input matInput id="editFirstName" type="text" [(ngModel)]="editFirstName" name="firstName"
-                placeholder="Enter first name" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="profile-form-field">
-              <mat-label>Last Name</mat-label>
-              <input matInput id="editLastName" type="text" [(ngModel)]="editLastName" name="lastName"
-                placeholder="Enter last name" />
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="profile-form-field">
-              <mat-label>Username (Optional)</mat-label>
-              <input matInput id="editUserName" type="text" [(ngModel)]="editUserName" name="userName"
-                placeholder="e.g. AB123" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="profile-form-field">
-              <mat-label>Email Address</mat-label>
-              <input matInput type="email" [value]="user()?.email || ''" disabled />
-              <mat-hint>Email cannot be modified directly.</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn--ghost" (click)="cancelEditing()" [disabled]="isSaving()">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn--primary" [disabled]="isSaving()">
-              @if (isSaving()) {
-              <div class="btn-spinner"></div>
-              <span>Saving...</span>
-              } @else {
-              <mat-icon>save</mat-icon>
-              <span>Save Changes</span>
-              }
-            </button>
-          </div>
-        </form>
-        }
-      </div>
-    </div>
-
-    <!-- Access & Role Privileges Card -->
-    <div class="profile-card">
-      <div class="card-header">
-        <div class="card-icon-wrap card-icon-wrap--purple">
-          <mat-icon class="card-icon">verified_user</mat-icon>
-        </div>
-        <div class="card-header-text">
-          <h2 class="card-title">Role & Privileges</h2>
-          <p class="card-subtitle">Your system level role and access parameters.</p>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <div class="role-overview-box">
-          <div class="role-box-header">
-            <span class="inline-role-badge" [class]="roleColor()">
-              <mat-icon class="badge-icon-sm">{{ roleIcon() }}</mat-icon>
-              {{ role() }}
-            </span>
-            <span class="role-level">Level: {{ role()?.toUpperCase() }}</span>
-          </div>
-          <p class="role-desc">{{ roleDescription() }}</p>
-        </div>
-
-        <div class="privilege-summary">
-          <span class="privilege-title">Account Privileges</span>
-          <ul class="privilege-list">
-            <li class="privilege-item">
-              <mat-icon class="check-icon">check</mat-icon>
-              <span>Dashboard & Metrics Access</span>
-            </li>
-            <li class="privilege-item">
-              <mat-icon class="check-icon">check</mat-icon>
-              <span>Product Catalog Browsing</span>
-            </li>
-            @if (role()?.toLowerCase() === 'admin' || role()?.toLowerCase() === 'manager') {
-            <li class="privilege-item">
-              <mat-icon class="check-icon">check</mat-icon>
-              <span>Product & Inventory Management</span>
-            </li>
-            <li class="privilege-item">
-              <mat-icon class="check-icon">check</mat-icon>
-              <span>Reports & Analytics Viewing</span>
-            </li>
-            }
-            @if (role()?.toLowerCase() === 'admin') {
-            <li class="privilege-item">
-              <mat-icon class="check-icon">check</mat-icon>
-              <span>User Administration & Roles</span>
-            </li>
-            <li class="privilege-item">
-              <mat-icon class="check-icon">check</mat-icon>
-              <span>System Configuration Settings</span>
-            </li>
-            }
-          </ul>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  }
-
-  <!-- Tab 2: SECURITY & PASSWORD -->
-  @if (activeTab() === 'security') {
-  <div class="profile-grid">
-
-    <!-- Change Password Card -->
-    <div class="profile-card">
-      <div class="card-header">
-        <div class="card-icon-wrap card-icon-wrap--amber">
-          <mat-icon class="card-icon">lock_reset</mat-icon>
-        </div>
-        <div class="card-header-text">
-          <h2 class="card-title">Change Password</h2>
-          <p class="card-subtitle">Ensure your account uses a strong, secure password.</p>
-        </div>
-      </div>
-
-      <div class="card-body">
-        @if (passwordError()) {
-        <div class="toast-banner toast--error">
-          <mat-icon>error_outline</mat-icon>
-          <span>{{ passwordError() }}</span>
-        </div>
-        }
-
-        <form class="edit-form" (ngSubmit)="changePassword()">
-          <mat-form-field appearance="outline" class="profile-form-field">
-            <mat-label>Current Password</mat-label>
-            <input matInput id="currentPassword" [type]="hideCurrentPassword() ? 'password' : 'text'"
-              [(ngModel)]="currentPassword" name="currentPassword" placeholder="Enter current password" />
-            <button mat-icon-button matSuffix type="button" (click)="hideCurrentPassword.set(!hideCurrentPassword())"
-              [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrentPassword()">
-              <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-          </mat-form-field>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="profile-form-field">
-              <mat-label>New Password</mat-label>
-              <input matInput id="newPassword" [type]="hideNewPassword() ? 'password' : 'text'"
-                [(ngModel)]="newPassword" name="newPassword" placeholder="At least 12 characters" />
-              <button mat-icon-button matSuffix type="button" (click)="hideNewPassword.set(!hideNewPassword())"
-                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword()">
-                <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="profile-form-field">
-              <mat-label>Confirm New Password</mat-label>
-              <input matInput id="confirmPassword" [type]="hideConfirmPassword() ? 'password' : 'text'"
-                [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repeat new password" />
-              <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())"
-                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword()">
-                <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-            </mat-form-field>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn btn--primary" [disabled]="isChangingPassword()">
-              @if (isChangingPassword()) {
-              <div class="btn-spinner"></div>
-              <span>Updating...</span>
-              } @else {
-              <mat-icon>key</mat-icon>
-              <span>Update Password</span>
-              }
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Security Info Card -->
-    <div class="profile-card">
-      <div class="card-header">
-        <div class="card-icon-wrap">
-          <mat-icon class="card-icon">security</mat-icon>
-        </div>
-        <div class="card-header-text">
-          <h2 class="card-title">Security Status</h2>
-          <p class="card-subtitle">Authentication parameters &amp; session security.</p>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <div class="security-item">
-          <div class="sec-icon sec-icon--success">
-            <mat-icon>verified</mat-icon>
-          </div>
-          <div class="sec-text">
-            <span class="sec-title">Authentication Token</span>
-            <span class="sec-desc">Active JWT bearer session token. Validated.</span>
-          </div>
-        </div>
-
-        <div class="security-item">
-          <div class="sec-icon sec-icon--info">
-            <mat-icon>schedule</mat-icon>
-          </div>
-          <div class="sec-text">
-            <span class="sec-title">Session Timeout</span>
-            <span class="sec-desc">60 minutes of inactivity auto-logout rule enforced.</span>
-          </div>
-        </div>
-
-        <div class="security-item">
-          <div class="sec-icon sec-icon--neutral">
-            <mat-icon>phonelink_lock</mat-icon>
-          </div>
-          <div class="sec-text">
-            <span class="sec-title">Two-Factor Authentication</span>
-            <span class="sec-desc">Not configured for this account.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  }
-
-  <!-- Tab 3: ACTIVITY LOG -->
-  @if (activeTab() === 'activity') {
-  <div class="profile-card">
-    <div class="card-header">
-      <div class="card-icon-wrap card-icon-wrap--blue">
-        <mat-icon class="card-icon">history</mat-icon>
-      </div>
-      <div class="card-header-text">
-        <h2 class="card-title">Recent Activity</h2>
-        <p class="card-subtitle">Audit record of your recent account actions &amp; logins.</p>
-      </div>
-    </div>
-
-    <div class="card-body">
-      <div class="timeline">
-        @for (log of activityLogs; track log.id) {
-        <div class="timeline-item">
-          <div class="timeline-marker">
-            <mat-icon class="timeline-icon">{{ log.icon }}</mat-icon>
-          </div>
-          <div class="timeline-content">
-            <div class="timeline-header">
-              <span class="timeline-action">{{ log.action }}</span>
-              <span class="timeline-time">{{ log.time }}</span>
+        <div class="card-body">
+          @if (!isEditing()) {
+          <!-- Read-only View -->
+          <div class="detail-rows">
+            <div class="detail-item">
+              <span class="detail-label">{{ t('profile.firstName') }} {{ t('profile.lastName') }}</span>
+              <span class="detail-value">{{ fullName() === 'User' ? t('profile.defaultName') : fullName() }}</span>
             </div>
-            <p class="timeline-detail">{{ log.detail }}</p>
+            <div class="detail-item">
+              <span class="detail-label">{{ t('profile.firstName') }}</span>
+              <span class="detail-value">{{ user()?.firstName || t('profile.notSet') }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">{{ t('profile.lastName') }}</span>
+              <span class="detail-value">{{ user()?.lastName || t('profile.notSet') }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">{{ t('profile.emailAddress') }}</span>
+              <span class="detail-value">{{ user()?.email || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">{{ t('profile.usernameLabel') }}</span>
+              <span class="detail-value">
+                @if (user()?.userName && user()?.userName !== user()?.email) {
+                &#64;{{ user()?.userName }}
+                } @else {
+                {{ t('profile.notSet') }}
+                }
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">{{ t('profile.userId') }}</span>
+              <span class="detail-value font-mono">{{ user()?.id || '—' }}</span>
+            </div>
+          </div>
+          } @else {
+          <!-- Edit Form View -->
+          <form class="edit-form" (ngSubmit)="saveProfile()">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="profile-form-field">
+                <mat-label>{{ t('profile.firstName') }}</mat-label>
+                <input matInput id="editFirstName" type="text" [(ngModel)]="editFirstName" name="firstName"
+                  [placeholder]="t('profile.enterFirstName')" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="profile-form-field">
+                <mat-label>{{ t('profile.lastName') }}</mat-label>
+                <input matInput id="editLastName" type="text" [(ngModel)]="editLastName" name="lastName"
+                  [placeholder]="t('profile.enterLastName')" />
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="profile-form-field">
+                <mat-label>{{ t('profile.usernameOptional') }}</mat-label>
+                <input matInput id="editUserName" type="text" [(ngModel)]="editUserName" name="userName"
+                  [placeholder]="t('profile.usernameExample')" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-form-field">
+                <mat-label>{{ t('profile.email') }}</mat-label>
+                <input matInput type="email" [value]="user()?.email || ''" disabled />
+                <mat-hint>{{ t('profile.emailHint') }}</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn--ghost" (click)="cancelEditing()" [disabled]="isSaving()">
+                {{ t('profile.cancelBtn') }}
+              </button>
+              <button type="submit" class="btn btn--primary" [disabled]="isSaving()">
+                @if (isSaving()) {
+                <div class="btn-spinner"></div>
+                <span>{{ t('profile.saving') }}</span>
+                } @else {
+                <mat-icon>save</mat-icon>
+                <span>{{ t('profile.saveChanges') }}</span>
+                }
+              </button>
+            </div>
+          </form>
+          }
+        </div>
+      </div>
+
+      <!-- Access & Role Privileges Card -->
+      <div class="profile-card">
+        <div class="card-header">
+          <div class="card-icon-wrap card-icon-wrap--purple">
+            <mat-icon class="card-icon">verified_user</mat-icon>
+          </div>
+          <div class="card-header-text">
+            <h2 class="card-title">{{ t('profile.rolePrivilegesTitle') }}</h2>
+            <p class="card-subtitle">{{ t('profile.rolePrivilegesSub') }}</p>
           </div>
         </div>
-        }
+
+        <div class="card-body">
+          <div class="role-overview-box">
+            <div class="role-box-header">
+              <span class="inline-role-badge" [class]="roleColor()">
+                <mat-icon class="badge-icon-sm">{{ roleIcon() }}</mat-icon>
+                {{ t('profile.roles.' + (role()?.toLowerCase() || 'default') + '.name') }}
+              </span>
+              <span class="role-level">{{ t('profile.level') }} {{ t('profile.roles.' + (role()?.toLowerCase() ||
+                'default') + '.name')?.toUpperCase() }}</span>
+            </div>
+            <p class="role-desc">{{ t('profile.roles.' + (role()?.toLowerCase() || 'default') + '.desc') }}</p>
+          </div>
+
+          <div class="privilege-summary">
+            <span class="privilege-title">{{ t('profile.accountPrivileges') }}</span>
+            <ul class="privilege-list">
+              <li class="privilege-item">
+                <mat-icon class="check-icon">check</mat-icon>
+                <span>{{ t('profile.privDashboard') }}</span>
+              </li>
+              <li class="privilege-item">
+                <mat-icon class="check-icon">check</mat-icon>
+                <span>{{ t('profile.privCatalog') }}</span>
+              </li>
+              @if (role()?.toLowerCase() === 'admin' || role()?.toLowerCase() === 'manager') {
+              <li class="privilege-item">
+                <mat-icon class="check-icon">check</mat-icon>
+                <span>{{ t('profile.privInventory') }}</span>
+              </li>
+              <li class="privilege-item">
+                <mat-icon class="check-icon">check</mat-icon>
+                <span>{{ t('profile.privReports') }}</span>
+              </li>
+              }
+              @if (role()?.toLowerCase() === 'admin') {
+              <li class="privilege-item">
+                <mat-icon class="check-icon">check</mat-icon>
+                <span>{{ t('profile.privUsers') }}</span>
+              </li>
+              <li class="privilege-item">
+                <mat-icon class="check-icon">check</mat-icon>
+                <span>{{ t('profile.privSystem') }}</span>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    }
+
+    <!-- Tab 2: SECURITY & PASSWORD -->
+    @if (activeTab() === 'security') {
+    <div class="profile-grid">
+
+      <!-- Change Password Card -->
+      <div class="profile-card">
+        <div class="card-header">
+          <div class="card-icon-wrap card-icon-wrap--amber">
+            <mat-icon class="card-icon">lock_reset</mat-icon>
+          </div>
+          <div class="card-header-text">
+            <h2 class="card-title">{{ t('profile.changePassword') }}</h2>
+            <p class="card-subtitle">{{ t('profile.changePasswordDesc') }}</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          @if (passwordError()) {
+          <div class="toast-banner toast--error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ passwordError() }}</span>
+          </div>
+          }
+
+          <form class="edit-form" (ngSubmit)="changePassword()">
+            <mat-form-field appearance="outline" class="profile-form-field">
+              <mat-label>{{ t('profile.currentPassword') }}</mat-label>
+              <input matInput id="currentPassword" [type]="hideCurrentPassword() ? 'password' : 'text'"
+                [(ngModel)]="currentPassword" name="currentPassword"
+                [placeholder]="t('profile.enterCurrentPassword')" />
+              <button mat-icon-button matSuffix type="button" (click)="hideCurrentPassword.set(!hideCurrentPassword())"
+                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrentPassword()">
+                <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="profile-form-field">
+                <mat-label>{{ t('profile.newPassword') }}</mat-label>
+                <input matInput id="newPassword" [type]="hideNewPassword() ? 'password' : 'text'"
+                  [(ngModel)]="newPassword" name="newPassword" [placeholder]="t('profile.atLeast12Chars')" />
+                <button mat-icon-button matSuffix type="button" (click)="hideNewPassword.set(!hideNewPassword())"
+                  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword()">
+                  <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="profile-form-field">
+                <mat-label>{{ t('profile.confirmNewPassword') }}</mat-label>
+                <input matInput id="confirmPassword" [type]="hideConfirmPassword() ? 'password' : 'text'"
+                  [(ngModel)]="confirmPassword" name="confirmPassword" [placeholder]="t('profile.repeatNewPassword')" />
+                <button mat-icon-button matSuffix type="button"
+                  (click)="hideConfirmPassword.set(!hideConfirmPassword())" [attr.aria-label]="'Hide password'"
+                  [attr.aria-pressed]="hideConfirmPassword()">
+                  <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn--primary" [disabled]="isChangingPassword()">
+                @if (isChangingPassword()) {
+                <div class="btn-spinner"></div>
+                <span>{{ t('profile.updating') }}</span>
+                } @else {
+                <mat-icon>key</mat-icon>
+                <span>{{ t('profile.updatePassword') }}</span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Security Info Card -->
+      <div class="profile-card">
+        <div class="card-header">
+          <div class="card-icon-wrap">
+            <mat-icon class="card-icon">security</mat-icon>
+          </div>
+          <div class="card-header-text">
+            <h2 class="card-title">{{ t('profile.securityStatus') }}</h2>
+            <p class="card-subtitle">{{ t('profile.securityStatusDesc') }}</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="security-item">
+            <div class="sec-icon sec-icon--success">
+              <mat-icon>verified</mat-icon>
+            </div>
+            <div class="sec-text">
+              <span class="sec-title">{{ t('profile.authToken') }}</span>
+              <span class="sec-desc">{{ t('profile.authTokenDesc') }}</span>
+            </div>
+          </div>
+
+          <div class="security-item">
+            <div class="sec-icon sec-icon--info">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <div class="sec-text">
+              <span class="sec-title">{{ t('profile.sessionTimeout') }}</span>
+              <span class="sec-desc">{{ t('profile.sessionTimeoutDesc') }}</span>
+            </div>
+          </div>
+
+          <div class="security-item">
+            <div class="sec-icon sec-icon--neutral">
+              <mat-icon>phonelink_lock</mat-icon>
+            </div>
+            <div class="sec-text">
+              <span class="sec-title">{{ t('profile.twoFactorAuth') }}</span>
+              <span class="sec-desc">{{ t('profile.twoFactorAuthDesc') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    }
+
+    <!-- Tab 3: ACTIVITY LOG -->
+    @if (activeTab() === 'activity') {
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="card-icon-wrap card-icon-wrap--blue">
+          <mat-icon class="card-icon">history</mat-icon>
+        </div>
+        <div class="card-header-text">
+          <h2 class="card-title">{{ t('profile.recentActivity') }}</h2>
+          <p class="card-subtitle">{{ t('profile.recentActivityDesc') }}</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="timeline">
+          @for (log of activityLogs; track log.id) {
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <mat-icon class="timeline-icon">{{ log.icon }}</mat-icon>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-action">{{ t('profile.activityLogs.log' + log.id + '.action') }}</span>
+                <span class="timeline-time">{{ t('profile.activityLogs.log' + log.id + '.time') }}</span>
+              </div>
+              <p class="timeline-detail">{{ t('profile.activityLogs.log' + log.id + '.detail') }}</p>
+            </div>
+          </div>
+          }
+        </div>
       </div>
     </div>
-  </div>
-  }
+    }
 
-</div>
+  </div>
+</ng-container>

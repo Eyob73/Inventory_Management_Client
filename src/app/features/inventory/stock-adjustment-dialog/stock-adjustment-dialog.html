@@ -1,10 +1,11 @@
+<ng-container *transloco="let t">
 <div class="supplier-dialog">
   <div class="dialog-header">
     <div class="header-title">
       <mat-icon class="header-icon">tune</mat-icon>
-      <h2>Stock adjustment</h2>
+      <h2>{{ t('inventory.dialog.title') }}</h2>
     </div>
-    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
+    <button type="button" class="close-btn" (click)="onCancel()" [attr.aria-label]="t('inventory.dialog.close')">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -18,45 +19,47 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="dialog-form">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Product</mat-label>
+      <mat-label>{{ t('inventory.dialog.product') }}</mat-label>
       <mat-select formControlName="productId">
         @for (product of data.products; track product.id) {
-          <mat-option [value]="product.id">{{ product.name }} ({{ product.sku }}) — {{ product.quantityInStock }} on hand</mat-option>
+          <mat-option [value]="product.id">{{ product.name }} ({{ product.sku }}) — {{ product.quantityInStock }} {{ t('inventory.dialog.onHand') }}</mat-option>
         }
       </mat-select>
       @if (form.get('productId')?.hasError('required')) {
-        <mat-error>Select a product.</mat-error>
+        <mat-error>{{ t('inventory.dialog.selectProduct') }}</mat-error>
       }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Quantity change</mat-label>
-      <input matInput type="number" formControlName="quantity" placeholder="e.g. 5 or -3" />
-      <mat-hint>Positive adds stock. Negative removes stock. Zero is not allowed.</mat-hint>
+      <mat-label>{{ t('inventory.dialog.qtyChange') }}</mat-label>
+      <input matInput type="number" formControlName="quantity" [placeholder]="t('inventory.dialog.qtyPlaceholder')" />
+      <mat-hint>{{ t('inventory.dialog.qtyHint') }}</mat-hint>
       @if (form.get('quantity')?.invalid && form.get('quantity')?.touched) {
-        <mat-error>Enter a non-zero whole number.</mat-error>
+        <mat-error>{{ t('inventory.dialog.qtyError') }}</mat-error>
       }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Reason</mat-label>
-      <textarea matInput formControlName="notes" rows="3" placeholder="Damage, count correction, etc."></textarea>
+      <mat-label>{{ t('inventory.dialog.reason') }}</mat-label>
+      <textarea matInput formControlName="notes" rows="3" [placeholder]="t('inventory.dialog.reasonPlaceholder')"></textarea>
       @if (form.get('notes')?.hasError('required') || form.get('notes')?.hasError('minlength')) {
-        <mat-error>A reason is required.</mat-error>
+        <mat-error>{{ t('inventory.dialog.reasonError') }}</mat-error>
       }
     </mat-form-field>
 
     <div class="dialog-actions">
-      <button type="button" class="btn btn--secondary" (click)="onCancel()" [disabled]="isSubmitting()">Cancel</button>
+      <button type="button" class="btn btn--secondary" (click)="onCancel()" [disabled]="isSubmitting()">{{ t('inventory.dialog.cancel') }}</button>
       <button type="submit" class="btn btn--primary" [disabled]="isSubmitting() || form.invalid">
         @if (isSubmitting()) {
           <mat-spinner diameter="18"></mat-spinner>
-          <span>Saving…</span>
+          <span>{{ t('inventory.dialog.saving') }}</span>
         } @else {
           <mat-icon>save</mat-icon>
-          <span>Apply adjustment</span>
+          <span>{{ t('inventory.dialog.apply') }}</span>
         }
       </button>
     </div>
   </form>
 </div>
+
+</ng-container>

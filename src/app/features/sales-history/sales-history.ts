@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, signal, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 // Components & UI
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
+import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 
 // Services & Models
@@ -46,7 +48,7 @@ import { Sale, SaleFilter } from '../../models/sale.model';
     MatDialogModule,
     MatTooltipModule,
     TableSkeleton
-  ],
+  , TranslocoDirective],
   templateUrl: './sales-history.html',
   styleUrl: './sales-history.scss'
 })
@@ -56,6 +58,7 @@ export class SalesHistoryComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+  private translocoService = inject(TranslocoService);
 
   sales = signal<Sale[]>([]);
   totalCount = signal<number>(0);
@@ -208,23 +211,23 @@ export class SalesHistoryComponent implements OnInit {
 
   cancelSale(sale: Sale): void {
     if (!this.canCancelSale) {
-      this.snackBar.open('Only Admins and Managers can cancel sales.', 'Close', { duration: 3000 });
+      this.snackBar.open(this.translocoService.translate('salesHistoryDialog.cancelError'), 'Close', { duration: 3000 });
       return;
     }
 
     this.confirmDialog.confirm({
-      title: 'Cancel Sale',
-      message: `Are you sure you want to cancel Sale #${sale.saleNumber}? This action will void the transaction and restore all stock quantities.`,
-      type: 'danger',
-      confirmText: 'Cancel Sale',
-      cancelText: 'Keep Sale',
+      title: this.translocoService.translate('salesHistoryDialog.title'),
+        message: this.translocoService.translate('salesHistoryDialog.message', { saleNumber: sale.saleNumber }),
+        type: 'danger',
+        confirmText: this.translocoService.translate('salesHistoryDialog.cancelSale'),
+        cancelText: this.translocoService.translate('salesHistoryDialog.keepSale'),
       icon: 'cancel'
     }).subscribe((confirmed) => {
       if (!confirmed) return;
 
       this.saleService.cancelSale(sale.id).subscribe({
         next: () => {
-          this.snackBar.open(`Sale #${sale.saleNumber} cancelled and stock restored.`, 'Success', {
+          this.snackBar.open(this.translocoService.translate('salesHistoryDialog.cancelSuccess', { saleNumber: sale.saleNumber }), 'Success', {
             duration: 3500
           });
           this.loadSales();

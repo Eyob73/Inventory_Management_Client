@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +12,7 @@ import { Sale } from '../../models/sale.model';
   selector: 'app-sale-details-dialog',
   standalone: true,
   imports: [
+    TranslocoDirective,
     CommonModule,
     MatDialogModule,
     MatButtonModule,

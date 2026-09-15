@@ -4,6 +4,7 @@ import { AppNotification } from '../models/notification.model';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth';
 import * as signalR from '@microsoft/signalr';
+import { SwPush } from '@angular/service-worker';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class NotificationService implements OnDestroy {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private ngZone = inject(NgZone);
+  private swPush = inject(SwPush);
 
   private baseUrl = `${environment.apiUrl}/Notifications`;
   private hubConnection: signalR.HubConnection | null = null;
@@ -75,30 +77,42 @@ export class NotificationService implements OnDestroy {
   }
 
   public async requestNotificationPermission() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Registration Failed', err));
-    }
-
-    if ('Notification' in window) {
-      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-        await Notification.requestPermission();
+    try {
+      if (this.swPush.isEnabled) {
+        const sub = await this.swPush.requestSubscription({
+          serverPublicKey: environment.vapidPublicKey
+        });
+        
+        console.log('Got Push Subscription:', sub);
+        
+        // Send to backend
+        this.http.post(`${environment.apiUrl}/PushSubscriptions/subscribe`, sub, { withCredentials: true })
+          .subscribe({
+            next: () => console.log('Successfully saved push subscription on server.'),
+            error: (err) => console.error('Failed to save push subscription', err)
+          });
+      } else {
+        console.warn('Service workers are disabled or not supported by this browser. Falling back to basic notifications.');
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+          await Notification.requestPermission();
+        }
       }
+    } catch (err) {
+      console.error('Could not subscribe to notifications', err);
     }
   }
 
   private showNativeNotification(notification: AppNotification) {
+    if (this.swPush.isEnabled) {
+      // Angular PWA Service Worker handles Web Push automatically!
+      return; 
+    }
+
     if ('Notification' in window && Notification.permission === 'granted') {
       const options: NotificationOptions = {
         body: notification.message,
       };
-      
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then(reg => {
-          reg.showNotification(notification.title || 'Inventory Update', options);
-        });
-      } else {
-        new Notification(notification.title || 'Inventory Update', options);
-      }
+      new Notification(notification.title || 'Inventory Update', options);
     }
   }
 

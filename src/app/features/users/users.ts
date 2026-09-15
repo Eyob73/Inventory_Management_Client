@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit, ViewChild, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {  CommonModule } from '@angular/common';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,12 +35,12 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    TableSkeleton,
-  ],
+    TableSkeleton, TranslocoDirective],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
 export class UsersComponent implements OnInit {
+  private translocoService = inject(TranslocoService);
   readonly store = inject(UserStore);
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
@@ -115,7 +116,7 @@ export class UsersComponent implements OnInit {
         this.store.loadUsers({ page: this.store.page(), pageSize: this.store.pageSize() });
       },
       error: (err) => {
-        this.error.set(err?.error?.detail || 'Failed to update user status.');
+        this.error.set(err?.error?.detail || this.translocoService.translate('users.userStatusUpdateFailed'));
         this.savingId.set(null);
       },
     });
@@ -141,7 +142,7 @@ export class UsersComponent implements OnInit {
             this.store.loadUsers({ page: newPage, pageSize: this.store.pageSize() });
           },
           error: (err) => {
-            this.error.set(err?.error?.detail || 'Failed to delete user.');
+            this.error.set(err?.error?.detail || this.translocoService.translate('users.userDeleteFailed'));
             this.savingId.set(null);
           },
         });

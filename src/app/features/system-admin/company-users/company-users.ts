@@ -6,17 +6,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SystemService, TenantUserDto, TenantDto } from '../../../services/system';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
+import { TranslocoService, TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-company-users',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatTableModule, MatButtonModule, MatIconModule, TableSkeleton],
+  imports: [TranslocoModule, CommonModule, RouterModule, MatTableModule, MatButtonModule, MatIconModule, TableSkeleton],
   templateUrl: './company-users.html',
   styleUrl: './company-users.scss',
 })
 export class CompanyUsersComponent implements OnInit {
   route = inject(ActivatedRoute);
   private systemService = inject(SystemService);
+  private transloco = inject(TranslocoService);
 
   users = signal<TenantUserDto[]>([]);
   company = signal<TenantDto | null>(null);
@@ -37,7 +39,7 @@ export class CompanyUsersComponent implements OnInit {
     // Load company details
     this.systemService.getTenant(id).subscribe({
       next: (tenant) => this.company.set(tenant),
-      error: () => this.error.set('Failed to load company details.')
+      error: () => this.error.set(this.transloco.translate('systemAdmin.companyDetails.loadFailed'))
     });
 
     // Load users
@@ -47,7 +49,7 @@ export class CompanyUsersComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load users.');
+        this.error.set(this.transloco.translate('systemAdmin.companyUsers.loadFailed'));
         this.loading.set(false);
       }
     });

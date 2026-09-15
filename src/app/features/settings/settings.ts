@@ -1,5 +1,6 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {  CommonModule } from '@angular/common';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthStore } from '../../store/auth.store';
 import { TenantApiService } from '../../services/tenant';
 import { LanguageService } from '../../services/language.service';
-import { TranslocoPipe } from '@jsverse/transloco';
+import {  } from '@jsverse/transloco';
 
 export interface SettingsSection {
   id: string;
@@ -33,13 +34,13 @@ export interface SettingsSection {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule,
-    TranslocoPipe
-  ],
+    MatProgressSpinnerModule
+  , TranslocoDirective],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class SettingsComponent implements OnInit {
+  private transloco = inject(TranslocoService);
   protected authStore = inject(AuthStore);
   private tenantApi = inject(TenantApiService);
   public languageService = inject(LanguageService);
@@ -62,36 +63,36 @@ export class SettingsComponent implements OnInit {
     const isSales = role === 'sales';
     const commonSection = { 
       id: 'localization', 
-      label: isSales ? 'Language' : 'Language & Currency', 
+      label: isSales ? 'settingsFull.navLanguage' : 'settingsFull.navLanguageCurrency', 
       icon: 'language' 
     };
 
     if (role === 'sales') {
       return [
-        { id: 'pos', label: 'POS & Fast Checkout', icon: 'point_of_sale' },
-        { id: 'terminal', label: 'Sales Terminal Display', icon: 'desktop_windows' },
+        { id: 'pos', label: 'settingsFull.navPosFastCheckout', icon: 'point_of_sale' },
+        { id: 'terminal', label: 'settingsFull.navSalesTerminalDisplay', icon: 'desktop_windows' },
         commonSection,
-        { id: 'salesAlerts', label: 'Targets & Alerts', icon: 'track_changes' },
-        { id: 'theme', label: 'Display & Preferences', icon: 'palette' },
+        { id: 'salesAlerts', label: 'settingsFull.navTargetsAlerts', icon: 'track_changes' },
+        { id: 'theme', label: 'settingsFull.navDisplayPreferences', icon: 'palette' },
       ];
     }
 
     if (role === 'manager') {
       return [
-        { id: 'inventory', label: 'Stock & Reorder Rules', icon: 'inventory_2' },
-        { id: 'salesPolicies', label: 'Sales & Discount Policies', icon: 'local_offer' },
+        { id: 'inventory', label: 'settingsFull.navStockReorderRules', icon: 'inventory_2' },
+        { id: 'salesPolicies', label: 'settingsFull.navSalesDiscountPolicies', icon: 'local_offer' },
         commonSection,
-        { id: 'managerNotifications', label: 'Notifications & Digests', icon: 'notifications' }
+        { id: 'managerNotifications', label: 'settingsFull.navNotificationsDigests', icon: 'notifications' }
       ];
     }
 
     // Default / Admin
     return [
-      { id: 'company', label: 'Company Profile', icon: 'business' },
-      { id: 'inventory', label: 'Inventory Alerts', icon: 'inventory_2' },
+      { id: 'company', label: 'settingsFull.companyProfile', icon: 'business' },
+      { id: 'inventory', label: 'settingsFull.navInventoryAlerts', icon: 'inventory_2' },
       commonSection,
-      { id: 'notifications', label: 'Notifications', icon: 'notifications' },
-      { id: 'security', label: 'Security', icon: 'security' },
+      { id: 'notifications', label: 'settingsFull.navNotifications', icon: 'notifications' },
+      { id: 'security', label: 'settingsFull.navSecurity', icon: 'security' },
     ];
   });
 

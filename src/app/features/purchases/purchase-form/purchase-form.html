@@ -1,16 +1,17 @@
+<ng-container *transloco="let t">
 <div class="purchase-form-page">
   <div class="page-header">
     <div>
       <a routerLink="/purchases" class="pdp-back">
         <mat-icon>arrow_back</mat-icon>
-        Purchases
+        {{ t('purchases.form.back') }}
       </a>
-      <h1 class="page-title">{{ isEditMode() ? 'Edit Draft Purchase' : 'New Purchase' }}</h1>
+      <h1 class="page-title">{{ isEditMode() ? t('purchases.form.editDraft') : t('purchases.form.newPurchase') }}</h1>
       <p class="page-subtitle">
         @if (purchaseNumber()) {
           {{ purchaseNumber() }} —
         }
-        Stock is added only when you complete the draft.
+        {{ t('purchases.form.subtitle') }}
       </p>
     </div>
   </div>
@@ -25,18 +26,18 @@
   @if (isLoading()) {
     <div class="empty-state">
       <mat-spinner diameter="36"></mat-spinner>
-      <p>Loading purchase…</p>
+      <p>{{ t('purchases.form.loading') }}</p>
     </div>
   } @else {
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <section class="form-section">
-        <h2 class="section-title">Purchase details</h2>
+        <h2 class="section-title">{{ t('purchases.form.detailsTitle') }}</h2>
         <div class="form-row form-row--3">
           <div class="form-group">
-            <label for="supplierId">Supplier</label>
+            <label for="supplierId">{{ t('purchases.form.supplier') }}</label>
             <mat-form-field appearance="outline" class="select-field">
-              <mat-select id="supplierId" formControlName="supplierId" placeholder="Optional">
-                <mat-option value="">None (no supplier)</mat-option>
+              <mat-select id="supplierId" formControlName="supplierId" [placeholder]="t('purchases.form.supplierOptional')">
+                <mat-option value="">{{ t('purchases.form.noSupplier') }}</mat-option>
                 @for (supplier of suppliers(); track supplier.id) {
                   <mat-option [value]="supplier.id">{{ supplier.name }}</mat-option>
                 }
@@ -44,20 +45,20 @@
             </mat-form-field>
           </div>
           <div class="form-group">
-            <label for="purchaseDate">Purchase date</label>
+            <label for="purchaseDate">{{ t('purchases.form.purchaseDate') }}</label>
             <mat-form-field appearance="outline" class="text-field">
               <input matInput id="purchaseDate" type="date" formControlName="purchaseDate" />
             </mat-form-field>
           </div>
           <div class="form-group">
-            <label for="notes">Notes</label>
+            <label for="notes">{{ t('purchases.form.notes') }}</label>
             <mat-form-field appearance="outline" class="text-field">
               <input
                 matInput
                 id="notes"
                 type="text"
                 formControlName="notes"
-                placeholder="Optional"
+                [placeholder]="t('purchases.form.supplierOptional')"
               />
             </mat-form-field>
           </div>
@@ -67,10 +68,10 @@
       <section class="form-section" formArrayName="items">
         <div class="section-header">
           <div>
-            <h2 class="section-title">Line items</h2>
-            <p class="section-hint">Unit cost is taken from each product’s catalog cost.</p>
+            <h2 class="section-title">{{ t('purchases.form.lineItems') }}</h2>
+            <p class="section-hint">{{ t('purchases.form.unitCostHint') }}</p>
           </div>
-          <button type="button" class="btn btn--secondary" (click)="addLine()">Add line</button>
+          <button type="button" class="btn btn--secondary" (click)="addLine()">{{ t('purchases.form.addLine') }}</button>
         </div>
 
         <div class="line-list">
@@ -78,12 +79,12 @@
             <div class="line-card" [formGroupName]="i">
               <div class="line-card__fields">
                 <div class="form-group line-card__product">
-                  <label [attr.for]="'product-' + i">Product</label>
+                  <label [attr.for]="'product-' + i">{{ t('purchases.form.product') }}</label>
                   <mat-form-field appearance="outline" class="select-field">
                     <mat-select
                       [id]="'product-' + i"
                       formControlName="productId"
-                      placeholder="Select a product"
+                      [placeholder]="t('purchases.form.selectProduct')"
                     >
                       @for (product of availableProducts(i); track product.id) {
                         <mat-option [value]="product.id"
@@ -93,11 +94,11 @@
                     </mat-select>
                   </mat-form-field>
                   @if (isLineInvalid(i, 'productId')) {
-                    <span class="form-error">Select a product.</span>
+                    <span class="form-error">{{ t('purchases.form.productReq') }}</span>
                   }
                 </div>
                 <div class="form-group">
-                  <label [attr.for]="'qty-' + i">Quantity</label>
+                  <label [attr.for]="'qty-' + i">{{ t('purchases.form.qty') }}</label>
                   <mat-form-field appearance="outline" class="text-field">
                     <input
                       matInput
@@ -110,17 +111,17 @@
                     />
                   </mat-form-field>
                   @if (isLineInvalid(i, 'quantity')) {
-                    <span class="form-error">Enter a quantity of 1 or more.</span>
+                    <span class="form-error">{{ t('purchases.form.qtyReq') }}</span>
                   }
                 </div>
                 <div class="form-group">
-                  <label>Unit cost (ETB)</label>
+                  <label>{{ t('purchases.form.unitCost') }}</label>
                   <mat-form-field appearance="outline" class="text-field">
                     <input matInput type="text" [value]="lineCost(i) | number: '1.2-2'" readonly />
                   </mat-form-field>
                 </div>
                 <div class="form-group">
-                  <label>Line total</label>
+                  <label>{{ t('purchases.form.lineTotal') }}</label>
                   <div class="line-total">{{ lineTotal(i) | number: '1.2-2' }} ETB</div>
                 </div>
               </div>
@@ -129,7 +130,7 @@
                 class="line-card__remove"
                 (click)="removeLine(i)"
                 [disabled]="items.length === 1"
-                aria-label="Remove line"
+                [attr.aria-label]="t('purchases.form.removeLine')"
               >
                 <mat-icon>close</mat-icon>
               </button>
@@ -139,7 +140,7 @@
       </section>
 
       <div class="form-footer">
-        <div class="grand-total">Grand total: {{ grandTotal() | number: '1.2-2' }} ETB</div>
+        <div class="grand-total">{{ t('purchases.form.grandTotal') }} {{ grandTotal() | number: '1.2-2' }} ETB</div>
         <div class="form-footer__actions">
           <button
             type="button"
@@ -147,7 +148,7 @@
             (click)="cancel()"
             [disabled]="isSubmitting()"
           >
-            Cancel
+            {{ t('purchases.form.cancel') }}
           </button>
           <button
             type="submit"
@@ -155,9 +156,9 @@
             [disabled]="isSubmitting() || form.invalid"
           >
             @if (isSubmitting()) {
-              Saving…
+              {{ t('purchases.form.saving') }}
             } @else {
-              {{ isEditMode() ? 'Update draft' : 'Save draft' }}
+              {{ isEditMode() ? t('purchases.form.updateDraftBtn') : t('purchases.form.saveDraftBtn') }}
             }
           </button>
         </div>
@@ -165,3 +166,5 @@
     </form>
   }
 </div>
+
+</ng-container>

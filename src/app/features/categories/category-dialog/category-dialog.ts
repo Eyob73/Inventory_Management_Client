@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -25,8 +26,7 @@ export interface CategoryDialogData {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatIconModule,
-  ],
+    MatIconModule, TranslocoDirective],
   templateUrl: './category-dialog.html',
   styleUrl: './category-dialog.scss',
 })

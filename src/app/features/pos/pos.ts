@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +27,7 @@ import { SaleService } from '../../services/sale.service';
 import { Product } from '../../models/products.model';
 import { CreateSaleRequest, Sale } from '../../models/sale.model';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
+import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import { CustomerDialogComponent } from '../customers/customer-dialog/customer-dialog';
 import { environment } from '../../../environments/environment.development';
@@ -56,7 +58,7 @@ export interface CartItem {
     MatDialogModule,
     MatTooltipModule,
     MatPaginatorModule
-  ],
+  , TranslocoDirective],
   templateUrl: './pos.html',
   styleUrl: './pos.scss'
 })
@@ -68,6 +70,7 @@ export class PosComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+  private translocoService = inject(TranslocoService);
 
   readonly baseUrl = environment.apiUrl.replace('/api', '');
 
@@ -362,15 +365,22 @@ export class PosComponent implements OnInit, OnDestroy {
 
     const totalFormatted = `${this.grandTotal().toFixed(2)} ETB`;
     const itemCount = this.cartItemCount();
-    const itemText = `${itemCount} ${itemCount === 1 ? 'item' : 'items'}`;
-    const customerInfo = customerName ? ` for ${customerName}` : '';
+    const itemText = this.translocoService.translate(itemCount === 1 ? 'posDialog.item' : 'posDialog.items', { count: itemCount });
+    const customerInfo = customerName ? this.translocoService.translate('posDialog.forCustomer', { name: customerName }) : '';
+
+    
+    let paymentMethodKey = 'pos.cash';
+    if (this.paymentMethod() === 'Card') paymentMethodKey = 'pos.card';
+    else if (this.paymentMethod() === 'Mobile Banking') paymentMethodKey = 'pos.mobileBanking';
+    else if (this.paymentMethod() === 'Telebirr') paymentMethodKey = 'pos.telebirr';
+    const translatedPaymentMethod = this.translocoService.translate(paymentMethodKey);
 
     this.confirmDialog.confirm({
-      title: 'Confirm Sale',
-      message: `Are you sure you want to submit this sale of ${itemText}${customerInfo} for a total of ${totalFormatted} using ${this.paymentMethod()}?`,
+      title: this.translocoService.translate('posDialog.title'),
+      message: this.translocoService.translate('posDialog.message', { itemText, customerInfo, totalFormatted, paymentMethod: translatedPaymentMethod }),
       type: 'info',
-      confirmText: 'Submit Sale',
-      cancelText: 'Cancel',
+      confirmText: this.translocoService.translate('posDialog.submit'),
+      cancelText: this.translocoService.translate('posDialog.cancel'),
       icon: 'point_of_sale'
     }).subscribe((confirmed) => {
       if (!confirmed) return;

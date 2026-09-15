@@ -9,11 +9,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SystemService } from '../../../services/system';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService, TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-add-company',
   standalone: true,
   imports: [
+    TranslocoModule,
     CommonModule, 
     ReactiveFormsModule,
     RouterModule,
@@ -31,6 +33,7 @@ export class AddCompanyComponent {
   private router = inject(Router);
   private systemService = inject(SystemService);
   private snackBar = inject(MatSnackBar);
+  private transloco = inject(TranslocoService);
 
   form = this.fb.group({
     name: ['', Validators.required],
@@ -64,13 +67,13 @@ export class AddCompanyComponent {
     this.systemService.createTenant(this.form.value).subscribe({
       next: (res) => {
         this.loading = false;
-        this.snackBar.open('Company created successfully.', 'Close', { duration: 3000 });
+        this.snackBar.open(this.transloco.translate('systemAdmin.addCompany.createSuccess'), this.transloco.translate('systemAdmin.common.close'), { duration: 3000 });
         this.router.navigate(['/system-admin/companies']);
       },
       error: (err) => {
         this.loading = false;
-        this.error = err?.error?.detail || err?.error?.errors?.join(', ') || 'Failed to create company';
-        this.snackBar.open(this.error || 'Failed', 'Close', { duration: 5000 });
+        this.error = err?.error?.detail || err?.error?.errors?.join(', ') || this.transloco.translate('systemAdmin.addCompany.createFailed');
+        this.snackBar.open(this.error || this.transloco.translate('systemAdmin.common.failed'), this.transloco.translate('systemAdmin.common.close'), { duration: 5000 });
       }
     });
   }

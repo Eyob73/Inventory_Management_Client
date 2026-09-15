@@ -8,6 +8,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DashboardService } from '../../../services/dashboard';
 import { DashboardWidget } from '../../../models/dashboard';
@@ -16,7 +17,8 @@ import { DashboardWidget } from '../../../models/dashboard';
   selector: 'app-widget-panel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, MatButtonModule, MatSlideToggleModule],
+  imports: [
+    TranslocoDirective,MatIconModule, MatButtonModule, MatSlideToggleModule],
   templateUrl: './widget-panel.html',
   styleUrl: './widget-panel.scss',
 })

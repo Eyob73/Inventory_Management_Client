@@ -1,11 +1,12 @@
+<ng-container *transloco="let t">
 <div class="panel-dialog">
   <!-- Header -->
   <div class="panel-head">
     <div class="panel-head-left">
       <mat-icon class="panel-head-icon">tune</mat-icon>
       <div>
-        <h2 class="panel-title">Customize Dashboard</h2>
-        <p class="panel-subtitle">Add, remove, and manage widgets</p>
+        <h2 class="panel-title">{{ t('dashboardCustomize.title') }}</h2>
+        <p class="panel-subtitle">{{ t('dashboardCustomize.subtitle') }}</p>
       </div>
     </div>
     <button mat-icon-button class="panel-close-btn" (click)="close()" aria-label="Close">
@@ -15,11 +16,11 @@
 
   <!-- Category Filter Tabs -->
   <div class="category-tabs">
-    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">All</button>
-    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'kpi'" (click)="setCategory('kpi')">KPIs</button>
-    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'charts'" (click)="setCategory('charts')">Charts</button>
-    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'tables'" (click)="setCategory('tables')">Tables</button>
-    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'lists'" (click)="setCategory('lists')">Lists</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">{{ t('dashboardCustomize.catAll') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'kpi'" (click)="setCategory('kpi')">{{ t('dashboardCustomize.catKpis') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'charts'" (click)="setCategory('charts')">{{ t('dashboardCustomize.catCharts') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'tables'" (click)="setCategory('tables')">{{ t('dashboardCustomize.catTables') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'lists'" (click)="setCategory('lists')">{{ t('dashboardCustomize.catLists') }}</button>
   </div>
 
   <!-- Reset Confirmation Banner -->
@@ -27,12 +28,12 @@
     <div class="reset-confirm-box">
       <mat-icon class="warn-icon">warning</mat-icon>
       <div class="confirm-text">
-        <strong>Reset to default layout?</strong>
-        <p>This will restore the original widget order, visibility, and default dimensions.</p>
+        <strong>{{ t('dashboardCustomize.resetTitle') }}</strong>
+        <p>{{ t('dashboardCustomize.resetDesc') }}</p>
       </div>
       <div class="confirm-actions">
-        <button mat-button class="cancel-btn" (click)="cancelReset()">Cancel</button>
-        <button mat-flat-button class="confirm-btn" (click)="doReset()">Reset Now</button>
+        <button mat-button class="cancel-btn" (click)="cancelReset()">{{ t('dashboardCustomize.cancel') }}</button>
+        <button mat-flat-button class="confirm-btn" (click)="doReset()">{{ t('dashboardCustomize.resetNow') }}</button>
       </div>
     </div>
   }
@@ -46,10 +47,10 @@
         </span>
         <div class="panel-row-info">
           <div class="label-row">
-            <span class="panel-row-label">{{ w.label }}</span>
+            <span class="panel-row-label">{{ t('dashboardWidgets.' + w.id + '.label') }}</span>
             <span class="size-badge">{{ w.columns }}×{{ w.rows }}</span>
           </div>
-          <span class="panel-row-desc">{{ w.description }}</span>
+          <span class="panel-row-desc">{{ t('dashboardWidgets.' + w.id + '.desc') }}</span>
         </div>
         <mat-slide-toggle
           [checked]="w.visible"
@@ -65,11 +66,13 @@
   <div class="panel-footer">
     <button mat-stroked-button class="reset-btn" (click)="askReset()">
       <mat-icon>restart_alt</mat-icon>
-      Reset
+      {{ t('dashboardCustomize.reset') }}
     </button>
     <button mat-flat-button class="done-btn" (click)="close()">
       <mat-icon>check</mat-icon>
-      Done
+      {{ t('dashboardCustomize.done') }}
     </button>
   </div>
 </div>
+
+</ng-container>

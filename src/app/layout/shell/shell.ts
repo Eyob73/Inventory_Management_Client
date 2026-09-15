@@ -81,7 +81,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   protected notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
   private confirmService = inject(ConfirmDialogService);
-  private destroyRef = inject(DestroyRef);
+    private destroyRef = inject(DestroyRef);
   private translocoService = inject(TranslocoService);
 
   getNavKey(label: string): string {
@@ -258,12 +258,19 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     this.themeService.toggleTheme();
   }
 
+  getTranslatedNotificationTitle(title: string): string {
+    if (!title) return '';
+    const key = 'shell.notificationTitles.' + title.replace(/\s+/g, '');
+    const translated = this.translocoService.translate(key);
+    return translated === key ? title : translated;
+  }
+
   logout(): void {
     this.confirmService.confirm({
-      title: 'Sign Out',
-      message: 'Are you sure you want to sign out?',
-      confirmText: 'Sign Out',
-      cancelText: 'Cancel',
+      title: this.translocoService.translate('confirm.signOutTitle'),
+      message: this.translocoService.translate('confirm.signOutMessage'),
+      confirmText: this.translocoService.translate('confirm.signOut'),
+      cancelText: this.translocoService.translate('common.cancel'),
       type: 'warning',
       icon: 'logout'
     }).pipe(

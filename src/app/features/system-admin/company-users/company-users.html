@@ -1,3 +1,4 @@
+<ng-container *transloco="let t; read: 'systemAdmin'">
 <div class="page-header">
   <div class="header-content">
     <button class="action-btn" [routerLink]="['/system-admin/companies', company()?.id]">
@@ -5,11 +6,11 @@
     </button>
     <div class="header-titles">
       @if (company()) {
-        <h1 class="page-title">{{ company()?.name }} Users</h1>
+        <h1 class="page-title">{{ t('companyUsers.title', { companyName: company()?.name }) }}</h1>
       } @else {
-        <h1 class="page-title">Company Users</h1>
+        <h1 class="page-title">{{ t('companyUsers.fallbackTitle') }}</h1>
       }
-      <p class="page-subtitle">Manage users registered under this tenant.</p>
+      <p class="page-subtitle">{{ t('companyUsers.subtitle') }}</p>
     </div>
   </div>
 </div>
@@ -25,13 +26,13 @@
   } @else if (users().length === 0) {
     <div class="empty-state">
       <mat-icon class="empty-icon">people_outline</mat-icon>
-      <h3>No users found.</h3>
-      <p>This company does not have any users yet.</p>
+      <h3>{{ t('companyUsers.noUsersFound') }}</h3>
+      <p>{{ t('companyUsers.noUsersDescription') }}</p>
     </div>
   } @else {
     <table mat-table [dataSource]="users()" class="modern-table">
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <th mat-header-cell *matHeaderCellDef> {{ t('common.name') }} </th>
         <td mat-cell *matCellDef="let element">
           <div class="user-cell">
             <div class="avatar">{{ getUserInitials(element) }}</div>
@@ -43,12 +44,12 @@
       </ng-container>
 
       <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <th mat-header-cell *matHeaderCellDef> {{ t('common.email') }} </th>
         <td mat-cell *matCellDef="let element"> {{element.email}} </td>
       </ng-container>
 
       <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef> Role </th>
+        <th mat-header-cell *matHeaderCellDef> {{ t('common.role') }} </th>
         <td mat-cell *matCellDef="let element"> 
           <span class="role-badge">{{ element.role }}</span>
         </td>
@@ -60,3 +61,5 @@
   }
 </div>
 
+
+</ng-container>

@@ -6,11 +6,21 @@
       <p class="page-subtitle">Comprehensive performance metrics, stock intelligence & financial reporting</p>
     </div>
     <div class="header-actions no-print">
-      <button type="button" class="btn btn--outline" (click)="exportReport('pdf')" matTooltip="Export report to PDF format">
-        <mat-icon>picture_as_pdf</mat-icon> Export PDF
+      <button type="button" class="btn btn--outline" (click)="exportReport('pdf')" matTooltip="Export report to PDF format" [disabled]="exportingPdf() || exportingExcel()">
+        @if (exportingPdf()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <mat-icon>picture_as_pdf</mat-icon>
+        }
+        Export PDF
       </button>
-      <button type="button" class="btn btn--outline" (click)="exportReport('xlsx')" matTooltip="Export report to Excel format">
-        <mat-icon>description</mat-icon> Export Excel
+      <button type="button" class="btn btn--outline" (click)="exportReport('xlsx')" matTooltip="Export report to Excel format" [disabled]="exportingExcel() || exportingPdf()">
+        @if (exportingExcel()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <mat-icon>description</mat-icon>
+        }
+        Export Excel
       </button>
       <button type="button" class="btn btn--primary" (click)="printReport()" matTooltip="Print current report view">
         <mat-icon>print</mat-icon> Print Report

@@ -1,13 +1,14 @@
+<ng-container *transloco="let t">
 <div class="receipt-dialog-container" id="printable-receipt">
   <div class="receipt-header">
     <div class="store-branding">
       <mat-icon class="store-icon">point_of_sale</mat-icon>
-      <h2>INVENTORY POS SYSTEM</h2>
-      <p class="store-subtitle">Official Sales Invoice & Receipt</p>
+      <h2>{{ t('receipt.posSystem') }}</h2>
+      <p class="store-subtitle">{{ t('receipt.subtitle') }}</p>
     </div>
     <div class="status-badge-container">
       <span class="status-badge" [ngClass]="sale.status.toLowerCase()">
-        {{ sale.status }}
+        {{ sale.status === 'Completed' ? t('salesHistory.completed') : (sale.status === 'Cancelled' ? t('salesHistory.cancelled') : sale.status) }}
       </span>
     </div>
   </div>
@@ -16,24 +17,24 @@
 
   <div class="meta-grid">
     <div class="meta-item">
-      <span class="label">Invoice No:</span>
+      <span class="label">{{ t('receipt.invoiceNo') }}</span>
       <span class="value highlight">{{ sale.saleNumber }}</span>
     </div>
     <div class="meta-item">
-      <span class="label">Date & Time:</span>
+      <span class="label">{{ t('receipt.dateTime') }}</span>
       <span class="value">{{ sale.saleDate | date:'medium' }}</span>
     </div>
     <div class="meta-item">
-      <span class="label">Cashier:</span>
-      <span class="value">{{ sale.cashierName || 'System Cashier' }}</span>
+      <span class="label">{{ t('receipt.cashier') }}</span>
+      <span class="value">{{ sale.cashierName || t('receipt.systemCashier') }}</span>
     </div>
     <div class="meta-item">
-      <span class="label">Customer:</span>
-      <span class="value">{{ sale.customerName || 'Walk-in Customer' }}</span>
+      <span class="label">{{ t('receipt.customer') }}</span>
+      <span class="value">{{ sale.customerName || t('receipt.walkIn') }}</span>
     </div>
     <div class="meta-item">
-      <span class="label">Payment Method:</span>
-      <span class="value payment-chip">{{ sale.paymentMethod }}</span>
+      <span class="label">{{ t('receipt.paymentMethod') }}</span>
+      <span class="value payment-chip">{{ sale.paymentMethod === 'Cash' ? t('salesHistory.cash') : (sale.paymentMethod === 'Card' ? t('salesHistory.card') : (sale.paymentMethod === 'Mobile Payment' || sale.paymentMethod === 'Mobile Banking' || sale.paymentMethod === 'Telebirr' ? t('salesHistory.mobilePayment') : sale.paymentMethod)) }}</span>
     </div>
   </div>
 
@@ -41,12 +42,12 @@
     <table class="receipt-items-table">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Item Description</th>
-          <th>SKU</th>
-          <th class="text-right">Price</th>
-          <th class="text-center">Qty</th>
-          <th class="text-right">Subtotal</th>
+          <th>{{ t('receipt.table.no') }}</th>
+          <th>{{ t('receipt.table.itemDesc') }}</th>
+          <th>{{ t('receipt.table.sku') }}</th>
+          <th class="text-right">{{ t('receipt.table.price') }}</th>
+          <th class="text-center">{{ t('receipt.table.qty') }}</th>
+          <th class="text-right">{{ t('receipt.table.subtotal') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -67,32 +68,32 @@
   <div class="totals-section">
     <div class="totals-summary">
       <div class="notes-box" *ngIf="sale.notes">
-        <span class="notes-title">Notes:</span>
+        <span class="notes-title">{{ t('receipt.notes') }}</span>
         <p class="notes-text">{{ sale.notes }}</p>
       </div>
       <div class="summary-row">
-        <span>Subtotal</span>
+        <span>{{ t('receipt.subtotal') }}</span>
         <span>{{ sale.subtotal | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="sale.discountAmount > 0">
-        <span>Discount</span>
+        <span>{{ t('receipt.discount') }}</span>
         <span class="text-discount">-{{ sale.discountAmount | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="sale.taxAmount > 0">
-        <span>Tax</span>
+        <span>{{ t('receipt.tax') }}</span>
         <span>+{{ sale.taxAmount | number:'1.2-2' }} ETB</span>
       </div>
       <mat-divider></mat-divider>
       <div class="summary-row grand-total">
-        <span>Grand Total</span>
+        <span>{{ t('receipt.grandTotal') }}</span>
         <span class="total-amount">{{ sale.totalAmount | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="sale.paymentMethod === 'Cash'">
-        <span>Amount Received</span>
+        <span>{{ t('receipt.amountReceived') }}</span>
         <span>{{ sale.amountReceived | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="sale.paymentMethod === 'Cash'">
-        <span>Change Due</span>
+        <span>{{ t('receipt.changeDue') }}</span>
         <span class="text-change">{{ sale.changeAmount | number:'1.2-2' }} ETB</span>
       </div>
     </div>
@@ -102,10 +103,11 @@
 <div class="dialog-actions no-print">
   <button type="button" class="btn btn--outline" (click)="close()">
     <mat-icon>close</mat-icon>
-    <span>Close</span>
+    <span>{{ t('receipt.close') }}</span>
   </button>
   <button type="button" class="btn btn--primary" (click)="printReceipt()">
     <mat-icon>print</mat-icon>
-    <span>Print Receipt</span>
+    <span>{{ t('receipt.print') }}</span>
   </button>
 </div>
+</ng-container>

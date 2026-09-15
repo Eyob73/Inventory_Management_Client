@@ -1,8 +1,9 @@
+<ng-container *transloco="let t">
 <div class="customer-details-dialog">
   <div class="dialog-header">
     <div class="header-title">
       <mat-icon class="header-icon">local_shipping</mat-icon>
-      <h2>Supplier Profile &amp; History</h2>
+      <h2>{{ t('suppliers.details.title') }}</h2>
     </div>
     <button type="button" class="close-btn" (click)="onClose()" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
@@ -12,7 +13,7 @@
   @if (isLoading()) {
     <div class="loading-state">
       <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading supplier details…</p>
+      <p>{{ t('suppliers.details.loading') }}</p>
     </div>
   } @else if (error()) {
     <div class="error-banner">
@@ -27,7 +28,7 @@
           <div class="name-row">
             <h3 class="cust-name">{{ sup.name }}</h3>
             <span class="status-badge" [class.status--active]="sup.isActive !== false" [class.status--inactive]="sup.isActive === false">
-              {{ sup.isActive !== false ? 'Active' : 'Inactive' }}
+              {{ sup.isActive !== false ? t('suppliers.dialog.active') : t('suppliers.dialog.inactive') }}
             </span>
           </div>
           <div class="contact-row">
@@ -48,37 +49,37 @@
       </div>
       <div class="stats-pills-row">
         <div class="stat-pill">
-          <span class="stat-label">Completed Purchases</span>
+          <span class="stat-label">{{ t('suppliers.details.completedPurchases') }}</span>
           <span class="stat-value">{{ sup.totalPurchasesCount || 0 }}</span>
         </div>
         <div class="stat-pill">
-          <span class="stat-label">Total Purchased</span>
+          <span class="stat-label">{{ t('suppliers.details.totalPurchased') }}</span>
           <span class="stat-value stat-value--highlight">{{ (sup.totalPurchased || 0) | number:'1.2-2' }} ETB</span>
         </div>
         <div class="stat-pill">
-          <span class="stat-label">Supplier Since</span>
+          <span class="stat-label">{{ t('suppliers.details.supplierSince') }}</span>
           <span class="stat-value">{{ sup.createdAt ? (sup.createdAt | date:'mediumDate') : '—' }}</span>
         </div>
       </div>
     </div>
 
     <div class="sales-history-section">
-      <h4 class="section-title"><mat-icon>inventory_2</mat-icon><span>Products purchased</span></h4>
+      <h4 class="section-title"><mat-icon>inventory_2</mat-icon><span>{{ t('suppliers.details.productsTitle') }}</span></h4>
       @if (!sup.purchasedProducts?.length) {
-        <div class="empty-sales"><mat-icon>inventory_2</mat-icon><p>No completed purchases for this supplier yet.</p></div>
+        <div class="empty-sales"><mat-icon>inventory_2</mat-icon><p>{{ t('suppliers.details.emptyProducts') }}</p></div>
       } @else {
         <div class="table-wrapper">
           <table mat-table [dataSource]="sup.purchasedProducts!" class="app-table sales-table">
             <ng-container matColumnDef="productName">
-              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.details.colProduct') }}</th>
               <td mat-cell *matCellDef="let row">{{ row.productName }}</td>
             </ng-container>
             <ng-container matColumnDef="sku">
-              <th mat-header-cell *matHeaderCellDef>SKU</th>
+              <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.details.colSku') }}</th>
               <td mat-cell *matCellDef="let row" class="font-mono">{{ row.sku }}</td>
             </ng-container>
             <ng-container matColumnDef="totalQuantity">
-              <th mat-header-cell *matHeaderCellDef class="text-center">Qty</th>
+              <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('suppliers.details.colQty') }}</th>
               <td mat-cell *matCellDef="let row" class="text-center">{{ row.totalQuantity }}</td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="productColumns"></tr>
@@ -89,30 +90,30 @@
     </div>
 
     <div class="sales-history-section" style="margin-top: 1.25rem;">
-      <h4 class="section-title"><mat-icon>receipt_long</mat-icon><span>Purchase history ({{ sup.purchaseHistory?.length || 0 }})</span></h4>
+      <h4 class="section-title"><mat-icon>receipt_long</mat-icon><span>{{ t('suppliers.details.historyTitle') }} ({{ sup.purchaseHistory?.length || 0 }})</span></h4>
       @if (!sup.purchaseHistory?.length) {
-        <div class="empty-sales"><mat-icon>remove_shopping_cart</mat-icon><p>No purchase records yet.</p></div>
+        <div class="empty-sales"><mat-icon>remove_shopping_cart</mat-icon><p>{{ t('suppliers.details.emptyHistory') }}</p></div>
       } @else {
         <div class="table-wrapper">
           <table mat-table [dataSource]="sup.purchaseHistory!" class="app-table sales-table">
             <ng-container matColumnDef="purchaseNumber">
-              <th mat-header-cell *matHeaderCellDef>PO #</th>
+              <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.details.colPoNo') }}</th>
               <td mat-cell *matCellDef="let row" class="font-mono font-bold">{{ row.purchaseNumber }}</td>
             </ng-container>
             <ng-container matColumnDef="purchaseDate">
-              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.details.colDate') }}</th>
               <td mat-cell *matCellDef="let row" class="text-secondary">{{ row.purchaseDate | date:'short' }}</td>
             </ng-container>
             <ng-container matColumnDef="itemsCount">
-              <th mat-header-cell *matHeaderCellDef class="text-center">Items</th>
+              <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('suppliers.details.colItems') }}</th>
               <td mat-cell *matCellDef="let row" class="text-center">{{ row.itemsCount }}</td>
             </ng-container>
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+              <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.details.colStatus') }}</th>
+              <td mat-cell *matCellDef="let row">{{ row.status === 'Completed' ? t('salesHistory.completed') : (row.status === 'Cancelled' ? t('salesHistory.cancelled') : row.status) }}</td>
             </ng-container>
             <ng-container matColumnDef="totalAmount">
-              <th mat-header-cell *matHeaderCellDef class="text-right">Total</th>
+              <th mat-header-cell *matHeaderCellDef class="text-right">{{ t('suppliers.details.colTotal') }}</th>
               <td mat-cell *matCellDef="let row" class="text-right font-bold price-text">{{ row.totalAmount | number:'1.2-2' }} ETB</td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="purchaseColumns"></tr>
@@ -124,6 +125,8 @@
   }
 
   <div class="dialog-actions">
-    <button type="button" class="btn btn--secondary" (click)="onClose()">Close</button>
+    <button type="button" class="btn btn--secondary" (click)="onClose()">{{ t('suppliers.details.close') }}</button>
   </div>
 </div>
+
+</ng-container>

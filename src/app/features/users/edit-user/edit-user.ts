@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {  CommonModule } from '@angular/common';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,12 +24,12 @@ import { UserService, SystemUser } from '../../../services/user.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSlideToggleModule,
-  ],
+    MatSlideToggleModule, TranslocoDirective],
   templateUrl: './edit-user.html',
   styleUrl: './edit-user.scss',
 })
 export class EditUserComponent implements OnInit {
+  private translocoService = inject(TranslocoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private userService = inject(UserService);
@@ -114,7 +115,7 @@ export class EditUserComponent implements OnInit {
             this.userService.toggleActive(this.userId()!).subscribe({
               next: () => {
                 this.isSaving.set(false);
-                this.successMessage.set('User updated successfully.');
+                this.successMessage.set(this.translocoService.translate('users.userUpdatedSuccess'));
                 setTimeout(() => this.router.navigate(['/users']), 1200);
               },
               error: (err) => {
@@ -124,7 +125,7 @@ export class EditUserComponent implements OnInit {
             });
           } else {
             this.isSaving.set(false);
-            this.successMessage.set('User updated successfully.');
+            this.successMessage.set(this.translocoService.translate('users.userUpdatedSuccess'));
             setTimeout(() => this.router.navigate(['/users']), 1200);
           }
         },
@@ -134,7 +135,7 @@ export class EditUserComponent implements OnInit {
           if (Array.isArray(apiErrors) && apiErrors.length > 0) {
             this.error.set(apiErrors.join(' '));
           } else {
-            this.error.set(err?.error?.detail || 'Failed to update user.');
+            this.error.set(err?.error?.detail || this.translocoService.translate('users.userUpdateFailed'));
           }
         },
       });

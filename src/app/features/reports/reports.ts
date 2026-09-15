@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 
@@ -68,6 +69,7 @@ type ReportTab =
     MatTooltipModule,
     MatSnackBarModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
     TableSkeleton,
     ReportLineChart,
     ReportBarChart,
@@ -137,6 +139,8 @@ export class Reports implements OnInit {
   stockData = signal<StockMovementReport | null>(null);
 
   loading = signal<boolean>(false);
+  exportingPdf = signal<boolean>(false);
+  exportingExcel = signal<boolean>(false);
   dateValidationError = signal<string | null>(null);
 
   // Computed chart data transformations
@@ -391,11 +395,25 @@ export class Reports implements OnInit {
   }
 
   exportReport(format: 'xlsx' | 'pdf'): void {
+    if (format === 'pdf') {
+      this.exportingPdf.set(true);
+    } else {
+      this.exportingExcel.set(true);
+    }
     const filter = this.buildFilterPayload();
     
+    const onComplete = () => {
+      if (format === 'pdf') {
+        this.exportingPdf.set(false);
+      } else {
+        this.exportingExcel.set(false);
+      }
+    };
+
     if (this.activeTab() === 'dashboard') {
       this.reportsService.exportComposite(filter, format).subscribe({
         next: (blob) => {
+          onComplete();
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -405,6 +423,7 @@ export class Reports implements OnInit {
           this.snackBar.open('Exported dashboard report successfully.', 'Close', { duration: 3000 });
         },
         error: () => {
+          onComplete();
           this.snackBar.open('Failed to export dashboard report.', 'Close', { duration: 3000 });
         },
       });
@@ -412,6 +431,7 @@ export class Reports implements OnInit {
       const reportType = this.activeTab();
       this.reportsService.exportReport(reportType, filter, format).subscribe({
         next: (blob) => {
+          onComplete();
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
@@ -421,6 +441,7 @@ export class Reports implements OnInit {
           this.snackBar.open(`Exported ${reportType} report successfully.`, 'Close', { duration: 3000 });
         },
         error: () => {
+          onComplete();
           this.snackBar.open('Failed to export report.', 'Close', { duration: 3000 });
         },
       });

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +22,7 @@ export interface ConfirmDialogData {
   styleUrl: './confirm-dialog.scss',
 })
 export class ConfirmDialogComponent {
+  transloco = inject(TranslocoService);
   dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
   data: ConfirmDialogData = inject(MAT_DIALOG_DATA);
 
@@ -38,11 +40,11 @@ export class ConfirmDialogComponent {
   }
 
   get confirmText(): string {
-    return this.data.confirmText || (this.type === 'danger' ? 'Delete' : 'Confirm');
+    return this.data.confirmText || (this.type === 'danger' ? this.transloco.translate('confirm.delete') : this.transloco.translate('confirm.confirm'));
   }
 
   get cancelText(): string {
-    return this.data.cancelText || 'Cancel';
+    return this.data.cancelText || this.transloco.translate('confirm.cancel');
   }
 
   onConfirm() {

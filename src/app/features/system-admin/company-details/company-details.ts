@@ -7,11 +7,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SystemService, TenantDto } from '../../../services/system';
 import { ConfirmDialogService } from '../../../ui/confirm-dialog/confirm-dialog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService, TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-company-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [TranslocoModule, CommonModule, RouterModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './company-details.html',
   styleUrl: './company-details.scss',
 })
@@ -21,6 +22,7 @@ export class CompanyDetailsComponent implements OnInit {
   private systemService = inject(SystemService);
   private confirmDialog = inject(ConfirmDialogService);
   private snackBar = inject(MatSnackBar);
+  private transloco = inject(TranslocoService);
 
   company = signal<TenantDto | null>(null);
   loading = signal(true);
@@ -41,7 +43,7 @@ export class CompanyDetailsComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load company details.');
+        this.error.set(this.transloco.translate('systemAdmin.companyDetails.loadFailed'));
         this.loading.set(false);
       }
     });
@@ -49,10 +51,10 @@ export class CompanyDetailsComponent implements OnInit {
 
   getStatusName(status: number): string {
     switch (status) {
-      case 0: return 'Active';
-      case 1: return 'Suspended';
-      case 2: return 'Deactivated';
-      default: return 'Unknown';
+      case 0: return this.transloco.translate('systemAdmin.common.active');
+      case 1: return this.transloco.translate('systemAdmin.common.suspended');
+      case 2: return this.transloco.translate('systemAdmin.common.deactivated');
+      default: return this.transloco.translate('systemAdmin.common.unknown');
     }
   }
 
@@ -70,10 +72,10 @@ export class CompanyDetailsComponent implements OnInit {
     if (!c) return;
     this.systemService.activateTenant(c.id).subscribe({
       next: () => {
-        this.snackBar.open('Company activated successfully.', 'Close', {duration: 3000});
+        this.snackBar.open(this.transloco.translate('systemAdmin.companies.activateSuccess'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
         this.loadCompany(c.id);
       },
-      error: () => this.snackBar.open('Failed to activate company.', 'Close', {duration: 3000})
+      error: () => this.snackBar.open(this.transloco.translate('systemAdmin.companies.activateFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000})
     });
   }
 
@@ -81,18 +83,18 @@ export class CompanyDetailsComponent implements OnInit {
     const c = this.company();
     if (!c) return;
     this.confirmDialog.confirm({
-      title: 'Suspend Company?',
+      title: this.transloco.translate('systemAdmin.companies.suspendTitle'),
       message: `Are you sure you want to suspend ${c.name}?`,
-      confirmText: 'Suspend Company',
-      cancelText: 'Cancel'
+      confirmText: this.transloco.translate('systemAdmin.common.suspendCompany'),
+      cancelText: this.transloco.translate('systemAdmin.common.cancel')
     }).subscribe(confirmed => {
       if (confirmed) {
         this.systemService.suspendTenant(c.id).subscribe({
           next: () => {
-            this.snackBar.open('Company suspended successfully.', 'Close', {duration: 3000});
+            this.snackBar.open(this.transloco.translate('systemAdmin.companies.suspendSuccess'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
             this.loadCompany(c.id);
           },
-          error: () => this.snackBar.open('Failed to suspend company.', 'Close', {duration: 3000})
+          error: () => this.snackBar.open(this.transloco.translate('systemAdmin.companies.suspendFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000})
         });
       }
     });
@@ -102,18 +104,18 @@ export class CompanyDetailsComponent implements OnInit {
     const c = this.company();
     if (!c) return;
     this.confirmDialog.confirm({
-      title: 'Deactivate Company?',
+      title: this.transloco.translate('systemAdmin.companies.deactivateTitle'),
       message: `This will prevent users from accessing the company ${c.name}.`,
-      confirmText: 'Deactivate',
+      confirmText: this.transloco.translate('systemAdmin.common.deactivate'),
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
       if (confirmed) {
         this.systemService.deactivateTenant(c.id).subscribe({
           next: () => {
-            this.snackBar.open('Company deactivated successfully.', 'Close', {duration: 3000});
+            this.snackBar.open(this.transloco.translate('systemAdmin.companies.deactivateSuccess'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
             this.loadCompany(c.id);
           },
-          error: () => this.snackBar.open('Failed to deactivate company.', 'Close', {duration: 3000})
+          error: () => this.snackBar.open(this.transloco.translate('systemAdmin.companies.deactivateFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000})
         });
       }
     });

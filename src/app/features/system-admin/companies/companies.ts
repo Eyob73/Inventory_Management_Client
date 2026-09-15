@@ -18,12 +18,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Subject } from 'rxjs';
+import { TranslocoService, TranslocoModule } from '@jsverse/transloco';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-companies',
   standalone: true,
   imports: [
+    TranslocoModule,
     FormsModule,
     CommonModule, 
     RouterModule,
@@ -48,6 +50,7 @@ export class Companies implements OnInit, OnDestroy {
   private router = inject(Router);
   private confirmDialog = inject(ConfirmDialogService);
   private snackBar = inject(MatSnackBar);
+  private transloco = inject(TranslocoService);
   
   companies = signal<TenantDto[]>([]);
   loading = signal<boolean>(true);
@@ -118,7 +121,7 @@ export class Companies implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loading.set(false);
-        this.snackBar.open('Failed to load companies.', 'Close', {duration: 3000});
+        this.snackBar.open(this.transloco.translate('systemAdmin.companies.loadFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
       }
     });
   }
@@ -143,10 +146,10 @@ export class Companies implements OnInit, OnDestroy {
 
   getStatusName(status: number): string {
     switch (status) {
-      case 0: return 'Active';
-      case 1: return 'Suspended';
-      case 2: return 'Deactivated';
-      default: return 'Unknown';
+      case 0: return this.transloco.translate('systemAdmin.common.active');
+      case 1: return this.transloco.translate('systemAdmin.common.suspended');
+      case 2: return this.transloco.translate('systemAdmin.common.deactivated');
+      default: return this.transloco.translate('systemAdmin.common.unknown');
     }
   }
 
@@ -170,29 +173,29 @@ export class Companies implements OnInit, OnDestroy {
   activate(company: TenantDto) {
     this.systemService.activateTenant(company.id).subscribe({
       next: () => {
-        this.snackBar.open('Company activated successfully.', 'Close', {duration: 3000});
+        this.snackBar.open(this.transloco.translate('systemAdmin.companies.activateSuccess'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
         this.loadCompanies();
       },
-      error: () => this.snackBar.open('Failed to activate company.', 'Close', {duration: 3000})
+      error: () => this.snackBar.open(this.transloco.translate('systemAdmin.companies.activateFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000})
     });
   }
 
   suspend(company: TenantDto) {
     this.confirmDialog
       .confirm({
-        title: 'Suspend Company?',
+        title: this.transloco.translate('systemAdmin.companies.suspendTitle'),
         message: `Are you sure you want to suspend ${company.name}? Users belonging to this company will no longer be able to use the system.`,
-        confirmText: 'Suspend Company',
-        cancelText: 'Cancel'
+        confirmText: this.transloco.translate('systemAdmin.common.suspendCompany'),
+        cancelText: this.transloco.translate('systemAdmin.common.cancel')
       })
       .subscribe((confirmed) => {
         if (!confirmed) return;
         this.systemService.suspendTenant(company.id).subscribe({
           next: () => {
-            this.snackBar.open('Company suspended successfully.', 'Close', {duration: 3000});
+            this.snackBar.open(this.transloco.translate('systemAdmin.companies.suspendSuccess'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
             this.loadCompanies();
           },
-          error: () => this.snackBar.open('Failed to suspend company.', 'Close', {duration: 3000})
+          error: () => this.snackBar.open(this.transloco.translate('systemAdmin.companies.suspendFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000})
         });
       });
   }
@@ -200,19 +203,19 @@ export class Companies implements OnInit, OnDestroy {
   deactivate(company: TenantDto) {
     this.confirmDialog
       .confirm({
-        title: 'Deactivate Company?',
+        title: this.transloco.translate('systemAdmin.companies.deactivateTitle'),
         message: `This will prevent users from accessing the company ${company.name}.`,
-        confirmText: 'Deactivate',
+        confirmText: this.transloco.translate('systemAdmin.common.deactivate'),
         cancelText: 'Cancel'
       })
       .subscribe((confirmed) => {
         if (!confirmed) return;
         this.systemService.deactivateTenant(company.id).subscribe({
           next: () => {
-            this.snackBar.open('Company deactivated successfully.', 'Close', {duration: 3000});
+            this.snackBar.open(this.transloco.translate('systemAdmin.companies.deactivateSuccess'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000});
             this.loadCompanies();
           },
-          error: () => this.snackBar.open('Failed to deactivate company.', 'Close', {duration: 3000})
+          error: () => this.snackBar.open(this.transloco.translate('systemAdmin.companies.deactivateFailed'), this.transloco.translate('systemAdmin.common.close'), {duration: 3000})
         });
       });
   }

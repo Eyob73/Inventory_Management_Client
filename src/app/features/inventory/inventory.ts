@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -33,8 +34,7 @@ import { StockAdjustmentDialogComponent } from './stock-adjustment-dialog/stock-
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    TableSkeleton,
-  ],
+    TableSkeleton, TranslocoDirective],
   templateUrl: './inventory.html',
   styleUrl: './inventory.scss',
 })

@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {  CommonModule } from '@angular/common';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,12 +33,12 @@ function passwordMatchValidator(): ValidatorFn {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-  ],
+    MatSelectModule, TranslocoDirective],
   templateUrl: './add-user.html',
   styleUrl: './add-user.scss',
 })
 export class AddUserComponent implements OnInit {
+  private translocoService = inject(TranslocoService);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private userService = inject(UserService);
@@ -89,7 +90,7 @@ export class AddUserComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isSaving.set(false);
-          this.successMessage.set('User created successfully.');
+          this.successMessage.set(this.translocoService.translate('users.userCreatedSuccess'));
           setTimeout(() => this.router.navigate(['/users']), 1200);
         },
         error: (err) => {
@@ -98,7 +99,7 @@ export class AddUserComponent implements OnInit {
           if (Array.isArray(apiErrors) && apiErrors.length > 0) {
             this.error.set(apiErrors.join(' '));
           } else {
-            this.error.set(err?.error?.detail || 'Failed to create user.');
+            this.error.set(err?.error?.detail || this.translocoService.translate('users.userCreateFailed'));
           }
         },
       });

@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, Inject, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -23,8 +24,7 @@ export interface CustomerDetailsDialogData {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule, TranslocoDirective],
   templateUrl: './customer-details-dialog.html',
   styleUrl: './customer-details-dialog.scss',
 })

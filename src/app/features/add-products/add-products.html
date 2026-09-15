@@ -58,7 +58,7 @@
             <input type="text" id="name" formControlName="name" [class.has-error]="isInvalid('name')"
                 [placeholder]="t('addProducts.namePlaceholder')">
             @if (isInvalid('name')) {
-            <span class="form-error">Product name is required.</span>
+            <span class="form-error">{{ t('addProducts.errNameReq') }}</span>
             }
         </div>
 
@@ -79,14 +79,14 @@
                     </mat-select>
                 </mat-form-field>
                 @if (categoriesResource.isLoading()) {
-                <span class="form-hint">Loading categories...</span>
+                <span class="form-hint">{{ t('addProducts.loadingCat') }}</span>
                 }
             </div>
 
             <div class="form-group">
                 <label for="supplierId">{{ t('addProducts.supplier') }}</label>
                 <mat-form-field appearance="outline" class="category-select-field">
-                    <mat-select id="supplierId" formControlName="supplierId" placeholder="Select a supplier"
+                    <mat-select id="supplierId" formControlName="supplierId" [placeholder]="t('addProducts.selectSupplier')"
                         panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
                         <mat-option [value]="''">{{ t('addProducts.noSupplier') }}</mat-option>
                         @for (sup of suppliersResource.value() || []; track sup.id) {
@@ -95,7 +95,7 @@
                     </mat-select>
                 </mat-form-field>
                 @if (suppliersResource.isLoading()) {
-                <span class="form-hint">Loading suppliers...</span>
+                <span class="form-hint">{{ t('addProducts.loadingSup') }}</span>
                 }
             </div>
 
@@ -117,7 +117,7 @@
                         placeholder="0.00" min="0" step="0.01">
                 </div>
                 @if (isInvalid('price')) {
-                <span class="form-error">Enter a valid price.</span>
+                <span class="form-error">{{ t('addProducts.errPriceValid') }}</span>
                 }
             </div>
 
@@ -159,7 +159,7 @@
         <div class="product-form__section-header">
             <div>
                 <h2 class="product-form__section-title">{{ t('addProducts.variants') }}</h2>
-                <p class="product-form__section-hint">Add size, color, or material options for this product.</p>
+                <p class="product-form__section-hint">{{ t('addProducts.variantsHint') }}</p>
             </div>
             <button type="button" class="btn btn--ghost" (click)="addVariant()">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none">
@@ -176,12 +176,12 @@
                     <div class="form-group">
                         <label>{{ t('addProducts.variantName') }}</label>
                         <input type="text" formControlName="name" [class.has-error]="isVariantInvalid(i, 'name')"
-                            placeholder="e.g. Size">
+                            [placeholder]="t('addProducts.egSize')">
                     </div>
                     <div class="form-group">
                         <label>{{ t('addProducts.variantValue') }}</label>
                         <input type="text" formControlName="value" [class.has-error]="isVariantInvalid(i, 'value')"
-                            placeholder="e.g. Medium">
+                            [placeholder]="t('addProducts.egMedium')">
                     </div>
                     <div class="form-group form-group--narrow">
                         <label>{{ t('addProducts.variantStock') }}</label>

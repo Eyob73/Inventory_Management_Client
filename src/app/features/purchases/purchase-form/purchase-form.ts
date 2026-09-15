@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -28,8 +29,7 @@ import { PurchaseStore } from '../../../store/purchase.store';
     MatSelectModule,
     MatIconModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule, TranslocoDirective],
   templateUrl: './purchase-form.html',
   styleUrl: './purchase-form.scss',
 })

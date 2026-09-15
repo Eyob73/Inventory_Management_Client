@@ -2,10 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from './confirm-dialog';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
   private dialog = inject(MatDialog);
+  private transloco = inject(TranslocoService);
 
   confirm(data: ConfirmDialogData): Observable<boolean> {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -19,14 +21,25 @@ export class ConfirmDialogService {
   }
 
   confirmDelete(entityName: string, entityLabel?: string): Observable<boolean> {
+    const entityKey = 'confirm.entity' + entityName.replace(/\s+/g, '');
+    let translatedEntity = entityName;
+    try {
+      translatedEntity = this.transloco.translate(entityKey);
+      if (translatedEntity === entityKey) {
+        translatedEntity = entityName; // fallback if key not found
+      }
+    } catch(e) {}
+    
+    const lowercaseEntity = translatedEntity.toLowerCase();
+
     return this.confirm({
-      title: `Delete ${entityName}`,
+      title: this.transloco.translate('confirm.deleteTitle', { entity: translatedEntity }),
       message: entityLabel
-        ? `Are you sure you want to delete "${entityLabel}"? This action cannot be undone.`
-        : `Are you sure you want to delete this ${entityName.toLowerCase()}? This action cannot be undone.`,
+        ? this.transloco.translate('confirm.deleteMessageLabel', { entityLabel })
+        : this.transloco.translate('confirm.deleteMessage', { entity: lowercaseEntity }),
       type: 'danger',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      confirmText: this.transloco.translate('confirm.delete'),
+      cancelText: this.transloco.translate('confirm.cancel'),
       icon: 'delete_forever',
     });
   }
@@ -36,8 +49,8 @@ export class ConfirmDialogService {
       title,
       message,
       type: 'warning',
-      confirmText,
-      cancelText: 'Cancel',
+      confirmText: confirmText === 'Proceed' ? this.transloco.translate('confirm.proceed') : confirmText,
+      cancelText: this.transloco.translate('confirm.cancel'),
       icon: 'warning_amber',
     });
   }

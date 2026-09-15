@@ -1,3 +1,4 @@
+import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, Inject, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -28,8 +29,7 @@ export interface StockAdjustmentDialogData {
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-  ],
+    MatProgressSpinnerModule, TranslocoDirective],
   templateUrl: './stock-adjustment-dialog.html',
   styleUrl: './stock-adjustment-dialog.scss',
 })

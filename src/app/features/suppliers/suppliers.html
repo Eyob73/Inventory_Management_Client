@@ -1,8 +1,9 @@
+<ng-container *transloco="let t">
 <div class="suppliers-page">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Supplier Management</h1>
-      <p class="page-subtitle">Manage vendor contacts, purchase history, and supplier status.</p>
+      <h1 class="page-title">{{ t('suppliers.title') }}</h1>
+      <p class="page-subtitle">{{ t('suppliers.subtitle') }}</p>
     </div>
     @if (canAdd) {
       <button class="btn btn--primary" (click)="openCreateDialog()">
@@ -14,7 +15,7 @@
             stroke-linecap="round"
           />
         </svg>
-        Add Supplier
+        {{ t('suppliers.addSupplier') }}
       </button>
     }
   </div>
@@ -34,41 +35,41 @@
     <div class="stat-card teal">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>local_shipping</mat-icon></span>
-        <span class="stat-title">Total Suppliers</span>
+        <span class="stat-title">{{ t('suppliers.stats.total') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().total }}</div>
-        <span class="stat-sub">All registered suppliers</span>
+        <span class="stat-sub">{{ t('suppliers.stats.all') }}</span>
       </div>
     </div>
     <div class="stat-card green">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>check_circle</mat-icon></span>
-        <span class="stat-title">Active</span>
+        <span class="stat-title">{{ t('suppliers.stats.active') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().active }}</div>
-        <span class="stat-sub">Active vendors</span>
+        <span class="stat-sub">{{ t('suppliers.stats.activeSub') }}</span>
       </div>
     </div>
     <div class="stat-card amber">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>pause_circle_outline</mat-icon></span>
-        <span class="stat-title">Inactive</span>
+        <span class="stat-title">{{ t('suppliers.stats.inactive') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().inactive }}</div>
-        <span class="stat-sub">Dormant vendors</span>
+        <span class="stat-sub">{{ t('suppliers.stats.inactiveSub') }}</span>
       </div>
     </div>
     <div class="stat-card blue">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>payments</mat-icon></span>
-        <span class="stat-title">Total Purchased</span>
+        <span class="stat-title">{{ t('suppliers.stats.totalPurchased') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ store.stats().totalPurchased | number: '1.0-0' }} ETB</div>
-        <span class="stat-sub">Lifetime spend</span>
+        <span class="stat-sub">{{ t('suppliers.stats.lifetimeSpend') }}</span>
       </div>
     </div>
   </div>
@@ -76,28 +77,28 @@
   <div class="filters-card">
     <div class="filter-row">
       <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Search Suppliers</mat-label>
+        <mat-label>{{ t('suppliers.search') }}</mat-label>
         <input
           matInput
           type="text"
-          placeholder="e.g. name, contact, phone, or email…"
+          [placeholder]="t('suppliers.searchPlaceholder')"
           [ngModel]="store.search()"
           (input)="applyFilter($event)"
         />
         <mat-icon matPrefix>search</mat-icon>
         @if (store.search()) {
-          <button matSuffix mat-icon-button (click)="store.setSearch('')" aria-label="Clear search">
+          <button matSuffix mat-icon-button (click)="store.setSearch('')" [attr.aria-label]="t('suppliers.clearSearch')">
             <mat-icon>close</mat-icon>
           </button>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Status</mat-label>
+        <mat-label>{{ t('suppliers.status') }}</mat-label>
         <mat-select [ngModel]="store.statusFilter()" (ngModelChange)="store.setStatusFilter($event)">
-          <mat-option value="all">All Statuses</mat-option>
-          <mat-option value="active">Active</mat-option>
-          <mat-option value="inactive">Inactive</mat-option>
+          <mat-option value="all">{{ t('suppliers.allStatuses') }}</mat-option>
+          <mat-option value="active">{{ t('suppliers.stats.active') }}</mat-option>
+          <mat-option value="inactive">{{ t('suppliers.stats.inactive') }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -110,13 +111,13 @@
       <div class="table-wrapper">
         <table mat-table [dataSource]="dataSource" matSort class="app-table">
           <ng-container matColumnDef="no">
-            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.table.no') }}</th>
             <td mat-cell *matCellDef="let row; let i = index" class="font-mono text-secondary">
               {{ (store.pageIndex() - 1) * store.pageSize() + i + 1 }}
             </td>
           </ng-container>
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Supplier Name</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.name') }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="customer-name-cell" (click)="openDetailsDialog(row)">{{
                 row.name
@@ -124,49 +125,49 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="contactName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact Person</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.contact') }}</th>
             <td mat-cell *matCellDef="let row" class="text-secondary">
               {{ row.contactName || '—' }}
             </td>
           </ng-container>
           <ng-container matColumnDef="phoneNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone Number</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.phone') }}</th>
             <td mat-cell *matCellDef="let row" class="font-mono text-secondary">
               {{ row.phoneNumber || '—' }}
             </td>
           </ng-container>
           <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.email') }}</th>
             <td mat-cell *matCellDef="let row" class="text-secondary">{{ row.email || '—' }}</td>
           </ng-container>
           <ng-container matColumnDef="createdAt">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Created Date</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.createdDate') }}</th>
             <td mat-cell *matCellDef="let row" class="text-secondary">
               {{ row.createdAt ? (row.createdAt | date: 'mediumDate') : '—' }}
             </td>
           </ng-container>
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.status') }}</th>
             <td mat-cell *matCellDef="let row">
               <span
                 class="status-badge"
                 [class.status--active]="row.isActive !== false"
                 [class.status--inactive]="row.isActive === false"
               >
-                {{ row.isActive !== false ? 'Active' : 'Inactive' }}
+                {{ row.isActive !== false ? t('suppliers.table.active') : t('suppliers.table.inactive') }}
               </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('suppliers.table.actions') }}</th>
             <td mat-cell *matCellDef="let row">
               <div class="actions-cell">
                 <button
                   type="button"
                   class="action-btn action-btn--view"
                   (click)="openDetailsDialog(row)"
-                  matTooltip="View details"
-                  aria-label="View details"
+                  [matTooltip]="t('suppliers.table.view')"
+                  [attr.aria-label]="t('suppliers.table.view')"
                 >
                   <mat-icon>visibility</mat-icon>
                 </button>
@@ -175,8 +176,8 @@
                     type="button"
                     class="action-btn action-btn--edit"
                     (click)="openEditDialog(row)"
-                    matTooltip="Edit supplier"
-                    aria-label="Edit supplier"
+                    [matTooltip]="t('suppliers.table.edit')"
+                    [attr.aria-label]="t('suppliers.table.edit')"
                   >
                     <mat-icon>edit</mat-icon>
                   </button>
@@ -186,8 +187,8 @@
                     type="button"
                     class="action-btn action-btn--delete"
                     (click)="onDelete(row)"
-                    matTooltip="Delete supplier"
-                    aria-label="Delete supplier"
+                    [matTooltip]="t('suppliers.table.delete')"
+                    [attr.aria-label]="t('suppliers.table.delete')"
                   >
                     <mat-icon>delete_outline</mat-icon>
                   </button>
@@ -201,12 +202,12 @@
             <td class="table-empty" [attr.colspan]="displayedColumns.length">
               <div class="empty-state">
                 <mat-icon class="empty-icon">local_shipping</mat-icon>
-                <p class="empty-title">No suppliers found</p>
+                <p class="empty-title">{{ t('suppliers.table.noMatch') }}</p>
                 <p class="empty-subtitle">
                   @if (store.search()) {
-                    No suppliers match your search.
+                    {{ t('suppliers.table.noMatchSearch') }}
                   } @else {
-                    Add your first supplier to start purchasing stock.
+                    {{ t('suppliers.table.noMatchAdd') }}
                   }
                 </p>
               </div>
@@ -229,3 +230,5 @@
 </div>
 
 
+
+</ng-container>

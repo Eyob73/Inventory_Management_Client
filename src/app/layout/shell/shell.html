@@ -53,7 +53,7 @@
         </div>
         <div class="user-info">
           <h4>{{ userName() }}</h4>
-          <span>{{ userRole() }}</span>
+          <span>{{ 'shell.roles.' + (userRole()?.toLowerCase() || 'default') | transloco }}</span>
         </div>
         <button class="logout-btn" type="button" title="Sign out" (click)="logout(); $event.preventDefault(); $event.stopPropagation()">
           <mat-icon>logout</mat-icon>
@@ -70,15 +70,15 @@
         <!-- Collapse toggle (only on desktop) -->
         @if (!isMobile()) {
         <button mat-icon-button class="collapse-btn" (click)="toggleCollapse()"
-          [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
-          [matTooltip]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'" matTooltipPosition="below">
+          [attr.aria-label]="isCollapsed() ? ('shell.expandSidebar' | transloco) : ('shell.collapseSidebar' | transloco)"
+          [matTooltip]="isCollapsed() ? ('shell.expandSidebar' | transloco) : ('shell.collapseSidebar' | transloco)" matTooltipPosition="below">
           <mat-icon>{{ isCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
         </button>
         }
 
         <!-- Mobile menu hamburger -->
         @if (isMobile()) {
-        <button mat-icon-button class="collapse-btn" (click)="sidenav.toggle()" aria-label="Toggle navigation">
+        <button mat-icon-button class="collapse-btn" (click)="sidenav.toggle()" [attr.aria-label]="'shell.toggleNav' | transloco">
           <mat-icon>menu</mat-icon>
         </button>
         }
@@ -100,12 +100,12 @@
         </div>
 
         <!-- Theme toggle -->
-        <button mat-icon-button (click)="toggleTheme()" matTooltip="Toggle theme" class="toolbar-action-btn">
+        <button mat-icon-button (click)="toggleTheme()" [matTooltip]="'shell.toggleTheme' | transloco" class="toolbar-action-btn">
           <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
 
         <!-- Notifications -->
-        <button mat-icon-button aria-label="Notifications" matTooltip="Notifications" class="toolbar-action-btn"
+        <button mat-icon-button [attr.aria-label]="'shell.notifications' | transloco" [matTooltip]="'shell.notifications' | transloco" class="toolbar-action-btn"
           [matMenuTriggerFor]="notificationMenu"
           #notificationTrigger="matMenuTrigger"
           [matBadge]="notificationService.unreadCount()"
@@ -115,13 +115,13 @@
         </button>
 
         <!-- Avatar / Account menu -->
-        <button type="button" [matMenuTriggerFor]="accountMenu" class="toolbar-account-btn" aria-label="Account menu">
+        <button type="button" [matMenuTriggerFor]="accountMenu" class="toolbar-account-btn" [attr.aria-label]="'shell.accountMenu' | transloco">
           <div class="avatar-wrapper">
             <span class="avatar-initials">{{ userInitials() }}</span>
           </div>
           <div class="toolbar-user-meta">
             <span class="toolbar-user-name">{{ userName() }}</span>
-            <span class="toolbar-user-role">{{ userRole() }}</span>
+            <span class="toolbar-user-role">{{ 'shell.roles.' + (userRole()?.toLowerCase() || 'default') | transloco }}</span>
           </div>
           <mat-icon class="chevron-icon">expand_more</mat-icon>
         </button>
@@ -140,7 +140,7 @@
             }
             <div class="header-role-badge">
               <span class="role-dot"></span>
-              {{ userRole() }}
+              {{ 'shell.roles.' + (userRole()?.toLowerCase() || 'default') | transloco }}
             </div>
           </div>
         </div>
@@ -150,12 +150,12 @@
         <div class="menu-items-group">
           <button mat-menu-item routerLink="/profile">
             <mat-icon class="menu-item-icon">person_outline</mat-icon>
-            <span>My Profile</span>
+            <span>{{ 'shell.myProfile' | transloco }}</span>
           </button>
           @if (canAccessSettings()) {
           <button mat-menu-item routerLink="/settings">
             <mat-icon class="menu-item-icon">tune</mat-icon>
-            <span>Settings</span>
+            <span>{{ 'shell.settings' | transloco }}</span>
           </button>
           }
         </div>
@@ -165,7 +165,7 @@
         <div class="menu-items-group">
           <button mat-menu-item class="logout-item" (click)="logout()">
             <mat-icon class="menu-item-icon">logout</mat-icon>
-            <span>Sign out</span>
+            <span>{{ 'shell.signOut' | transloco }}</span>
           </button>
         </div>
       </mat-menu>
@@ -174,15 +174,15 @@
       <mat-menu #notificationMenu="matMenu" xPosition="before" class="notification-dropdown-menu">
         <div class="notification-menu-header" (click)="$event.stopPropagation()">
           <div class="header-title-row">
-            <span class="header-title">Notifications</span>
+            <span class="header-title">{{ 'shell.notifications' | transloco }}</span>
             @if (notificationService.unreadCount() > 0) {
-            <span class="unread-pill">{{ notificationService.unreadCount() }} unread</span>
+            <span class="unread-pill">{{ notificationService.unreadCount() }} {{ 'shell.unread' | transloco }}</span>
             }
           </div>
           @if (notificationService.unreadCount() > 0) {
           <button type="button" class="mark-all-btn" (click)="notificationService.markAllAsRead()">
             <mat-icon class="btn-icon">done_all</mat-icon>
-            Mark read
+            {{ 'shell.markRead' | transloco }}
           </button>
           }
         </div>
@@ -200,7 +200,7 @@
             </div>
             <div class="notification-body">
               <div class="notification-title-row">
-                <span class="notification-item-title">{{ item.title }}</span>
+                <span class="notification-item-title">{{ getTranslatedNotificationTitle(item.title) }}</span>
                 <span class="notification-time">{{ getTimeAgo(item.timestamp) }}</span>
               </div>
               <p class="notification-message">{{ item.message }}</p>
@@ -224,7 +224,7 @@
         <mat-divider />
         <div class="notification-footer" (click)="$event.stopPropagation()">
           <button type="button" class="clear-all-btn" (click)="notificationService.clearAll()">
-            Clear all
+            {{ 'shell.clearAll' | transloco }}
           </button>
         </div>
         }
