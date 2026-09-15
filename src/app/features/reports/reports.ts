@@ -14,6 +14,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
+import { CardSkeleton } from '../../ui/card-skeleton/card-skeleton';
 
 import { ReportsService } from '../../services/reports.service';
 import { CategoryService } from '../../services/category';
@@ -71,6 +72,7 @@ type ReportTab =
     MatPaginatorModule,
     MatProgressSpinnerModule,
     TableSkeleton,
+    CardSkeleton,
     ReportLineChart,
     ReportBarChart,
     ReportDonutChart,

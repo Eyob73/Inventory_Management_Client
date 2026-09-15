@@ -232,7 +232,51 @@
 
   <!-- Skeleton Loading State -->
   @if (loading()) {
-    <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+    @if (activeTab() === 'dashboard') {
+      <div class="dashboard-grid">
+        <div class="summary-cards-grid">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <app-card-skeleton type="kpi"></app-card-skeleton>
+          }
+        </div>
+        <div class="charts-row">
+          <app-card-skeleton type="chart"></app-card-skeleton>
+          <app-card-skeleton type="chart"></app-card-skeleton>
+        </div>
+      </div>
+    } @else if (activeTab() === 'sales' || activeTab() === 'purchases' || activeTab() === 'inventory') {
+      <div class="report-section">
+        <div class="summary-cards-grid four-cols">
+          @for (i of [1,2,3,4]; track i) {
+            <app-card-skeleton type="kpi"></app-card-skeleton>
+          }
+        </div>
+        @if (activeTab() === 'sales' || activeTab() === 'purchases') {
+          <div class="charts-row">
+            <app-card-skeleton type="chart"></app-card-skeleton>
+            <app-card-skeleton type="chart"></app-card-skeleton>
+          </div>
+        }
+        <div class="table-card">
+          <app-table-skeleton [rows]="8" [columns]="skeletonColumns"></app-table-skeleton>
+        </div>
+      </div>
+    } @else if (activeTab() === 'low-stock') {
+      <div class="report-section">
+        <div class="summary-cards-grid three-cols">
+          @for (i of [1,2,3]; track i) {
+            <app-card-skeleton type="kpi"></app-card-skeleton>
+          }
+        </div>
+        <div class="table-card">
+          <app-table-skeleton [rows]="8" [columns]="skeletonColumns"></app-table-skeleton>
+        </div>
+      </div>
+    } @else {
+      <div class="table-card">
+        <app-table-skeleton [rows]="8" [columns]="skeletonColumns"></app-table-skeleton>
+      </div>
+    }
   } @else {
     <div class="report-content">
 

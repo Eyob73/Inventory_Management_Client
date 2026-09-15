@@ -17,6 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Product } from '../../models/products.model';
 import { ProductStore } from '../../store/products.store';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
+import { CardSkeleton } from '../../ui/card-skeleton/card-skeleton';
 import { AuthStore } from '../../store/auth.store';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import {
@@ -45,6 +46,7 @@ import { environment } from '../../../environments/environment.development';
     MatButtonModule,
     MatTooltipModule,
     TableSkeleton,
+    CardSkeleton,
     TranslocoDirective],
   templateUrl: './products.html',
   styleUrl: './products.scss',

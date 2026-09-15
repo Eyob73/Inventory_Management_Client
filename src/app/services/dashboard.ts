@@ -3,12 +3,16 @@ import { WidgetDefinition, UserWidgetConfig, DashboardWidget, WidgetSettings } f
 import { WIDGET_REGISTRY, MANAGER_WIDGET_REGISTRY, SALES_WIDGET_REGISTRY } from '../features/dashboard/widget-registry';
 import { SYSTEM_WIDGET_REGISTRY } from '../features/dashboard/system-widget-registry';
 import { AuthStore } from '../store/auth.store';
+import { DashboardStore } from '../store/dashboard.store';
+import { SystemDashboardStore } from '../store/system-dashboard.store';
 
 const STORAGE_KEY = 'dashboard_widget_config_v7';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly authStore = inject(AuthStore);
+  private readonly dashboardStore = inject(DashboardStore);
+  private readonly systemDashboardStore = inject(SystemDashboardStore);
 
   readonly availableDefinitions = computed(() => {
     const role = this.authStore.userRole()?.toLowerCase();
@@ -69,7 +73,7 @@ export class DashboardService {
         minRows: def.minRows ?? 1,
         maxRows: def.maxRows ?? 4,
         settings,
-        loading: loading[def.id] ?? false,
+        loading: loading[def.id] || this.dashboardStore.isLoading() || this.systemDashboardStore.isLoading(),
         error: errors[def.id] ?? null,
       };
     });

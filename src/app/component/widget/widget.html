@@ -145,16 +145,11 @@
 
   <!-- Body Content -->
   <div class="widget-body">
-    <!-- Loading Overlay -->
+    <!-- Loading State -->
     @if (widget().loading) {
-      <div class="widget-loading-overlay">
-        <mat-spinner diameter="32" color="accent" />
-        <span>{{ t('dashboard.widgetUI.updating') }}</span>
-      </div>
-    }
-
-    <!-- Error State Banner -->
-    @if (widget().error) {
+      <app-card-skeleton [type]="(widget().id.includes('kpi') || widget().id.includes('low-stock')) ? 'kpi-body' : 'chart-body'"></app-card-skeleton>
+    } @else if (widget().error) {
+      <!-- Error State Banner -->
       <div class="widget-error-state">
         <mat-icon class="error-icon">error_outline</mat-icon>
         <p class="error-msg">{{ widget().error }}</p>

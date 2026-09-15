@@ -14,6 +14,7 @@ import { CdkDragHandle, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { DashboardWidget, WidgetSettings } from '../../models/dashboard';
 import { DashboardService } from '../../services/dashboard';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { CardSkeleton } from '../../ui/card-skeleton/card-skeleton';
 
 @Component({
   selector: 'app-widget',
@@ -29,6 +30,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
     CdkDragHandle,
     CdkDragPlaceholder,
     TranslocoDirective,
+    CardSkeleton,
   ],
   templateUrl: './widget.html',
   styleUrl: './widget.scss',
