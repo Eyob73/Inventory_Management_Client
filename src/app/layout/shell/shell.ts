@@ -152,10 +152,15 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     this.navigation.getNavGroups(this.authStore.userRole())
   );
 
-  // Admin, Manager, and Sales can access Settings
+  // Admin, Manager, Sales, and System Admin can access Settings
   readonly canAccessSettings = computed(() => {
     const role = (this.authStore.userRole() || '').toLowerCase();
-    return role === 'admin' || role === 'manager' || role === 'sales';
+    return role === 'admin' || role === 'manager' || role === 'sales' || role === 'systemadmin';
+  });
+
+  readonly settingsRoute = computed(() => {
+    const role = (this.authStore.userRole() || '').toLowerCase();
+    return role === 'systemadmin' ? '/system-admin/settings' : '/settings';
   });
 
   readonly sidenavWidth = computed(() =>

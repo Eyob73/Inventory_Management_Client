@@ -28,19 +28,17 @@ export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
 
       const normalizedUserRole = userRole.toLowerCase();
 
-      // SystemAdmin should be strictly checked if requested
-      if (roles.some(r => r.toLowerCase() === 'systemadmin')) {
-         if (normalizedUserRole !== 'systemadmin') return false;
-         return true;
-      }
+      // Explicitly allowed roles
+      const isAllowed = roles.some((r) => r.toLowerCase() === normalizedUserRole);
+      if (isAllowed) return true;
 
-      // Admin always has full access to other routes
-      if (normalizedUserRole === 'admin' || normalizedUserRole === 'administrator') {
+      // SystemAdmin routes should NOT be automatically accessible by Admins
+      const isSystemAdminRoute = roles.every(r => r.toLowerCase() === 'systemadmin');
+      
+      // Admin always has full access to other standard routes
+      if (!isSystemAdminRoute && (normalizedUserRole === 'admin' || normalizedUserRole === 'administrator')) {
         return true;
       }
-
-      const allowed = roles.some((r) => r.toLowerCase() === normalizedUserRole);
-      if (allowed) return true;
 
       // Cancel navigation so the user stays on the current page.
       return false;

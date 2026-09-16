@@ -28,7 +28,9 @@
     "inactive": "Hojii Ala",
     "actions": "Tarkaanfiiwwan",
     "status": "Haala",
-    "confirm": "Mirkaneessi"
+    "confirm": "Mirkaneessi",
+    "reset": "Reset",
+    "saveChanges": "Save Changes"
   },
   "dashboard": {
     "title": {
@@ -585,10 +587,10 @@
     "saveChanges": "Jijjiirama Olkaa'i",
     "english": "English",
     "amharic": "Amharic (አማርኛ)",
-    "oromo": "Afaan Oromoo",
-    "preferredLanguage": "Afaan Filatame",
-    "language": "Filannoo Afaanii",
-    "chooseLanguage": "Afaan idilee sirnichaa filadhu.",
+    "oromo": "Oromo",
+    "preferredLanguage": "Preferred Language",
+    "language": "Language",
+    "chooseLanguage": "Choose your preferred language",
     "placeholders": {
       "br": "Br",
       "etb": "ETB",
@@ -1710,7 +1712,8 @@
       "admin": "Bulchaa",
       "manager": "Hogganaa",
       "sales": "Gurgurtaa",
-      "default": "Fayyadamaa"
+      "default": "Fayyadamaa",
+      "systemadmin": "Bulchaa Sirnaa"
     },
     "expandSidebar": "Saayidbaarii Bal'isi",
     "collapseSidebar": "Saayidbaarii Sassaabi",
@@ -1725,5 +1728,26 @@
       "SaleCompleted": "Gurgurtaa Xumurame",
       "InventoryManagementReport": "Gabaasa Bulchiinsa Kuusaa"
     }
+  },
+  "systemSettings": {
+    "title": "System Settings",
+    "subtitle": "Manage global system configuration and platform rules.",
+    "saveSuccess": "Settings saved successfully.",
+    "generalConfig": "General Configuration",
+    "platformName": "Platform Name",
+    "supportEmail": "Support Email",
+    "maintenanceMode": "Maintenance Mode",
+    "maintenanceHint": "When enabled, only System Admins can log in.",
+    "allowRegistration": "Allow Self-Registration",
+    "registrationHint": "Allow new users to register and create companies on their own.",
+    "tenantLimits": "Company Limits",
+    "maxUsersPerCompany": "Max Users per Company",
+    "maxProductsPerCompany": "Max Products per Company",
+    "securityCompliance": "Security & Compliance",
+    "requireComplexPasswords": "Require Complex Passwords",
+    "passwordsHint": "Enforce uppercase, lowercase, numbers, and symbols.",
+    "forceMfa": "Force Multi-Factor Authentication (MFA)",
+    "mfaHint": "Require all users to use MFA (currently simulated).",
+    "sessionTimeout": "Idle Session Timeout (minutes)"
   }
 }

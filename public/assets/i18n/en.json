@@ -28,7 +28,9 @@
     "inactive": "Inactive",
     "actions": "Actions",
     "status": "Status",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "reset": "Reset",
+    "saveChanges": "Save Changes"
   },
   "dashboard": {
     "title": {
@@ -585,10 +587,10 @@
     "saveChanges": "Save Changes",
     "english": "English",
     "amharic": "Amharic (አማርኛ)",
-    "oromo": "Afaan Oromoo",
+    "oromo": "Oromo",
     "preferredLanguage": "Preferred Language",
-    "language": "Language Preferences",
-    "chooseLanguage": "Choose the default language for the system UI.",
+    "language": "Language",
+    "chooseLanguage": "Choose your preferred language",
     "placeholders": {
       "br": "Br",
       "etb": "ETB",
@@ -1533,6 +1535,10 @@
         "name": "Sales",
         "desc": "Sales processing, customer management, and product catalog browsing."
       },
+      "systemadmin": {
+        "name": "System Admin",
+        "desc": "Full administrative access across the entire system, managing tenants and companies."
+      },
       "default": {
         "name": "User",
         "desc": "Standard user access."
@@ -1706,7 +1712,8 @@
       "admin": "Admin",
       "manager": "Manager",
       "sales": "Sales",
-      "default": "User"
+      "default": "User",
+      "systemadmin": "System Admin"
     },
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
@@ -1721,5 +1728,26 @@
       "SaleCompleted": "Sale Completed",
       "InventoryManagementReport": "Inventory Management Report"
     }
+  },
+  "systemSettings": {
+    "title": "System Settings",
+    "subtitle": "Manage global system configuration and platform rules.",
+    "saveSuccess": "Settings saved successfully.",
+    "generalConfig": "General Configuration",
+    "platformName": "Platform Name",
+    "supportEmail": "Support Email",
+    "maintenanceMode": "Maintenance Mode",
+    "maintenanceHint": "When enabled, only System Admins can log in.",
+    "allowRegistration": "Allow Self-Registration",
+    "registrationHint": "Allow new users to register and create companies on their own.",
+    "tenantLimits": "Company Limits",
+    "maxUsersPerCompany": "Max Users per Company",
+    "maxProductsPerCompany": "Max Products per Company",
+    "securityCompliance": "Security & Compliance",
+    "requireComplexPasswords": "Require Complex Passwords",
+    "passwordsHint": "Enforce uppercase, lowercase, numbers, and symbols.",
+    "forceMfa": "Force Multi-Factor Authentication (MFA)",
+    "mfaHint": "Require all users to use MFA (currently simulated).",
+    "sessionTimeout": "Idle Session Timeout (minutes)"
   }
 }

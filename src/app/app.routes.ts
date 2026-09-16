@@ -87,7 +87,7 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./features/profile/profile').then((m) => m.ProfileComponent),
-        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales', 'SystemAdmin'])],
       },
 
       // ── Admin + Manager only ─────────────────────────────────────

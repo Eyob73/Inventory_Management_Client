@@ -155,6 +155,13 @@ export class SystemUsersComponent implements OnInit, OnDestroy {
     return this.companies().get(tenantId.toLowerCase()) || this.transloco.translate('systemAdmin.users.unknownCompany');
   }
 
+  getTranslatedRole(role?: string): string {
+    if (!role) return this.transloco.translate('systemAdmin.common.unknown');
+    const key = 'shell.roles.' + role.toLowerCase();
+    const translated = this.transloco.translate(key);
+    return translated !== key ? translated : role;
+  }
+
   getUserInitials(user: SystemUser): string {
     const f = (user.firstName || '').charAt(0);
     const l = (user.lastName || '').charAt(0);

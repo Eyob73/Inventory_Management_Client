@@ -7,7 +7,6 @@
   <div class="header-actions">
     <button class="btn btn--ghost" (click)="loadUsers()">
       <mat-icon>refresh</mat-icon>
-      <mat-icon>refresh</mat-icon>
       {{ t('common.refresh') }}
     </button>
   </div>
@@ -83,7 +82,7 @@
       <ng-container matColumnDef="role">
         <th mat-header-cell *matHeaderCellDef> {{ t('common.role') }} </th>
         <td mat-cell *matCellDef="let element"> 
-          <span class="role-badge">{{ element.roles?.[0] || t('common.unknown') }}</span>
+          <span class="role-badge">{{ getTranslatedRole(element.roles?.[0]) }}</span>
         </td>
       </ng-container>
 

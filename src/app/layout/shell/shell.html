@@ -153,7 +153,7 @@
             <span>{{ 'shell.myProfile' | transloco }}</span>
           </button>
           @if (canAccessSettings()) {
-          <button mat-menu-item routerLink="/settings">
+          <button mat-menu-item [routerLink]="settingsRoute()">
             <mat-icon class="menu-item-icon">tune</mat-icon>
             <span>{{ 'shell.settings' | transloco }}</span>
           </button>

@@ -28,7 +28,9 @@
     "inactive": "ቦዘኔ",
     "actions": "እርምጃዎች",
     "status": "ሁኔታ",
-    "confirm": "አረጋግጥ"
+    "confirm": "አረጋግጥ",
+    "reset": "Reset",
+    "saveChanges": "Save Changes"
   },
   "dashboard": {
     "title": {
@@ -43,12 +45,12 @@
       "overview": "የሽያጭ፣ የክምችት እና የቀጥታ ክምችት አፈጻጸም"
     },
     "actions": {
-      "customize": "ያብጁ",
+      "customize": "ያበጁ",
       "customizeTooltip": "መግብሮችን ያክሉ ወይም ያስወግዱ",
       "newSale": "አዲስ ሽያጭ",
       "addProduct": "ምርት አክል",
-      "exportReport": "ሪፖርት አውጣ (Export)",
-      "customizeDash": "ዳሽቦርድ ያብጁ",
+      "exportReport": "ሪፖርት አውጡ",
+      "customizeDash": "ዳሽቦርድ ያበጁ",
       "restoreLayout": "ነባሪ አቀማመጥን መልስ"
     },
     "welcome": {
@@ -585,10 +587,10 @@
     "saveChanges": "ለውጦችን አስቀምጥ",
     "english": "English",
     "amharic": "Amharic (አማርኛ)",
-    "oromo": "Afaan Oromoo",
-    "preferredLanguage": "የተመረጠ ቋንቋ",
-    "language": "የቋንቋ ምርጫዎች",
-    "chooseLanguage": "ለስርዓቱ ነባሪ ቋንቋ ይምረጡ።",
+    "oromo": "Oromo",
+    "preferredLanguage": "Preferred Language",
+    "language": "Language",
+    "chooseLanguage": "Choose your preferred language",
     "placeholders": {
       "br": "Br",
       "etb": "ETB",
@@ -1349,7 +1351,7 @@
     "resetNow": "አሁን መልስ",
     "reset": "ነባሪውን መልስ",
     "done": "ተከናውኗል",
-    "btnText": "ያብጁ (Customize)",
+    "btnText": "ያብጁ",
     "btnTooltip": "መግብሮችን ያክሉ ወይም ያስወግዱ"
   },
   "dashboardWidgets": {
@@ -1710,7 +1712,8 @@
       "admin": "አስተዳዳሪ",
       "manager": "ስራ አስኪያጅ",
       "sales": "የሽያጭ ሰራተኛ",
-      "default": "ተጠቃሚ"
+      "default": "ተጠቃሚ",
+      "systemadmin": "የስርዓት አስተዳዳሪ"
     },
     "expandSidebar": "የጎን አሞሌውን ዘርጋ",
     "collapseSidebar": "የጎን አሞሌውን ሰብስብ",
@@ -1725,5 +1728,26 @@
       "SaleCompleted": "ሽያጭ ተጠናቅቋል",
       "InventoryManagementReport": "የክምችት አስተዳደር ሪፖርት"
     }
+  },
+  "systemSettings": {
+    "title": "System Settings",
+    "subtitle": "Manage global system configuration and platform rules.",
+    "saveSuccess": "Settings saved successfully.",
+    "generalConfig": "General Configuration",
+    "platformName": "Platform Name",
+    "supportEmail": "Support Email",
+    "maintenanceMode": "Maintenance Mode",
+    "maintenanceHint": "When enabled, only System Admins can log in.",
+    "allowRegistration": "Allow Self-Registration",
+    "registrationHint": "Allow new users to register and create companies on their own.",
+    "tenantLimits": "Company Limits",
+    "maxUsersPerCompany": "Max Users per Company",
+    "maxProductsPerCompany": "Max Products per Company",
+    "securityCompliance": "Security & Compliance",
+    "requireComplexPasswords": "Require Complex Passwords",
+    "passwordsHint": "Enforce uppercase, lowercase, numbers, and symbols.",
+    "forceMfa": "Force Multi-Factor Authentication (MFA)",
+    "mfaHint": "Require all users to use MFA (currently simulated).",
+    "sessionTimeout": "Idle Session Timeout (minutes)"
   }
 }

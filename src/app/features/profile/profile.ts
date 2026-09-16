@@ -24,7 +24,6 @@ interface ActivityItem {
   standalone: true,
   imports: [
     TranslocoDirective,
-    TranslocoPipe,
     CommonModule,
     FormsModule,
     MatIconModule,
@@ -103,6 +102,7 @@ export class ProfileComponent {
 
   readonly roleColor = computed(() => {
     switch (this.role()?.toLowerCase()) {
+      case 'systemadmin': return 'role--systemadmin';
       case 'admin': return 'role--admin';
       case 'manager': return 'role--manager';
       case 'sales': return 'role--sales';
@@ -112,6 +112,7 @@ export class ProfileComponent {
 
   readonly roleIcon = computed(() => {
     switch (this.role()?.toLowerCase()) {
+      case 'systemadmin': return 'admin_panel_settings';
       case 'admin': return 'shield';
       case 'manager': return 'manage_accounts';
       case 'sales': return 'point_of_sale';
@@ -121,6 +122,7 @@ export class ProfileComponent {
 
   readonly roleDescription = computed(() => {
     switch (this.role()?.toLowerCase()) {
+      case 'systemadmin': return 'Full administrative access across the entire system, managing tenants and companies.';
       case 'admin': return 'Full administrative control over users, inventory, reports, and system configuration.';
       case 'manager': return 'Operational access for inventory control, product updates, and sales reporting.';
       case 'sales': return 'Sales processing, customer management, and product catalog browsing.';
@@ -168,6 +170,10 @@ export class ProfileComponent {
             lastName: updatedUser.lastName,
             userName: updatedUser.userName,
           });
+          
+          // Refresh the token so the new claims (name, username) are reflected in the JWT
+          this.authService.refresh().subscribe();
+
           this.isSaving.set(false);
           this.isEditing.set(false);
           this.saveSuccess.set(true);

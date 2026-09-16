@@ -1,0 +1,157 @@
+<ng-container *transloco="let t">
+<div class="settings-page">
+  <div class="page-header">
+    <h1 class="page-title">{{ t('systemSettings.title') }}</h1>
+    <p class="page-subtitle">{{ t('systemSettings.subtitle') }}</p>
+  </div>
+
+  @if (saveSuccess()) {
+  <div class="success-banner">
+    <mat-icon>check_circle</mat-icon>
+    <span>{{ t('systemSettings.saveSuccess') }}</span>
+  </div>
+  }
+
+  <div class="settings-layout">
+    <nav class="settings-nav">
+      @for (section of sections(); track section.id) {
+      <button class="nav-item" [class.active]="activeSection() === section.id" (click)="setSection(section.id)">
+        <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
+        <span>{{ section.label }}</span>
+      </button>
+      }
+    </nav>
+
+    <div class="settings-content">
+      <!-- GENERAL SETTINGS -->
+      @if (activeSection() === 'general') {
+      <div class="settings-card">
+        <div class="card-header">
+          <mat-icon>settings</mat-icon>
+          <h2>{{ t('systemSettings.generalConfig') }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>{{ t('systemSettings.platformName') }}</mat-label>
+              <input matInput [(ngModel)]="generalSettings.platformName" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>{{ t('systemSettings.supportEmail') }}</mat-label>
+              <input matInput type="email" [(ngModel)]="generalSettings.supportEmail" />
+            </mat-form-field>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-label">{{ t('systemSettings.maintenanceMode') }}</span>
+              <span class="toggle-hint">{{ t('systemSettings.maintenanceHint') }}</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="generalSettings.maintenanceMode" color="primary"></mat-slide-toggle>
+          </div>
+          
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-label">{{ t('systemSettings.allowRegistration') }}</span>
+              <span class="toggle-hint">{{ t('systemSettings.registrationHint') }}</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="generalSettings.allowSelfRegistration" color="primary"></mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- TENANT LIMITS -->
+      @if (activeSection() === 'limits') {
+      <div class="settings-card">
+        <div class="card-header">
+          <mat-icon>corporate_fare</mat-icon>
+          <h2>{{ t('systemSettings.tenantLimits') }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>{{ t('systemSettings.maxUsersPerCompany') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="limitSettings.maxUsersPerCompany" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>{{ t('systemSettings.maxProductsPerCompany') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="limitSettings.maxProductsPerCompany" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- LOCALIZATION -->
+      @if (activeSection() === 'localization') {
+      <div class="settings-card">
+        <div class="card-header">
+          <mat-icon>language</mat-icon>
+          <div>
+            <h2>{{ t('settings.language') }}</h2>
+            <p class="card-desc">{{ t('settings.chooseLanguage') }}</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>{{ t('settings.preferredLanguage') }}</mat-label>
+              <mat-select [(ngModel)]="preferredLanguage">
+                <mat-option value="en">{{ t('settings.english') }}</mat-option>
+                <mat-option value="am">አማርኛ (Amharic)</mat-option>
+                <mat-option value="om">{{ t('settings.oromo') }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- SECURITY & COMPLIANCE -->
+      @if (activeSection() === 'security') {
+      <div class="settings-card">
+        <div class="card-header">
+          <mat-icon>security</mat-icon>
+          <h2>{{ t('systemSettings.securityCompliance') }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-label">{{ t('systemSettings.requireComplexPasswords') }}</span>
+              <span class="toggle-hint">{{ t('systemSettings.passwordsHint') }}</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="securitySettings.requireComplexPasswords" color="primary"></mat-slide-toggle>
+          </div>
+          
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-label">{{ t('systemSettings.forceMfa') }}</span>
+              <span class="toggle-hint">{{ t('systemSettings.mfaHint') }}</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="securitySettings.forceMfa" color="primary"></mat-slide-toggle>
+          </div>
+
+          <div class="field-row" style="margin-top: 1rem;">
+            <mat-form-field appearance="outline" class="settings-form-field">
+              <mat-label>{{ t('systemSettings.sessionTimeout') }}</mat-label>
+              <input matInput type="number" [(ngModel)]="securitySettings.sessionTimeoutMinutes" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="save-area">
+        <button type="button" class="btn btn--outline" (click)="resetDefaults()">
+          <mat-icon>restart_alt</mat-icon>
+          {{ t('common.reset') }}
+        </button>
+        <button type="button" class="btn btn--primary" (click)="saveSettings()">
+          {{ t('common.saveChanges') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</ng-container>
