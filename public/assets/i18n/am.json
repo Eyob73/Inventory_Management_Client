@@ -925,7 +925,9 @@
     "addNote": "የትዕዛዝ ማስታወሻ አክል",
     "notePlaceholder": "ልዩ መመሪያዎች ወይም ማስታወሻዎች...",
     "processing": "ክፍያውን በማካሄድ ላይ...",
-    "submit": "ሽያጭ አረጋግጥ"
+    "submit": "ሽያጭ አረጋግጥ",
+    "next": "ቀጣይ",
+    "back": "ተመለስ"
   },
   "salesHistory": {
     "title": "የሽያጭ ታሪክ",

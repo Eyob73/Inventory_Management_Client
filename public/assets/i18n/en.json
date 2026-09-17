@@ -925,7 +925,9 @@
     "addNote": "Add order note",
     "notePlaceholder": "Gift wrap, special instructions…",
     "processing": "Processing…",
-    "submit": "Submit"
+    "submit": "Submit",
+    "next": "Next",
+    "back": "Back"
   },
   "salesHistory": {
     "title": "Sales History",

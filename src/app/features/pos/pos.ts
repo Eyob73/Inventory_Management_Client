@@ -100,6 +100,9 @@ export class PosComponent implements OnInit, OnDestroy {
 
   isLoadingProducts = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
+  
+  // Mobile UI toggle state
+  isMobileCheckoutView = signal<boolean>(false);
 
   // Live terminal clock — a small, honest nod to real point-of-sale hardware
   currentTime = signal<Date>(new Date());
@@ -293,6 +296,9 @@ export class PosComponent implements OnInit, OnDestroy {
     const currentCart = [...this.cart()];
     currentCart.splice(index, 1);
     this.cart.set(currentCart);
+    if (this.cart().length === 0) {
+      this.isMobileCheckoutView.set(false);
+    }
   }
 
   clearCart(): void {
@@ -303,6 +309,7 @@ export class PosComponent implements OnInit, OnDestroy {
     this.selectedCustomerId.set(null);
     this.saleNotes.set('');
     this.showNotes.set(false);
+    this.isMobileCheckoutView.set(false);
   }
 
   clearCustomer(): void {
@@ -405,6 +412,7 @@ export class PosComponent implements OnInit, OnDestroy {
           // Reset cart & refresh product inventory stock levels
           this.clearCart();
           this.loadProducts();
+          this.isMobileCheckoutView.set(false);
         },
         error: (err) => {
           this.isSubmitting.set(false);

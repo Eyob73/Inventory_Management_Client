@@ -925,7 +925,9 @@
     "addNote": "Yaadannoo ajajaa ida'i",
     "notePlaceholder": "Kennaa haguuguu, qajeelfama addaa…",
     "processing": "Adeemsisaa jira…",
-    "submit": "Mirkaneessi"
+    "submit": "Mirkaneessi",
+    "next": "Itti aanee",
+    "back": "Duuba"
   },
   "salesHistory": {
     "title": "Seenaa Gurgurtaa",

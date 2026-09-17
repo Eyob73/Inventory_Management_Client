@@ -1,5 +1,5 @@
 <ng-container *transloco="let t">
-<div class="pos-terminal">
+<div class="pos-terminal" [class.show-mobile-checkout]="isMobileCheckoutView()">
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- LEFT PANEL — Product catalog                                    -->
@@ -114,6 +114,15 @@
       [pageSize]="pageSize()" [pageIndex]="currentPage()" [pageSizeOptions]="[5, 10, 15, 20, 30, 50]"
       [showFirstLastButtons]="true" (page)="onPageChange($event)" [attr.aria-label]="t('pos.ariaPaginator')">
     </mat-paginator>
+
+    <!-- Mobile Next Button (Checkout) -->
+    <div class="mobile-next-checkout" *ngIf="cartItemCount() > 0">
+      <button class="btn btn--primary mobile-next-btn" (click)="isMobileCheckoutView.set(true)">
+        <span class="mobile-next-label">{{ t('pos.next') || 'Next' }}</span>
+        <span class="mobile-next-totals">{{ cartItemCount() }} {{ cartItemCount() === 1 ? t('pos.item') : t('pos.items') }} · {{ grandTotal() | number:'1.2-2' }} ETB</span>
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -124,12 +133,17 @@
     <!-- Panel header -->
     <header class="order-header">
       <div class="order-header-left">
-        <span class="order-label">{{ t('pos.orderTicket') }}</span>
-        <div class="order-title-row">
-          <h2 class="order-heading">{{ t('pos.currentOrder') }}</h2>
-          <span class="order-badge" *ngIf="cartItemCount() > 0">
-            {{ cartItemCount() }} {{ cartItemCount() === 1 ? t('pos.item') : t('pos.items') }}
-          </span>
+        <button type="button" class="mobile-back-btn plain-arrow-btn" (click)="isMobileCheckoutView.set(false)" [attr.aria-label]="t('pos.back') || 'Back'">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="order-title-wrapper">
+          <span class="order-label">{{ t('pos.orderTicket') }}</span>
+          <div class="order-title-row">
+            <h2 class="order-heading">{{ t('pos.currentOrder') }}</h2>
+            <span class="order-badge" *ngIf="cartItemCount() > 0">
+              {{ cartItemCount() }} {{ cartItemCount() === 1 ? t('pos.item') : t('pos.items') }}
+            </span>
+          </div>
         </div>
       </div>
       <div class="order-header-right">

@@ -443,8 +443,40 @@
 
   .order-header-left {
     display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+
+    .mobile-back-btn {
+      display: none;
+      &.plain-arrow-btn {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        color: var(--ink);
+        cursor: pointer;
+        display: none; /* Default hidden */
+        align-items: center;
+        justify-content: center;
+        
+        mat-icon {
+          font-size: 1.5rem;
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+
+        &:hover {
+          color: var(--moss);
+        }
+      }
+    }
+
+    .order-title-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
 
     .order-label {
       font-size: 0.65rem;
@@ -1006,19 +1038,87 @@
   }
 }
 
+/* Mobile Checkout Button - Hidden by default on desktop */
+.mobile-next-checkout {
+  display: none;
+}
+
 /* ═════════════════════════════════════════════════════════════════════
    Responsive Behavior
    ═════════════════════════════════════════════════════════════════════ */
 @media (max-width: 960px) {
   .pos-terminal {
     flex-direction: column;
-    height: auto;
-    min-height: calc(100vh - 80px);
+    height: calc(100vh - 112px); /* Maintain fixed height */
+    gap: 0;
+  }
+
+  .catalog-panel {
+    display: flex;
+    width: 100%;
   }
 
   .order-panel {
+    display: none;
     width: 100%;
-    max-height: 65vh;
+    max-height: none;
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+
+  /* When mobile checkout is active */
+  .pos-terminal.show-mobile-checkout {
+    .catalog-panel {
+      display: none;
+    }
+    .order-panel {
+      display: flex;
+    }
+  }
+
+  /* Show the mobile next/checkout button inside catalog panel */
+  .mobile-next-checkout {
+    display: block;
+    padding: 0.5rem 0.25rem 1rem 0.25rem;
+    background: var(--paper);
+    flex-shrink: 0;
+  }
+
+  .mobile-next-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.25rem;
+    font-size: 1.05rem;
+    border-radius: var(--pos-radius-md);
+    overflow: hidden;
+    
+    .mobile-next-label {
+      flex-shrink: 0;
+    }
+
+    .mobile-next-totals {
+      font-weight: 700;
+      font-family: var(--pos-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      text-align: right;
+      padding: 0 0.5rem;
+    }
+
+    mat-icon {
+      flex-shrink: 0;
+    }
+  }
+
+  .order-header-left {
+    .mobile-back-btn {
+      display: inline-flex !important;
+    }
   }
 }
 
