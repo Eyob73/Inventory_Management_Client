@@ -270,7 +270,214 @@ input[placeholder*="search" i] {
   background: rgba(0, 0, 0, 0.9);
 }
 
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9px;
+}
+
+/* Auto-hide: Show scrollbar thumb and track only when hovering directly over it, or while scrolling */
+::-webkit-scrollbar-track:hover,
+*.is-scrolling::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active,
+*.is-scrolling::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  *:hover {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+  }
+}
+
+
+
+/* ─── Global Utility Helpers ───────────────────────────────── */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* ─── Global Form Control Focus & Hover Styles ─────────────── */
+input:not([type="checkbox"]):not([type="radio"]):not(.mat-mdc-input-element):not(.mat-input-element),
+select,
+textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    background: var(--surface);
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px var(--teal-glow);
+  }
+}
+
+/* Ensure Angular Material inputs never inherit generic input borders or glow on focus/hover */
+.mat-mdc-form-field input.mat-mdc-input-element,
+.mat-mdc-input-element {
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
+  }
+}
+
+/* ─── Global Search Input Cursor (Caret) ─────────────── */
+.search-form-field,
+.search-input-container,
+.search-input,
+.pos-search-input,
+.search-dialog,
+input[type="search"],
+input[placeholder*="Search" i],
+input[placeholder*="search" i] {
+  caret-color: var(--ink) !important;
+
+  input,
+  .mat-mdc-form-field-input-control {
+    caret-color: var(--ink) !important;
+  }
+}
+
+/* ─── Global Button Component Styles ────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  line-height: 1.2;
+
+  mat-icon,
+  .btn-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--sm {
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+
+    mat-icon,
+    .btn-icon {
+      font-size: 0.95rem;
+      width: 0.95rem;
+      height: 0.95rem;
+    }
+  }
+
+  &--lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    border-radius: 12px;
+  }
+
+  &--primary {
+    background: var(--moss);
+    color: var(--btn-primary-fg, #ffffff);
+    border-color: var(--moss);
+    box-shadow: 0 4px 14px var(--teal-glow);
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--teal-glow);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+
+  &--outline,
+  &--ghost {
+    background: transparent;
+    color: var(--slate);
+    border-color: var(--border-strong, var(--border));
+
+    &:hover:not(:disabled) {
+      background: var(--row-hover, rgba(255, 255, 255, 0.04));
+      color: var(--ink);
+      border-color: var(--border-strong);
+    }
+  }
+
+  &--secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--border);
+
+    &:hover:not(:disabled) {
+      background: var(--paper);
+      border-color: var(--border-strong);
+    }
+  }
+}
+
+/* Fullscreen Image Dialog */
+.fullscreen-image-backdrop {
+  background: rgba(0, 0, 0, 0.9);
+}
+
 .fullscreen-image-dialog .mat-mdc-dialog-container {
   background: transparent !important;
   box-shadow: none !important;
 }
+.select-search-container {
+  padding: 8px;
+  position: sticky;
+  top: -8px;
+  margin-top: -8px;
+  background: var(--paper, var(--surface, #fff));
+  z-index: 1;
+  border-bottom: 1px solid var(--border);
+}
+.select-search-wrapper { display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; background: transparent; transition: border-color 0.2s; }
+.select-search-wrapper:focus-within { border-color: var(--moss, #3b82f6); box-shadow: 0 0 0 2px var(--teal-glow, rgba(59, 130, 246, 0.15)); }
+.select-search-icon { color: var(--text-secondary); font-size: 1.2rem; width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center; }
+.select-search-input { flex: 1; width: 100%; border: none !important; outline: none !important; background: transparent !important; box-shadow: none !important; font-family: inherit; font-size: inherit; color: var(--ink); padding: 4px 0; }

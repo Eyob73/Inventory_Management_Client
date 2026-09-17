@@ -85,7 +85,23 @@
                       [id]="'product-' + i"
                       formControlName="productId"
                       [placeholder]="t('purchases.form.selectProduct')"
+                      (openedChange)="onDropdownOpen($event)"
                     >
+                      <div class="select-search-container">
+                        <div class="select-search-wrapper">
+                          <mat-icon class="select-search-icon">search</mat-icon>
+                          <input 
+                            matInput 
+                            type="text" 
+                            placeholder="Search..." 
+                            [ngModel]="productSearch()"
+                            (ngModelChange)="productSearch.set($event)"
+                            [ngModelOptions]="{standalone: true}"
+                            (keydown)="$event.stopPropagation()"
+                            class="select-search-input"
+                          />
+                        </div>
+                      </div>
                       @for (product of availableProducts(i); track product.id) {
                         <mat-option [value]="product.id"
                           >{{ product.name }} ({{ product.sku }})</mat-option

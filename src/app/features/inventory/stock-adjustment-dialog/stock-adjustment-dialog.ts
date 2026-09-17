@@ -1,7 +1,7 @@
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Component, Inject, inject, signal } from '@angular/core';
+import { Component, Inject, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,6 +23,7 @@ export interface StockAdjustmentDialogData {
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -41,6 +42,14 @@ export class StockAdjustmentDialogComponent {
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
   form;
+
+  productSearch = signal('');
+  filteredProducts = computed(() => {
+    const term = this.productSearch().toLowerCase();
+    return this.data.products.filter(p => 
+      p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term)
+    );
+  });
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: StockAdjustmentDialogData) {
     this.form = this.fb.group({

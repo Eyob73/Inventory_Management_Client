@@ -21,7 +21,22 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ t('inventory.dialog.product') }}</mat-label>
       <mat-select formControlName="productId">
-        @for (product of data.products; track product.id) {
+        <div class="select-search-container">
+          <div class="select-search-wrapper">
+            <mat-icon class="select-search-icon">search</mat-icon>
+            <input 
+              matInput 
+              type="text" 
+              placeholder="Search..." 
+              [ngModel]="productSearch()"
+              (ngModelChange)="productSearch.set($event)"
+              [ngModelOptions]="{standalone: true}"
+              (keydown)="$event.stopPropagation()"
+              class="select-search-input"
+            />
+          </div>
+        </div>
+        @for (product of filteredProducts(); track product.id) {
           <mat-option [value]="product.id">{{ product.name }} ({{ product.sku }}) — {{ product.quantityInStock }} {{ t('inventory.dialog.onHand') }}</mat-option>
         }
       </mat-select>

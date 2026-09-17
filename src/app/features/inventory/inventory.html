@@ -40,8 +40,22 @@
       <mat-form-field appearance="outline">
         <mat-label>{{ t('inventory.product') }}</mat-label>
         <mat-select [(ngModel)]="productId" (selectionChange)="applyFilters()">
+          <div class="select-search-container">
+            <div class="select-search-wrapper">
+              <mat-icon class="select-search-icon">search</mat-icon>
+              <input 
+                matInput 
+                type="text" 
+                placeholder="Search..." 
+                [ngModel]="productSearch()"
+                (ngModelChange)="productSearch.set($event)"
+                (keydown)="$event.stopPropagation()"
+                class="select-search-input"
+              />
+            </div>
+          </div>
           <mat-option value="">{{ t('inventory.allProducts') }}</mat-option>
-          @for (product of products(); track product.id) {
+          @for (product of filteredProducts(); track product.id) {
             <mat-option [value]="product.id">{{ product.name }}</mat-option>
           }
         </mat-select>

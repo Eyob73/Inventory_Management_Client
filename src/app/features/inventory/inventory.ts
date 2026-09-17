@@ -1,5 +1,5 @@
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -46,6 +46,15 @@ export class Inventory implements OnInit {
 
   dataSource = new MatTableDataSource<InventoryTransaction>([]);
   products = signal<Product[]>([]);
+  
+  productSearch = signal('');
+  filteredProducts = computed(() => {
+    const term = this.productSearch().toLowerCase();
+    return this.products().filter(p => 
+      p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term)
+    );
+  });
+
   isLoading = signal(true);
   error = signal<string | null>(null);
   search = '';

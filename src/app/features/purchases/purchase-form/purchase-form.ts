@@ -1,7 +1,7 @@
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,6 +23,7 @@ import { PurchaseStore } from '../../../store/purchase.store';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     RouterLink,
     MatFormFieldModule,
     MatInputModule,
@@ -132,10 +133,25 @@ export class PurchaseFormComponent implements OnInit {
     );
   }
 
+  productSearch = signal('');
+
+  onDropdownOpen(isOpen: boolean): void {
+    if (isOpen) {
+      this.productSearch.set('');
+    }
+  }
+
   availableProducts(index: number): Product[] {
     const taken = this.selectedProductIds(index);
     const currentId = this.items.at(index).get('productId')?.value;
-    return this.products().filter((p) => p.id === currentId || !taken.has(p.id));
+    const term = this.productSearch().toLowerCase();
+    
+    return this.products().filter((p) => {
+      const isAvailable = p.id === currentId || !taken.has(p.id);
+      if (!isAvailable) return false;
+      if (!term) return true;
+      return p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term);
+    });
   }
 
   cancel(): void {
