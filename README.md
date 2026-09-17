@@ -202,7 +202,6 @@ flowchart TD
 ```text
 src/
 ├── app/
-│   ├── animations/       # Route and UI animations
 │   ├── core/             # Core configurations (e.g., Transloco loader, Paginator)
 │   ├── features/         # Feature-based pages (auth, dashboard, pos, products, etc.)
 │   ├── guards/           # Role and authentication route guards
