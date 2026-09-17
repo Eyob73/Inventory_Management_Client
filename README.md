@@ -76,6 +76,22 @@ completing sales transactions.
 The inventory interface provides visibility into current stock levels,
 inventory status, stock movements, and low-stock products.
 
+---
+
+### Sales History
+
+![Sales History](public/assets/images/sales-history.png)
+
+The sales history view allows users to track past transactions, review sales details, and monitor POS activity over time.
+
+---
+
+### Reports
+
+![Reports](public/assets/images/reports.png)
+
+The reports section provides detailed insights into business performance, helping management analyze sales trends, inventory status, and purchasing data.
+
 ## Key Features
 
 ### Authentication & Authorization
