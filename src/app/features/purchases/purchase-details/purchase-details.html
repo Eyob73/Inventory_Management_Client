@@ -98,6 +98,28 @@
         </div>
       </section>
 
+            <section class="form-section sales-history-section" *ngIf="bottleImpacts().length > 0">
+        <h4 class="section-title"><mat-icon>change_circle</mat-icon><span>Bottle Impact</span></h4>
+        <div class="table-wrapper">
+          <table class="app-table sales-table" style="width: 100%">
+            <thead>
+              <tr>
+                <th style="text-align: left; padding: 0.75rem 1rem;">Bottle Type</th>
+                <th style="text-align: right; padding: 0.75rem 1rem;">Empty Bottles Used</th>
+                <th style="text-align: right; padding: 0.75rem 1rem;">Full Bottles Added</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let impact of bottleImpacts()">
+                <td style="padding: 0.75rem 1rem;">{{ impact.name }}</td>
+                <td style="text-align: right; padding: 0.75rem 1rem; color: #d32f2f;">-{{ impact.quantity }}</td>
+                <td style="text-align: right; padding: 0.75rem 1rem; color: #388e3c;">+{{ impact.quantity }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <div class="dialog-actions">
         @if (po.status === 'Draft') {
           <button type="button" class="btn btn--secondary" (click)="edit()">{{ t('purchases.details.btnEdit') }}</button>

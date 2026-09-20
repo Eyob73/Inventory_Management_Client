@@ -1,5 +1,5 @@
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BottleInventoryService } from '../../../core/services/bottle-inventory';
+import { forkJoin, map, switchMap, of } from 'rxjs';
 import { Purchase } from '../../../models/purchase.model';
 import { PurchaseService } from '../../../services/purchase';
 import { PurchaseStore } from '../../../store/purchase.store';
@@ -33,13 +35,32 @@ export class PurchaseDetailsComponent implements OnInit {
   private purchaseApi = inject(PurchaseService);
   private purchaseStore = inject(PurchaseStore);
   private snackBar = inject(MatSnackBar);
-  private confirmDialog = inject(ConfirmDialogService);
+    private confirmDialog = inject(ConfirmDialogService);
+  private bottleInventoryApi = inject(BottleInventoryService);
   private authService = inject(AuthService);
 
   purchase = signal<Purchase | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
-  displayedColumns = ['productName', 'sku', 'quantity', 'unitCost', 'totalCost'];
+    displayedColumns = ['productName', 'sku', 'quantity', 'unitCost', 'totalCost'];
+
+  bottleImpacts = computed(() => {
+    const p = this.purchase();
+    if (!p || !p.items) return [];
+    
+    const requiredBottles = new Map<string, { name: string, quantity: number }>();
+    const returnableItems = p.items.filter(i => (i as any).isReturnable && (i as any).bottleTypeId);
+    
+    for (const item of returnableItems) {
+      const typeId = (item as any).bottleTypeId;
+      const typeName = (item as any).bottleTypeName || 'Unknown Bottle';
+      const existing = requiredBottles.get(typeId) || { name: typeName, quantity: 0 };
+      existing.quantity += item.quantity;
+      requiredBottles.set(typeId, existing);
+    }
+    
+    return Array.from(requiredBottles.values());
+  });
 
   get canDelete(): boolean {
     return this.authService.hasRole('Admin');
@@ -64,15 +85,63 @@ export class PurchaseDetailsComponent implements OnInit {
     this.router.navigate(['/purchases', purchase.id, 'edit']);
   }
 
-  complete(): void {
+      complete(): void {
     const purchase = this.purchase();
     if (!purchase) return;
+
+    const returnableItems = purchase.items.filter(i => (i as any).isReturnable && (i as any).bottleTypeId);
+
+    if (returnableItems.length === 0) {
+      this.promptComplete(purchase, `Receive stock for "${purchase.purchaseNumber}"? Quantities will be added to inventory.`);
+      return;
+    }
+
+    // Group required bottles by bottle type
+    const requiredBottles = new Map<string, { name: string, quantity: number }>();
+    for (const item of returnableItems) {
+      const typeId = (item as any).bottleTypeId;
+      const typeName = (item as any).bottleTypeName || 'Unknown Bottle';
+      const existing = requiredBottles.get(typeId) || { name: typeName, quantity: 0 };
+      existing.quantity += item.quantity;
+      requiredBottles.set(typeId, existing);
+    }
+
+    this.bottleInventoryApi.getInventory().subscribe({
+      next: (inventoryList) => {
+        let isShortage = false;
+        let errorMessage = 'Not Enough Empty Bottles\n\n';
+        let impactMessage = `Purchase Summary\n\nBottle Impact\n────────────────────────────\n`;
+
+        for (const [typeId, required] of requiredBottles.entries()) {
+          const inv = inventoryList.find(i => i.bottleTypeId === typeId);
+          const available = inv ? inv.emptyBottles : 0;
+
+          if (available < required.quantity) {
+            isShortage = true;
+            errorMessage += `Bottle Type: ${required.name}\nRequired: ${required.quantity}\nAvailable empty bottles: ${available}\nShortage: ${required.quantity - available}\n\n`;
+          } else {
+            impactMessage += `Bottle Type: ${required.name}\nEmpty bottles used: ${required.quantity}\nFull bottles added: ${required.quantity}\n\nCurrent empty bottles: ${available}\nAfter purchase: ${available - required.quantity}\n\n`;
+          }
+        }
+
+        if (isShortage) {
+          errorMessage += `The purchase cannot be completed until the bottle stock issue is resolved.`;
+          this.confirmDialog.confirmWarning('Insufficient Empty Bottles', errorMessage, 'OK').subscribe();
+        } else {
+          impactMessage = impactMessage.trim();
+          this.promptComplete(purchase, impactMessage);
+        }
+      },
+      error: (err) => this.snackBar.open(this.errMsg(err, 'Failed to verify bottle inventory'), 'Close', { duration: 5000 })
+    });
+  }
+
+  private promptComplete(purchase: Purchase, message: string): void {
     this.confirmDialog
       .confirmWarning(
-        'Complete purchase',
-        `Receive stock for "${purchase.purchaseNumber}"? Quantities will be added to inventory.`,
-        'Complete'
-      )
+        'Complete Purchase',
+        message,
+        'Confirm Purchase')
       .subscribe((ok) => {
         if (!ok) return;
         this.purchaseApi.complete(purchase.id).subscribe({
@@ -146,3 +215,7 @@ export class PurchaseDetailsComponent implements OnInit {
     return typeof err?.error === 'string' ? err.error : err?.error?.detail || err?.message || fallback;
   }
 }
+
+
+
+

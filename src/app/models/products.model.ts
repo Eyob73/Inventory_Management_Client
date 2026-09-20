@@ -14,6 +14,9 @@ export interface Product {
     updatedAt: string | null;
     imageUrl?: string | null;
     minimumStockLevel?: number | null;
+    isReturnable?: boolean;
+    bottleDepositAmount?: number;
+    bottleTypeId?: string | null;
 }
 
 export interface PagedResult<T> {

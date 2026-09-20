@@ -199,12 +199,33 @@
         <p class="order-empty-sub">{{ t('pos.tapProduct') }}</p>
       </div>
 
-      <!-- Item rows -->
-      <div *ngFor="let item of cart(); let i = index" class="order-line">
+            <!-- Item rows -->
+      <div *ngFor="let item of cart(); let i = index" class="order-line" [class.has-bottle]="item.product.isReturnable">
         <div class="line-info">
           <span class="line-name">{{ item.product.name }}</span>
           <span class="line-price">{{ item.product.price | number:'1.2-2' }} ETB {{ t('pos.ea') }}</span>
         </div>
+        
+        <div *ngIf="item.product.isReturnable" class="bottle-option-box">
+          <div class="bottle-option-title">Bottle Option</div>
+          <div class="bottle-option-radios">
+             <label class="bottle-radio-label">
+                <input type="radio" [name]="'bottleOpt' + i" [checked]="item.isBottleExchange" (change)="setBottleExchange(i, true)">
+                <div class="bottle-radio-text">
+                  <span class="br-main">Customer provides bottle</span>
+                  <span class="br-sub">Bottle Exchange - No deposit charged</span>
+                </div>
+             </label>
+             <label class="bottle-radio-label">
+                <input type="radio" [name]="'bottleOpt' + i" [checked]="!item.isBottleExchange" (change)="setBottleExchange(i, false)">
+                <div class="bottle-radio-text">
+                  <span class="br-main">Customer needs bottle</span>
+                  <span class="br-sub">Bottle Deposit (+{{item.product.bottleDepositAmount | number:'1.2-2'}} ETB)</span>
+                </div>
+             </label>
+          </div>
+        </div>
+
         <div class="line-controls">
           <div class="qty-group">
             <button class="qty-action" (click)="updateQuantity(i, item.quantity - 1)">
@@ -215,7 +236,9 @@
               <mat-icon>add</mat-icon>
             </button>
           </div>
-          <span class="line-total">{{ (item.product.price * item.quantity) | number:'1.2-2' }} ETB</span>
+          <span class="line-total">
+            {{ (item.product.price * item.quantity + (!item.isBottleExchange ? (item.bottleDepositAmount * item.quantity) : 0)) | number:'1.2-2' }} ETB
+          </span>
           <button class="line-remove" (click)="removeItem(i)" [matTooltip]="t('pos.remove')">
             <mat-icon>close</mat-icon>
           </button>
@@ -234,6 +257,10 @@
         <div class="totals-row">
           <span>{{ t('pos.subtotal') }}</span>
           <span>{{ cartSubtotal() | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="totals-row" *ngIf="totalBottleDeposit() > 0">
+          <span>Bottle Deposits</span>
+          <span>{{ totalBottleDeposit() | number:'1.2-2' }} ETB</span>
         </div>
         <div class="totals-row" *ngIf="itemDiscountsTotal() > 0">
           <span>{{ t('pos.itemDiscounts') }}</span>
@@ -311,3 +338,4 @@
 
 </div>
 </ng-container>
+

@@ -75,6 +75,7 @@
 }
 
 .dialog-message {
+    white-space: pre-wrap;
   font-size: 0.9rem;
   color: var(--slate);
   line-height: 1.5;
@@ -150,3 +151,4 @@
     color: var(--ink);
   }
 }
+

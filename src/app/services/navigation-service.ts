@@ -24,6 +24,19 @@ const ALL_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: 'Bottle Management',
+          items: [
+        { label: 'Bottle Dashboard', path: '/bottles/dashboard', icon: 'speed' },
+        { label: 'Bottle Types', path: '/bottles/types', icon: 'local_drink' },
+        { label: 'Bottle Inventory', path: '/bottles/inventory', icon: 'inventory' },
+        { label: 'Customer Bottles', path: '/bottles/customers', icon: 'people' },
+        { label: 'Bottle Transactions', path: '/bottles/transactions', icon: 'sync_alt' },
+        { label: 'Bottle Reports', path: '/bottles/reports', icon: 'bar_chart' },
+        { label: 'Bottle Settings', path: '/bottles/settings', icon: 'settings' },
+      ],
+  },
+
+  {
     label: 'Transactions',
     items: [
       { label: 'POS Terminal', path: '/pos', icon: 'storefront' },
@@ -62,6 +75,13 @@ const ALL_NAV_GROUPS: NavGroup[] = [
 
 const routeTitleMap: Record<string, string> = {
   '/dashboard': 'Dashboard',
+    '/bottles/dashboard': 'Bottle Dashboard',
+  '/bottles/types': 'Bottle Types',
+  '/bottles/inventory': 'Bottle Inventory',
+  '/bottles/customers': 'Customer Bottles',
+  '/bottles/transactions': 'Bottle Transactions',
+  '/bottles/reports': 'Bottle Reports',
+  '/bottles/settings': 'Bottle Settings',
   '/products': 'Products',
   '/add-products': 'Add Product',
   '/categories': 'Categories',

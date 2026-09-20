@@ -9,6 +9,8 @@ export interface SaleItem {
   discountAmount: number;
   subtotal: number;
   totalPrice: number;
+  isBottleExchange?: boolean;
+  bottleDepositAmount?: number;
 }
 
 export interface CreateSaleItemRequest {
@@ -16,6 +18,8 @@ export interface CreateSaleItemRequest {
   quantity: number;
   unitPrice: number;
   discountAmount: number;
+  isBottleExchange?: boolean;
+  bottleDepositAmount?: number;
 }
 
 export interface Sale {
@@ -70,3 +74,5 @@ export interface PagedSaleResponse {
   hasPrevious: boolean;
   hasNext: boolean;
 }
+
+

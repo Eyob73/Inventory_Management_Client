@@ -1,0 +1,19 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<h2 mat-dialog-title>{{ t('returnBottlesFor') }} {{data.customerName}}</h2>
+<mat-dialog-content>
+  <p>{{ t('returning') }} <strong>{{data.bottleTypeName}}</strong></p>
+  <mat-form-field appearance="fill" style="width:100%; margin-top: 10px;">
+    <mat-label>{{ t('quantityToReturn') }}</mat-label>
+    <input matInput type="number" [(ngModel)]="quantity" min="1" [max]="data.maxQuantity">
+  </mat-form-field>
+  <mat-form-field appearance="fill" style="width:100%; margin-top: 10px;">
+    <mat-label>{{ t('refundAmountETB') }}</mat-label>
+    <input matInput type="number" [(ngModel)]="refundAmount" min="0">
+  </mat-form-field>
+</mat-dialog-content>
+<div class="dialog-actions">
+  <button type="button" class="btn btn--outline" (click)="onCancel()">{{ t('cancel') }}</button>
+  <button type="button" class="btn btn--primary" [disabled]="quantity < 1 || quantity > data.maxQuantity"
+    (click)="onConfirm()"><mat-icon>check_circle</mat-icon> <span>{{ t('confirmReturn') }}</span></button>
+</div>
+</ng-container>

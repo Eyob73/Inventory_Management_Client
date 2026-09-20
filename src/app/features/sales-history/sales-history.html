@@ -26,12 +26,16 @@
 
       <mat-form-field appearance="outline">
         <mat-label>{{ t('salesHistory.startDate') }}</mat-label>
-        <input matInput type="date" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onSearch()" />
+        <input matInput [matDatepicker]="startPicker" [ngModel]="startDate()" (ngModelChange)="onStartDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>{{ t('salesHistory.endDate') }}</mat-label>
-        <input matInput type="date" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onSearch()" />
+        <input matInput [matDatepicker]="endPicker" [ngModel]="endDate()" (ngModelChange)="onEndDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">

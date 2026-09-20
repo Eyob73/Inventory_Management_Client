@@ -1,0 +1,56 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('settingsTitle') }}</h1>
+      <p class="page-subtitle">{{ t('settingsSubtitleLong') }}</p>
+    </div>
+  </div>
+
+  <div class="settings-card">
+    <div class="setting-row">
+      <div class="setting-info">
+        <h3>{{ t('enableBottleMgmt') }}</h3>
+        <p>{{ t('enableBottleMgmtDesc') }}</p>
+      </div>
+      <mat-slide-toggle [(ngModel)]="settings.enableBottleManagement" color="primary"></mat-slide-toggle>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h3>{{ t('allowBottleReturns') }}</h3>
+        <p>{{ t('allowBottleReturnsDesc') }}</p>
+      </div>
+      <mat-slide-toggle [(ngModel)]="settings.allowBottleReturns" color="primary"></mat-slide-toggle>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h3>{{ t('allowBottleAdjustments') }}</h3>
+        <p>{{ t('allowBottleAdjustmentsDesc') }}</p>
+      </div>
+      <mat-slide-toggle [(ngModel)]="settings.allowBottleAdjustments" color="primary"></mat-slide-toggle>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h3>{{ t('requireCustomerForDeposit') }}</h3>
+        <p>{{ t('requireCustomerForDepositDesc') }}</p>
+      </div>
+      <mat-slide-toggle [(ngModel)]="settings.requireCustomerForDeposit" color="primary"></mat-slide-toggle>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h3>{{ t('allowCashierRefunds') }}</h3>
+        <p>{{ t('allowCashierRefundsDesc') }}</p>
+      </div>
+      <mat-slide-toggle [(ngModel)]="settings.allowCashierRefunds" color="primary"></mat-slide-toggle>
+    </div>
+
+    <div style="margin-top: 1.5rem; text-align: right;">
+      <button class="btn btn--primary" (click)="saveSettings()">{{ t('saveSettings') }}</button>
+    </div>
+  </div>
+</div>
+</ng-container>

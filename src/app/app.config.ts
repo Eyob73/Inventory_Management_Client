@@ -42,11 +42,7 @@ export const appConfig: ApplicationConfig = {
       loader: TranslocoHttpLoader,
     }),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: false /* disabled temporarily to avoid 404 */,
       registrationStrategy: 'registerWhenStable:30000',
     }),
   ],

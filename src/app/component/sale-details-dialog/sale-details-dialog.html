@@ -75,6 +75,10 @@
         <span>{{ t('receipt.subtotal') }}</span>
         <span>{{ sale.subtotal | number:'1.2-2' }} ETB</span>
       </div>
+      <div class="summary-row" *ngIf="totalBottleDeposit > 0">
+        <span>Bottle Deposits</span>
+        <span>+{{ totalBottleDeposit | number:'1.2-2' }} ETB</span>
+      </div>
       <div class="summary-row" *ngIf="sale.discountAmount > 0">
         <span>{{ t('receipt.discount') }}</span>
         <span class="text-discount">-{{ sale.discountAmount | number:'1.2-2' }} ETB</span>

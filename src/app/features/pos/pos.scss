@@ -1126,4 +1126,54 @@
   * {
     transition: none !important;
   }
+}.bottle-option-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+.bottle-option-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--slate);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+.bottle-option-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bottle-radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+.bottle-radio-label input {
+  margin-top: 4px;
+  accent-color: var(--moss);
+}
+.bottle-radio-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+.br-main {
+  font-weight: 500;
+  color: var(--ink);
+}
+.br-sub {
+  font-size: 11.5px;
+  color: var(--slate);
+}
+.order-line.has-bottle {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  .line-controls {
+    justify-content: space-between;
+  }
 }

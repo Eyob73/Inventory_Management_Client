@@ -1,0 +1,180 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('reportsTitle') }}</h1>
+      <p class="page-subtitle">{{ t('reportsSubtitle') }}</p>
+    </div>
+    <div style="display: flex; gap: 1rem;" *ngIf="store.reportData()">
+      <button class="btn btn--outline"><mat-icon>print</mat-icon> {{ t('printReport') }}</button>
+      <button class="btn btn--outline"><mat-icon>download</mat-icon> {{ t('export') }}</button>
+    </div>
+  </div>
+
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Report Type</mat-label>
+        <mat-select [(ngModel)]="reportType">
+          <mat-option value="movement">Bottle Movement</mat-option>
+          <mat-option value="deposit">Deposit Report</mat-option>
+          <mat-option value="customer">Customer Balance</mat-option>
+          <mat-option value="loss">Loss/Damage Report</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('startDate') }}</mat-label>
+        <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('endDate') }}</mat-label>
+        <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+      
+      <button mat-flat-button color="primary" style="height: 56px; width: 100%;" (click)="generateReport()" [disabled]="store.isLoading()">
+        <span *ngIf="!store.isLoading()">{{ t('generateReport') }}</span>
+        <mat-spinner diameter="24" *ngIf="store.isLoading()"></mat-spinner>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card" *ngIf="!store.reportData() && !store.isLoading()" style="padding: 4rem; text-align: center; border: 1px dashed var(--border); background: var(--paper);">
+    <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--slate-soft); margin-bottom: 1rem;">insights</mat-icon>
+    <h2 style="font-size: 16px; color: var(--ink); margin-bottom: 0.5rem; font-weight: 600;">{{ t('noReportGenerated') }}</h2>
+    <p style="color: var(--slate); font-size: 14px; max-width: 400px; margin: 0 auto;">{{ t('noReportGeneratedDesc') }}</p>
+  </div>
+
+  <div class="table-card" *ngIf="store.reportData() && !store.isLoading()">
+    
+    <!-- MOVEMENT TABLE -->
+    <table mat-table [dataSource]="store.movementData()" *ngIf="store.reportData()?.reportType === 'movement'" class="app-table">
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> {{ t('date') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.date | date:'short'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="transactionType">
+        <th mat-header-cell *matHeaderCellDef> {{ t('type') }} </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="status-badge status--active">{{ t('transactionTypes.' + element.transactionType.toLowerCase()) }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="bottleTypeName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('bottleType') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.bottleTypeName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('customer') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.customerName || '-'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef> {{ t('quantity') }} </th>
+        <td mat-cell *matCellDef="let element" class="font-mono text-right"> {{element.quantity}} </td>
+      </ng-container>
+      <ng-container matColumnDef="reference">
+        <th mat-header-cell *matHeaderCellDef> {{ t('reference') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.reference || '-'}} </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="movementColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: movementColumns;"></tr>
+    </table>
+
+    <!-- DEPOSIT TABLE -->
+    <table mat-table [dataSource]="store.depositData()" *ngIf="store.reportData()?.reportType === 'deposit'" class="app-table">
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> {{ t('date') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.date | date:'short'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('customer') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.customerName || '-'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="bottleTypeName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('bottleType') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.bottleTypeName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="transactionType">
+        <th mat-header-cell *matHeaderCellDef> {{ t('type') }} </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="status-badge" [ngClass]="element.transactionType === 'Returned' ? 'status--active' : 'status--pending'">{{ t('transactionTypes.' + element.transactionType.toLowerCase()) }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="depositAmount">
+        <th mat-header-cell *matHeaderCellDef> {{ t('amount') }} </th>
+        <td mat-cell *matCellDef="let element" class="font-mono text-right"> {{element.depositAmount | currency:'ETB '}} </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="depositColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: depositColumns;"></tr>
+    </table>
+
+    <!-- CUSTOMER BALANCE TABLE -->
+    <table mat-table [dataSource]="store.customerData()" *ngIf="store.reportData()?.reportType === 'customer'" class="app-table">
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('customer') }} </th>
+        <td mat-cell *matCellDef="let element"> <strong>{{element.customerName}}</strong> </td>
+      </ng-container>
+      <ng-container matColumnDef="bottleTypeName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('bottleType') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.bottleTypeName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="unreturnedBottles">
+        <th mat-header-cell *matHeaderCellDef> {{ t('unreturned') }} </th>
+        <td mat-cell *matCellDef="let element" class="font-mono">
+          <span class="status-badge" [ngClass]="element.unreturnedBottles > 0 ? 'status--active' : 'status--inactive'">
+            {{element.unreturnedBottles}}
+          </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="totalDeposit">
+        <th mat-header-cell *matHeaderCellDef> {{ t('depositLiability') }} </th>
+        <td mat-cell *matCellDef="let element" class="font-mono text-right"> {{element.totalDeposit | currency:'ETB '}} </td>
+      </ng-container>
+      <ng-container matColumnDef="lastUpdatedAt">
+        <th mat-header-cell *matHeaderCellDef> {{ t('lastUpdated') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.lastUpdatedAt | date:'medium'}} </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="customerColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: customerColumns;"></tr>
+    </table>
+
+    <!-- LOSS/DAMAGE TABLE -->
+    <table mat-table [dataSource]="store.lossData()" *ngIf="store.reportData()?.reportType === 'loss'" class="app-table">
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> {{ t('date') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.date | date:'short'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="bottleTypeName">
+        <th mat-header-cell *matHeaderCellDef> {{ t('bottleType') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.bottleTypeName}} </td>
+      </ng-container>
+      <ng-container matColumnDef="transactionType">
+        <th mat-header-cell *matHeaderCellDef> {{ t('type') }} </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="status-badge status--error">{{ t('transactionTypes.' + element.transactionType.toLowerCase()) }}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef> {{ t('quantity') }} </th>
+        <td mat-cell *matCellDef="let element" class="font-mono text-right"> {{element.quantity}} </td>
+      </ng-container>
+      <ng-container matColumnDef="notes">
+        <th mat-header-cell *matHeaderCellDef> {{ t('notes') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.notes || '-'}} </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="lossColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: lossColumns;"></tr>
+    </table>
+
+  </div>
+</div>
+
+</ng-container>

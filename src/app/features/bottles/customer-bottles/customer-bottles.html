@@ -1,0 +1,79 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('customerBottlesTitle') }}</h1>
+      <p class="page-subtitle">{{ t('customerBottlesSubtitle') }}</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    @if (store.isLoading() && (!store.balances() || store.balances()?.length === 0)) {
+      <app-table-skeleton [columns]="5"></app-table-skeleton>
+    } @else {
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="app-table">
+          <ng-container matColumnDef="customerName">
+            <th mat-header-cell *matHeaderCellDef> {{ t('customer') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-medium"> {{element.customerName}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="bottleTypeName">
+            <th mat-header-cell *matHeaderCellDef> {{ t('bottleType') }} </th>
+            <td mat-cell *matCellDef="let element"> {{element.bottleTypeName}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef> {{ t('unreturnedBottles') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-mono text-secondary"> 
+              <span class="status-badge" [ngClass]="element.balance > 0 ? 'status--active' : 'status--inactive'">
+                {{element.balance}}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalDeposit">
+            <th mat-header-cell *matHeaderCellDef> {{ t('totalDepositLiability') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-mono text-secondary"> {{element.totalDeposit | currency:'ETB '}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> {{ t('actions') }} </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="actions-cell">
+                <button class="btn btn--outline btn--sm" (click)="openReturnDialog(element)" [disabled]="element.balance === 0">
+                  {{ t('return') }}
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions'];"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="table-empty" colspan="5">
+              <div class="empty-state">
+                <mat-icon class="empty-icon">people</mat-icon>
+                <p class="empty-title">{{ t('noCustomerBottles') }}</p>
+                <p class="empty-subtitle">{{ t('noCustomerBottlesSubtitle') }}</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="store.totalCount()"
+        [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
+        (page)="onPageChange($event)"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        aria-label="Select page">
+      </mat-paginator>
+    }
+  </div>
+</div>
+
+
+</ng-container>

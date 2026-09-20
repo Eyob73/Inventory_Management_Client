@@ -12,6 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { CardSkeleton } from '../../ui/card-skeleton/card-skeleton';
@@ -71,6 +73,8 @@ type ReportTab =
     MatSnackBarModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     TableSkeleton,
     CardSkeleton,
     ReportLineChart,
@@ -239,6 +243,24 @@ export class Reports implements OnInit {
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  onStartDateChange(date: Date | null): void {
+    if (date) {
+      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.startDate.set(d.toISOString().split('T')[0]);
+    } else {
+      this.startDate.set('');
+    }
+  }
+
+  onEndDateChange(date: Date | null): void {
+    if (date) {
+      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.endDate.set(d.toISOString().split('T')[0]);
+    } else {
+      this.endDate.set('');
+    }
   }
 
   applyFilters(): void {

@@ -155,6 +155,36 @@
         </div>
     </section>
 
+        <section class="product-form__section">
+        <h2 class="product-form__section-title">Returnable Bottle Configuration</h2>
+
+        <div class="form-row">
+            <div class="form-group form-group--status">
+                <label for="isReturnable">Returnable Product?</label>
+                <label class="catalog-status-toggle">
+                    <input type="checkbox" id="isReturnable" formControlName="isReturnable">
+                    <span>Yes, this product is returnable</span>
+                </label>
+            </div>
+            
+            @if (productForm.get('isReturnable')?.value) {
+                <div class="form-group">
+                    <label for="bottleTypeId">Bottle Type</label>
+                    <mat-form-field appearance="outline" class="category-select-field">
+                        <mat-select id="bottleTypeId" formControlName="bottleTypeId" placeholder="Select Bottle Type">
+                            @for (type of bottleTypesResource.value() || []; track type.id) {
+                                <mat-option [value]="type.id">{{ type.name }} ({{ type.depositAmount }} ETB)</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    @if (bottleTypesResource.isLoading()) {
+                        <span class="form-hint">Loading bottle types...</span>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
     <section class="product-form__section" formArrayName="variants">
         <div class="product-form__section-header">
             <div>

@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -36,6 +37,8 @@ export interface CartItem {
   product: Product;
   quantity: number;
   discountAmount: number;
+  isBottleExchange: boolean;
+  bottleDepositAmount: number;
 }
 
 @Component({
@@ -49,6 +52,7 @@ export interface CartItem {
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
+      MatCheckboxModule,
     MatTabsModule,
     MatCardModule,
     MatChipsModule,
@@ -134,6 +138,10 @@ export class PosComponent implements OnInit, OnDestroy {
     this.cart().reduce((sum, item) => sum + item.product.price * item.quantity, 0)
   );
 
+  readonly totalBottleDeposit = computed(() =>
+    this.cart().reduce((sum, item) => sum + (item.isBottleExchange ? 0 : (item.quantity * item.bottleDepositAmount)), 0)
+  );
+
   readonly itemDiscountsTotal = computed(() =>
     this.cart().reduce((sum, item) => sum + item.discountAmount, 0)
   );
@@ -152,7 +160,7 @@ export class PosComponent implements OnInit, OnDestroy {
   });
 
   readonly grandTotal = computed(() =>
-    Math.max(0, this.cartSubtotal() - this.totalDiscount() + this.calculatedTax())
+    Math.max(0, this.cartSubtotal() - this.totalDiscount() + this.calculatedTax()) + this.totalBottleDeposit()
   );
 
   readonly changeAmount = computed(() => {
@@ -265,8 +273,22 @@ export class PosComponent implements OnInit, OnDestroy {
       updatedCart[existingIndex] = { ...item, quantity: item.quantity + 1 };
       this.cart.set(updatedCart);
     } else {
-      this.cart.set([...currentCart, { product, quantity: 1, discountAmount: 0 }]);
+      this.cart.set([...currentCart, { product, quantity: 1, discountAmount: 0 , isBottleExchange: true, bottleDepositAmount: product.isReturnable ? (product.bottleDepositAmount || 0) : 0 }]);
     }
+  }
+
+  toggleBottleExchange(index: number): void {
+    const currentCart = [...this.cart()];
+    if (index < 0 || index >= currentCart.length) return;
+    currentCart[index].isBottleExchange = !currentCart[index].isBottleExchange;
+    this.cart.set(currentCart);
+  }
+
+  setBottleExchange(index: number, value: boolean): void {
+    const currentCart = [...this.cart()];
+    if (index < 0 || index >= currentCart.length) return;
+    currentCart[index].isBottleExchange = value;
+    this.cart.set(currentCart);
   }
 
   updateQuantity(index: number, newQty: number): void {
@@ -346,6 +368,12 @@ export class PosComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const hasPendingDeposits = this.cart().some(item => item.product.isReturnable && !item.isBottleExchange);
+    if (hasPendingDeposits && !this.selectedCustomerId()) {
+      this.snackBar.open('A registered customer must be selected to track bottle deposits.', 'Close', { duration: 4500 });
+      return;
+    }
+
     let customerName = this.manualCustomerName().trim();
     if (this.selectedCustomerId()) {
       const found = this.customers().find((c) => c.id === this.selectedCustomerId());
@@ -366,7 +394,9 @@ export class PosComponent implements OnInit, OnDestroy {
         productId: item.product.id,
         quantity: item.quantity,
         unitPrice: item.product.price,
-        discountAmount: item.discountAmount
+        discountAmount: item.discountAmount,
+        isBottleExchange: item.isBottleExchange,
+        bottleDepositAmount: item.bottleDepositAmount
       }))
     };
 

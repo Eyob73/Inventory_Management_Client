@@ -87,6 +87,13 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   getNavKey(label: string): string {
     const map: Record<string, string> = {
       'Dashboard': 'dashboard',
+      'Bottle Dashboard': 'bottles-dashboard',
+      'Bottle Types': 'bottles-types',
+      'Bottle Inventory': 'bottles-inventory',
+      'Customer Bottles': 'bottles-customers',
+      'Bottle Transactions': 'bottles-transactions',
+      'Bottle Reports': 'bottles-reports',
+      'Bottle Settings': 'bottles-settings',
       'Products': 'products',
       'Categories': 'categories',
       'Inventory': 'inventory',

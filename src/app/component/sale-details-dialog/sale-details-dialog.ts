@@ -31,6 +31,10 @@ export class SaleDetailsDialogComponent {
     return this.data.sale;
   }
 
+  get totalBottleDeposit(): number {
+    return this.sale.items?.reduce((sum, item) => sum + (item.isBottleExchange === false ? (item.quantity * (item.bottleDepositAmount || 0)) : 0), 0) || 0;
+  }
+
   printReceipt(): void {
     window.print();
   }
@@ -39,3 +43,4 @@ export class SaleDetailsDialogComponent {
     this.dialogRef.close();
   }
 }
+

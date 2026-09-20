@@ -14,7 +14,8 @@ import { Product } from "../../models/products.model";
 import { ProductStore } from "../../store/products.store";
 import { ProductService } from "../../services/product";
 import { CategoryService } from "../../services/category";
-import { SupplierService } from "../../services/supplier";
+import { SupplierService } from '../../services/supplier';
+import { BottleTypesService } from '../../core/services/bottle-types';
 import { environment } from "../../../environments/environment.development";
 
 import { MatIconModule } from "@angular/material/icon";
@@ -80,6 +81,7 @@ export class AddProducts implements OnInit {
   readonly productStore = inject(ProductStore);
   private categoryService = inject(CategoryService);
   private supplierService = inject(SupplierService);
+  private bottleTypesService = inject(BottleTypesService);
 
   isError = signal(false);
   submissionStatus = signal<string | null>(null);
@@ -95,6 +97,10 @@ export class AddProducts implements OnInit {
     stream: () => this.supplierService.getAll(),
   });
 
+  readonly bottleTypesResource = rxResource({
+    stream: () => this.bottleTypesService.getBottleTypes(),
+  });
+
   productForm = this.fb.group({
     name: ['', Validators.required],
     description: [''],
@@ -106,6 +112,8 @@ export class AddProducts implements OnInit {
     category: ['', Validators.required],
     supplierId: [''],
     sku: [''],
+      isReturnable: [false],
+      bottleTypeId: [null as string | null],
     variants: this.fb.array([
       this.fb.group({
         name: [''],
@@ -317,6 +325,8 @@ export class AddProducts implements OnInit {
       category: product.categoryId || '',
       supplierId: product.supplierId || '',
       sku: product.sku || '',
+      isReturnable: product.isReturnable ?? false,
+      bottleTypeId: product.bottleTypeId || null,
     });
   }
 
@@ -331,6 +341,8 @@ export class AddProducts implements OnInit {
       minimumStock: rawValue.minimumStock ?? 0,
       isActive: rawValue.isActive ?? true,
       sku: rawValue.sku || '',
+      isReturnable: rawValue.isReturnable ?? false,
+      bottleTypeId: rawValue.isReturnable ? (rawValue.bottleTypeId || null) : null,
       categoryId: rawValue.category || '',
       supplierId: rawValue.supplierId || null,
     };
@@ -340,3 +352,5 @@ export class AddProducts implements OnInit {
     return payload;
   }
 }
+
+

@@ -1,0 +1,85 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('inventoryTitle') }}</h1>
+      <p class="page-subtitle">{{ t('inventorySubtitle') }}</p>
+    </div>
+        <div style="display: flex; gap: 1rem;">
+      <button class="btn btn--secondary" (click)="setOpeningBalance()">
+        <mat-icon style="font-size: 1.1rem; width: 1.1rem; height: 1.1rem; display: flex; align-items: center; justify-content: center;">add_circle_outline</mat-icon>
+        {{ t('setOpeningBalance') }}
+      </button>
+      <button class="btn btn--primary" (click)="adjustInventory()">
+        <mat-icon style="font-size: 1.1rem; width: 1.1rem; height: 1.1rem; display: flex; align-items: center; justify-content: center;">tune</mat-icon>
+        {{ t('adjustInventory') }}
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    @if (store.isLoading() && (!store.inventory() || store.inventory()?.length === 0)) {
+      <app-table-skeleton [columns]="6"></app-table-skeleton>
+    } @else {
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="app-table">
+          <ng-container matColumnDef="bottleTypeName">
+            <th mat-header-cell *matHeaderCellDef> {{ t('bottleType') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-medium"> {{element.bottleTypeName}} </td>
+          </ng-container>
+
+                  <ng-container matColumnDef="fullBottles">
+            <th mat-header-cell *matHeaderCellDef> {{ t('fullBottles') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-mono text-primary"> {{element.fullBottles || 0}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="damagedBottles">
+            <th mat-header-cell *matHeaderCellDef> {{ t('damaged') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-mono text-warn"> {{element.damagedBottles || 0}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lostBottles">
+            <th mat-header-cell *matHeaderCellDef> {{ t('lost') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-mono text-warn"> {{element.lostBottles || 0}} </td>
+          </ng-container>
+          <ng-container matColumnDef="emptyQuantity">
+            <th mat-header-cell *matHeaderCellDef> {{ t('emptyBottles') }} </th>
+            <td mat-cell *matCellDef="let element" class="font-mono text-secondary"> {{element.emptyBottles || 0}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastUpdatedAt">
+            <th mat-header-cell *matHeaderCellDef> {{ t('lastUpdated') }} </th>
+            <td mat-cell *matCellDef="let element" class="text-secondary"> {{element.lastUpdatedAt | date:'short'}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['bottleTypeName', 'fullBottles', 'emptyQuantity', 'damagedBottles', 'lostBottles', 'lastUpdatedAt']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['bottleTypeName', 'fullBottles', 'emptyQuantity', 'damagedBottles', 'lostBottles', 'lastUpdatedAt'];"></tr>
+          
+          <tr class="mat-row" *matNoDataRow>
+            <td class="table-empty" colspan="6">
+              <div class="empty-state">
+                <mat-icon class="empty-icon">inventory_2</mat-icon>
+                <p class="empty-title">{{ t('noInventoryFound') }}</p>
+                <p class="empty-subtitle">{{ t('noInventorySubtitle') }}</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="store.totalCount()"
+        [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
+        (page)="onPageChange($event)"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        aria-label="Select page">
+      </mat-paginator>
+    }
+  </div>
+</div>
+
+
+
+
+</ng-container>

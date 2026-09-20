@@ -17,6 +17,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 // Components & UI
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
@@ -47,6 +49,8 @@ import { Sale, SaleFilter } from '../../models/sale.model';
     MatSnackBarModule,
     MatDialogModule,
     MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     TableSkeleton
   , TranslocoDirective],
   templateUrl: './sales-history.html',
@@ -183,6 +187,26 @@ export class SalesHistoryComponent implements OnInit {
   onSearch(): void {
     this.pageIndex.set(1);
     this.loadSales();
+  }
+
+  onStartDateChange(date: Date | null): void {
+    if (date) {
+      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.startDate.set(d.toISOString().split('T')[0]);
+    } else {
+      this.startDate.set('');
+    }
+    this.onSearch();
+  }
+
+  onEndDateChange(date: Date | null): void {
+    if (date) {
+      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.endDate.set(d.toISOString().split('T')[0]);
+    } else {
+      this.endDate.set('');
+    }
+    this.onSearch();
   }
 
   resetFilters(): void {

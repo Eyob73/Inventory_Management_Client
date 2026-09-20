@@ -167,6 +167,13 @@ export const routes: Routes = [
         canActivate: [roleGuard(['Admin', 'Manager'])],
       },
 
+      
+      // ── Bottles ──────────────────────────────────────────────────
+      {
+        path: 'bottles',
+        loadChildren: () => import('./features/bottles/bottles.routes').then((m) => m.BOTTLE_ROUTES),
+      },
+
       // ── System Admin only ────────────────────────────────────────
       {
         path: 'system-admin/dashboard',
@@ -214,3 +221,4 @@ export const routes: Routes = [
   // ── Fallback ─────────────────────────────────────────────────────
   { path: '**', redirectTo: 'dashboard' },
 ];
+

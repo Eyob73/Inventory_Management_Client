@@ -1,0 +1,76 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('dashboardTitle') }}</h1>
+      <p class="page-subtitle">{{ t('dashboardSubtitle') }}</p>
+    </div>
+  </div>
+
+  @if (!store.stats()) {
+    <div class="stats-row">
+      @for (i of [1,2,3,4]; track i) {
+        <app-card-skeleton type="kpi"></app-card-skeleton>
+      }
+    </div>
+  } @else {
+    <div class="stats-row">
+      <div class="stat-card blue">
+        <div class="stat-card-header">
+          <div class="stat-icon-wrap">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <span class="stat-title">{{ t('fullBottles') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalFullBottles}}</div>
+          <span class="stat-sub">{{ t('readyToSell') }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="stat-card-header">
+          <div class="stat-icon-wrap">
+            <mat-icon>local_drink</mat-icon>
+          </div>
+          <span class="stat-title">{{ t('emptyBottles') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalEmptyBottles}}</div>
+          <span class="stat-sub">{{ t('readyForRefill') }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card amber">
+        <div class="stat-card-header">
+          <div class="stat-icon-wrap">
+            <mat-icon>people</mat-icon>
+          </div>
+          <span class="stat-title">{{ t('withCustomers') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalBottlesWithCustomers}}</div>
+          <span class="stat-sub">{{ t('pendingReturn') }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card purple">
+        <div class="stat-card-header">
+          <div class="stat-icon-wrap">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+          <span class="stat-title">{{ t('totalDepositLiability') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalPendingDepositLiability | currency:'ETB '}}</div>
+          <span class="stat-sub">{{ t('outstandingDeposits') }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+
+
+
+</ng-container>
