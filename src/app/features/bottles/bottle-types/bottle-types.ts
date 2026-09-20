@@ -10,6 +10,7 @@ import { BottleType } from '../../../core/services/bottle-types';
 import { BottleTypeDialogComponent } from './bottle-type-dialog/bottle-type-dialog';
 import { BottleTypesStore } from '../../../store/bottle-types.store';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
+import { ConfirmDialogService } from '../../../ui/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-bottle-types',
@@ -28,7 +29,8 @@ export class BottleTypesComponent implements OnInit {
 
 
   constructor(
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private confirmService: ConfirmDialogService
   ) {
     effect(() => {
       this.dataSource.data = this.store.bottleTypes() || [];
@@ -64,10 +66,12 @@ export class BottleTypesComponent implements OnInit {
     });
   }
 
-  deleteType(id: string): void {
-    if (confirm('Are you sure you want to delete this bottle type?')) {
-      this.store.deleteBottleType(id);
-    }
+  deleteType(type: BottleType): void {
+    this.confirmService.confirmDelete('Bottle Type', type.name).subscribe(confirmed => {
+      if (confirmed) {
+        this.store.deleteBottleType(type.id);
+      }
+    });
   }
 }
 

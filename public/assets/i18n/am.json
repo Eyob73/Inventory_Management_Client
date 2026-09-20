@@ -1319,7 +1319,8 @@
     "entityUserAccount": "የተጠቃሚ አካውንት",
     "signOutTitle": "ከስርዓቱ ውጣ",
     "signOutMessage": "ከስርዓቱ መውጣት (Sign Out) ይፈልጋሉ?",
-    "signOut": "ውጣ"
+    "signOut": "ውጣ",
+    "entityBottleType": "የጠርሙስ አይነት"
   },
   "loginFull": {
     "tagline": "ለዘመናዊ የንግድ ተቋማት የተሰራ",

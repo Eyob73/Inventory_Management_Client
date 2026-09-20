@@ -1319,7 +1319,8 @@
     "entityUserAccount": "Herrega Fayyadamaa",
     "signOutTitle": "Bahi",
     "signOutMessage": "Dhuguma sirnicha keessaa bahuu barbaaddaa?",
-    "signOut": "Bahi"
+    "signOut": "Bahi",
+    "entityBottleType": "Gosa Qaruuraa"
   },
   "loginFull": {
     "tagline": "Gareewwan ammayyaaf kan ijaarame",
