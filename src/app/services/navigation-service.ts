@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { TenantApiService } from './tenant';
 
 export interface NavItem {
   label: string;
@@ -25,15 +26,16 @@ const ALL_NAV_GROUPS: NavGroup[] = [
   },
   {
     label: 'Bottle Management',
-          items: [
-        { label: 'Bottle Dashboard', path: '/bottles/dashboard', icon: 'speed' },
-        { label: 'Bottle Types', path: '/bottles/types', icon: 'local_drink' },
-        { label: 'Bottle Inventory', path: '/bottles/inventory', icon: 'inventory' },
-        { label: 'Customer Bottles', path: '/bottles/customers', icon: 'people' },
-        { label: 'Bottle Transactions', path: '/bottles/transactions', icon: 'sync_alt' },
-        { label: 'Bottle Reports', path: '/bottles/reports', icon: 'bar_chart' },
-        { label: 'Bottle Settings', path: '/bottles/settings', icon: 'settings' },
-      ],
+    roles: ['Admin', 'Manager', 'Sales'],
+    items: [
+      { label: 'Bottle Dashboard', path: '/bottles/dashboard', icon: 'speed', roles: ['Admin', 'Manager'] },
+      { label: 'Bottle Types', path: '/bottles/types', icon: 'local_drink', roles: ['Admin', 'Manager'] },
+      { label: 'Bottle Inventory', path: '/bottles/inventory', icon: 'inventory', roles: ['Admin', 'Manager'] },
+      { label: 'Customer Bottles', path: '/bottles/customers', icon: 'people', roles: ['Admin', 'Manager', 'Sales'] },
+      { label: 'Bottle Transactions', path: '/bottles/transactions', icon: 'sync_alt', roles: ['Admin', 'Manager', 'Sales'] },
+      { label: 'Bottle Reports', path: '/bottles/reports', icon: 'bar_chart', roles: ['Admin', 'Manager'] },
+      { label: 'Bottle Settings', path: '/bottles/settings', icon: 'settings', roles: ['Admin', 'Manager'] },
+    ],
   },
 
   {
@@ -107,6 +109,7 @@ const routeTitleMap: Record<string, string> = {
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {
+  private tenantService = inject(TenantApiService);
 
   /**
    * Returns nav groups filtered to only items visible for the given role.
@@ -114,9 +117,13 @@ export class NavigationService {
    */
   getNavGroups(role?: string): NavGroup[] {
     const normalizedRole = role?.toLowerCase() ?? '';
+    const isBottleEnabled = this.tenantService.isBottleManagementEnabled();
 
     return ALL_NAV_GROUPS
       .filter((group) => {
+        if (group.label === 'Bottle Management' && !isBottleEnabled) {
+          return false;
+        }
         if (!group.roles) {
            return normalizedRole !== 'systemadmin';
         }

@@ -155,7 +155,8 @@
         </div>
     </section>
 
-        <section class="product-form__section">
+    @if (isBottleManagementEnabled()) {
+    <section class="product-form__section">
         <h2 class="product-form__section-title">Returnable Bottle Configuration</h2>
 
         <div class="form-row">
@@ -184,6 +185,7 @@
             }
         </div>
     </section>
+    }
 
     <section class="product-form__section" formArrayName="variants">
         <div class="product-form__section-header">

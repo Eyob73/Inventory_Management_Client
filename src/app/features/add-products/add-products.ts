@@ -17,6 +17,7 @@ import { CategoryService } from "../../services/category";
 import { SupplierService } from '../../services/supplier';
 import { BottleTypesService } from '../../core/services/bottle-types';
 import { environment } from "../../../environments/environment.development";
+import { TenantApiService } from '../../services/tenant';
 
 import { MatIconModule } from "@angular/material/icon";
 
@@ -82,9 +83,11 @@ export class AddProducts implements OnInit {
   private categoryService = inject(CategoryService);
   private supplierService = inject(SupplierService);
   private bottleTypesService = inject(BottleTypesService);
+  private tenantService = inject(TenantApiService);
 
   isError = signal(false);
   submissionStatus = signal<string | null>(null);
+  isBottleManagementEnabled = this.tenantService.isBottleManagementEnabled;
   readonly isEditMode = signal(false);
   readonly productId = signal<string | null>(null);
   private wasSubmitting = false;

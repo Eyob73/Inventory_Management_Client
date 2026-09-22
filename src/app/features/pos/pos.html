@@ -206,7 +206,7 @@
           <span class="line-price">{{ item.product.price | number:'1.2-2' }} ETB {{ t('pos.ea') }}</span>
         </div>
         
-        <div *ngIf="item.product.isReturnable" class="bottle-option-box">
+        <div *ngIf="isBottleManagementEnabled() && item.product.isReturnable" class="bottle-option-box">
           <div class="bottle-option-title">Bottle Option</div>
           <div class="bottle-option-radios">
              <label class="bottle-radio-label">
@@ -237,7 +237,7 @@
             </button>
           </div>
           <span class="line-total">
-            {{ (item.product.price * item.quantity + (!item.isBottleExchange ? (item.bottleDepositAmount * item.quantity) : 0)) | number:'1.2-2' }} ETB
+            {{ (item.product.price * item.quantity + (isBottleManagementEnabled() && !item.isBottleExchange ? (item.bottleDepositAmount * item.quantity) : 0)) | number:'1.2-2' }} ETB
           </span>
           <button class="line-remove" (click)="removeItem(i)" [matTooltip]="t('pos.remove')">
             <mat-icon>close</mat-icon>
@@ -258,7 +258,7 @@
           <span>{{ t('pos.subtotal') }}</span>
           <span>{{ cartSubtotal() | number:'1.2-2' }} ETB</span>
         </div>
-        <div class="totals-row" *ngIf="totalBottleDeposit() > 0">
+        <div class="totals-row" *ngIf="isBottleManagementEnabled() && totalBottleDeposit() > 0">
           <span>Bottle Deposits</span>
           <span>{{ totalBottleDeposit() | number:'1.2-2' }} ETB</span>
         </div>
@@ -338,4 +338,5 @@
 
 </div>
 </ng-container>
+
 

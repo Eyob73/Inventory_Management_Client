@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -13,6 +13,7 @@ export interface TenantProfile {
   website?: string;
   taxId?: string;
   lowStockThreshold?: number;
+  enableBottleManagement?: boolean;
 }
 
 export interface UpdateTenantProfile {
@@ -23,12 +24,14 @@ export interface UpdateTenantProfile {
   website?: string;
   taxId?: string;
   lowStockThreshold?: number;
+  enableBottleManagement?: boolean;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class TenantApiService {
+  public isBottleManagementEnabled = signal<boolean>(false);
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Tenants`;
 
@@ -40,3 +43,5 @@ export class TenantApiService {
     return this.http.put<TenantProfile>(`${this.baseUrl}/mine`, data);
   }
 }
+
+

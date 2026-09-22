@@ -11,6 +11,8 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap, catchError, EMPTY, of, switchMap, exhaustMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
+import { TenantApiService } from '../services/tenant';
+import { NavigationService } from '../services/navigation-service';
 import { User, LoginCredentials, RegisterCredentials } from '../models/auth.model';
 
 export interface AuthState {
@@ -41,7 +43,7 @@ export const AuthStore = signalStore(
     }),
     isLoggedIn: computed(() => store.isAuthenticated()),
   })),
-  withMethods((store, authService = inject(AuthService), router = inject(Router)) => ({
+  withMethods((store, authService = inject(AuthService), router = inject(Router), tenantService = inject(TenantApiService), navigationService = inject(NavigationService)) => ({
     checkAuth: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
@@ -55,6 +57,26 @@ export const AuthStore = signalStore(
             return of(null);
           }
           return authService.getCurrentUser().pipe(
+            switchMap((user) => {
+              if (user) {
+                const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
+                if (r?.toLowerCase() !== 'systemadmin') {
+                  return tenantService.getMyTenant().pipe(
+                    tap(tenant => {
+                      localStorage.setItem('inv_tenant_cache', JSON.stringify({
+                        company: tenant,
+                        lowStockThreshold: tenant.lowStockThreshold,
+                        enableBottleManagement: tenant.enableBottleManagement
+                      }));
+                      tenantService.isBottleManagementEnabled.set(tenant.enableBottleManagement ?? false);
+                    }),
+                    catchError(() => of(null)),
+                    switchMap(() => of(user))
+                  );
+                }
+              }
+              return of(user);
+            }),
             tap((user) => {
               if (user) {
                 patchState(store, {
@@ -99,6 +121,26 @@ export const AuthStore = signalStore(
           authService.login(credentials).pipe(
             switchMap(() =>
               authService.getCurrentUser().pipe(
+                switchMap((user) => {
+                  if (user) {
+                    const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
+                    if (r?.toLowerCase() !== 'systemadmin') {
+                      return tenantService.getMyTenant().pipe(
+                        tap(tenant => {
+                          localStorage.setItem('inv_tenant_cache', JSON.stringify({
+                            company: tenant,
+                            lowStockThreshold: tenant.lowStockThreshold,
+                            enableBottleManagement: tenant.enableBottleManagement
+                          }));
+                          tenantService.isBottleManagementEnabled.set(tenant.enableBottleManagement ?? false);
+                        }),
+                        catchError(() => of(null)),
+                        switchMap(() => of(user))
+                      );
+                    }
+                  }
+                  return of(user);
+                }),
                 tap((user) => {
                   if (user) {
                     patchState(store, {
@@ -227,3 +269,8 @@ export const AuthStore = signalStore(
     },
   })
 );
+
+
+
+
+

@@ -1,5 +1,6 @@
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
+import { TenantApiService } from '../../services/tenant';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -75,11 +76,13 @@ export class PosComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
   private translocoService = inject(TranslocoService);
+  private tenantService = inject(TenantApiService);
 
   readonly baseUrl = environment.apiUrl.replace('/api', '');
 
   // State Signals
   products = signal<Product[]>([]);
+  isBottleManagementEnabled = this.tenantService.isBottleManagementEnabled;
   categories = signal<Category[]>([]);
   customers = signal<Customer[]>([]);
   cart = signal<CartItem[]>([]);
@@ -277,14 +280,16 @@ export class PosComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleBottleExchange(index: number): void {
+    toggleBottleExchange(index: number): void {
+    if (!this.isBottleManagementEnabled()) return;
     const currentCart = [...this.cart()];
     if (index < 0 || index >= currentCart.length) return;
     currentCart[index].isBottleExchange = !currentCart[index].isBottleExchange;
     this.cart.set(currentCart);
   }
 
-  setBottleExchange(index: number, value: boolean): void {
+    setBottleExchange(index: number, value: boolean): void {
+    if (!this.isBottleManagementEnabled()) return;
     const currentCart = [...this.cart()];
     if (index < 0 || index >= currentCart.length) return;
     currentCart[index].isBottleExchange = value;
@@ -368,7 +373,7 @@ export class PosComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const hasPendingDeposits = this.cart().some(item => item.product.isReturnable && !item.isBottleExchange);
+    const hasPendingDeposits = this.isBottleManagementEnabled() && this.cart().some(item => item.product.isReturnable && !item.isBottleExchange);
     if (hasPendingDeposits && !this.selectedCustomerId()) {
       this.snackBar.open('A registered customer must be selected to track bottle deposits.', 'Close', { duration: 4500 });
       return;
@@ -453,3 +458,5 @@ export class PosComponent implements OnInit, OnDestroy {
     });
   }
 }
+
+

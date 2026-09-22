@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class BottleSettingsComponent {
   settings = {
-    enableBottleManagement: true,
+    // enableBottleManagement removed and moved to global settings
     allowBottleReturns: true,
     allowBottleAdjustments: false,
     requireCustomerForDeposit: true,

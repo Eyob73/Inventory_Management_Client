@@ -1,5 +1,6 @@
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { TenantApiService } from '../../../services/tenant';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,10 +39,12 @@ export class PurchaseDetailsComponent implements OnInit {
     private confirmDialog = inject(ConfirmDialogService);
   private bottleInventoryApi = inject(BottleInventoryService);
   private authService = inject(AuthService);
+  private tenantService = inject(TenantApiService);
 
   purchase = signal<Purchase | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
+  isBottleManagementEnabled = this.tenantService.isBottleManagementEnabled;
     displayedColumns = ['productName', 'sku', 'quantity', 'unitCost', 'totalCost'];
 
   bottleImpacts = computed(() => {
@@ -215,6 +218,8 @@ export class PurchaseDetailsComponent implements OnInit {
     return typeof err?.error === 'string' ? err.error : err?.error?.detail || err?.message || fallback;
   }
 }
+
+
 
 
 

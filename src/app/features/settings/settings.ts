@@ -93,6 +93,7 @@ export class SettingsComponent implements OnInit {
       commonSection,
       { id: 'notifications', label: 'settingsFull.navNotifications', icon: 'notifications' },
       { id: 'security', label: 'settingsFull.navSecurity', icon: 'security' },
+      { id: 'bottle', label: 'bottles.settingsTitle', icon: 'liquor' },
     ];
   });
 
@@ -198,6 +199,10 @@ export class SettingsComponent implements OnInit {
     twoFactorEnabled: false,
   };
 
+  adminBottle = {
+    enableBottleManagement: false,
+  };
+
   ngOnInit() {
     this.preferredLanguage = this.languageService.getCurrentLanguage();
     // Set initial active section
@@ -251,6 +256,7 @@ export class SettingsComponent implements OnInit {
           if (data.adminCurrency) this.adminCurrency = { ...this.adminCurrency, ...data.adminCurrency };
           if (data.adminNotifications) this.adminNotifications = { ...this.adminNotifications, ...data.adminNotifications };
           if (data.adminSecurity) this.adminSecurity = { ...this.adminSecurity, ...data.adminSecurity };
+          if (data.adminBottle) this.adminBottle = { ...this.adminBottle, ...data.adminBottle };
         }
       }
       
@@ -262,6 +268,9 @@ export class SettingsComponent implements OnInit {
             this.company = { ...this.company, ...parsed.company };
             if (parsed.lowStockThreshold !== undefined) {
               this.adminInventory.lowStockThreshold = parsed.lowStockThreshold;
+            }
+            if (parsed.enableBottleManagement !== undefined) {
+              this.adminBottle.enableBottleManagement = parsed.enableBottleManagement;
             }
           } catch (e) {}
         }
@@ -280,17 +289,22 @@ export class SettingsComponent implements OnInit {
               if (tenant.lowStockThreshold !== undefined) {
                 this.adminInventory.lowStockThreshold = tenant.lowStockThreshold;
               }
+              if (tenant.enableBottleManagement !== undefined) {
+                this.adminBottle.enableBottleManagement = tenant.enableBottleManagement;
+              }
               // Update local cache silently
               const currentStored = localStorage.getItem(this.getStorageKey());
               const p = currentStored ? JSON.parse(currentStored) : {};
               p.company = this.company;
               p.adminInventory = this.adminInventory;
+              p.adminBottle = this.adminBottle;
               localStorage.setItem(this.getStorageKey(), JSON.stringify(p));
 
               // Update the specific tenant cache
               localStorage.setItem('inv_tenant_cache', JSON.stringify({
                 company: this.company,
-                lowStockThreshold: this.adminInventory.lowStockThreshold
+                lowStockThreshold: this.adminInventory.lowStockThreshold,
+                enableBottleManagement: this.adminBottle.enableBottleManagement
               }));
             }
           },
@@ -349,7 +363,8 @@ export class SettingsComponent implements OnInit {
       if (role === 'admin') {
         localStorage.setItem('inv_tenant_cache', JSON.stringify({
           company: this.company,
-          lowStockThreshold: this.adminInventory.lowStockThreshold
+          lowStockThreshold: this.adminInventory.lowStockThreshold,
+          enableBottleManagement: this.adminBottle.enableBottleManagement
         }));
 
         this.tenantApi.updateMyTenant({
@@ -360,7 +375,11 @@ export class SettingsComponent implements OnInit {
           website: this.company.website,
           taxId: this.company.taxId,
           lowStockThreshold: this.adminInventory.lowStockThreshold,
+          enableBottleManagement: this.adminBottle.enableBottleManagement,
         }).subscribe({
+          next: () => {
+            this.tenantApi.isBottleManagementEnabled.set(this.adminBottle.enableBottleManagement);
+          },
           error: (err) => console.error('Failed to update tenant profile', err)
         });
       }

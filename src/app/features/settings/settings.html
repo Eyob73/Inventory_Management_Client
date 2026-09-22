@@ -801,7 +801,29 @@
         </div>
       </div>
       }
+
+      <!-- Admin Bottle Management -->
+      @if (activeSection() === 'bottle') {
+      <div class="settings-card">
+        <div class="card-header">
+          <mat-icon>liquor</mat-icon>
+          <div>
+            <h2>{{ t('bottles.settingsTitle') }}</h2>
+            <p class="card-desc">{{ t('bottles.enableBottleMgmtDesc') }}</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-label">{{ t('bottles.enableBottleMgmt') }}</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="adminBottle.enableBottleManagement" color="primary"></mat-slide-toggle>
+          </div>
+        </div>
+      </div>
       }
+      }
+
 
       <!-- Bottom Actions Bar -->
       <div class="save-area">
