@@ -22,6 +22,9 @@
           <input matInput #barcodeInput type="text" placeholder="Scan or enter barcode..." 
             autocomplete="off" inputmode="none"
             (keyup.enter)="onBarcodeScanned(barcodeInput.value); barcodeInput.value = ''" />
+          <button matSuffix mat-icon-button (click)="openCameraScanner()" aria-label="Scan with Camera" matTooltip="Scan with Camera">
+            <mat-icon>camera_alt</mat-icon>
+          </button>
         </mat-form-field>
       </div>
 

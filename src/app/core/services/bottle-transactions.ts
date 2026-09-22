@@ -37,7 +37,8 @@ export class BottleTransactionsService {
   getPagedTransactions(pageIndex: number, pageSize: number, search?: string): Observable<PagedBottleTransactionResponse> {
     let params = new HttpParams()
       .set('page', pageIndex.toString())
-      .set('pageSize', pageSize.toString());
+      .set('pageSize', pageSize.toString())
+      .set('descending', 'true');
 
     if (search) {
       params = params.set('search', search);

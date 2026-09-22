@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation-service';
 
 import { MatListModule } from '@angular/material/list';
+import { AuthStore } from '../../store/auth.store';
 
 @Component({
   selector: 'app-search-dialog',
@@ -23,15 +24,27 @@ export class SearchDialogComponent {
   private dialogRef = inject(MatDialogRef<SearchDialogComponent>);
   private router = inject(Router);
   private navService = inject(NavigationService);
+  private authStore = inject(AuthStore);
 
   query = '';
-  filteredItems = this.navService.getNavGroups().flatMap(g => g.items);
+  allItems = this.navService.getSearchableItems(this.authStore.userRole());
+  filteredItems = [...this.allItems];
 
   filterItems() {
     const q = this.query.toLowerCase().trim();
-    this.filteredItems = this.navService.getNavGroups()
-      .flatMap(g => g.items)
-      .filter(item => item.label.toLowerCase().includes(q) || item.path.includes(q));
+    if (!q) {
+      this.filteredItems = [...this.allItems];
+      return;
+    }
+    
+    this.filteredItems = this.allItems.filter(item => {
+      const matchLabel = item.label.toLowerCase().includes(q);
+      const matchPath = item.path.toLowerCase().includes(q);
+      const matchDesc = item.description?.toLowerCase().includes(q) ?? false;
+      const matchKeywords = item.keywords?.some(k => k.toLowerCase().includes(q)) ?? false;
+      
+      return matchLabel || matchPath || matchDesc || matchKeywords;
+    });
   }
 
   navigate(path: string) {

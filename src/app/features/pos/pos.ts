@@ -28,6 +28,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
 import { SaleService } from '../../services/sale.service';
 import { Product } from '../../models/products.model';
 import { CreateSaleRequest, Sale } from '../../models/sale.model';
+import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
@@ -240,6 +241,20 @@ export class PosComponent implements OnInit, OnDestroy {
         } else {
           this.snackBar.open('Error looking up barcode.', 'Close', { duration: 3000 });
         }
+      }
+    });
+  }
+
+  openCameraScanner(): void {
+    const dialogRef = this.dialog.open(BarcodeScannerDialog, {
+      width: '100%',
+      maxWidth: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
+      if (barcode) {
+        this.snackBar.open(`✓ Barcode detected`, 'Close', { duration: 1500 });
+        this.onBarcodeScanned(barcode);
       }
     });
   }

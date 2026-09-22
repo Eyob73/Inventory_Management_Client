@@ -251,6 +251,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     event.preventDefault();
     this.dialog.open(SearchDialogComponent, {
       width: '540px',
+      maxWidth: '95vw',
       panelClass: 'search-dialog-panel',
       autoFocus: true,
     });

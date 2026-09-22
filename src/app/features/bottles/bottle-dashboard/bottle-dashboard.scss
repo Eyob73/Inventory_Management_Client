@@ -310,12 +310,22 @@
     align-items: center;
     gap: 6px;
     white-space: nowrap;
+    max-width: 100%;
+    min-width: 0;
 
     mat-icon {
       font-size: 14px;
       width: 14px;
       height: 14px;
       color: var(--slate);
+      flex-shrink: 0;
+    }
+
+    .truncate-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 150px;
     }
   }
 }

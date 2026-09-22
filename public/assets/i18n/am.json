@@ -1,6 +1,21 @@
 {
   "app": {
-    "title": "የዕቃ ክምችት አስተዳደር"
+    "title": "የዕቃ አያያዝ አስተዳደር"
+  },
+  "scanner": {
+    "scanBarcode": "ባርኮድ ስካን ያድርጉ",
+    "scanProductBarcode": "የምርት ባርኮድ ስካን ያድርጉ",
+    "alignBarcode": "ባርኮዱን በስካን ማድረጊያ ቦታ ውስጥ ያስተካክሉ",
+    "cameraInitializing": "ካሜራ በመጀመር ላይ...",
+    "cameraPermissionDenied": "የካሜራ ፍቃድ ተከልክሏል። እባክዎ በብሮውዘርዎ መቼቶች ውስጥ ይፍቀዱ።",
+    "cameraUnavailable": "በዚህ መሣሪያ ላይ ምንም ካሜራ የለም።",
+    "cameraInUse": "ካሜራ አይገኝም ወይም ስራ ላይ ነው።",
+    "barcodeDetected": "ባርኮድ ተገኝቷል",
+    "searchingProduct": "ምርት በመፈለግ ላይ...",
+    "productFound": "በባርኮድ {{barcode}} ምርት ተገኝቷል",
+    "productNotFound": "በባርኮድ {{barcode}} ምንም ምርት አልተገኘም",
+    "scanAgain": "እንደገና ስካን ያድርጉ",
+    "cancel": "ይቅር"
   },
   "navigation": {
     "dashboard": "ዳሽቦርድ",
@@ -134,10 +149,14 @@
     },
     "filters": {
       "search": "ምርቶችን ፈልግ",
-      "searchPlaceholder": "ለምሳሌ ስም፣ የእቃ መለያ ኮድ (SKU) ወይም ምድብ...",
+      "searchPlaceholder": "ለምሳሌ ስም፣ የእቃ መለያ ኮድ (SKU)፣ ባርኮድ፣ ወይም ምድብ...",
       "clearSearch": "ፍለጋን ያጽዱ",
       "category": "ምድብ",
-      "allCategories": "ሁሉም ምድቦች"
+      "allCategories": "ሁሉም ምድቦች",
+      "stockStatus": "የክምችት ሁኔታ",
+      "allProducts": "ሁሉም ምርቶች",
+      "lowStock": "አነስተኛ ክምችት",
+      "outOfStock": "ክምችት ያለቀባቸው"
     },
     "table": {
       "no": "ተ.ቁ",

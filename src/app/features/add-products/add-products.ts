@@ -20,7 +20,8 @@ import { environment } from "../../../environments/environment.development";
 import { TenantApiService } from '../../services/tenant';
 
 import { MatIconModule } from "@angular/material/icon";
-
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
 let dbPromise: Promise<IDBDatabase> | null = null;
 function getDB(): Promise<IDBDatabase> {
   if (!dbPromise) {
@@ -70,7 +71,7 @@ async function removeDraft(key: string) {
 @Component({
   selector: 'app-add-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, TranslocoDirective],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, MatDialogModule, TranslocoDirective],
   templateUrl: './add-products.html',
   styleUrl: './add-products.scss',
 })
@@ -286,6 +287,22 @@ export class AddProducts implements OnInit {
       const objectUrl = URL.createObjectURL(file);
       this.imagePreview.set(objectUrl);
     }
+  }
+
+  private dialog = inject(MatDialog);
+
+  openCameraScanner(): void {
+    const dialogRef = this.dialog.open(BarcodeScannerDialog, {
+      width: '100%',
+      maxWidth: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
+      if (barcode) {
+        this.productForm.patchValue({ barcode });
+        this.productForm.get('barcode')?.markAsDirty();
+      }
+    });
   }
 
   onSubmit() {

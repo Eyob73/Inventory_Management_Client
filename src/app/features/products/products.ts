@@ -2,8 +2,12 @@ import { Category } from '../../models/category.model';
 import { CategoryService } from '../../services/category';
 import { FormsModule } from '@angular/forms';
 import { signal, Component, inject, ViewChild, effect, OnInit, computed } from '@angular/core';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
+import { ProductService } from '../../services/product';
 import { Router, RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -115,7 +119,11 @@ export class Products implements OnInit {
 
   
   onCategoryChange(categoryId: string): void {
-    this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: this.store.search(), categoryId });
+    this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: this.store.search(), categoryId, status: this.store.status() });
+  }
+
+  onStatusChange(status: number | null): void {
+    this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: this.store.search(), categoryId: this.store.categoryId(), status });
   }
 
   applyFilter(event: Event): void {
@@ -123,9 +131,41 @@ export class Products implements OnInit {
     this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search });
   }
 
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private productService = inject(ProductService);
+  private translocoService = inject(TranslocoService);
+
   clearSearch(input: HTMLInputElement): void {
     input.value = '';
     this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: '' });
+  }
+
+  openScanner(): void {
+    const dialogRef = this.dialog.open(BarcodeScannerDialog, {
+      width: '90vw',
+      maxWidth: '600px',
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
+      if (barcode && barcode.trim()) {
+        const normalizedBarcode = barcode.trim();
+        this.productService.getAll(1, 1, normalizedBarcode).subscribe((res) => {
+          const count = Array.isArray(res) ? res.length : (res.totalCount || 0);
+          if (count > 0) {
+            this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: normalizedBarcode });
+            const msg = this.translocoService.translate('scanner.productFound', { barcode: normalizedBarcode }) || `Product found with barcode: ${normalizedBarcode}`;
+            const close = this.translocoService.translate('scanner.cancel') || 'Close';
+            this.snackBar.open(msg, close, { duration: 3000 });
+          } else {
+            const msg = this.translocoService.translate('scanner.productNotFound', { barcode: normalizedBarcode }) || `No product was found with barcode: ${normalizedBarcode}`;
+            const close = this.translocoService.translate('scanner.cancel') || 'Close';
+            this.snackBar.open(msg, close, { duration: 5000 });
+          }
+        });
+      }
+    });
   }
 
   viewDetails(product: Product): void {

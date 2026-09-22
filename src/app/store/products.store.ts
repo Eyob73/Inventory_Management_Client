@@ -30,6 +30,7 @@ export const ProductStore = signalStore(
         hasNextPage: false,
         search: '',
           categoryId: 'ALL',
+          status: null as number | null,
     }),
     withEntities<Product>(),
     withComputed((store) => ({
@@ -46,7 +47,7 @@ export const ProductStore = signalStore(
         ),
     })),
     withMethods((store, api = inject(ProductService)) => ({
-        loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string; categoryId?: string } | void>(
+        loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string; categoryId?: string; status?: number | null } | void>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
                 switchMap((params) => {
@@ -55,8 +56,9 @@ export const ProductStore = signalStore(
                     const reqPageSize = query.pageSize ?? store.pageSize();
                     const search = query.search ?? store.search();
                       const categoryId = query.categoryId ?? store.categoryId();
+                      const status = query.status !== undefined ? query.status : store.status();
 
-                    return api.getAll(reqPageIndex, reqPageSize, search || undefined, categoryId).pipe(
+                    return api.getAll(reqPageIndex, reqPageSize, search || undefined, categoryId, status || undefined).pipe(
                         tap((res: PagedProductResponse | Product[]) => {
                             if (Array.isArray(res)) {
                                 patchState(
@@ -71,6 +73,7 @@ export const ProductStore = signalStore(
                                         hasPreviousPage: false,
                                         hasNextPage: false,
                                         search,
+                                        status
                                     }
                                 );
                             } else {
@@ -86,6 +89,7 @@ export const ProductStore = signalStore(
                                         hasPreviousPage: res.hasPreviousPage || false,
                                         hasNextPage: res.hasNextPage || false,
                                         search,
+                                        status
                                     }
                                 );
                             }

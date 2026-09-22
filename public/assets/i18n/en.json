@@ -2,6 +2,21 @@
   "app": {
     "title": "Inventory Management"
   },
+  "scanner": {
+    "scanBarcode": "Scan Barcode",
+    "scanProductBarcode": "Scan Product Barcode",
+    "alignBarcode": "Align the barcode inside the scanning area",
+    "cameraInitializing": "Starting camera...",
+    "cameraPermissionDenied": "Camera access was denied. Please allow it in your browser settings.",
+    "cameraUnavailable": "No camera is available on this device.",
+    "cameraInUse": "Camera unavailable or already in use.",
+    "barcodeDetected": "Barcode detected",
+    "searchingProduct": "Searching for product...",
+    "productFound": "Product found with barcode: {{barcode}}",
+    "productNotFound": "No product was found with barcode: {{barcode}}",
+    "scanAgain": "Scan Again",
+    "cancel": "Cancel"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "products": "Products",
@@ -134,10 +149,14 @@
     },
     "filters": {
       "search": "Search Products",
-      "searchPlaceholder": "e.g. name, SKU, or category...",
+      "searchPlaceholder": "e.g. name, SKU, barcode, or category...",
       "clearSearch": "Clear search",
       "category": "Category",
-      "allCategories": "All Categories"
+      "allCategories": "All Categories",
+      "stockStatus": "Stock Status",
+      "allProducts": "All Products",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of Stock"
     },
     "table": {
       "no": "No.",

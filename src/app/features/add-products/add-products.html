@@ -106,7 +106,12 @@
 
             <div class="form-group">
                 <label for="barcode">Barcode</label>
-                <input type="text" id="barcode" formControlName="barcode" placeholder="Scan or enter barcode">
+                <div style="display: flex; gap: 8px;">
+                  <input style="flex: 1;" type="text" id="barcode" formControlName="barcode" placeholder="Scan or enter barcode">
+                  <button type="button" class="btn btn-outline" style="padding: 0 16px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--slate-soft, #f0f0f0)'" onmouseout="this.style.background='var(--surface)'" (click)="openCameraScanner()">
+                    <mat-icon>camera_alt</mat-icon>
+                  </button>
+                </div>
             </div>
         </div>
     </section>

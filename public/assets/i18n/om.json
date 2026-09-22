@@ -1,6 +1,21 @@
 {
   "app": {
-    "title": "Sirna To'annoo Kuusaa"
+    "title": "Bulchiinsa Kuusaa"
+  },
+  "scanner": {
+    "scanBarcode": "Baarkoodii Skaan Godhi",
+    "scanProductBarcode": "Baarkoodii Oomishaa Skaan Godhi",
+    "alignBarcode": "Baarkoodicha bakka skaan godhamu keessa sirreessi",
+    "cameraInitializing": "Kaameeraa jalqabaa jira...",
+    "cameraPermissionDenied": "Hayyamni kaameeraa dhorkameera. Maaloo setingii biraawzarii keessatti hayyami.",
+    "cameraUnavailable": "Meesha kana irratti kaameeraan hin jiru.",
+    "cameraInUse": "Kaameeraan hin argamu ykn hojii irra jira.",
+    "barcodeDetected": "Baarkoodiin argameera",
+    "searchingProduct": "Oomisha barbaadaa jira...",
+    "productFound": "Oomishni baarkoodii {{barcode}} qabu argameera",
+    "productNotFound": "Oomishni baarkoodii {{barcode}} qabu hin argamne",
+    "scanAgain": "Irra deebi'ii Skaan Godhi",
+    "cancel": "Haqi"
   },
   "navigation": {
     "dashboard": "Daashboordii",
@@ -134,10 +149,14 @@
     },
     "filters": {
       "search": "Oomishaalee Barbaadi",
-      "searchPlaceholder": "Fkn. maqaa, koodii (SKU), ykn ramaddii...",
+      "searchPlaceholder": "Fkn. maqaa, koodii (SKU), baarkoodii, ykn ramaddii...",
       "clearSearch": "Barbaacha haqi",
       "category": "Ramaddii",
-      "allCategories": "Ramaddiiwwan Hunda"
+      "allCategories": "Ramaddiiwwan Hunda",
+      "stockStatus": "Haala Kuusaa",
+      "allProducts": "Oomishaalee Hunda",
+      "lowStock": "Kuusaa Xinnaa",
+      "outOfStock": "Kuusaan Kan Dhumate"
     },
     "table": {
       "no": "Lakk.",
