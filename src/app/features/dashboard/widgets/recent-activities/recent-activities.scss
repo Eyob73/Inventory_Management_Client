@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  padding: 12px 18px;
+}
+
+.activity-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--slate);
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+
+  &.type-order {
+    background: var(--teal-soft);
+    color: var(--teal-dark);
+  }
+
+  &.type-stock {
+    background: color-mix(in srgb, var(--teal) 15%, transparent);
+    color: var(--teal);
+  }
+
+  &.type-system {
+    background: var(--rose-soft, color-mix(in srgb, var(--error) 12%, transparent));
+    color: var(--rose, var(--error));
+  }
+
+  &.type-supplier {
+    background: color-mix(in srgb, #8b5cf6 12%, transparent);
+    color: #7c3aed;
+  }
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.activity-user {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.activity-time {
+  font-size: 11px;
+  color: var(--slate-soft);
+}
+
+.activity-desc {
+  font-size: 12.5px;
+  color: var(--slate);
+}
+
+.activity-target {
+  color: var(--ink-soft);
+  font-weight: 500;
+}

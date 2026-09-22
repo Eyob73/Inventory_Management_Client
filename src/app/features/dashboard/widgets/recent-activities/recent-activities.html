@@ -1,0 +1,20 @@
+<ng-container *transloco="let t">
+<div class="activity-timeline">
+  @for (act of activities(); track act.id) {
+    <div class="activity-item">
+      <div class="activity-icon" [ngClass]="'type-' + act.type">
+        <mat-icon>{{ act.icon }}</mat-icon>
+      </div>
+      <div class="activity-content">
+        <div class="activity-header">
+          <span class="activity-user">{{ act.user || t('dashboard.recentActivities.system') }}</span>
+          <span class="activity-time">{{ act.timestamp | date:'MMM d, h:mm a' }}</span>
+        </div>
+        <div class="activity-desc">
+          {{ t('dashboard.recentActivities.' + act.action) }} &mdash; <strong class="activity-target">{{ act.target }}</strong>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+</ng-container>

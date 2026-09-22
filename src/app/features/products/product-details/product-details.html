@@ -1,0 +1,102 @@
+<div class="pd">
+<ng-container *transloco="let t">
+  <header class="pd-hero">
+    <div class="pd-hero__media">
+      @if (imageUrl()) {
+      <img [src]="imageUrl()!" [alt]="product().name" class="pd-hero__image clickable-image" (click)="toggleFullscreen()" />
+      } @else {
+      <div class="pd-hero__placeholder" aria-hidden="true">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      }
+    </div>
+    <div class="pd-hero__meta">
+      <span class="status-badge" [ngClass]="stockStatus().class">{{ t('products.stockStatus.' + stockStatus().class) }}</span>
+      <h2 class="pd-hero__name">{{ product().name }}</h2>
+      <p class="pd-hero__sku">SKU <code>{{ product().sku || '—' }}</code></p>
+      @if (product().description) {
+      <p class="pd-hero__desc">{{ product().description }}</p>
+      }
+    </div>
+  </header>
+
+  <div class="pd-grid">
+    <section class="pd-card">
+      <h3 class="pd-card__title">{{ t('products.details.identity') }}</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.productName') }}</dt>
+          <dd>{{ product().name }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.productCode') }}</dt>
+          <dd><code class="sku-tag">{{ product().sku || '—' }}</code></dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.category') }}</dt>
+          <dd>{{ categoryName() || '—' }}</dd>
+        </div>
+        <div class="pd-dl__row pd-dl__row--block">
+          <dt>{{ t('products.details.description') }}</dt>
+          <dd>{{ product().description || '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="pd-card">
+      <h3 class="pd-card__title">{{ t('products.details.pricing') }}</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.price') }}</dt>
+          <dd class="pd-dl__strong">{{ product().price != null ? (product().price | number:'1.2-2') + ' ETB' : '—' }}
+          </dd>
+        </div>
+        @if (showCost()) {
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.costPrice') }}</dt>
+          <dd>{{ product().cost != null ? (product().cost | number:'1.2-2') + ' ETB' : '—' }}</dd>
+        </div>
+        }
+      </dl>
+    </section>
+
+    <section class="pd-card">
+      <h3 class="pd-card__title">{{ t('products.details.inventory') }}</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.currentStock') }}</dt>
+          <dd>{{ product().quantityInStock ?? 0 }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.minStock') }}</dt>
+          <dd>{{ minStock() != null ? minStock() : '—' }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.productStatus') }}</dt>
+          <dd>
+            <span class="status-badge" [ngClass]="stockStatus().class">{{ t('products.stockStatus.' + stockStatus().class) }}</span>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="pd-card">
+      <h3 class="pd-card__title">{{ t('products.details.supplierAudit') }}</h3>
+      <dl class="pd-dl">
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.supplier') }}</dt>
+          <dd>{{ supplierName() === 'No supplier' || supplierName() === 'No Supplier' || supplierName() === 'Unknown Supplier' ? t('purchases.details.noSupplier') : (supplierName() || '—') }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.createdDate') }}</dt>
+          <dd>{{ product().createdAt ? (product().createdAt | date:'MMM d, y, h:mm a') : '—' }}</dd>
+        </div>
+        <div class="pd-dl__row">
+          <dt>{{ t('products.details.updatedDate') }}</dt>
+          <dd>{{ product().updatedAt ? (product().updatedAt | date:'MMM d, y, h:mm a') : '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</ng-container>
+</div>

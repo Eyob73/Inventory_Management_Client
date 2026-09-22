@@ -1,1 +1,259 @@
-<p>products works!</p>
+<div class="products-container">
+<ng-container *transloco="let t">
+  <div class="products-header">
+    <div>
+      <h1 class="products-title">{{ t('products.title') }}</h1>
+      <p class="products-subtitle">
+        {{ t('products.subtitle') }}
+      </p>
+    </div>
+    @if (canAddProducts()) {
+      <a routerLink="/add-products" class="btn btn--primary">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+          <path
+            d="M12 5v14M5 12h14"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
+        </svg>
+        {{ t('products.addProduct') }}
+      </a>
+    }
+  </div>
+
+  <!-- Stats Cards Row -->
+  <div class="stats-row">
+    @if (store.isLoading()) {
+      @for (i of [1,2,3,4]; track $index) {
+        <app-card-skeleton type="kpi"></app-card-skeleton>
+      }
+    } @else {
+      <div class="stat-card teal">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap"><mat-icon>inventory_2</mat-icon></span>
+          <span class="stat-title">{{ t('products.stats.total') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{ store.totalCount() }}</div>
+          <span class="stat-sub">{{ t('products.stats.allCatalogItems') }}</span>
+        </div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap"><mat-icon>account_balance_wallet</mat-icon></span>
+          <span class="stat-title">{{ t('products.stats.inventoryValue') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{ store.totalInventoryValue() | number: '1.0-0' }} ETB</div>
+          <span class="stat-sub">{{ t('products.stats.totalStockValue') }}</span>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap"><mat-icon>warning</mat-icon></span>
+          <span class="stat-title">{{ t('products.stats.lowStock') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{ store.lowStockCount() }}</div>
+          <span class="stat-sub">{{ t('products.stats.replenishment') }}</span>
+        </div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap"><mat-icon>remove_shopping_cart</mat-icon></span>
+          <span class="stat-title">{{ t('products.stats.outOfStock') }}</span>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{ store.outOfStockCount() }}</div>
+          <span class="stat-sub">{{ t('products.stats.shortage') }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Search / Filter toolbar -->
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ t('products.filters.search') }}</mat-label>
+        <input
+          #searchInput
+          matInput
+          [placeholder]="t('products.filters.searchPlaceholder')"
+          [ngModel]="store.search()"
+          (keyup)="applyFilter($event)"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchInput.value) {
+          <button matSuffix mat-icon-button (click)="clearSearch(searchInput)" [attr.aria-label]="t('products.filters.clearSearch')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('products.filters.category') }}</mat-label>
+        <mat-select [ngModel]="store.categoryId()" (ngModelChange)="onCategoryChange($event)">
+          <mat-option value="ALL">{{ t('products.filters.allCategories') }}</mat-option>
+          @for (cat of categories(); track cat.id) {
+            <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  @if (store.isLoading()) {
+    <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+  } @else {
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" matSort class="products-table">
+          <!-- No Column -->
+          <ng-container matColumnDef="no">
+            <th mat-header-cell *matHeaderCellDef>{{ t('products.table.no') }}</th>
+            <td mat-cell *matCellDef="let element; let i = index" class="font-mono text-secondary">
+              {{ (store.pageIndex() - 1) * store.pageSize() + i + 1 }}
+            </td>
+          </ng-container>
+
+          <!-- Product Name & Description Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('products.table.product') }}</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="product-cell">
+                <div class="product-cell__media">
+                  @if (element.imageUrl) {
+                    <img [src]="baseUrl + element.imageUrl" [alt]="element.name" class="product-cell__image" />
+                  } @else {
+                    <div class="product-cell__placeholder" aria-hidden="true">
+                      <mat-icon>inventory_2</mat-icon>
+                    </div>
+                  }
+                </div>
+                <div class="product-cell__info">
+                  <span class="product-cell__name">{{ element.name }}</span>
+                  <span class="product-cell__desc">{{ element.description }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- SKU Column -->
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('products.table.sku') }}</th>
+            <td mat-cell *matCellDef="let element">
+              <code class="sku-tag">{{ element.sku }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('products.table.price') }}</th>
+            <td mat-cell *matCellDef="let element" class="font-medium">
+              {{ element.price?.toFixed(2) }} ETB
+            </td>
+          </ng-container>
+
+          <!-- Cost Column — hidden for Sales users -->
+          @if (!isSales()) {
+            <ng-container matColumnDef="cost">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('products.table.cost') }}</th>
+              <td mat-cell *matCellDef="let element" class="text-slate">
+                {{ element.cost?.toFixed(2) }} ETB
+              </td>
+            </ng-container>
+          }
+
+          <!-- Stock Column -->
+          <ng-container matColumnDef="quantityInStock">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('products.table.stock') }}</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="status-badge" [ngClass]="getStockStatus(element.quantityInStock).class">
+                {{ t('products.stockStatus.' + getStockStatus(element.quantityInStock).class) }} ({{ element.quantityInStock }})
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{ t('products.table.actions') }}</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="actions-cell">
+                <button
+                  type="button"
+                  class="action-btn action-btn--view"
+                  (click)="viewDetails(element)"
+                  [matTooltip]="t('products.table.viewDetails')" [attr.aria-label]="t('products.table.viewDetails')"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                @if (canEditProducts()) {
+                  <button
+                    type="button"
+                    class="action-btn action-btn--edit"
+                    (click)="editProduct(element)"
+                    [matTooltip]="t('products.table.editProduct')" [attr.aria-label]="t('products.table.editProduct')"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                }
+                @if (canDeleteProducts()) {
+                  <button
+                    type="button"
+                    class="action-btn action-btn--delete"
+                    (click)="deleteProduct(element)"
+                    [matTooltip]="t('products.table.deleteProduct')" [attr.aria-label]="t('products.table.deleteProduct')"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns()" class="table-row"></tr>
+
+          <!-- Row shown when there is no data or no matching search filter -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="table-empty" [attr.colspan]="displayedColumns().length">
+              <div class="empty-state">
+                <svg
+                  class="empty-icon"
+                  viewBox="0 0 24 24"
+                  width="44"
+                  height="44"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <p class="empty-title">{{ t('products.table.noProducts') }}</p>
+                <p class="empty-subtitle">{{ t('products.table.noProductsDesc') }}</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        class="products-paginator"
+        [length]="store.totalCount()"
+        [pageSize]="store.pageSize()"
+        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        (page)="onPageChange($event)"
+        [attr.aria-label]="t('products.pagination')"
+      />
+    </div>
+  }
+</ng-container>
+</div>

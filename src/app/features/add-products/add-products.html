@@ -1,0 +1,247 @@
+<form class="product-form" [formGroup]="productForm" (ngSubmit)="onSubmit()">
+<ng-container *transloco="let t">
+
+    <div class="product-form__header">
+        <h1 class="product-form__title">{{ isEditMode() ? t('addProducts.titleEdit') : t('addProducts.titleAdd') }}</h1>
+        <p class="product-form__subtitle">
+          {{ isEditMode() ? t('addProducts.subtitleEdit') : t('addProducts.subtitleAdd') }}
+        </p>
+    </div>
+
+    @if (submissionStatus()) {
+    <div class="product-form__status" [class.product-form__status--error]="isError()">
+        <p>{{ submissionStatus() }}</p>
+    </div>
+    }
+
+    <section class="product-form__section">
+        <h2 class="product-form__section-title">{{ t('addProducts.productImage') }}</h2>
+        <div class="form-group">
+            <div class="image-upload-container" [class.has-image]="!!imagePreview()">
+                @if (imagePreview()) {
+                    <div class="image-preview-container">
+                        <img [src]="imagePreview()" alt="Preview" class="image-preview">
+                        <button type="button" class="btn btn-icon remove-image-btn" (click)="removeImage($event)" [attr.title]="t('addProducts.removeImage')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                } @else {
+                    <div class="image-placeholder">
+                        <div class="placeholder-icon">
+                            <mat-icon>add_photo_alternate</mat-icon>
+                        </div>
+                        <span class="placeholder-text">{{ t('addProducts.uploadImage') }}</span>
+                        <span class="placeholder-hint">{{ t('addProducts.imageHint') }}</span>
+                        <div class="upload-actions">
+                            <label for="productImage" class="upload-btn upload-btn--outline" [attr.title]="t('addProducts.browseFiles')">
+                                <mat-icon>folder_open</mat-icon>
+                                <span>{{ t('addProducts.browseFiles') }}</span>
+                            </label>
+                            <label for="productImageCamera" class="upload-btn upload-btn--primary" [attr.title]="t('addProducts.camera')">
+                                <mat-icon>camera_alt</mat-icon>
+                                <span>{{ t('addProducts.camera') }}</span>
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+            <input type="file" id="productImage" class="visually-hidden" accept=".jpg,.jpeg,.png,.webp" (change)="onFileSelected($event)">
+            <input type="file" id="productImageCamera" class="visually-hidden" accept="image/*" capture="environment" (change)="onFileSelected($event)">
+        </div>
+    </section>
+
+    <section class="product-form__section">
+        <h2 class="product-form__section-title">{{ t('addProducts.basicInfo') }}</h2>
+
+        <div class="form-group">
+            <label for="name">{{ t('addProducts.productName') }}</label>
+            <input type="text" id="name" formControlName="name" [class.has-error]="isInvalid('name')"
+                [placeholder]="t('addProducts.namePlaceholder')">
+            @if (isInvalid('name')) {
+            <span class="form-error">{{ t('addProducts.errNameReq') }}</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="description">{{ t('addProducts.description') }}</label>
+            <input type="text" id="description" formControlName="description"
+                [placeholder]="t('addProducts.descPlaceholder')">
+        </div>
+
+        <div class="form-row form-row--3">
+            <div class="form-group">
+                <label for="category">{{ t('addProducts.category') }}</label>
+                <mat-form-field appearance="outline" class="category-select-field">
+                    <mat-select id="category" formControlName="category" [placeholder]="t('addProducts.catPlaceholder')">
+                        @for (cat of categoriesResource.value() || []; track cat.id) {
+                        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                @if (categoriesResource.isLoading()) {
+                <span class="form-hint">{{ t('addProducts.loadingCat') }}</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="supplierId">{{ t('addProducts.supplier') }}</label>
+                <mat-form-field appearance="outline" class="category-select-field">
+                    <mat-select id="supplierId" formControlName="supplierId" [placeholder]="t('addProducts.selectSupplier')"
+                        panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
+                        <mat-option [value]="''">{{ t('addProducts.noSupplier') }}</mat-option>
+                        @for (sup of suppliersResource.value() || []; track sup.id) {
+                        <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                @if (suppliersResource.isLoading()) {
+                <span class="form-hint">{{ t('addProducts.loadingSup') }}</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="sku">{{ t('addProducts.sku') }}</label>
+                <input type="text" id="sku" formControlName="sku" [placeholder]="t('addProducts.skuPlaceholder')">
+            </div>
+        </div>
+    </section>
+
+    <section class="product-form__section">
+        <h2 class="product-form__section-title">{{ t('addProducts.pricingInv') }}</h2>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">{{ t('addProducts.price') }}</label>
+                <div class="input-prefix">
+                    <input type="number" id="price" formControlName="price" [class.has-error]="isInvalid('price')"
+                        placeholder="0.00" min="0" step="0.01">
+                </div>
+                @if (isInvalid('price')) {
+                <span class="form-error">{{ t('addProducts.errPriceValid') }}</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="cost">{{ t('addProducts.cost') }}</label>
+                <div class="input-prefix">
+                    <input type="number" id="cost" formControlName="cost" [class.has-error]="isInvalid('cost')"
+                        placeholder="0.00" min="0" step="0.01">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">{{ t('addProducts.currentStock') }}</label>
+                <input type="number" id="stock" formControlName="stock" placeholder="0" min="0" readonly>
+                <span class="form-hint">{{ t('addProducts.stockHint') }}</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="minimumStock">{{ t('addProducts.minStock') }}</label>
+                <input type="number" id="minimumStock" formControlName="minimumStock"
+                    [class.has-error]="isInvalid('minimumStock')" placeholder="0" min="0">
+                @if (isInvalid('minimumStock')) {
+                <span class="form-error">{{ t('addProducts.minStockErr') }}</span>
+                }
+            </div>
+            <div class="form-group form-group--status">
+                <label for="isActive">{{ t('addProducts.catalogStatus') }}</label>
+                <label class="catalog-status-toggle">
+                    <input type="checkbox" id="isActive" formControlName="isActive">
+                    <span>{{ t('addProducts.active') }}</span>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    @if (isBottleManagementEnabled()) {
+    <section class="product-form__section">
+        <h2 class="product-form__section-title">Returnable Bottle Configuration</h2>
+
+        <div class="form-row">
+            <div class="form-group form-group--status">
+                <label for="isReturnable">Returnable Product?</label>
+                <label class="catalog-status-toggle">
+                    <input type="checkbox" id="isReturnable" formControlName="isReturnable">
+                    <span>Yes, this product is returnable</span>
+                </label>
+            </div>
+            
+            @if (productForm.get('isReturnable')?.value) {
+                <div class="form-group">
+                    <label for="bottleTypeId">Bottle Type</label>
+                    <mat-form-field appearance="outline" class="category-select-field">
+                        <mat-select id="bottleTypeId" formControlName="bottleTypeId" placeholder="Select Bottle Type">
+                            @for (type of bottleTypesResource.value() || []; track type.id) {
+                                <mat-option [value]="type.id">{{ type.name }} ({{ type.depositAmount }} ETB)</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    @if (bottleTypesResource.isLoading()) {
+                        <span class="form-hint">Loading bottle types...</span>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+    }
+
+    <section class="product-form__section" formArrayName="variants">
+        <div class="product-form__section-header">
+            <div>
+                <h2 class="product-form__section-title">{{ t('addProducts.variants') }}</h2>
+                <p class="product-form__section-hint">{{ t('addProducts.variantsHint') }}</p>
+            </div>
+            <button type="button" class="btn btn--ghost" (click)="addVariant()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                {{ t('addProducts.addVariant') }}
+            </button>
+        </div>
+
+        <div class="variant-list">
+            @for (variant of variants.controls; let i = $index; track variant) {
+            <div class="variant-card" [formGroupName]="i">
+                <div class="variant-card__fields">
+                    <div class="form-group">
+                        <label>{{ t('addProducts.variantName') }}</label>
+                        <input type="text" formControlName="name" [class.has-error]="isVariantInvalid(i, 'name')"
+                            [placeholder]="t('addProducts.egSize')">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ t('addProducts.variantValue') }}</label>
+                        <input type="text" formControlName="value" [class.has-error]="isVariantInvalid(i, 'value')"
+                            [placeholder]="t('addProducts.egMedium')">
+                    </div>
+                    <div class="form-group form-group--narrow">
+                        <label>{{ t('addProducts.variantStock') }}</label>
+                        <input type="number" formControlName="stock" [class.has-error]="isVariantInvalid(i, 'stock')"
+                            placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <button type="button" class="variant-card__remove" (click)="removeVariant(i)"
+                    [disabled]="variants.length === 1" [attr.aria-label]="t('addProducts.removeVariant')">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            }
+        </div>
+    </section>
+
+    <div class="product-form__footer">
+        <button type="button" class="btn btn--secondary" (click)="cancel()">{{ t('addProducts.cancel') }}</button>
+        <button type="submit" class="btn btn--primary" [disabled]="productForm.invalid || productStore.isLoading()">
+            @if (productStore.isLoading()) {
+            Saving...
+            } @else {
+            {{ isEditMode() ? t('addProducts.saveChanges') : t('addProducts.saveProduct') }}
+            }
+        </button>
+    </div>
+</ng-container>
+</form>

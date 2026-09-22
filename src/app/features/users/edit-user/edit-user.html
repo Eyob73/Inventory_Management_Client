@@ -1,0 +1,147 @@
+<ng-container *transloco="let t">
+<div class="edit-user-page">
+
+  <!-- Header with Back Button -->
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      {{ t('users.backToUsers') }}
+    </button>
+
+    @if (user()) {
+    <div class="header-main">
+      <div class="user-avatar">{{ getUserInitials() }}</div>
+      <div>
+        <h1 class="page-title">{{ t('users.editUserProfile') }}</h1>
+        <p class="page-subtitle">{{ user()?.email }} &bull; ID: {{ user()?.id }}</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Messages -->
+  @if (error()) {
+  <div class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error() }}</span>
+    <button class="dismiss-btn" (click)="dismissError()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  }
+
+  @if (successMessage()) {
+  <div class="success-banner">
+    <mat-icon>check_circle_outline</mat-icon>
+    <span>{{ successMessage() }}</span>
+  </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <p>{{ t('users.loadingUserDetails') }}</p>
+  </div>
+  } @else if (user()) {
+  <!-- Form Card -->
+  <div class="form-card">
+    <form [formGroup]="editForm" (ngSubmit)="saveUser()" class="edit-form">
+
+      <!-- Section: Personal Information -->
+      <div class="form-section">
+        <div class="section-title">
+          <mat-icon>person</mat-icon>
+          <span>{{ t('users.personalInfo') }}</span>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>{{ t('users.firstName') }}</mat-label>
+            <input matInput id="firstName" formControlName="firstName" [placeholder]="t('users.enterFirstName')" required />
+            @if (editForm.get('firstName')?.invalid && editForm.get('firstName')?.touched) {
+            <mat-error>{{ t('users.firstNameReq') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>{{ t('users.lastName') }}</mat-label>
+            <input matInput id="lastName" formControlName="lastName" [placeholder]="t('users.enterLastName')" />
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>{{ t('users.emailAddress') }}</mat-label>
+            <input matInput id="email" type="email" formControlName="email" [placeholder]="t('users.emailPlaceholder')" required />
+            @if (editForm.get('email')?.hasError('required') && editForm.get('email')?.touched) {
+            <mat-error>{{ t('users.emailReq') }}</mat-error>
+            } @else if (editForm.get('email')?.hasError('email') && editForm.get('email')?.touched) {
+            <mat-error>{{ t('users.emailInvalid') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>{{ t('users.usernameOptional') }}</mat-label>
+            <input matInput id="userName" formControlName="userName" [placeholder]="t('users.usernamePlaceholder')" />
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>{{ t('users.phoneNumber') }}</mat-label>
+            <input matInput id="phoneNumber" formControlName="phoneNumber" [placeholder]="t('users.phonePlaceholder')" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Section: Role & Account Settings -->
+      <div class="form-section">
+        <div class="section-title">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>{{ t('users.rolePermissions') }}</span>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="user-form-field">
+            <mat-label>{{ t('users.systemRole') }}</mat-label>
+            <mat-select id="role" formControlName="role">
+              @for (role of ROLES; track role) {
+              <mat-option [value]="role">{{ t('users.' + role.toLowerCase()) }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="toggle-field">
+            <div class="toggle-label">
+              <span class="toggle-title">{{ t('users.accountStatus') }}</span>
+              <span class="toggle-desc">{{ t('users.toggleAccountStatus') }}</span>
+            </div>
+            <mat-slide-toggle color="primary" formControlName="isActive">
+              {{ editForm.get('isActive')?.value ? t('users.active') : t('users.locked') }}
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn--ghost" (click)="goBack()" [disabled]="isSaving()">
+          {{ t('users.cancel') }}
+        </button>
+        <button type="submit" class="btn btn--primary" [disabled]="editForm.invalid || isSaving()">
+          @if (isSaving()) {
+          <div class="btn-spinner"></div>
+          <span>{{ t('users.saving') }}</span>
+          } @else {
+          <mat-icon>save</mat-icon>
+          <span>{{ t('users.saveChanges') }}</span>
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+  }
+</div>
+</ng-container>

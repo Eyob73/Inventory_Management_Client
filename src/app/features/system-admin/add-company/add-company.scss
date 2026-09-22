@@ -1,0 +1,119 @@
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .back-btn {
+    color: var(--slate);
+    &:hover {
+      background: var(--surface-hover);
+      color: var(--ink);
+    }
+  }
+
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .page-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .page-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: var(--slate);
+  }
+}
+
+.page-body {
+}
+
+.company-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+
+  .card-title {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  .col-span-2 {
+    grid-column: span 2;
+  }
+}
+
+.form-grid-single {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.mt-6 {
+  margin-top: 24px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+
+  button {
+    min-width: 120px;
+  }
+  
+  mat-spinner {
+    margin: 0 auto;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+
+    .col-span-2 {
+      grid-column: span 1;
+    }
+  }
+}

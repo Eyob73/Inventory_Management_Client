@@ -1,0 +1,239 @@
+import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { Component, inject, computed, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { AuthStore } from '../../store/auth.store';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth';
+
+interface ActivityItem {
+  id: string;
+  action: string;
+  detail: string;
+  time: string;
+  icon: string;
+}
+
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
+  templateUrl: './profile.html',
+  styleUrl: './profile.scss',
+})
+export class ProfileComponent {
+  private translocoService = inject(TranslocoService);
+  readonly authStore = inject(AuthStore);
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
+
+  readonly user = computed(() => this.authStore.user());
+  readonly role = computed(() => this.authStore.userRole());
+
+  // UI Signals
+  readonly activeTab = signal<'overview' | 'security' | 'activity'>('overview');
+  readonly emailCopied = signal(false);
+  readonly isEditing = signal(false);
+  readonly isSaving = signal(false);
+  readonly isChangingPassword = signal(false);
+  readonly saveSuccess = signal(false);
+  readonly profileError = signal<string | null>(null);
+
+  // Password Visibility Signals
+  readonly hideCurrentPassword = signal(true);
+  readonly hideNewPassword = signal(true);
+  readonly hideConfirmPassword = signal(true);
+
+  // Editable Form Fields
+  editFirstName = '';
+  editLastName = '';
+  editUserName = '';
+
+  // Password Fields (Security tab)
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  passwordChangeSuccess = signal(false);
+  passwordError = signal<string | null>(null);
+
+  // Recent Activity Log
+  readonly activityLogs: ActivityItem[] = [
+    { id: '1', action: 'System Login', detail: 'Authenticated successfully from Windows (Chrome)', time: '10 minutes ago', icon: 'login' },
+    { id: '2', action: 'Catalog Access', detail: 'Viewed inventory products catalog', time: '1 hour ago', icon: 'inventory_2' },
+    { id: '3', action: 'Dashboard View', detail: 'Accessed sales overview dashboard', time: '2 hours ago', icon: 'dashboard' },
+    { id: '4', action: 'Session Started', detail: 'New auth token issued', time: 'Today at 08:30 AM', icon: 'key' },
+  ];
+
+  readonly fullName = computed(() => {
+    const u = this.user();
+    if (!u) return 'User';
+    if (u.firstName) {
+      return u.lastName ? `${u.firstName} ${u.lastName}` : u.firstName;
+    }
+    return u.userName || u.email?.split('@')[0] || 'User';
+  });
+
+  readonly initials = computed(() => {
+    const u = this.user();
+    if (u?.firstName) {
+      const f = u.firstName.charAt(0);
+      const l = u.lastName ? u.lastName.charAt(0) : '';
+      return (f + l).toUpperCase();
+    }
+    const name = this.fullName();
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  });
+
+  readonly roleColor = computed(() => {
+    switch (this.role()?.toLowerCase()) {
+      case 'systemadmin': return 'role--systemadmin';
+      case 'admin': return 'role--admin';
+      case 'manager': return 'role--manager';
+      case 'sales': return 'role--sales';
+      default: return 'role--default';
+    }
+  });
+
+  readonly roleIcon = computed(() => {
+    switch (this.role()?.toLowerCase()) {
+      case 'systemadmin': return 'admin_panel_settings';
+      case 'admin': return 'shield';
+      case 'manager': return 'manage_accounts';
+      case 'sales': return 'point_of_sale';
+      default: return 'person';
+    }
+  });
+
+  readonly roleDescription = computed(() => {
+    switch (this.role()?.toLowerCase()) {
+      case 'systemadmin': return 'Full administrative access across the entire system, managing tenants and companies.';
+      case 'admin': return 'Full administrative control over users, inventory, reports, and system configuration.';
+      case 'manager': return 'Operational access for inventory control, product updates, and sales reporting.';
+      case 'sales': return 'Sales processing, customer management, and product catalog browsing.';
+      default: return 'Standard user access.';
+    }
+  });
+
+  setTab(tab: 'overview' | 'security' | 'activity'): void {
+    this.activeTab.set(tab);
+  }
+
+  startEditing(): void {
+    const u = this.user();
+    this.editFirstName = u?.firstName || '';
+    this.editLastName = u?.lastName || '';
+    this.editUserName = u?.userName || '';
+    this.isEditing.set(true);
+  }
+
+  cancelEditing(): void {
+    this.isEditing.set(false);
+  }
+
+  saveProfile(): void {
+    const u = this.user();
+    if (!u || !u.id) return;
+
+    this.isSaving.set(true);
+    this.profileError.set(null);
+
+    const roleVal = Array.isArray(u.roles) ? u.roles[0] : (u.roles || 'User');
+
+    this.userService
+      .updateUser(u.id, {
+        email: u.email,
+        firstName: this.editFirstName,
+        lastName: this.editLastName,
+        userName: this.editUserName || undefined,
+        role: roleVal,
+      })
+      .subscribe({
+        next: (updatedUser) => {
+          this.authStore.updateUser({
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            userName: updatedUser.userName,
+          });
+          
+          // Refresh the token so the new claims (name, username) are reflected in the JWT
+          this.authService.refresh().subscribe();
+
+          this.isSaving.set(false);
+          this.isEditing.set(false);
+          this.saveSuccess.set(true);
+          setTimeout(() => this.saveSuccess.set(false), 3000);
+        },
+        error: (err) => {
+          this.isSaving.set(false);
+          const apiErrors = err?.error?.errors;
+          if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+            this.profileError.set(apiErrors.join(' '));
+          } else {
+            this.profileError.set(err?.error?.detail || this.translocoService.translate('profile.errUpdateProfile'));
+          }
+        },
+      });
+  }
+
+  copyEmail(): void {
+    const email = this.user()?.email;
+    if (!email) return;
+    navigator.clipboard?.writeText(email).then(() => {
+      this.emailCopied.set(true);
+      setTimeout(() => this.emailCopied.set(false), 1500);
+    });
+  }
+
+  changePassword(): void {
+    this.passwordError.set(null);
+    if (!this.currentPassword) {
+      this.passwordError.set(this.translocoService.translate('profile.errEnterCurrentPass'));
+      return;
+    }
+    if (this.newPassword.length < 6) {
+      this.passwordError.set(this.translocoService.translate('profile.errNewPassMin6'));
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.passwordError.set(this.translocoService.translate('profile.errPassMismatch'));
+      return;
+    }
+
+    this.isChangingPassword.set(true);
+    this.authService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.isChangingPassword.set(false);
+        this.passwordChangeSuccess.set(true);
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+        setTimeout(() => this.passwordChangeSuccess.set(false), 4000);
+      },
+      error: (err) => {
+        this.isChangingPassword.set(false);
+        const apiErrors = err?.error?.errors;
+        if (Array.isArray(apiErrors) && apiErrors.length > 0) {
+          this.passwordError.set(apiErrors.join(' '));
+        } else {
+          this.passwordError.set(err?.error?.detail || err?.error?.message || this.translocoService.translate('profile.errUpdatePass'));
+        }
+      },
+    });
+  }
+}

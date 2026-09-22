@@ -1,0 +1,78 @@
+<ng-container *transloco="let t">
+<div class="panel-dialog">
+  <!-- Header -->
+  <div class="panel-head">
+    <div class="panel-head-left">
+      <mat-icon class="panel-head-icon">tune</mat-icon>
+      <div>
+        <h2 class="panel-title">{{ t('dashboardCustomize.title') }}</h2>
+        <p class="panel-subtitle">{{ t('dashboardCustomize.subtitle') }}</p>
+      </div>
+    </div>
+    <button mat-icon-button class="panel-close-btn" (click)="close()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Category Filter Tabs -->
+  <div class="category-tabs">
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">{{ t('dashboardCustomize.catAll') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'kpi'" (click)="setCategory('kpi')">{{ t('dashboardCustomize.catKpis') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'charts'" (click)="setCategory('charts')">{{ t('dashboardCustomize.catCharts') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'tables'" (click)="setCategory('tables')">{{ t('dashboardCustomize.catTables') }}</button>
+    <button type="button" class="cat-chip" [class.active]="selectedCategory() === 'lists'" (click)="setCategory('lists')">{{ t('dashboardCustomize.catLists') }}</button>
+  </div>
+
+  <!-- Reset Confirmation Banner -->
+  @if (confirmingReset()) {
+    <div class="reset-confirm-box">
+      <mat-icon class="warn-icon">warning</mat-icon>
+      <div class="confirm-text">
+        <strong>{{ t('dashboardCustomize.resetTitle') }}</strong>
+        <p>{{ t('dashboardCustomize.resetDesc') }}</p>
+      </div>
+      <div class="confirm-actions">
+        <button mat-button class="cancel-btn" (click)="cancelReset()">{{ t('dashboardCustomize.cancel') }}</button>
+        <button mat-flat-button class="confirm-btn" (click)="doReset()">{{ t('dashboardCustomize.resetNow') }}</button>
+      </div>
+    </div>
+  }
+
+  <!-- Widget List -->
+  <div class="panel-body">
+    @for (w of filteredWidgets(); track w.id) {
+      <div class="panel-row" [class.panel-row--hidden]="!w.visible">
+        <span class="panel-icon-wrap">
+          <mat-icon>{{ w.icon }}</mat-icon>
+        </span>
+        <div class="panel-row-info">
+          <div class="label-row">
+            <span class="panel-row-label">{{ t('dashboardWidgets.' + w.id + '.label') }}</span>
+            <span class="size-badge">{{ w.columns }}×{{ w.rows }}</span>
+          </div>
+          <span class="panel-row-desc">{{ t('dashboardWidgets.' + w.id + '.desc') }}</span>
+        </div>
+        <mat-slide-toggle
+          [checked]="w.visible"
+          (change)="toggle(w.id, w.visible)"
+          [attr.aria-label]="'Toggle ' + w.label"
+          color="primary"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="panel-footer">
+    <button mat-stroked-button class="reset-btn" (click)="askReset()">
+      <mat-icon>restart_alt</mat-icon>
+      {{ t('dashboardCustomize.reset') }}
+    </button>
+    <button mat-flat-button class="done-btn" (click)="close()">
+      <mat-icon>check</mat-icon>
+      {{ t('dashboardCustomize.done') }}
+    </button>
+  </div>
+</div>
+
+</ng-container>

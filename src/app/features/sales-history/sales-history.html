@@ -1,0 +1,178 @@
+<ng-container *transloco="let t">
+<div class="sales-history-container">
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">{{ t('salesHistory.title') }}</h1>
+      <p class="page-subtitle">
+        {{ t('salesHistory.subtitle') }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ t('salesHistory.search') }}</mat-label>
+        <input matInput [placeholder]="t('salesHistory.searchPlaceholder')" [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)" (keyup.enter)="onSearch()" />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchTerm()) {
+        <button matSuffix mat-icon-button (click)="searchTerm.set(''); onSearch()" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('salesHistory.startDate') }}</mat-label>
+        <input matInput [matDatepicker]="startPicker" [ngModel]="startDate()" (ngModelChange)="onStartDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('salesHistory.endDate') }}</mat-label>
+        <input matInput [matDatepicker]="endPicker" [ngModel]="endDate()" (ngModelChange)="onEndDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('salesHistory.paymentMethod') }}</mat-label>
+        <mat-select [ngModel]="selectedPaymentMethod()" (ngModelChange)="selectedPaymentMethod.set($event); onSearch()">
+          <mat-option value="">{{ t('salesHistory.allPaymentMethods') }}</mat-option>
+          <mat-option value="Cash">{{ t('salesHistory.cash') }}</mat-option>
+          <mat-option value="Card">{{ t('salesHistory.card') }}</mat-option>
+          <mat-option value="Mobile Payment">{{ t('salesHistory.mobilePayment') }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('salesHistory.status') }}</mat-label>
+        <mat-select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event); onSearch()">
+          <mat-option value="">{{ t('salesHistory.allStatuses') }}</mat-option>
+          <mat-option value="Completed">{{ t('salesHistory.completed') }}</mat-option>
+          <mat-option value="Cancelled">{{ t('salesHistory.cancelled') }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button type="button" class="btn btn--outline" (click)="resetFilters()">
+        <mat-icon>refresh</mat-icon> {{ t('salesHistory.resetFilters') }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Sales Table / Skeleton Loading -->
+  @if (isLoading()) {
+  <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+  } @else {
+  <div class="table-card">
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="sales-table">
+        <!-- Number Column -->
+        <ng-container matColumnDef="number">
+          <th mat-header-cell *matHeaderCellDef>{{ t('salesHistory.table.no') }}</th>
+          <td mat-cell *matCellDef="let element; let i = index">
+            {{ (pageIndex() - 1) * pageSize() + i + 1 }}
+          </td>
+        </ng-container>
+
+        <!-- Sale Number Column -->
+        <ng-container matColumnDef="saleNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('salesHistory.table.saleNo') }}</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="sale-number-code">{{ element.saleNumber }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('salesHistory.table.date') }}</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.saleDate | date: 'medium' }}
+          </td>
+        </ng-container>
+
+        <!-- Cashier Column -->
+        <ng-container matColumnDef="cashier">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('salesHistory.table.cashier') }}</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.cashierName || t('salesHistory.table.sys') }}
+          </td>
+        </ng-container>
+
+        <!-- Customer Column -->
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('salesHistory.table.customer') }}</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.customerName || t('salesHistory.table.walkIn') }}
+          </td>
+        </ng-container>
+
+        <!-- Payment Method Column -->
+        <ng-container matColumnDef="paymentMethod">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('salesHistory.table.paymentMethod') }}</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="payment-badge">{{ element.paymentMethod === 'Cash' ? t('salesHistory.cash') : (element.paymentMethod === 'Card' ? t('salesHistory.card') : (element.paymentMethod === 'Mobile Payment' || element.paymentMethod === 'Mobile Banking' || element.paymentMethod === 'Telebirr' ? t('salesHistory.mobilePayment') : element.paymentMethod)) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Items Count Column -->
+        <ng-container matColumnDef="itemsCount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">{{ t('salesHistory.table.items') }}</th>
+          <td mat-cell *matCellDef="let element" class="text-center font-bold">
+            {{ element.items.length }}
+          </td>
+        </ng-container>
+
+        <!-- Total Amount Column -->
+        <ng-container matColumnDef="totalAmount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-right">{{ t('salesHistory.table.totalAmount') }}</th>
+          <td mat-cell *matCellDef="let element" class="text-right font-bold amount-cell">
+            {{ element.totalAmount | number: '1.2-2' }} ETB
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">{{ t('salesHistory.table.status') }}</th>
+          <td mat-cell *matCellDef="let element" class="text-center">
+            <span class="status-badge" [ngClass]="element.status.toLowerCase()">
+              {{ element.status === 'Completed' ? t('salesHistory.completed') : (element.status === 'Cancelled' ? t('salesHistory.cancelled') : element.status) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('salesHistory.table.actions') }}</th>
+          <td mat-cell *matCellDef="let element" class="text-center">
+            <button mat-icon-button color="primary" [matTooltip]="t('salesHistory.table.viewReceipt')" (click)="viewDetails(element)">
+              <mat-icon>receipt_long</mat-icon>
+            </button>
+            <button *ngIf="canCancelSale" mat-icon-button color="warn" [matTooltip]="t('salesHistory.table.cancelSale')"
+              [disabled]="element.status === 'Cancelled'" (click)="cancelSale(element)">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-table-cell" [attr.colspan]="displayedColumns.length">
+            {{ t('salesHistory.table.noMatch') }}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="totalCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex() - 1"
+      [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons></mat-paginator>
+  </div>
+  }
+</div>
+</ng-container>

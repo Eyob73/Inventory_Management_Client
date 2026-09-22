@@ -1,0 +1,53 @@
+<div class="table-skeleton" role="status" aria-busy="true" aria-label="Loading table">
+  <div class="table-skeleton__card">
+    <table class="table-skeleton__table">
+      @if (showHeader()) {
+        <thead>
+          <tr>
+            @for (col of columnDefs(); track $index) {
+              <th [style.width]="col.width || null" [class.align-right]="col.align === 'right'">
+                <span class="bone bone--header" [style.width]="col.width ? '70%' : boneWidth($index, true)"></span>
+              </th>
+            }
+          </tr>
+        </thead>
+      }
+
+      <tbody>
+        @for (row of rowIndexes(); track row) {
+          <tr>
+            @for (col of columnDefs(); track $index) {
+              <td [class.align-right]="col.align === 'right'">
+                @if (col.dual) {
+                  <div class="bone-stack">
+                    <span class="bone" [style.width]="boneWidth($index + row)"></span>
+                    <span class="bone bone--sm" [style.width]="boneWidth($index + row + 3)"></span>
+                  </div>
+                } @else {
+                  <span
+                    class="bone"
+                    [class.bone--pill]="$index === columnDefs().length - 2"
+                    [style.width]="col.width ? '65%' : boneWidth($index + row)"
+                  ></span>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (showFooter()) {
+      <div class="table-skeleton__footer">
+        <span class="bone bone--sm" style="width: 88px"></span>
+        <div class="table-skeleton__footer-actions">
+          <span class="bone bone--btn"></span>
+          <span class="bone bone--btn"></span>
+          <span class="bone bone--btn"></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <span class="sr-only">Loading…</span>
+</div>

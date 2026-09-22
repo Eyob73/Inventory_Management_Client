@@ -1,0 +1,20 @@
+<ng-container *transloco="let t">
+<div class="kpi-body">
+  <div class="kpi-value">{{ kpi().value }}</div>
+
+  <div class="kpi-delta-row">
+    <span class="kpi-delta" [class.negative]="!kpi().positive">
+      <mat-icon>{{ kpi().positive ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+      
+      
+      @if (kpi().deltaKey) {
+        {{ t(kpi().deltaKey!.key, { count: kpi().deltaKey!.count }) }}
+      } @else {
+        {{ kpi().deltaStr }}
+      }
+    </span>
+    <span class="kpi-sub">{{ t(kpi().sub) }}</span>
+  </div>
+</div>
+
+</ng-container>

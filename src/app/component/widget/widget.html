@@ -1,0 +1,169 @@
+<div class="container" [class.is-loading]="widget().loading">
+  <ng-container *transloco="let t">
+  <!-- Placeholder shown in grid slot while widget is being dragged -->
+  <div *cdkDragPlaceholder class="widget-placeholder"></div>
+
+  <!-- Header -->
+  <div class="widget-header">
+    <!-- Dedicated Drag Handle -->
+    <button
+      type="button"
+      class="drag-handle widget-drag-handle"
+      cdkDragHandle
+      [matTooltip]="t('dashboard.widgetUI.dragTooltip')"
+      matTooltipPosition="above"
+      aria-label="Drag widget handle"
+    >
+      <mat-icon>drag_indicator</mat-icon>
+    </button>
+
+    <!-- Widget Icon & Title -->
+    <span class="widget-icon-wrap">
+      <mat-icon>{{ widget().icon }}</mat-icon>
+    </span>
+
+    <h2 class="widget-label">
+        {{ widget().settings.customTitle || t('dashboard.widgets.' + widget().id) }}
+      </h2>
+
+    <span class="spacer"></span>
+
+    <!-- Action Toolbar -->
+    <div class="widget-actions">
+      <!-- Settings Menu Trigger -->
+      <button
+        mat-icon-button
+        class="widget-action-btn"
+        [matMenuTriggerFor]="settingsMenu"
+        [matTooltip]="t('dashboard.widgetUI.settingsTooltip')"
+        matTooltipPosition="above"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+
+      <!-- Remove Button -->
+      <button
+        mat-icon-button
+        class="widget-action-btn remove-btn"
+        [matTooltip]="t('dashboard.widgetUI.removeTooltip')"
+        matTooltipPosition="above"
+        (click)="remove()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Dropdown Menu -->
+  <mat-menu #settingsMenu="matMenu" class="widget-settings-menu">
+    <div class="menu-header">{{ t('dashboard.widgetUI.customization') }}</div>
+
+    <!-- Width / Columns Selector -->
+    <div class="menu-section">
+      <span class="menu-section-label">{{ t('dashboard.widgetUI.columns') }}</span>
+      <div class="size-btn-group">
+        @for (c of [1, 2, 3, 4]; track c) {
+          @if (c >= widget().minColumns && c <= widget().maxColumns) {
+            <button
+              type="button"
+              class="size-btn"
+              [class.active]="widget().columns === c"
+              (click)="resize(c, widget().rows)"
+            >
+              {{ c }} {{ t('dashboard.widgetUI.col') }}
+            </button>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Height / Rows Selector -->
+    <div class="menu-section">
+      <span class="menu-section-label">{{ t('dashboard.widgetUI.rows') }}</span>
+      <div class="size-btn-group">
+        @for (r of [1, 2, 3, 4]; track r) {
+          @if (r >= widget().minRows && r <= widget().maxRows) {
+            <button
+              type="button"
+              class="size-btn"
+              [class.active]="widget().rows === r"
+              (click)="resize(widget().columns, r)"
+            >
+              {{ r }} {{ t('dashboard.widgetUI.row') }}
+            </button>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Card Background Style -->
+    <div class="menu-section">
+      <span class="menu-section-label">{{ t('dashboard.widgetUI.cardStyle') }}</span>
+      <div class="size-btn-group">
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="(widget().settings.bgStyle || 'default') === 'default'"
+          (click)="setBgStyle('default')"
+        >
+          {{ t('dashboard.widgetUI.default') }}
+        </button>
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="widget().settings.bgStyle === 'surface'"
+          (click)="setBgStyle('surface')"
+        >
+          {{ t('dashboard.widgetUI.card') }}
+        </button>
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="widget().settings.bgStyle === 'glass'"
+          (click)="setBgStyle('glass')"
+        >
+          {{ t('dashboard.widgetUI.glass') }}
+        </button>
+        <button
+          type="button"
+          class="size-btn"
+          [class.active]="widget().settings.bgStyle === 'accent'"
+          (click)="setBgStyle('accent')"
+        >
+          {{ t('dashboard.widgetUI.accent') }}
+        </button>
+      </div>
+    </div>
+
+    <div class="menu-divider"></div>
+
+    <button mat-menu-item (click)="remove()">
+      <mat-icon class="menu-icon-danger">visibility_off</mat-icon>
+      <span>{{ t('dashboard.widgetUI.hide') }}</span>
+    </button>
+  </mat-menu>
+
+  <!-- Body Content -->
+  <div class="widget-body">
+    <!-- Loading State -->
+    @if (widget().loading) {
+      <app-card-skeleton [type]="(widget().id.includes('kpi') || widget().id.includes('low-stock')) ? 'kpi-body' : 'chart-body'"></app-card-skeleton>
+    } @else if (widget().error) {
+      <!-- Error State Banner -->
+      <div class="widget-error-state">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <p class="error-msg">{{ widget().error }}</p>
+        <button mat-button class="retry-btn" (click)="refresh()">
+          <mat-icon>refresh</mat-icon> {{ t('dashboard.widgetUI.retry') }}
+        </button>
+      </div>
+    } @else {
+      <!-- Dynamic Angular Component Content -->
+      <ng-container
+        [ngComponentOutlet]="widget().component"
+        [ngComponentOutletInputs]="widget().inputs ?? {}"
+      />
+    }
+  </div>
+  </ng-container>
+</div>

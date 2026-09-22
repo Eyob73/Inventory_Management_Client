@@ -1,0 +1,214 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('dashboardTitle') }}</h1>
+      <p class="page-subtitle">{{ t('dashboardSubtitle') }}</p>
+    </div>
+  </div>
+
+  @if (!store.stats()) {
+    <div class="stats-row">
+      @for (i of [1,2,3,4]; track i) {
+        <app-card-skeleton type="kpi"></app-card-skeleton>
+      }
+    </div>
+  } @else {
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap">
+            <mat-icon>inventory_2</mat-icon>
+          </span>
+          <h2 class="stat-title">{{ t('fullBottles') }}</h2>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalFullBottles}}</div>
+          <div class="stat-sub-row">
+            <span class="stat-sub">{{ t('readyToSell') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap">
+            <mat-icon>local_drink</mat-icon>
+          </span>
+          <h2 class="stat-title">{{ t('emptyBottles') }}</h2>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalEmptyBottles}}</div>
+          <div class="stat-sub-row">
+            <span class="stat-sub">{{ t('readyForRefill') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap">
+            <mat-icon>people</mat-icon>
+          </span>
+          <h2 class="stat-title">{{ t('withCustomers') }}</h2>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalBottlesWithCustomers}}</div>
+          <div class="stat-sub-row">
+            <span class="stat-sub">{{ t('pendingReturn') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-icon-wrap">
+            <mat-icon>account_balance</mat-icon>
+          </span>
+          <h2 class="stat-title">{{ t('totalDepositLiability') }}</h2>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-value">{{store.stats()?.totalPendingDepositLiability | currency:'ETB '}}</div>
+          <div class="stat-sub-row">
+            <span class="stat-sub">{{ t('outstandingDeposits') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="dashboard-sections">
+    <!-- Recent Activity Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2 class="section-title">{{ t('recentActivity') }}</h2>
+          <p class="section-subtitle">{{ t('recentActivityDesc') }}</p>
+        </div>
+        @if (canEditTypes()) {
+          <a routerLink="/bottles/transactions" class="action-link">{{ t('viewAll') }} <mat-icon>arrow_forward</mat-icon></a>
+        }
+      </div>
+      
+      @if (transactionsStore.isLoading()) {
+        <app-card-skeleton type="chart-body"></app-card-skeleton>
+      } @else if (transactionsStore.transactions().length === 0) {
+        <div class="empty-state-wrapper">
+          <div class="empty-icon-wrap">
+            <mat-icon>history</mat-icon>
+          </div>
+          <h3 class="empty-title">{{ t('noActivity') }}</h3>
+          <p class="empty-subtitle">{{ t('noActivityDesc') }}</p>
+        </div>
+      } @else {
+        <div class="activity-list">
+          @for (tx of transactionsStore.transactions(); track tx.id) {
+            <div class="activity-item">
+              <div class="activity-icon-wrap" [ngClass]="getTxColorClass(tx.transactionType)">
+                <mat-icon>{{ getTxIcon(tx.transactionType) }}</mat-icon>
+              </div>
+              <div class="activity-content">
+                <div class="activity-top">
+                  <span class="activity-title">{{ t(getTxLabel(tx.transactionType)) }}</span>
+                  <span class="activity-time">
+                    @if (tx.createdAt) {
+                      {{ tx.createdAt | date:'short' }}
+                    }
+                  </span>
+                </div>
+                <div class="activity-desc">
+                  {{ tx.bottleTypeName }} 
+                  @if (getBottleTypeDetailsByName(tx.bottleTypeName)?.capacity) {
+                    <span class="text-muted">· {{ getBottleTypeDetailsByName(tx.bottleTypeName)?.capacity }}</span>
+                  }
+                </div>
+                <div class="activity-meta">
+                  <span class="meta-item font-medium">{{ tx.quantity }} {{ t('bottlesCount') }}</span>
+                  @if (tx.depositAmount > 0) {
+                    <span class="meta-dot">•</span>
+                    <span class="meta-item">{{ tx.depositAmount | currency:'ETB ' }} {{ t('depositLabel') }}</span>
+                  }
+                  <span class="meta-dot">•</span>
+                  @if (tx.customerName) {
+                    <span class="meta-item"><mat-icon>person</mat-icon> {{ tx.customerName }}</span>
+                    <span class="meta-dot">•</span>
+                  }
+                  <span class="meta-item"><mat-icon>account_circle</mat-icon> {{ tx.createdBy || 'System' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Inventory Table Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2 class="section-title">{{ t('bottleTypeInventory') }}</h2>
+          <p class="section-subtitle">{{ t('bottleTypeInventoryDesc') }}</p>
+        </div>
+      </div>
+
+      @if (inventoryStore.isLoading() || typesStore.isLoading()) {
+        <app-card-skeleton type="chart-body"></app-card-skeleton>
+      } @else if (inventoryStore.inventory().length === 0) {
+        <div class="empty-state-wrapper">
+          <div class="empty-icon-wrap">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <h3 class="empty-title">{{ t('noTypes') }}</h3>
+          <p class="empty-subtitle">{{ t('noTypesDesc') }}</p>
+          @if (canEditTypes()) {
+            <a routerLink="/bottles/types" class="btn btn-primary">
+              <mat-icon>add</mat-icon> {{ t('addBottleType') }}
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="app-table">
+            <thead>
+              <tr>
+                <th>{{ t('table.bottleType') }}</th>
+                <th>{{ t('table.size') }}</th>
+                <th class="text-right">{{ t('table.total') }}</th>
+                <th class="text-right">{{ t('table.available') }}</th>
+                <th class="text-right">{{ t('table.inCirculation') }}</th>
+                <th class="text-right">{{ t('table.deposit') }}</th>
+                <th>{{ t('table.status') }}</th>
+                <th class="text-right">{{ t('table.action') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (inv of inventoryStore.inventory(); track inv.id) {
+                <tr>
+                  <td class="font-medium">{{ inv.bottleTypeName }}</td>
+                  <td class="text-muted">{{ getBottleTypeDetails(inv.bottleTypeId)?.capacity || '-' }}</td>
+                  <td class="text-right font-mono">{{ inv.emptyBottles + inv.fullBottles + inv.withCustomers }}</td>
+                  <td class="text-right font-mono">{{ inv.emptyBottles }}</td>
+                  <td class="text-right font-mono">{{ inv.withCustomers }}</td>
+                  <td class="text-right font-mono">{{ getBottleTypeDetails(inv.bottleTypeId)?.depositAmount | currency:'ETB ' }}</td>
+                  <td>
+                    <span class="status-badge" [ngClass]="getInventoryStatusClass(inv)">
+                      {{ t(getInventoryStatus(inv)) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="actions-cell">
+                      <button class="action-btn" [routerLink]="['/bottles/inventory']" [title]="t('viewDetails')">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+</ng-container>

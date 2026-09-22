@@ -1,0 +1,266 @@
+import { TranslocoDirective } from '@jsverse/transloco';
+import { Component, OnInit, signal, inject, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+
+// Material Modules
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
+// Components & UI
+import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
+import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
+import { TranslocoService } from '@jsverse/transloco';
+import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+
+// Services & Models
+import { SaleService } from '../../services/sale.service';
+import { AuthService } from '../../services/auth';
+import { Sale, SaleFilter } from '../../models/sale.model';
+
+@Component({
+  selector: 'app-sales-history',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    TableSkeleton
+  , TranslocoDirective],
+  templateUrl: './sales-history.html',
+  styleUrl: './sales-history.scss'
+})
+export class SalesHistoryComponent implements OnInit {
+  private saleService = inject(SaleService);
+  private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private confirmDialog = inject(ConfirmDialogService);
+  private translocoService = inject(TranslocoService);
+
+  sales = signal<Sale[]>([]);
+  totalCount = signal<number>(0);
+  isLoading = signal<boolean>(false);
+
+  dataSource = new MatTableDataSource<Sale>([]);
+
+  @ViewChild(MatSort) set sort(sort: MatSort | undefined) {
+    if (sort) {
+      this.dataSource.sort = sort;
+    }
+  }
+
+  // Filters
+  searchTerm = signal<string>('');
+  startDate = signal<string>('');
+  endDate = signal<string>('');
+  selectedPaymentMethod = signal<string>('');
+  selectedStatus = signal<string>('');
+
+  pageIndex = signal<number>(1);
+  pageSize = signal<number>(10);
+
+  displayedColumns: string[] = [
+    'number',
+    'saleNumber',
+    'date',
+    'cashier',
+    'customer',
+    'paymentMethod',
+    'itemsCount',
+    'totalAmount',
+    'status',
+    'actions'
+  ];
+
+  readonly skeletonColumns: TableSkeletonColumn[] = [
+    { width: '4%' },
+    { width: '12%' },
+    { width: '15%' },
+    { width: '12%' },
+    { width: '13%' },
+    { width: '12%' },
+    { width: '6%', align: 'center' },
+    { width: '11%', align: 'right' },
+    { width: '8%', align: 'center' },
+    { width: '7%', align: 'center' }
+  ];
+
+  get isSalesRole(): boolean {
+    return this.authService.hasRole('Sales') && !this.authService.hasRole('Admin') && !this.authService.hasRole('Manager');
+  }
+
+  get canCancelSale(): boolean {
+    return this.authService.hasRole('Admin') || this.authService.hasRole('Manager');
+  }
+
+  private route = inject(ActivatedRoute);
+
+  ngOnInit(): void {
+    this.dataSource.sortingDataAccessor = (item: Sale, property: string) => {
+      switch (property) {
+        case 'saleNumber': return item.saleNumber || '';
+        case 'date': return item.saleDate ? new Date(item.saleDate).getTime() : 0;
+        case 'cashier': return item.cashierName || '';
+        case 'customer': return item.customerName || '';
+        case 'paymentMethod': return item.paymentMethod || '';
+        case 'itemsCount': return item.items ? item.items.length : 0;
+        case 'totalAmount': return item.totalAmount || 0;
+        case 'status': return item.status || '';
+        default: return (item as any)[property];
+      }
+    };
+    this.loadSales();
+    this.checkRouteForSaleId();
+  }
+
+  private checkRouteForSaleId(): void {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.saleService.getSaleById(id).subscribe({
+          next: (sale) => {
+            this.viewDetails(sale);
+          },
+          error: (err) => {
+            this.snackBar.open('Sale details not found.', 'Close', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  loadSales(): void {
+    this.isLoading.set(true);
+
+    const filter: SaleFilter = {
+      searchTerm: this.searchTerm().trim() || undefined,
+      startDate: this.startDate() || undefined,
+      endDate: this.endDate() || undefined,
+      paymentMethod: this.selectedPaymentMethod() || undefined,
+      status: this.selectedStatus() || undefined,
+      pageIndex: this.pageIndex(),
+      pageSize: this.pageSize()
+    };
+
+    this.saleService.getPagedSales(filter).subscribe({
+      next: (res) => {
+        const data = res.items || [];
+        this.sales.set(data);
+        this.dataSource.data = data;
+        this.totalCount.set(res.totalCount || 0);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.snackBar.open('Failed to load sales history.', 'Close', { duration: 3000 });
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  onSearch(): void {
+    this.pageIndex.set(1);
+    this.loadSales();
+  }
+
+  onStartDateChange(date: Date | null): void {
+    if (date) {
+      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.startDate.set(d.toISOString().split('T')[0]);
+    } else {
+      this.startDate.set('');
+    }
+    this.onSearch();
+  }
+
+  onEndDateChange(date: Date | null): void {
+    if (date) {
+      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+      this.endDate.set(d.toISOString().split('T')[0]);
+    } else {
+      this.endDate.set('');
+    }
+    this.onSearch();
+  }
+
+  resetFilters(): void {
+    this.searchTerm.set('');
+    this.startDate.set('');
+    this.endDate.set('');
+    this.selectedPaymentMethod.set('');
+    this.selectedStatus.set('');
+    this.pageIndex.set(1);
+    this.loadSales();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex + 1);
+    this.pageSize.set(event.pageSize);
+    this.loadSales();
+  }
+
+  viewDetails(sale: Sale): void {
+    this.dialog.open(SaleDetailsDialogComponent, {
+      data: { sale },
+      width: '680px',
+      panelClass: 'pos-receipt-modal'
+    });
+  }
+
+  cancelSale(sale: Sale): void {
+    if (!this.canCancelSale) {
+      this.snackBar.open(this.translocoService.translate('salesHistoryDialog.cancelError'), 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.confirmDialog.confirm({
+      title: this.translocoService.translate('salesHistoryDialog.title'),
+        message: this.translocoService.translate('salesHistoryDialog.message', { saleNumber: sale.saleNumber }),
+        type: 'danger',
+        confirmText: this.translocoService.translate('salesHistoryDialog.cancelSale'),
+        cancelText: this.translocoService.translate('salesHistoryDialog.keepSale'),
+      icon: 'cancel'
+    }).subscribe((confirmed) => {
+      if (!confirmed) return;
+
+      this.saleService.cancelSale(sale.id).subscribe({
+        next: () => {
+          this.snackBar.open(this.translocoService.translate('salesHistoryDialog.cancelSuccess', { saleNumber: sale.saleNumber }), 'Success', {
+            duration: 3500
+          });
+          this.loadSales();
+        },
+        error: (err) => {
+          const msg = err?.error?.detail || 'Failed to cancel sale.';
+          this.snackBar.open(msg, 'Close', { duration: 4000 });
+        }
+      });
+    });
+  }
+}

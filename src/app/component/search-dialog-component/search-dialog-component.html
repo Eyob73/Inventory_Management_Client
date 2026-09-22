@@ -1,0 +1,18 @@
+<div class="search-dialog">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search pages</mat-label>
+        <input matInput [(ngModel)]="query" (input)="filterItems()" placeholder="Type to filter..." autofocus />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-nav-list class="result-list">
+        @for (item of filteredItems; track item.path) {
+          <a mat-list-item (click)="navigate(item.path)" class="result-item">
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        } @empty {
+          <div class="no-results">No matching pages found</div>
+        }
+      </mat-nav-list>
+      <button mat-button (click)="close()" class="close-btn">Cancel</button>
+    </div>

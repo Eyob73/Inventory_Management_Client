@@ -1,0 +1,38 @@
+@if (type() === 'kpi') {
+  <div class="stat-card-skeleton">
+    <div class="stat-card-header-sk">
+      <div class="bone bone--icon"></div>
+      <div class="bone bone--title"></div>
+    </div>
+    <div class="stat-card-body-sk">
+      <div class="bone bone--value"></div>
+      <div class="stat-delta-row-sk">
+        <div class="bone bone--delta"></div>
+        <div class="bone bone--sub"></div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (type() === 'chart') {
+  <div class="widget-card-skeleton">
+    <div class="bone bone--chart-title"></div>
+    <div class="bone bone--chart-area"></div>
+  </div>
+}
+
+@if (type() === 'kpi-body') {
+  <div class="kpi-body-skeleton">
+    <div class="bone bone--value"></div>
+    <div class="kpi-delta-row-sk">
+      <div class="bone bone--delta"></div>
+      <div class="bone bone--sub"></div>
+    </div>
+  </div>
+}
+
+@if (type() === 'chart-body') {
+  <div class="chart-body-skeleton">
+    <div class="bone bone--chart-area"></div>
+  </div>
+}

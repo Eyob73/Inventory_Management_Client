@@ -1,0 +1,147 @@
+/* ─── Global design tokens (light + dark) ─────────────────────── */
+/* Available everywhere via var(--token). Toggle: html.dark-theme   */
+
+:root {
+  color-scheme: light;
+
+  /* User Defined Theme Palette (Light / White) */
+  --canvas: #F5F5F4;
+  --paper: #F5F5F4;
+  --surface: #FFFFFF;
+  --ink: #0A0A0A;
+  --slate: #6B6B6B;
+  --line: #E1E1DF;
+  --cobalt: #0e8c7f;
+  --cobalt-soft: #E8EDFD;
+  --moss: #5B7553;
+  --moss-soft: #EAEFE6;
+  --shadow: 0 1px 2px rgba(10, 10, 10, 0.05);
+
+  /* App token aliases */
+  --ink-soft: var(--slate);
+  --teal: var(--moss);
+  --teal-dark: #465c3f;
+  --teal-soft: var(--moss-soft);
+  --teal-glow: rgba(91, 117, 83, 0.2);
+  --slate-soft: #919191;
+  --error: #d93838;
+  --rose: #d93838;
+  --rose-soft: #fde8e8;
+  --amber: var(--moss);
+  --amber-soft: var(--moss-soft);
+  --primary: var(--moss);
+  --primary-soft: var(--moss-soft);
+  --surface-card: var(--surface);
+  --surface-hover: var(--paper);
+  --text-heading: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--slate);
+
+  /* Layout Surfaces */
+  --sidenav-bg: var(--surface);
+  --toolbar-bg: var(--surface);
+  --toolbar-bg-scrolled: rgba(255, 255, 255, 0.98);
+
+  /* Borders & Shadows */
+  --border: var(--line);
+  --border-strong: #cfcfcd;
+  --shadow-sm: var(--shadow);
+  --shadow-md: 0 4px 6px -1px rgba(10, 10, 10, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(10, 10, 10, 0.08);
+
+  /* Interactive */
+  --row-hover: rgba(10, 10, 10, 0.03);
+  --btn-primary-fg: #ffffff;
+  --paginator-bg: linear-gradient(180deg, #ffffff 0%, var(--canvas) 100%);
+
+  /* Status badges */
+  --status-in-bg: var(--moss-soft);
+  --status-in-fg: var(--moss);
+  --status-low-bg: var(--cobalt-soft);
+  --status-low-fg: var(--cobalt);
+  --status-out-bg: #fde8e8;
+  --status-out-fg: #d93838;
+
+  /* Skeleton */
+  --sk-base: #e5e5e3;
+  --sk-shine: #f0f0ee;
+  --sk-border: var(--border);
+  --sk-surface: var(--surface);
+  --sk-paper: var(--canvas);
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html.dark-theme {
+  color-scheme: dark;
+
+  /* User Defined Theme Palette (Dark) */
+  --canvas: #0A0A0B;
+  --paper: #0A0A0B;
+  --surface: #151517;
+  --ink: #F4F4F3;
+  --slate: #8F8F94;
+  --line: #232326;
+  --cobalt: #0e8c7f;
+  --cobalt-soft: #182036;
+  --moss: #8FBF7A;
+  --moss-soft: #1C2318;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+
+  /* App token aliases */
+  --ink-soft: var(--slate);
+  --teal: var(--moss);
+  --teal-dark: #709c5d;
+  --teal-soft: var(--moss-soft);
+  --teal-glow: rgba(143, 191, 122, 0.25);
+  --slate-soft: #636368;
+  --error: #f87171;
+  --rose: #f87171;
+  --rose-soft: rgba(248, 113, 113, 0.16);
+  --amber: var(--moss);
+  --amber-soft: var(--moss-soft);
+  --primary: var(--moss);
+  --primary-soft: var(--moss-soft);
+  --surface-card: var(--surface);
+  --surface-hover: var(--paper);
+  --text-heading: var(--ink);
+  --text-body: var(--ink);
+  --text-muted: var(--slate);
+
+  /* Layout Surfaces */
+  --sidenav-bg: var(--surface);
+  --toolbar-bg: var(--surface);
+  --toolbar-bg-scrolled: rgba(21, 21, 23, 0.98);
+
+  /* Borders & Shadows */
+  --border: var(--line);
+  --border-strong: #36363b;
+  --shadow-sm: var(--shadow);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+
+  /* Interactive */
+  --row-hover: rgba(255, 255, 255, 0.04);
+  --btn-primary-fg: #0a0a0b;
+  --paginator-bg: linear-gradient(180deg, rgba(21, 21, 23, 0.6) 0%, rgba(10, 10, 11, 0.8) 100%);
+
+  /* Status badges */
+  --status-in-bg: var(--moss-soft);
+  --status-in-fg: var(--moss);
+  --status-low-bg: var(--cobalt-soft);
+  --status-low-fg: var(--cobalt);
+  --status-out-bg: rgba(248, 113, 113, 0.16);
+  --status-out-fg: #f87171;
+
+  /* Skeleton */
+  --sk-base: #151517;
+  --sk-shine: #232326;
+  --sk-border: var(--border);
+  --sk-surface: var(--surface);
+  --sk-paper: var(--canvas);
+
+  --mat-paginator-disabled-icon-color: rgba(143, 143, 148, 0.35);
+}

@@ -1,0 +1,79 @@
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
+import { AuthStore } from '../store/auth.store';
+
+/**
+ * Role guard factory. Accepts a single role string or an array of allowed roles.
+ * Admin users always have access (admin is super-role).
+ * Cancels navigation when access is denied so the user stays on the current page.
+ *
+ * Usage:
+ *   canActivate: [roleGuard('Admin')]
+ *   canActivate: [roleGuard(['Admin', 'Manager'])]
+ */
+export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
+  return () => {
+    const store = inject(AuthStore);
+    const router = inject(Router);
+
+    const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+
+    const evaluateRole = () => {
+      const userRole = store.userRole();
+      if (!userRole || userRole === 'Guest') {
+        return router.createUrlTree(['/login']);
+      }
+
+      const normalizedUserRole = userRole.toLowerCase();
+
+      // Explicitly allowed roles
+      const isAllowed = roles.some((r) => r.toLowerCase() === normalizedUserRole);
+      if (isAllowed) return true;
+
+      // SystemAdmin routes should NOT be automatically accessible by Admins
+      const isSystemAdminRoute = roles.every(r => r.toLowerCase() === 'systemadmin');
+      
+      // Admin always has full access to other standard routes
+      if (!isSystemAdminRoute && (normalizedUserRole === 'admin' || normalizedUserRole === 'administrator')) {
+        return true;
+      }
+
+      // Cancel navigation so the user stays on the current page.
+      return false;
+    };
+
+    // Wait for auth loading to finish before evaluating
+    if (store.isLoading()) {
+      return toObservable(store.isLoading).pipe(
+        filter((isLoading) => !isLoading),
+        map(() => evaluateRole())
+      );
+    }
+
+    return evaluateRole();
+  };
+};
+
+/**
+ * Auth guard — requires any authenticated user (used for the main shell layout).
+ */
+export const authGuard: CanActivateFn = () => {
+  const store = inject(AuthStore);
+  const router = inject(Router);
+
+  const evaluate = () => {
+    if (store.isLoggedIn()) return true;
+    return router.createUrlTree(['/login']);
+  };
+
+  if (store.isLoading()) {
+    return toObservable(store.isLoading).pipe(
+      filter((isLoading) => !isLoading),
+      map(() => evaluate())
+    );
+  }
+
+  return evaluate();
+};

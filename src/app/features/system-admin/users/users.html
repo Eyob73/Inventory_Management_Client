@@ -1,0 +1,113 @@
+<ng-container *transloco="let t; read: 'systemAdmin'">
+<div class="products-container"><div class="products-header">
+  <div class="header-left-wrap">
+    <h1 class="products-title">{{ t('users.title') }}</h1>
+    <p class="products-subtitle">{{ t('users.subtitle') }}</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn--ghost" (click)="loadUsers()">
+      <mat-icon>refresh</mat-icon>
+      {{ t('common.refresh') }}
+    </button>
+  </div>
+</div>
+
+<div class="filters-card">
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>{{ t('users.searchUsers') }}</mat-label>
+      <input
+        matInput
+        type="text"
+        [placeholder]="t('users.searchPlaceholder')"
+        [ngModel]="searchQuery()"
+        (input)="onSearch($event)"
+      />
+      <mat-icon matPrefix>search</mat-icon>
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="clearSearch()" [attr.aria-label]="t('common.clearSearch')">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="filter-form-field">
+      <mat-label>{{ t('users.companyFilter') }}</mat-label>
+      <mat-select (selectionChange)="onTenantChange($event.value)" [value]="tenantFilter()">
+        <mat-option [value]="null">{{ t('users.allCompanies') }}</mat-option>
+        <mat-option value="system">{{ t('users.systemAdminsOnly') }}</mat-option>
+        <mat-divider></mat-divider>
+        @for (tenant of tenantsList(); track tenant.id) {
+          <mat-option [value]="tenant.id">{{ tenant.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="table-card"> <div class="table-wrapper">
+  @if (loading()) {
+    <app-table-skeleton [columns]="[{width:'30%'},{width:'25%'},{width:'15%'},{width:'30%'}]"></app-table-skeleton>
+  } @else if (error()) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon text-red">error_outline</mat-icon>
+      <h3>{{ error() }}</h3>
+      <button class="btn btn--primary" (click)="loadUsers()">{{ t('common.tryAgain') }}</button>
+    </div>
+  } @else if (users().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">people_outline</mat-icon>
+      <h3>{{ t('users.noUsersFound') }}</h3>
+      <p>{{ t('users.noUsersDescription') }}</p>
+    </div>
+  } @else {
+    <table mat-table [dataSource]="users()" class="modern-table" matSort (matSortChange)="onSort($event)">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ t('common.name') }} </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="user-cell">
+            <div class="avatar">{{ getUserInitials(element) }}</div>
+            <div class="user-names">
+              <span class="user-fullname">{{ element.firstName }} {{ element.lastName }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ t('common.email') }} </th>
+        <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef> {{ t('common.role') }} </th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="role-badge">{{ getTranslatedRole(element.roles?.[0]) }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="company">
+        <th mat-header-cell *matHeaderCellDef> {{ t('common.company') }} </th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="company-badge" [class.system]="!element.tenantId">
+            {{ getCompanyName(element.tenantId) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    
+    <mat-paginator [length]="totalLength()" [pageSize]="pageSize()" [pageSizeOptions]="pageSizeOptions"
+      (page)="onPage($event)" aria-label="Select page">
+    </mat-paginator>
+  }
+  </div>
+</div>
+</div>
+
+
+
+
+</ng-container>

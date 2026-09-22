@@ -1,0 +1,12 @@
+<div class="chart-container">
+  @if (!hasData()) {
+    <div class="empty-chart">
+      <span class="material-icons">show_chart</span>
+      <p>No trend data available for selected period</p>
+    </div>
+  } @else {
+    <div style="position: relative; height: 250px; width: 100%;">
+      <canvas #chartCanvas></canvas>
+    </div>
+  }
+</div>

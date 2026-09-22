@@ -1,0 +1,108 @@
+<ng-container *transloco="let t; read: 'systemAdmin'">
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <button class="action-btn" (click)="cancel()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-titles">
+        <h1 class="page-title">{{ t('addCompany.title') }}</h1>
+        <p class="page-subtitle">{{ t('addCompany.subtitle') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="company-form">
+      <!-- Company Details Card -->
+      <div class="form-card">
+        <h2 class="card-title">{{ t('addCompany.companyInfo') }}</h2>
+        
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="col-span-2">
+            <mat-label>{{ t('addCompany.companyName') }}</mat-label>
+            <input matInput formControlName="name" [placeholder]="t('addCompany.namePlaceholder')" />
+            <mat-error *ngIf="form.get('name')?.hasError('required')">{{ t('addCompany.nameRequired') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.companyCode') }}</mat-label>
+            <input matInput formControlName="code" [placeholder]="t('addCompany.codePlaceholder')" />
+            <mat-error *ngIf="form.get('code')?.hasError('required')">{{ t('addCompany.codeRequired') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.contactEmail') }}</mat-label>
+            <input matInput formControlName="email" type="email" [placeholder]="t('addCompany.emailPlaceholder')" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.contactPhone') }}</mat-label>
+            <input matInput formControlName="phone" [placeholder]="t('addCompany.phonePlaceholder')" />
+          </mat-form-field>
+        </div>
+        
+        <div class="form-grid-single">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('addCompany.address') }}</mat-label>
+            <textarea matInput formControlName="address" rows="2" [placeholder]="t('addCompany.addressPlaceholder')"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('addCompany.description') }}</mat-label>
+            <textarea matInput formControlName="description" rows="2" [placeholder]="t('addCompany.descriptionPlaceholder')"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Administrator Details Card -->
+      <div class="form-card mt-6">
+        <h2 class="card-title">{{ t('addCompany.adminInfo') }}</h2>
+        
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.firstName') }}</mat-label>
+            <input matInput formControlName="adminFirstName" />
+            <mat-error *ngIf="form.get('adminFirstName')?.hasError('required')">{{ t('addCompany.firstNameRequired') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.lastName') }}</mat-label>
+            <input matInput formControlName="adminLastName" />
+            <mat-error *ngIf="form.get('adminLastName')?.hasError('required')">{{ t('addCompany.lastNameRequired') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-span-2">
+            <mat-label>{{ t('addCompany.adminEmail') }}</mat-label>
+            <input matInput formControlName="adminEmail" type="email" />
+            <mat-error *ngIf="form.get('adminEmail')?.hasError('required')">{{ t('addCompany.emailRequired') }}</mat-error>
+            <mat-error *ngIf="form.get('adminEmail')?.hasError('email')">{{ t('addCompany.validEmail') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.password') }}</mat-label>
+            <input matInput formControlName="adminPassword" type="password" />
+            <mat-error *ngIf="form.get('adminPassword')?.hasError('required')">{{ t('addCompany.passwordRequired') }}</mat-error>
+            <mat-error *ngIf="form.get('adminPassword')?.hasError('minlength')">{{ t('addCompany.min8Chars') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t('addCompany.confirmPassword') }}</mat-label>
+            <input matInput formControlName="confirmPassword" type="password" />
+            <mat-error *ngIf="form.hasError('mismatch')">{{ t('addCompany.passwordsMismatch') }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-actions mt-6">
+        <button type="button" class="btn btn--ghost" (click)="cancel()" [disabled]="loading">{{ t('common.cancel') }}</button>
+        <button type="submit" class="btn btn--primary" [disabled]="loading">
+          <span *ngIf="!loading">{{ t('addCompany.createCompany') }}</span>
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</ng-container>

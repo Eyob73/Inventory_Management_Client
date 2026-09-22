@@ -1,1 +1,153 @@
-<p>inventory works!</p>
+<ng-container *transloco="let t">
+<div class="inventory-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ t('inventory.title') }}</h1>
+      <p class="page-subtitle">
+        {{ t('inventory.subtitle') }}
+      </p>
+    </div>
+    <button class="btn btn--primary" (click)="openAdjustment()">
+      <mat-icon>tune</mat-icon>
+      {{ t('inventory.adjust') }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ t('inventory.search') }}</mat-label>
+        <input
+          matInput
+          [(ngModel)]="search"
+          [placeholder]="t('inventory.searchPlaceholder')"
+          (keyup.enter)="applyFilters()"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (search) {
+          <button matSuffix mat-icon-button (click)="search=''; applyFilters()" [attr.aria-label]="t('inventory.clearSearch')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('inventory.product') }}</mat-label>
+        <mat-select [(ngModel)]="productId" (selectionChange)="applyFilters()">
+          <div class="select-search-container">
+            <div class="select-search-wrapper">
+              <mat-icon class="select-search-icon">search</mat-icon>
+              <input 
+                matInput 
+                type="text" 
+                placeholder="Search..." 
+                [ngModel]="productSearch()"
+                (ngModelChange)="productSearch.set($event)"
+                (keydown)="$event.stopPropagation()"
+                class="select-search-input"
+              />
+            </div>
+          </div>
+          <mat-option value="">{{ t('inventory.allProducts') }}</mat-option>
+          @for (product of filteredProducts(); track product.id) {
+            <mat-option [value]="product.id">{{ product.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('inventory.type') }}</mat-label>
+        <mat-select [(ngModel)]="type" (selectionChange)="applyFilters()">
+          <mat-option value="">{{ t('inventory.allTypes') }}</mat-option>
+          @for (typeItem of types; track typeItem) {
+            <mat-option [value]="typeItem">{{ t('inventory.types.' + typeItem) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button type="button" class="btn btn--secondary" (click)="applyFilters()">{{ t('inventory.filter') }}</button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
+  } @else {
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="app-table">
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>{{ t('inventory.table.when') }}</th>
+            <td mat-cell *matCellDef="let row" class="text-secondary">
+              {{ row.createdAt | date: 'short' }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef>{{ t('inventory.table.product') }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.productName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef>{{ t('inventory.table.sku') }}</th>
+            <td mat-cell *matCellDef="let row" class="font-mono text-secondary">{{ row.sku }}</td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>{{ t('inventory.table.type') }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="status-badge" [ngClass]="typeClass(row.type)">{{ t('inventory.types.' + row.type) }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('inventory.table.change') }}</th>
+            <td mat-cell *matCellDef="let row" class="text-center font-mono">
+              {{ row.quantity > 0 ? '+' : '' }}{{ row.quantity }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="previousQuantity">
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('inventory.table.before') }}</th>
+            <td mat-cell *matCellDef="let row" class="text-center">{{ row.previousQuantity }}</td>
+          </ng-container>
+          <ng-container matColumnDef="newQuantity">
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('inventory.table.after') }}</th>
+            <td mat-cell *matCellDef="let row" class="text-center font-bold">
+              {{ row.newQuantity }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="notes">
+            <th mat-header-cell *matHeaderCellDef>{{ t('inventory.table.notes') }}</th>
+            <td mat-cell *matCellDef="let row" class="text-secondary">{{ row.notes || '—' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td class="table-empty" [attr.colspan]="displayedColumns.length">
+              <div class="empty-state">
+                <mat-icon class="empty-icon">tune</mat-icon>
+                <p class="empty-title">{{ t('inventory.table.noMatch') }}</p>
+                <p class="empty-subtitle">
+                  {{ t('inventory.table.noMatchSub') }}
+                </p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator
+        class="customers-paginator"
+        [length]="totalCount"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex > 0 ? pageIndex - 1 : 0"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        (page)="onPageChange($event)"
+        [attr.aria-label]="t('inventory.table.aria')"
+      />
+    </div>
+  }
+</div>
+
+
+
+</ng-container>

@@ -1,0 +1,94 @@
+<ng-container *transloco="let t">
+<div class="customer-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">{{ isEditMode ? 'edit_note' : 'person_add' }}</mat-icon>
+      <h2>{{ isEditMode ? t('customers.dialog.editTitle') : t('customers.dialog.createTitle') }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <!-- Full Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('customers.dialog.name') }}</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput formControlName="name" [placeholder]="t('customers.dialog.namePlaceholder')" />
+      @if (customerForm.get('name')?.hasError('required')) {
+        <mat-error>{{ t('customers.dialog.nameReq') }}</mat-error>
+      }
+      @if (customerForm.get('name')?.hasError('minlength')) {
+        <mat-error>{{ t('customers.dialog.nameMinLen') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Phone Number & Email Row -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ t('customers.dialog.phone') }}</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput formControlName="phoneNumber" [placeholder]="t('customers.dialog.phonePlaceholder')" />
+        @if (customerForm.get('phoneNumber')?.hasError('required')) {
+          <mat-error>{{ t('customers.dialog.phoneReq') }}</mat-error>
+        }
+        @if (customerForm.get('phoneNumber')?.hasError('pattern')) {
+          <mat-error>{{ t('customers.dialog.phoneInvalid') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ t('customers.dialog.email') }}</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput type="email" formControlName="email" [placeholder]="t('customers.dialog.emailPlaceholder')" />
+        @if (customerForm.get('email')?.hasError('email')) {
+          <mat-error>{{ t('customers.dialog.emailInvalid') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Address -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('customers.dialog.addressLabel') }}</mat-label>
+      <mat-icon matPrefix>place</mat-icon>
+      <textarea matInput formControlName="address" rows="2" [placeholder]="t('customers.dialog.addressPlaceholder')"></textarea>
+    </mat-form-field>
+
+    <!-- Status Toggle -->
+    <div class="status-toggle-row">
+      <div class="toggle-info">
+        <span class="toggle-label">{{ t('customers.dialog.status') }}</span>
+        <span class="toggle-sub">{{ customerForm.get('isActive')?.value ? t('customers.dialog.activeSub') : t('customers.dialog.inactiveSub') }}</span>
+      </div>
+      <mat-slide-toggle formControlName="isActive" color="primary">
+        {{ customerForm.get('isActive')?.value ? t('customers.dialog.active') : t('customers.dialog.inactive') }}
+      </mat-slide-toggle>
+    </div>
+
+    <!-- Actions -->
+    <div class="dialog-actions">
+      <button type="button" class="btn btn--secondary" (click)="onCancel()" [disabled]="isSubmitting()">
+        {{ t('customers.dialog.cancel') }}
+      </button>
+      <button type="submit" class="btn btn--primary" [disabled]="isSubmitting() || customerForm.invalid">
+        @if (isSubmitting()) {
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>{{ t('customers.dialog.saving') }}</span>
+        } @else {
+          <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+          <span>{{ isEditMode ? t('customers.dialog.saveChanges') : t('customers.dialog.createCustomer') }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
+
+</ng-container>

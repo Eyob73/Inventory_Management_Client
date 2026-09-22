@@ -1,0 +1,56 @@
+<ng-container *transloco="let t">
+<div class="category-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">{{ isEdit ? 'edit_note' : 'add_circle' }}</mat-icon>
+      <h2>{{ isEdit ? t('categories.dialog.editTitle') : t('categories.dialog.createTitle') }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" [attr.aria-label]="t('categories.dialog.cancel')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSave()" class="dialog-form">
+    @if (duplicateError) {
+      <div class="alert alert--error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ t('categories.dialog.duplicateErr') }}</span>
+      </div>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('categories.dialog.name') }}</mat-label>
+      <input matInput formControlName="name" [placeholder]="t('categories.dialog.namePlaceholder')" required />
+      @if (form.get('name')?.hasError('required')) {
+        <mat-error>{{ t('categories.dialog.nameReq') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('categories.dialog.desc') }}</mat-label>
+      <textarea matInput formControlName="description" rows="3" [placeholder]="t('categories.dialog.descPlaceholder')"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('categories.dialog.status') }}</mat-label>
+      <mat-select formControlName="isActive">
+        <mat-option [value]="true">
+          <span class="status-badge-inline status--active">{{ t('categories.dialog.active') }}</span>
+        </mat-option>
+        <mat-option [value]="false">
+          <span class="status-badge-inline status--inactive">{{ t('categories.dialog.inactive') }}</span>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn btn--outline" (click)="onCancel()">{{ t('categories.dialog.cancel') }}</button>
+      <button type="submit" class="btn btn--primary" [disabled]="form.invalid">
+        <mat-icon>{{ isEdit ? 'check' : 'add' }}</mat-icon>
+        {{ isEdit ? t('categories.dialog.saveChanges') : t('categories.dialog.createCategory') }}
+      </button>
+    </div>
+  </form>
+</div>
+
+</ng-container>

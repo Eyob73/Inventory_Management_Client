@@ -1,0 +1,117 @@
+<ng-container *transloco="let t">
+<div class="receipt-dialog-container" id="printable-receipt">
+  <div class="receipt-header">
+    <div class="store-branding">
+      <mat-icon class="store-icon">point_of_sale</mat-icon>
+      <h2>{{ t('receipt.posSystem') }}</h2>
+      <p class="store-subtitle">{{ t('receipt.subtitle') }}</p>
+    </div>
+    <div class="status-badge-container">
+      <span class="status-badge" [ngClass]="sale.status.toLowerCase()">
+        {{ sale.status === 'Completed' ? t('salesHistory.completed') : (sale.status === 'Cancelled' ? t('salesHistory.cancelled') : sale.status) }}
+      </span>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <span class="label">{{ t('receipt.invoiceNo') }}</span>
+      <span class="value highlight">{{ sale.saleNumber }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">{{ t('receipt.dateTime') }}</span>
+      <span class="value">{{ sale.saleDate | date:'medium' }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">{{ t('receipt.cashier') }}</span>
+      <span class="value">{{ sale.cashierName || t('receipt.systemCashier') }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">{{ t('receipt.customer') }}</span>
+      <span class="value">{{ sale.customerName || t('receipt.walkIn') }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">{{ t('receipt.paymentMethod') }}</span>
+      <span class="value payment-chip">{{ sale.paymentMethod === 'Cash' ? t('salesHistory.cash') : (sale.paymentMethod === 'Card' ? t('salesHistory.card') : (sale.paymentMethod === 'Mobile Payment' || sale.paymentMethod === 'Mobile Banking' || sale.paymentMethod === 'Telebirr' ? t('salesHistory.mobilePayment') : sale.paymentMethod)) }}</span>
+    </div>
+  </div>
+
+  <div class="items-table-wrapper">
+    <table class="receipt-items-table">
+      <thead>
+        <tr>
+          <th>{{ t('receipt.table.no') }}</th>
+          <th>{{ t('receipt.table.itemDesc') }}</th>
+          <th>{{ t('receipt.table.sku') }}</th>
+          <th class="text-right">{{ t('receipt.table.price') }}</th>
+          <th class="text-center">{{ t('receipt.table.qty') }}</th>
+          <th class="text-right">{{ t('receipt.table.subtotal') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of sale.items; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <div class="item-name">{{ item.productName }}</div>
+          </td>
+          <td><code class="sku-code">{{ item.sku }}</code></td>
+          <td class="text-right">{{ item.unitPrice | number:'1.2-2' }} ETB</td>
+          <td class="text-center font-bold">{{ item.quantity }}</td>
+          <td class="text-right font-semibold">{{ item.subtotal | number:'1.2-2' }} ETB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="totals-section">
+    <div class="totals-summary">
+      <div class="notes-box" *ngIf="sale.notes">
+        <span class="notes-title">{{ t('receipt.notes') }}</span>
+        <p class="notes-text">{{ sale.notes }}</p>
+      </div>
+      <div class="summary-row">
+        <span>{{ t('receipt.subtotal') }}</span>
+        <span>{{ sale.subtotal | number:'1.2-2' }} ETB</span>
+      </div>
+      <div class="summary-row" *ngIf="totalBottleDeposit > 0">
+        <span>Bottle Deposits</span>
+        <span>+{{ totalBottleDeposit | number:'1.2-2' }} ETB</span>
+      </div>
+      <div class="summary-row" *ngIf="sale.discountAmount > 0">
+        <span>{{ t('receipt.discount') }}</span>
+        <span class="text-discount">-{{ sale.discountAmount | number:'1.2-2' }} ETB</span>
+      </div>
+      <div class="summary-row" *ngIf="sale.taxAmount > 0">
+        <span>{{ t('receipt.tax') }}</span>
+        <span>+{{ sale.taxAmount | number:'1.2-2' }} ETB</span>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="summary-row grand-total">
+        <span>{{ t('receipt.grandTotal') }}</span>
+        <span class="total-amount">{{ sale.totalAmount | number:'1.2-2' }} ETB</span>
+      </div>
+      <div class="summary-row" *ngIf="sale.paymentMethod === 'Cash'">
+        <span>{{ t('receipt.amountReceived') }}</span>
+        <span>{{ sale.amountReceived | number:'1.2-2' }} ETB</span>
+      </div>
+      <div class="summary-row" *ngIf="sale.paymentMethod === 'Cash'">
+        <span>{{ t('receipt.changeDue') }}</span>
+        <span class="text-change">{{ sale.changeAmount | number:'1.2-2' }} ETB</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-actions no-print">
+  <button type="button" class="btn btn--outline" (click)="close()">
+    <mat-icon>close</mat-icon>
+    <span>{{ t('receipt.close') }}</span>
+  </button>
+  <button type="button" class="btn btn--primary" (click)="printReceipt()">
+    <mat-icon>print</mat-icon>
+    <span>{{ t('receipt.print') }}</span>
+  </button>
+</div>
+</ng-container>
