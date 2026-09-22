@@ -34,7 +34,7 @@ export class BottleTransactionsService {
     return this.http.get<BottleTransaction[]>(this.apiUrl);
   }
 
-  getPagedTransactions(pageIndex: number, pageSize: number, search?: string): Observable<PagedBottleTransactionResponse> {
+  getPagedTransactions(pageIndex: number, pageSize: number, search?: string, status?: number): Observable<PagedBottleTransactionResponse> {
     let params = new HttpParams()
       .set('page', pageIndex.toString())
       .set('pageSize', pageSize.toString())
@@ -42,6 +42,9 @@ export class BottleTransactionsService {
 
     if (search) {
       params = params.set('search', search);
+    }
+    if (status !== undefined && status !== null) {
+      params = params.set('status', status.toString());
     }
 
     return this.http.get<PagedBottleTransactionResponse>(this.apiUrl + '/paged', { params });

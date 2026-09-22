@@ -17,7 +17,28 @@
     </div>
   </div>
 
+  <div class="filters-card">
+    <div class="filter-row" style="grid-template-columns: 1fr;">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ t('search') || 'Search' }}</mat-label>
+        <input
+          matInput
+          [placeholder]="t('search') || 'Search'"
+          [ngModel]="searchTerm"
+          (input)="onSearch($event)"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchTerm) {
+          <button matSuffix mat-icon-button (click)="searchTerm = ''; onSearch({target: {value: ''}})">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
   <div class="table-card">
+
     @if (store.isLoading() && (!store.inventory() || store.inventory()?.length === 0)) {
       <app-table-skeleton [columns]="6"></app-table-skeleton>
     } @else {

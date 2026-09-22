@@ -13,14 +13,16 @@ export const CustomerBottlesStore = signalStore(
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
-    search: ''
+    search: '',
+    bottleTypeId: undefined as string | undefined,
+    hasBalance: undefined as boolean | undefined
   }),
   withEntities<CustomerBottleBalance>(),
   withComputed((store) => ({
     balances: computed(() => store.entities())
   })),
   withMethods((store, api = inject(CustomerBottlesService)) => ({
-    loadBalances: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string } | void>(
+    loadBalances: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string; bottleTypeId?: string; hasBalance?: boolean } | void>(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
         switchMap((params) => {
@@ -28,15 +30,19 @@ export const CustomerBottlesStore = signalStore(
           const reqPageIndex = query.pageIndex ?? store.pageIndex();
           const reqPageSize = query.pageSize ?? store.pageSize();
           const search = query.search ?? store.search();
+          const bottleTypeId = query.bottleTypeId !== undefined ? query.bottleTypeId : store.bottleTypeId();
+          const hasBalance = query.hasBalance !== undefined ? query.hasBalance : store.hasBalance();
           
-          return api.getPagedBalances(reqPageIndex, reqPageSize, search).pipe(
+          return api.getPagedBalances(reqPageIndex, reqPageSize, search, bottleTypeId, hasBalance).pipe(
             tap((res) => {
               patchState(store, setAllEntities(res.items || []), { 
                 isLoading: false,
                 totalCount: res.totalCount || 0,
                 pageIndex: res.page || reqPageIndex,
                 pageSize: res.pageSize || reqPageSize,
-                search: search
+                search: search,
+                bottleTypeId: bottleTypeId,
+                hasBalance: hasBalance
               });
             }),
             catchError((err) => {
@@ -52,7 +58,7 @@ export const CustomerBottlesStore = signalStore(
         tap(() => patchState(store, { isLoading: true, error: null })),
         exhaustMap((payload) =>
           api.returnBottles(payload).pipe(
-            switchMap(() => api.getPagedBalances(store.pageIndex(), store.pageSize(), store.search()).pipe(
+            switchMap(() => api.getPagedBalances(store.pageIndex(), store.pageSize(), store.search(), store.bottleTypeId(), store.hasBalance()).pipe(
                tap((res) => patchState(store, setAllEntities(res.items || []), {
                  isLoading: false,
                  totalCount: res.totalCount || 0

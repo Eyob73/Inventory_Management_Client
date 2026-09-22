@@ -7,7 +7,43 @@
     </div>
   </div>
 
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ t('search') || 'Search' }}</mat-label>
+        <input
+          matInput
+          [placeholder]="t('search') || 'Search'"
+          [ngModel]="searchTerm"
+          (input)="onSearch($event)"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchTerm) {
+          <button matSuffix mat-icon-button (click)="searchTerm = ''; onSearch({target: {value: ''}})">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="status-field">
+        <mat-label>{{ t('type') || 'Type' }}</mat-label>
+        <mat-select [value]="store.status()" (selectionChange)="onStatusChange($event.value)">
+          <mat-option [value]="undefined">{{ t('all') || 'All' }}</mat-option>
+          <mat-option [value]="0">{{ t('transactionTypes.received') || 'Received' }}</mat-option>
+          <mat-option [value]="1">{{ t('transactionTypes.issued') || 'Issued' }}</mat-option>
+          <mat-option [value]="2">{{ t('transactionTypes.returned') || 'Returned' }}</mat-option>
+          <mat-option [value]="3">{{ t('transactionTypes.exchanged') || 'Exchanged' }}</mat-option>
+          <mat-option [value]="4">{{ t('transactionTypes.damaged') || 'Damaged' }}</mat-option>
+          <mat-option [value]="5">{{ t('transactionTypes.lost') || 'Lost' }}</mat-option>
+          <mat-option [value]="6">{{ t('transactionTypes.adjustment') || 'Adjustment' }}</mat-option>
+          <mat-option [value]="7">{{ t('transactionTypes.transfer') || 'Transfer' }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
   <div class="table-card">
+
     @if (store.isLoading() && (!store.transactions() || store.transactions()?.length === 0)) {
       <app-table-skeleton [columns]="8"></app-table-skeleton>
     } @else {

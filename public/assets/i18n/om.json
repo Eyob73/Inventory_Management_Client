@@ -52,7 +52,8 @@
     "status": "Haala",
     "confirm": "Mirkaneessi",
     "reset": "Reset",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "all": "Hunda"
   },
   "dashboard": {
     "title": {
@@ -1871,7 +1872,7 @@
     "emptyQuantity": "Baay'ina Duwwaa (Kuusaa qabatamaa)",
     "emptyQuantityHint": "Baay'ina qaruuraa duwwaa amma qabdu",
     "description": "Ibsa",
-    "active": "Socho'aa",
+    "active": "Si'aayaa",
     "cancel": "Haqi",
     "save": "Olkaa'i",
     "adjustInventoryTitle": "Kuusaa Qaruuraa Duwwaa Sirreessi",
@@ -1921,6 +1922,20 @@
       "lost": "Badeera",
       "adjustment": "Sirreeffama",
       "transfer": "Darbii"
+    },
+    "balanceStatus": "Haala Baalasii",
+    "hasBalance": "Hin deebifamne (Baalasii qaba)",
+    "returnedNoBalance": "Deebifame (Baalasii hin qabu)",
+    "search": "Barbaadi",
+    "all": "Hunda",
+    "inactive": "Hojii Ala",
+    "status": "Haala",
+    "reportType": "Gosa Gabaasaa",
+    "reportTypes": {
+      "movement": "Sochii Qaruuraa",
+      "deposit": "Gabaasa Qabsiisaa",
+      "customer": "Baalasii Maamilaa",
+      "loss": "Gabaasa Bade/Badaa"
     }
   }
 }

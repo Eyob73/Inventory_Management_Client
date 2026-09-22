@@ -13,14 +13,15 @@ export const BottleTransactionsStore = signalStore(
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
-    search: ''
+    search: '',
+    status: undefined as number | undefined
   }),
   withEntities<BottleTransaction>(),
   withComputed((store) => ({
     transactions: computed(() => store.entities()),
   })),
   withMethods((store, api = inject(BottleTransactionsService)) => ({
-    loadTransactions: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string } | void>(
+    loadTransactions: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string; status?: number } | void>(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
         switchMap((params) => {
@@ -28,15 +29,17 @@ export const BottleTransactionsStore = signalStore(
           const reqPageIndex = query.pageIndex ?? store.pageIndex();
           const reqPageSize = query.pageSize ?? store.pageSize();
           const search = query.search ?? store.search();
+          const status = query.status !== undefined ? query.status : store.status();
           
-          return api.getPagedTransactions(reqPageIndex, reqPageSize, search).pipe(
+          return api.getPagedTransactions(reqPageIndex, reqPageSize, search, status).pipe(
             tap((res) => {
               patchState(store, setAllEntities(res.items || []), { 
                 isLoading: false,
                 totalCount: res.totalCount || 0,
                 pageIndex: res.page || reqPageIndex,
                 pageSize: res.pageSize || reqPageSize,
-                search: search
+                search: search,
+                status: status
               });
             }),
             catchError((err) => {

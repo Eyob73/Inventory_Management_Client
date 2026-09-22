@@ -14,12 +14,12 @@
   <div class="filters-card">
     <div class="filter-row">
       <mat-form-field appearance="outline">
-        <mat-label>Report Type</mat-label>
+        <mat-label>{{ t('reportType') || 'Report Type' }}</mat-label>
         <mat-select [(ngModel)]="reportType">
-          <mat-option value="movement">Bottle Movement</mat-option>
-          <mat-option value="deposit">Deposit Report</mat-option>
-          <mat-option value="customer">Customer Balance</mat-option>
-          <mat-option value="loss">Loss/Damage Report</mat-option>
+          <mat-option value="movement">{{ t('reportTypes.movement') || 'Bottle Movement' }}</mat-option>
+          <mat-option value="deposit">{{ t('reportTypes.deposit') || 'Deposit Report' }}</mat-option>
+          <mat-option value="customer">{{ t('reportTypes.customer') || 'Customer Balance' }}</mat-option>
+          <mat-option value="loss">{{ t('reportTypes.loss') || 'Loss/Damage Report' }}</mat-option>
         </mat-select>
       </mat-form-field>
       
