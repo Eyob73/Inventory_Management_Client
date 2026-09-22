@@ -33,6 +33,10 @@
           <dd><code class="sku-tag">{{ product().sku || '—' }}</code></dd>
         </div>
         <div class="pd-dl__row">
+          <dt>Barcode</dt>
+          <dd><code class="sku-tag">{{ product().barcode || '—' }}</code></dd>
+        </div>
+        <div class="pd-dl__row">
           <dt>{{ t('products.details.category') }}</dt>
           <dd>{{ categoryName() || '—' }}</dd>
         </div>

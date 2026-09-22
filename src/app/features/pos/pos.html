@@ -8,14 +8,22 @@
 
     <!-- Top bar: search + category chips -->
     <header class="catalog-topbar">
-      <mat-form-field appearance="outline" class="search-form-field catalog-search">
-        <mat-icon matPrefix class="search-icon">search</mat-icon>
-        <input matInput type="text" [placeholder]="t('pos.search')" [ngModel]="searchTerm()"
-          (ngModelChange)="onSearchChange($event)" />
-        <button *ngIf="searchTerm()" matSuffix mat-icon-button (click)="onSearchChange('')" [attr.aria-label]="t('pos.clearSearch')">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-form-field>
+      <div class="search-row" style="display: flex; gap: 1rem; width: 100%;">
+        <mat-form-field appearance="outline" class="search-form-field catalog-search" style="flex: 1;">
+          <mat-icon matPrefix class="search-icon">search</mat-icon>
+          <input matInput type="text" [placeholder]="t('pos.search')" [ngModel]="searchTerm()"
+            (ngModelChange)="onSearchChange($event)" />
+          <button *ngIf="searchTerm()" matSuffix mat-icon-button (click)="onSearchChange('')" [attr.aria-label]="t('pos.clearSearch')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="search-form-field catalog-search barcode-scan" style="flex: 1;">
+          <mat-icon matPrefix class="search-icon">qr_code_scanner</mat-icon>
+          <input matInput #barcodeInput type="text" placeholder="Scan or enter barcode..." 
+            autocomplete="off" inputmode="none"
+            (keyup.enter)="onBarcodeScanned(barcodeInput.value); barcodeInput.value = ''" />
+        </mat-form-field>
+      </div>
 
       <div class="category-rail">
         <button class="cat-pill" [class.cat-pill--active]="selectedCategoryId() === 'ALL'"

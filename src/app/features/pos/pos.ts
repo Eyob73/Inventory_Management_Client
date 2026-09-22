@@ -222,6 +222,28 @@ export class PosComponent implements OnInit, OnDestroy {
     this.loadProducts();
   }
 
+  onBarcodeScanned(barcode: string): void {
+    const trimmed = barcode?.trim();
+    if (!trimmed) return;
+
+    this.productService.getByBarcode(trimmed).subscribe({
+      next: (product: Product) => {
+        if (!product.isActive) {
+          this.snackBar.open(`Product is inactive.`, 'Close', { duration: 3000 });
+          return;
+        }
+        this.addToCart(product);
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          this.snackBar.open(`⚠ Barcode not found: ${trimmed}`, 'Close', { duration: 3000 });
+        } else {
+          this.snackBar.open('Error looking up barcode.', 'Close', { duration: 3000 });
+        }
+      }
+    });
+  }
+
   onCategorySelect(catId: string): void {
     this.selectedCategoryId.set(catId);
     this.currentPage.set(0);

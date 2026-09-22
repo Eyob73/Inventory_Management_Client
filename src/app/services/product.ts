@@ -48,6 +48,10 @@ export class ProductService {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
 
+  getByBarcode(barcode: string) {
+    return this.http.get<Product>(`${this.baseUrl}/barcode/${barcode}`);
+  }
+
   create(product: Partial<Product>, image?: File) {
     const formData = new FormData();
     Object.keys(product).forEach((key) => {

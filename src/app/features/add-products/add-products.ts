@@ -115,8 +115,9 @@ export class AddProducts implements OnInit {
     category: ['', Validators.required],
     supplierId: [''],
     sku: [''],
-      isReturnable: [false],
-      bottleTypeId: [null as string | null],
+    barcode: [''],
+    isReturnable: [false],
+    bottleTypeId: [null as string | null],
     variants: this.fb.array([
       this.fb.group({
         name: [''],
@@ -328,6 +329,7 @@ export class AddProducts implements OnInit {
       category: product.categoryId || '',
       supplierId: product.supplierId || '',
       sku: product.sku || '',
+      barcode: product.barcode || '',
       isReturnable: product.isReturnable ?? false,
       bottleTypeId: product.bottleTypeId || null,
     });
@@ -344,6 +346,7 @@ export class AddProducts implements OnInit {
       minimumStock: rawValue.minimumStock ?? 0,
       isActive: rawValue.isActive ?? true,
       sku: rawValue.sku || '',
+      barcode: rawValue.barcode || '',
       isReturnable: rawValue.isReturnable ?? false,
       bottleTypeId: rawValue.isReturnable ? (rawValue.bottleTypeId || null) : null,
       categoryId: rawValue.category || '',
