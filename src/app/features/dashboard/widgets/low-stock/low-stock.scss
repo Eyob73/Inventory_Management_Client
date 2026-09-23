@@ -4,7 +4,7 @@
 }
 
 .mono {
-  font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+  font-family: var(--font-family-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -96,3 +96,4 @@
     background: var(--teal-soft) !important;
   }
 }
+

@@ -1937,5 +1937,21 @@
       "customer": "Baalasii Maamilaa",
       "loss": "Gabaasa Bade/Badaa"
     }
+  },
+  "forgotPassword": {
+    "title": "Iggitii kee irraanfattee?",
+    "subtitle": "Teessoo iimeelii kee galchi, nutis iggitii kee haaromsuuf geessituu siif ergaa.",
+    "sendLink": "Geessituu Haaromsaa Ergi",
+    "sending": "Ergaa jira...",
+    "backToLogin": "Gara Seensaatti Deebi'i"
+  },
+  "resetPassword": {
+    "title": "Iggitii haaraa uumi",
+    "subtitle": "Iggitii haaraa fi eegumsa qabu armaan gaditti galchii mirkaneessi.",
+    "newPassword": "Iggitii Haaraa",
+    "confirmPassword": "Iggitii Mirkaneessi",
+    "resetBtn": "Iggitii Haaromsi",
+    "resetting": "Haaromsaa jira...",
+    "invalidLink": "Geessituun iggitii haaromsuu kun sirrii miti ykn yeroon isaa darbeera."
   }
 }

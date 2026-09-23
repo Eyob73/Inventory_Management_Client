@@ -7,7 +7,7 @@
   overflow-x: hidden;
   background-color: var(--surface);
   color: var(--ink);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
 
 }
 
@@ -93,7 +93,7 @@
 
       &.highlight {
         color: var(--moss);
-        font-family: monospace;
+        font-family: var(--font-family-mono);
         font-size: 1rem;
       }
     }
@@ -143,7 +143,7 @@
       padding: 0.15rem 0.4rem;
       border-radius: 4px;
       font-size: 0.8rem;
-      font-family: monospace;
+      font-family: var(--font-family-mono);
     }
 
     .text-right {

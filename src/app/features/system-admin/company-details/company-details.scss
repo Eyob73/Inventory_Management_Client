@@ -36,7 +36,7 @@
     gap: 12px;
     
     .code {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: var(--font-family-mono);
       color: var(--slate);
       font-size: 14px;
       padding: 2px 6px;
@@ -173,3 +173,4 @@
 .text-green { color: var(--moss); }
 .text-amber { color: #f59e0b; }
 .text-red { color: #ef4444; }
+

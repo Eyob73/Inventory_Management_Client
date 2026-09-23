@@ -4,7 +4,7 @@
 ----------------------------------------------------------------*/
 :host {
     display: block;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: var(--font-family-base);
     min-height: 100vh;
     background: var(--paper);
     color: var(--ink);
@@ -60,7 +60,7 @@
 }
 
 .brand-wordmark {
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-family: var(--font-family-heading);
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.01em;

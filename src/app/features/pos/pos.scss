@@ -2,10 +2,10 @@
 
 :host {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--ink);
 
-  --pos-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --pos-mono: var(--font-family-mono);
   --pos-radius-sm: 8px;
   --pos-radius-md: 12px;
   --pos-radius-lg: 16px;
@@ -1177,3 +1177,4 @@
     justify-content: space-between;
   }
 }
+

@@ -1,7 +1,7 @@
 /* Tokens come from styles/_theme.scss (body / :root) */
 :host {
     display: block;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font-family-base);
     color: var(--ink);
 }
 
@@ -16,7 +16,7 @@
 }
 
 .product-form__title {
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-family: var(--font-family-heading);
     font-size: 26px;
     font-weight: 600;
     letter-spacing: -0.01em;
@@ -465,4 +465,5 @@
         }
     }
 }
+
 

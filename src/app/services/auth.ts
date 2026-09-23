@@ -145,4 +145,20 @@ export class AuthService {
       { withCredentials: true }
     );
   }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/forgot-password`,
+      { email },
+      { withCredentials: true }
+    );
+  }
+
+  resetPassword(payload: any): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/reset-password`,
+      payload,
+      { withCredentials: true }
+    );
+  }
 }

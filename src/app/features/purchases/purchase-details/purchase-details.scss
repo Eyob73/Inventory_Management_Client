@@ -293,7 +293,7 @@
   width: 100%;
 
   .font-mono {
-    font-family: monospace;
+    font-family: var(--font-family-mono);
   }
 
   .font-bold {
@@ -450,3 +450,4 @@
     }
   }
 }
+

@@ -91,7 +91,7 @@
   }
 
   .stat-value {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-mono);
     font-size: 20px;
     font-weight: 700;
     color: var(--ink);
@@ -213,3 +213,4 @@
     }
   }
 }
+

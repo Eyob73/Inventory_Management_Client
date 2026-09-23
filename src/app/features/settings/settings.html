@@ -358,17 +358,6 @@
         <div class="card-body">
           <div class="field-row">
             <mat-form-field appearance="outline" class="settings-form-field">
-              <mat-label>{{ t('settings.sales.preferredLanguageLabel') }}</mat-label>
-              <mat-select [(ngModel)]="salesTheme.language">
-                <mat-option value="en-US">{{ t('settings.dropdowns.langEnUS') }}</mat-option>
-                <mat-option value="am-ET">{{ t('settings.dropdowns.langAmET') }}</mat-option>
-                <mat-option value="om-ET">{{ t('settings.dropdowns.langOmET') }}</mat-option>
-                <mat-option value="ti-ET">{{ t('settings.dropdowns.langTiET') }}</mat-option>
-                <mat-option value="en-GB">{{ t('settings.dropdowns.langEnGB') }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="settings-form-field">
               <mat-label>{{ t('settingsFull.interfaceTheme') }}</mat-label>
               <mat-select [(ngModel)]="salesTheme.colorMode">
                 <mat-option value="system">{{ t('settings.dropdowns.themeSystem') }}</mat-option>

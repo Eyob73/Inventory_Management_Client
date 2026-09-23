@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--ink);
 }
 .page-container {
@@ -56,3 +56,4 @@
   color: var(--slate);
   margin: 0;
 }
+

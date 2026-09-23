@@ -1937,5 +1937,21 @@
       "customer": "Customer Balance",
       "loss": "Loss/Damage Report"
     }
+  },
+  "forgotPassword": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+    "sendLink": "Send Reset Link",
+    "sending": "Sending...",
+    "backToLogin": "Back to Login"
+  },
+  "resetPassword": {
+    "title": "Create a new password",
+    "subtitle": "Enter and confirm your new secure password below.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "resetBtn": "Reset Password",
+    "resetting": "Resetting...",
+    "invalidLink": "This password reset link is invalid or has expired."
   }
 }

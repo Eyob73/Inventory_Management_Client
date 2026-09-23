@@ -181,7 +181,7 @@
     font-size: 14px;
     border-radius: 8px !important;
     margin-bottom: 2px;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font-family-base);
     transition: background-color 0.15s ease, color 0.15s ease;
 
     &:hover:not(.mdc-list-item--disabled),
@@ -426,7 +426,7 @@
     color: var(--ink) !important;
     font-size: 13px !important;
     font-weight: 500 !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
+    font-family: var(--font-family-base) !important;
     transition: background-color 0.15s ease, color 0.15s ease !important;
 
     .menu-item-icon,
@@ -836,7 +836,7 @@
 }
 
 .font-mono {
-  font-family: monospace !important;
+  font-family: var(--font-family-mono) !important;
 }
 
 .actions-cell {
@@ -958,7 +958,7 @@
   width: 100%;
   border-top: 1px solid var(--border);
   background: var(--paginator-bg, var(--surface));
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
 
   .mat-mdc-paginator-container {
     justify-content: flex-end;

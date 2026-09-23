@@ -1,7 +1,7 @@
 /* Tokens come from styles/_theme.scss (body / :root) */
 :host {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--ink);
 }
 
@@ -22,7 +22,7 @@
 }
 
 .products-title {
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-family: var(--font-family-heading);
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -104,7 +104,7 @@
   }
 
   .stat-value {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-mono);
     font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.03em;
@@ -134,7 +134,7 @@
   width: 55px;
   max-width: 55px;
   color: var(--slate);
-  font-family: monospace;
+  font-family: var(--font-family-mono);
 }
 
 .product-cell {
@@ -196,7 +196,7 @@
 }
 
 .sku-tag {
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-size: 12.5px;
   padding: 3px 7px;
   background: var(--paper);
@@ -378,5 +378,6 @@
     }
   }
 }
+
 
 

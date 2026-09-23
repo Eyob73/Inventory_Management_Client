@@ -458,7 +458,7 @@
 }
 
 .font-mono {
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-size: 0.825rem;
   color: var(--text-secondary);
 }
