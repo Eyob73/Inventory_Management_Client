@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -25,6 +25,7 @@ import { AuthStore } from '../../../store/auth.store';
     MatIconModule,
     MatProgressSpinnerModule,
     TranslocoDirective,
+    RouterModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

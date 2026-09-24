@@ -28,6 +28,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
 import { SaleService } from '../../services/sale.service';
 import { Product } from '../../models/products.model';
 import { CreateSaleRequest, Sale } from '../../models/sale.model';
+import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
@@ -220,6 +221,42 @@ export class PosComponent implements OnInit, OnDestroy {
     this.searchTerm.set(term);
     this.currentPage.set(0);
     this.loadProducts();
+  }
+
+  onBarcodeScanned(barcode: string): void {
+    const trimmed = barcode?.trim();
+    if (!trimmed) return;
+
+    this.productService.getByBarcode(trimmed).subscribe({
+      next: (product: Product) => {
+        if (!product.isActive) {
+          this.snackBar.open(`Product is inactive.`, 'Close', { duration: 3000 });
+          return;
+        }
+        this.addToCart(product);
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          this.snackBar.open(`⚠ Barcode not found: ${trimmed}`, 'Close', { duration: 3000 });
+        } else {
+          this.snackBar.open('Error looking up barcode.', 'Close', { duration: 3000 });
+        }
+      }
+    });
+  }
+
+  openCameraScanner(): void {
+    const dialogRef = this.dialog.open(BarcodeScannerDialog, {
+      width: '100%',
+      maxWidth: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
+      if (barcode) {
+        this.snackBar.open(`✓ Barcode detected`, 'Close', { duration: 1500 });
+        this.onBarcodeScanned(barcode);
+      }
+    });
   }
 
   onCategorySelect(catId: string): void {

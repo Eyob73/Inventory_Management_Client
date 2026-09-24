@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--ink);
 }
 
@@ -86,7 +86,7 @@
 }
 
 .sale-number-code {
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-weight: 700;
   color: var(--moss);
   background: var(--moss-soft);
@@ -109,5 +109,6 @@
   color: var(--ink);
   font-size: 0.95rem;
 }
+
 
 

@@ -2,6 +2,21 @@
   "app": {
     "title": "Inventory Management"
   },
+  "scanner": {
+    "scanBarcode": "Scan Barcode",
+    "scanProductBarcode": "Scan Product Barcode",
+    "alignBarcode": "Align the barcode inside the scanning area",
+    "cameraInitializing": "Starting camera...",
+    "cameraPermissionDenied": "Camera access was denied. Please allow it in your browser settings.",
+    "cameraUnavailable": "No camera is available on this device.",
+    "cameraInUse": "Camera unavailable or already in use.",
+    "barcodeDetected": "Barcode detected",
+    "searchingProduct": "Searching for product...",
+    "productFound": "Product found with barcode: {{barcode}}",
+    "productNotFound": "No product was found with barcode: {{barcode}}",
+    "scanAgain": "Scan Again",
+    "cancel": "Cancel"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "products": "Products",
@@ -37,7 +52,8 @@
     "status": "Status",
     "confirm": "Confirm",
     "reset": "Reset",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "all": "All"
   },
   "dashboard": {
     "title": {
@@ -134,10 +150,15 @@
     },
     "filters": {
       "search": "Search Products",
-      "searchPlaceholder": "e.g. name, SKU, or category...",
+      "searchPlaceholder": "e.g. name, SKU, barcode, or category...",
       "clearSearch": "Clear search",
+      "scanBarcode": "Scan Barcode",
       "category": "Category",
-      "allCategories": "All Categories"
+      "allCategories": "All Categories",
+      "stockStatus": "Stock Status",
+      "allProducts": "All Products",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of Stock"
     },
     "table": {
       "no": "No.",
@@ -1902,6 +1923,36 @@
       "lost": "Lost",
       "adjustment": "Adjustment",
       "transfer": "Transfer"
+    },
+    "balanceStatus": "Balance Status",
+    "hasBalance": "Unreturned (Has Balance)",
+    "returnedNoBalance": "Returned (No Balance)",
+    "search": "Search",
+    "all": "All",
+    "inactive": "Inactive",
+    "status": "Status",
+    "reportType": "Report Type",
+    "reportTypes": {
+      "movement": "Bottle Movement",
+      "deposit": "Deposit Report",
+      "customer": "Customer Balance",
+      "loss": "Loss/Damage Report"
     }
+  },
+  "forgotPassword": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+    "sendLink": "Send Reset Link",
+    "sending": "Sending...",
+    "backToLogin": "Back to Login"
+  },
+  "resetPassword": {
+    "title": "Create a new password",
+    "subtitle": "Enter and confirm your new secure password below.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "resetBtn": "Reset Password",
+    "resetting": "Resetting...",
+    "invalidLink": "This password reset link is invalid or has expired."
   }
 }

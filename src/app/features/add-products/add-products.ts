@@ -20,7 +20,8 @@ import { environment } from "../../../environments/environment.development";
 import { TenantApiService } from '../../services/tenant';
 
 import { MatIconModule } from "@angular/material/icon";
-
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
 let dbPromise: Promise<IDBDatabase> | null = null;
 function getDB(): Promise<IDBDatabase> {
   if (!dbPromise) {
@@ -70,7 +71,7 @@ async function removeDraft(key: string) {
 @Component({
   selector: 'app-add-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, TranslocoDirective],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, MatDialogModule, TranslocoDirective],
   templateUrl: './add-products.html',
   styleUrl: './add-products.scss',
 })
@@ -115,8 +116,9 @@ export class AddProducts implements OnInit {
     category: ['', Validators.required],
     supplierId: [''],
     sku: [''],
-      isReturnable: [false],
-      bottleTypeId: [null as string | null],
+    barcode: [''],
+    isReturnable: [false],
+    bottleTypeId: [null as string | null],
     variants: this.fb.array([
       this.fb.group({
         name: [''],
@@ -287,6 +289,22 @@ export class AddProducts implements OnInit {
     }
   }
 
+  private dialog = inject(MatDialog);
+
+  openCameraScanner(): void {
+    const dialogRef = this.dialog.open(BarcodeScannerDialog, {
+      width: '100%',
+      maxWidth: '500px'
+    });
+
+    dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
+      if (barcode) {
+        this.productForm.patchValue({ barcode });
+        this.productForm.get('barcode')?.markAsDirty();
+      }
+    });
+  }
+
   onSubmit() {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
@@ -328,6 +346,7 @@ export class AddProducts implements OnInit {
       category: product.categoryId || '',
       supplierId: product.supplierId || '',
       sku: product.sku || '',
+      barcode: product.barcode || '',
       isReturnable: product.isReturnable ?? false,
       bottleTypeId: product.bottleTypeId || null,
     });
@@ -344,6 +363,7 @@ export class AddProducts implements OnInit {
       minimumStock: rawValue.minimumStock ?? 0,
       isActive: rawValue.isActive ?? true,
       sku: rawValue.sku || '',
+      barcode: rawValue.barcode || '',
       isReturnable: rawValue.isReturnable ?? false,
       bottleTypeId: rawValue.isReturnable ? (rawValue.bottleTypeId || null) : null,
       categoryId: rawValue.category || '',

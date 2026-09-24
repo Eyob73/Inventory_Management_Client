@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--ink);
 }
 
@@ -21,7 +21,7 @@
 }
 
 .page-title {
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-family: var(--font-family-heading);
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -92,3 +92,4 @@
     font-size: 20px;
   }
 }
+

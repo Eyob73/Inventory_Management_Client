@@ -9,7 +9,7 @@ html {
   @include mat.theme((color: (primary: mat.$cyan-palette,
         tertiary: mat.$cyan-palette,
       ),
-      typography: Inter,
+      typography: 'Inter',
       density: 0,
     ));
 }
@@ -33,11 +33,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   height: 100%;
-  font-family:
-    'Inter',
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-family-base);
   background: var(--paper);
   color: var(--ink);
   line-height: 1.6;
@@ -481,3 +477,56 @@ input[placeholder*="search" i] {
 .select-search-wrapper:focus-within { border-color: var(--moss, #3b82f6); box-shadow: 0 0 0 2px var(--teal-glow, rgba(59, 130, 246, 0.15)); }
 .select-search-icon { color: var(--text-secondary); font-size: 1.2rem; width: 1.2rem; height: 1.2rem; display: flex; align-items: center; justify-content: center; }
 .select-search-input { flex: 1; width: 100%; border: none !important; outline: none !important; background: transparent !important; box-shadow: none !important; font-family: inherit; font-size: inherit; color: var(--ink); padding: 4px 0; }
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: var(--surface);
+  transition: border-color 0.2s;
+  width: 250px;
+}
+.search-box:focus-within {
+  border-color: var(--moss, #3b82f6);
+  box-shadow: 0 0 0 2px var(--teal-glow, rgba(59, 130, 246, 0.15));
+}
+.search-icon {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-input {
+  flex: 1;
+  width: 100%;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--ink);
+}
+
+
+/* Typography Variables Overrides */
+h1, h2, h3, h4, h5, h6, .mat-mdc-dialog-title, .mat-headline-1, .mat-headline-2, .mat-headline-3, .mat-headline-4, .mat-headline-5, .mat-headline-6 {
+  font-family: var(--font-family-heading) !important;
+}
+
+code, pre, kbd, .sku, .barcode, .product-code, .font-mono {
+  font-family: var(--font-family-mono) !important;
+}
+
+h1 { font-weight: 700 !important; }
+h2 { font-weight: 700 !important; }
+h3 { font-weight: 600 !important; }
+h4 { font-weight: 600 !important; }
+h5 { font-weight: 600 !important; }
+h6 { font-weight: 600 !important; }

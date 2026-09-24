@@ -213,7 +213,7 @@
 }
 
 .sku-code {
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   background: var(--paper);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;

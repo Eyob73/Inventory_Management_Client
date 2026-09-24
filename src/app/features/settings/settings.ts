@@ -52,6 +52,7 @@ export class SettingsComponent implements OnInit {
   saveSuccess = signal<boolean>(false);
   resetSuccess = signal<boolean>(false);
   isLoading = signal<boolean>(false);
+  isEditingCompany = signal<boolean>(false);
 
   preferredLanguage = 'en';
 
@@ -386,6 +387,17 @@ export class SettingsComponent implements OnInit {
     } catch (e) {
       console.error('Failed to save settings', e);
     }
+  }
+
+  saveCompanyProfile() {
+    this.saveSettings();
+    this.isEditingCompany.set(false);
+  }
+
+  cancelCompanyEditing() {
+    // Optionally reload data to revert changes, or just hide form
+    this.loadRoleSettings();
+    this.isEditingCompany.set(false);
   }
 
   resetDefaults() {

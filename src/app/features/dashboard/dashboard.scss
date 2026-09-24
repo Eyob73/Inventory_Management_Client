@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--ink);
 }
 
@@ -448,4 +448,5 @@
   color: var(--slate-soft);
   transition: transform 0.2s;
 }
+
 

@@ -7,7 +7,47 @@
     </div>
   </div>
 
+  <div class="filters-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ t('search') || 'Search' }}</mat-label>
+        <input
+          matInput
+          [placeholder]="t('search') || 'Search'"
+          [ngModel]="searchTerm"
+          (input)="onSearch($event)"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchTerm) {
+          <button matSuffix mat-icon-button (click)="searchTerm = ''; onSearch({target: {value: ''}})">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="status-field">
+        <mat-label>{{ t('bottleType') || 'Bottle Type' }}</mat-label>
+        <mat-select [value]="store.bottleTypeId()" (selectionChange)="onBottleTypeChange($event.value)">
+          <mat-option [value]="undefined">{{ t('all') || 'All' }}</mat-option>
+          @for (type of bottleTypesStore.bottleTypes(); track type.id) {
+            <mat-option [value]="type.id">{{ type.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="status-field">
+        <mat-label>{{ t('balanceStatus') || 'Balance Status' }}</mat-label>
+        <mat-select [value]="store.hasBalance()" (selectionChange)="onHasBalanceChange($event.value)">
+          <mat-option [value]="undefined">{{ t('all') || 'All' }}</mat-option>
+          <mat-option [value]="true">{{ t('hasBalance') || 'Unreturned (Has Balance)' }}</mat-option>
+          <mat-option [value]="false">{{ t('returnedNoBalance') || 'Returned (No Balance)' }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
   <div class="table-card">
+
     @if (store.isLoading() && (!store.balances() || store.balances()?.length === 0)) {
       <app-table-skeleton [columns]="5"></app-table-skeleton>
     } @else {

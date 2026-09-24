@@ -1,6 +1,21 @@
 {
   "app": {
-    "title": "Sirna To'annoo Kuusaa"
+    "title": "Bulchiinsa Kuusaa"
+  },
+  "scanner": {
+    "scanBarcode": "Baarkoodii Skaan Godhi",
+    "scanProductBarcode": "Baarkoodii Oomishaa Skaan Godhi",
+    "alignBarcode": "Baarkoodicha bakka skaan godhamu keessa sirreessi",
+    "cameraInitializing": "Kaameeraa jalqabaa jira...",
+    "cameraPermissionDenied": "Hayyamni kaameeraa dhorkameera. Maaloo setingii biraawzarii keessatti hayyami.",
+    "cameraUnavailable": "Meesha kana irratti kaameeraan hin jiru.",
+    "cameraInUse": "Kaameeraan hin argamu ykn hojii irra jira.",
+    "barcodeDetected": "Baarkoodiin argameera",
+    "searchingProduct": "Oomisha barbaadaa jira...",
+    "productFound": "Oomishni baarkoodii {{barcode}} qabu argameera",
+    "productNotFound": "Oomishni baarkoodii {{barcode}} qabu hin argamne",
+    "scanAgain": "Irra deebi'ii Skaan Godhi",
+    "cancel": "Haqi"
   },
   "navigation": {
     "dashboard": "Daashboordii",
@@ -37,7 +52,8 @@
     "status": "Haala",
     "confirm": "Mirkaneessi",
     "reset": "Reset",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "all": "Hunda"
   },
   "dashboard": {
     "title": {
@@ -134,10 +150,15 @@
     },
     "filters": {
       "search": "Oomishaalee Barbaadi",
-      "searchPlaceholder": "Fkn. maqaa, koodii (SKU), ykn ramaddii...",
+      "searchPlaceholder": "Fkn. maqaa, koodii (SKU), baarkoodii, ykn ramaddii...",
       "clearSearch": "Barbaacha haqi",
+      "scanBarcode": "Baarkoodii Skaan Godhi",
       "category": "Ramaddii",
-      "allCategories": "Ramaddiiwwan Hunda"
+      "allCategories": "Ramaddiiwwan Hunda",
+      "stockStatus": "Haala Kuusaa",
+      "allProducts": "Oomishaalee Hunda",
+      "lowStock": "Kuusaa Xinnaa",
+      "outOfStock": "Kuusaan Kan Dhumate"
     },
     "table": {
       "no": "Lakk.",
@@ -1852,7 +1873,7 @@
     "emptyQuantity": "Baay'ina Duwwaa (Kuusaa qabatamaa)",
     "emptyQuantityHint": "Baay'ina qaruuraa duwwaa amma qabdu",
     "description": "Ibsa",
-    "active": "Socho'aa",
+    "active": "Si'aayaa",
     "cancel": "Haqi",
     "save": "Olkaa'i",
     "adjustInventoryTitle": "Kuusaa Qaruuraa Duwwaa Sirreessi",
@@ -1902,6 +1923,36 @@
       "lost": "Badeera",
       "adjustment": "Sirreeffama",
       "transfer": "Darbii"
+    },
+    "balanceStatus": "Haala Baalasii",
+    "hasBalance": "Hin deebifamne (Baalasii qaba)",
+    "returnedNoBalance": "Deebifame (Baalasii hin qabu)",
+    "search": "Barbaadi",
+    "all": "Hunda",
+    "inactive": "Hojii Ala",
+    "status": "Haala",
+    "reportType": "Gosa Gabaasaa",
+    "reportTypes": {
+      "movement": "Sochii Qaruuraa",
+      "deposit": "Gabaasa Qabsiisaa",
+      "customer": "Baalasii Maamilaa",
+      "loss": "Gabaasa Bade/Badaa"
     }
+  },
+  "forgotPassword": {
+    "title": "Iggitii kee irraanfattee?",
+    "subtitle": "Teessoo iimeelii kee galchi, nutis iggitii kee haaromsuuf geessituu siif ergaa.",
+    "sendLink": "Geessituu Haaromsaa Ergi",
+    "sending": "Ergaa jira...",
+    "backToLogin": "Gara Seensaatti Deebi'i"
+  },
+  "resetPassword": {
+    "title": "Iggitii haaraa uumi",
+    "subtitle": "Iggitii haaraa fi eegumsa qabu armaan gaditti galchii mirkaneessi.",
+    "newPassword": "Iggitii Haaraa",
+    "confirmPassword": "Iggitii Mirkaneessi",
+    "resetBtn": "Iggitii Haaromsi",
+    "resetting": "Haaromsaa jira...",
+    "invalidLink": "Geessituun iggitii haaromsuu kun sirrii miti ykn yeroon isaa darbeera."
   }
 }

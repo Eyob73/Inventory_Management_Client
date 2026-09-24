@@ -77,3 +77,31 @@ export const authGuard: CanActivateFn = () => {
 
   return evaluate();
 };
+
+/**
+ * No Auth guard — requires the user to NOT be logged in (used for login/register pages).
+ */
+export const noAuthGuard: CanActivateFn = () => {
+  const store = inject(AuthStore);
+  const router = inject(Router);
+
+  const evaluate = () => {
+    if (store.isLoggedIn()) {
+      const role = store.userRole();
+      if (role?.toLowerCase() === 'systemadmin') {
+        return router.createUrlTree(['/system-admin/dashboard']);
+      }
+      return router.createUrlTree(['/dashboard']);
+    }
+    return true;
+  };
+
+  if (store.isLoading()) {
+    return toObservable(store.isLoading).pipe(
+      filter((isLoading) => !isLoading),
+      map(() => evaluate())
+    );
+  }
+
+  return evaluate();
+};

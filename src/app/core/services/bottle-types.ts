@@ -33,13 +33,16 @@ export class BottleTypesService {
     return this.http.get<BottleType[]>(this.apiUrl);
   }
 
-  getPagedBottleTypes(pageIndex: number, pageSize: number, search?: string): Observable<PagedBottleTypeResponse> {
+  getPagedBottleTypes(pageIndex: number, pageSize: number, search?: string, status?: number): Observable<PagedBottleTypeResponse> {
     let params = new HttpParams()
       .set('page', pageIndex.toString())
       .set('pageSize', pageSize.toString());
 
     if (search) {
       params = params.set('search', search);
+    }
+    if (status !== undefined && status !== null) {
+      params = params.set('status', status.toString());
     }
 
     return this.http.get<PagedBottleTypeResponse>(this.apiUrl + '/paged', { params });

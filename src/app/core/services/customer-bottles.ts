@@ -33,13 +33,19 @@ export class CustomerBottlesService {
     return this.http.get<CustomerBottleBalance[]>(this.apiUrl);
   }
 
-  getPagedBalances(pageIndex: number, pageSize: number, search?: string): Observable<PagedCustomerBottleResponse> {
+  getPagedBalances(pageIndex: number, pageSize: number, search?: string, bottleTypeId?: string, hasBalance?: boolean): Observable<PagedCustomerBottleResponse> {
     let params = new HttpParams()
       .set('page', pageIndex.toString())
       .set('pageSize', pageSize.toString());
 
     if (search) {
       params = params.set('search', search);
+    }
+    if (bottleTypeId) {
+      params = params.set('bottleTypeId', bottleTypeId);
+    }
+    if (hasBalance !== undefined && hasBalance !== null) {
+      params = params.set('hasBalance', hasBalance.toString());
     }
 
     return this.http.get<PagedCustomerBottleResponse>(this.apiUrl + '/paged', { params });

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { inject } from '@angular/core';
-import { roleGuard, authGuard } from './guards/role.guard';
+import { roleGuard, authGuard, noAuthGuard } from './guards/role.guard';
 import { AuthStore } from './store/auth.store';
 
 export const routes: Routes = [
@@ -8,6 +8,17 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
+    canActivate: [noAuthGuard],
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPasswordComponent),
+    canActivate: [noAuthGuard],
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/reset-password/reset-password').then((m) => m.ResetPasswordComponent),
+    canActivate: [noAuthGuard],
   },
   {
     path: 'unauthorized',

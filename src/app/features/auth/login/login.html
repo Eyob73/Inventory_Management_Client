@@ -10,7 +10,7 @@
             <span class="brand-mark" aria-hidden="true">
                 <svg viewBox="0 0 28 28" fill="none">
                     <rect x="2" y="2" width="16" height="16" rx="4" fill="var(--moss)" />
-                    <rect x="10" y="10" width="16" height="16" rx="4" fill="#ffffff" opacity="0.85" />
+                    <rect x="10" y="10" width="16" height="16" rx="4" fill="var(--ink)" opacity="0.8" />
                 </svg>
             </span>
             <span class="brand-wordmark">Inventory Management</span>
@@ -94,7 +94,7 @@
                 <mat-checkbox formControlName="remember" color="primary">
                     {{ t('loginFull.rememberMe') }}
                 </mat-checkbox>
-                <a class="text-link" href="#" (click)="$event.preventDefault()">{{ t('loginFull.forgotPassword') }}</a>
+                <a class="text-link" routerLink="/forgot-password">{{ t('loginFull.forgotPassword') }}</a>
             </div>
 
             <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="submitting">

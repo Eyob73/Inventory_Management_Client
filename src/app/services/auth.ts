@@ -124,6 +124,7 @@ export class AuthService {
       roles: decoded.role || decoded.roles || decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || [],
       firstName: decoded.given_name || decoded.firstName || decoded.FirstName || decoded.firstname || '',
       lastName: decoded.family_name || decoded.lastName || decoded.LastName || decoded.lastname || '',
+      tenantId: decoded.TenantId || decoded.tenantId || '',
       tenantName: decoded.TenantName || decoded.tenantName || '',
       preferredLanguage: decoded.PreferredLanguage || decoded.preferredLanguage
     };
@@ -142,6 +143,22 @@ export class AuthService {
     return this.http.post<{ message: string }>(
       `${this.baseUrl}/change-password`,
       { currentPassword, newPassword },
+      { withCredentials: true }
+    );
+  }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/forgot-password`,
+      { email },
+      { withCredentials: true }
+    );
+  }
+
+  resetPassword(payload: any): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/reset-password`,
+      payload,
       { withCredentials: true }
     );
   }

@@ -1,11 +1,15 @@
 import { TranslocoModule } from '@jsverse/transloco';
-import { Component, OnInit, inject, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { BottleInventory } from '../../../core/services/bottle-inventory';
 import { AdjustInventoryDialogComponent } from './adjust-inventory-dialog/adjust-inventory-dialog';
 import { OpeningBalanceDialogComponent } from './opening-balance-dialog/opening-balance-dialog';
@@ -15,18 +19,18 @@ import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
 @Component({
   selector: 'app-bottle-inventory',
   standalone: true,
-  imports: [TranslocoModule, CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatPaginatorModule, TableSkeleton],
+  imports: [TranslocoModule, CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatPaginatorModule, TableSkeleton, FormsModule, MatFormFieldModule, MatInputModule],
   templateUrl: './bottle-inventory.html',
   styleUrls: ['./bottle-inventory.scss']
 })
-export class BottleInventoryComponent implements OnInit {
+export class BottleInventoryComponent implements OnInit, OnDestroy {
   store = inject(BottleInventoryStore);
   displayedColumns: string[] = ['bottleTypeName', 'fullBottles', 'emptyQuantity', 'damagedBottles', 'lostBottles', 'lastUpdatedAt'];
 
   dataSource = new MatTableDataSource<BottleInventory>([]);
   pageSizeOptions = [5, 10, 25, 50];
-
-
+  searchTerm: string = '';
+  private searchSubject = new Subject<string>();
 
   constructor(
     private dialog: MatDialog
@@ -34,12 +38,27 @@ export class BottleInventoryComponent implements OnInit {
     effect(() => {
       this.dataSource.data = this.store.inventory() || [];
     });
+
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.store.loadInventory({ search: term, pageIndex: 1 });
+    });
+  }
+
+  onSearch(event: any): void {
+    this.searchSubject.next(event.target.value);
   }
 
   onPageChange(event: any): void { this.store.loadInventory({ pageIndex: event.pageIndex + 1, pageSize: event.pageSize }); }
 
   ngOnInit(): void {
     this.store.loadInventory();
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   setOpeningBalance(): void {

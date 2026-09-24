@@ -1,6 +1,21 @@
 {
   "app": {
-    "title": "የዕቃ ክምችት አስተዳደር"
+    "title": "የዕቃ አያያዝ አስተዳደር"
+  },
+  "scanner": {
+    "scanBarcode": "ባርኮድ ስካን ያድርጉ",
+    "scanProductBarcode": "የምርት ባርኮድ ስካን ያድርጉ",
+    "alignBarcode": "ባርኮዱን በስካን ማድረጊያ ቦታ ውስጥ ያስተካክሉ",
+    "cameraInitializing": "ካሜራ በመጀመር ላይ...",
+    "cameraPermissionDenied": "የካሜራ ፍቃድ ተከልክሏል። እባክዎ በብሮውዘርዎ መቼቶች ውስጥ ይፍቀዱ።",
+    "cameraUnavailable": "በዚህ መሣሪያ ላይ ምንም ካሜራ የለም።",
+    "cameraInUse": "ካሜራ አይገኝም ወይም ስራ ላይ ነው።",
+    "barcodeDetected": "ባርኮድ ተገኝቷል",
+    "searchingProduct": "ምርት በመፈለግ ላይ...",
+    "productFound": "በባርኮድ {{barcode}} ምርት ተገኝቷል",
+    "productNotFound": "በባርኮድ {{barcode}} ምንም ምርት አልተገኘም",
+    "scanAgain": "እንደገና ስካን ያድርጉ",
+    "cancel": "ይቅር"
   },
   "navigation": {
     "dashboard": "ዳሽቦርድ",
@@ -32,12 +47,13 @@
     "cancel": "ሰርዝ",
     "search": "ፈልግ",
     "active": "ንቁ",
-    "inactive": "ቦዘኔ",
+    "inactive": "እንቅስቃሴ-አልባ",
     "actions": "እርምጃዎች",
     "status": "ሁኔታ",
     "confirm": "አረጋግጥ",
     "reset": "Reset",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "all": "ሁሉንም"
   },
   "dashboard": {
     "title": {
@@ -134,10 +150,15 @@
     },
     "filters": {
       "search": "ምርቶችን ፈልግ",
-      "searchPlaceholder": "ለምሳሌ ስም፣ የእቃ መለያ ኮድ (SKU) ወይም ምድብ...",
+      "searchPlaceholder": "ለምሳሌ ስም፣ የእቃ መለያ ኮድ (SKU)፣ ባርኮድ፣ ወይም ምድብ...",
       "clearSearch": "ፍለጋን ያጽዱ",
+      "scanBarcode": "ባርኮድ ስካን ያድርጉ",
       "category": "ምድብ",
-      "allCategories": "ሁሉም ምድቦች"
+      "allCategories": "ሁሉም ምድቦች",
+      "stockStatus": "የክምችት ሁኔታ",
+      "allProducts": "ሁሉም ምርቶች",
+      "lowStock": "አነስተኛ ክምችት",
+      "outOfStock": "ክምችት ያለቀባቸው"
     },
     "table": {
       "no": "ተ.ቁ",
@@ -676,7 +697,7 @@
     "role": "የስራ ሚና",
     "status": "ሁኔታ",
     "actions": "እርምጃዎች",
-    "inactive": "ቦዘኔ",
+    "inactive": "እንቅስቃሴ-አልባ",
     "noUsersFound": "ምንም ተጠቃሚ አልተገኘም",
     "noUsersMatch": "ፍለጋዎን የሚያሟላ ተጠቃሚ የለም።",
     "editUser": "የተጠቃሚ መረጃ አርትዕ",
@@ -829,7 +850,7 @@
       "all": "ሁሉም ምድቦች",
       "active": "ንቁ ምድቦች",
       "activeSub": "በአሁኑ ጊዜ በጥቅም ላይ ያሉ",
-      "inactive": "ቦዘኔ ምድቦች",
+      "inactive": "እንቅስቃሴ-አልባ ምድቦች",
       "inactiveSub": "የታገዱ ወይም የቦዘኑ",
       "totalProducts": "አጠቃላይ ምርቶች",
       "totalProductsSub": "በሁሉም ምድቦች የተመዘገቡ"
@@ -848,7 +869,7 @@
       "products": "የምርቶች ብዛት",
       "actions": "እርምጃዎች",
       "active": "ንቁ",
-      "inactive": "ቦዘኔ",
+      "inactive": "እንቅስቃሴ-አልባ",
       "view": "ዝርዝሮችን እይ",
       "edit": "ምድቡን አርትዕ",
       "delete": "ምድቡን አጥፋ",
@@ -866,7 +887,7 @@
       "descPlaceholder": "በዚህ ምድብ ውስጥ ያሉ ዕቃዎች አጭር ማጠቃለያ...",
       "status": "ሁኔታ",
       "active": "ንቁ",
-      "inactive": "ቦዘኔ",
+      "inactive": "እንቅስቃሴ-አልባ",
       "cancel": "ሰርዝ",
       "saveChanges": "ለውጦችን አስቀምጥ",
       "createCategory": "ምድብ ፍጠር",
@@ -982,7 +1003,7 @@
       "all": "ሁሉም የተመዘገቡ ደንበኞች",
       "active": "ንቁ ደንበኞች",
       "activeSub": "በቅርብ ጊዜ ግብይት ያደረጉ",
-      "inactive": "ቦዘኔ ደንበኞች",
+      "inactive": "እንቅስቃሴ-አልባ ደንበኞች",
       "inactiveSub": "ለረጅም ጊዜ ግብይት ያላደረጉ",
       "totalSales": "ጠቅላላ የሽያጭ ገቢ",
       "totalSalesSub": "ከደንበኞች የተገኘ አጠቃላይ ገቢ"
@@ -1001,7 +1022,7 @@
       "status": "ሁኔታ",
       "actions": "እርምጃዎች",
       "active": "ንቁ",
-      "inactive": "ቦዘኔ",
+      "inactive": "እንቅስቃሴ-አልባ",
       "view": "ዝርዝር እይ",
       "edit": "ደንበኛን አርትዕ",
       "delete": "ደንበኛን አጥፋ",
@@ -1028,7 +1049,7 @@
       "addressPlaceholder": "ለምሳሌ አዲስ አበባ፣ ቦሌ",
       "status": "ሁኔታ",
       "active": "ንቁ",
-      "inactive": "ቦዘኔ",
+      "inactive": "እንቅስቃሴ-አልባ",
       "cancel": "ሰርዝ",
       "saveChanges": "ለውጦችን አስቀምጥ",
       "createCustomer": "ደንበኛ መዝግብ",
@@ -1053,7 +1074,7 @@
       "phoneInvalid": "እባክዎ ትክክለኛ ስልክ ቁጥር ያስገቡ።",
       "emailInvalid": "ትክክለኛ የኢሜይል አድራሻ ያስገቡ።",
       "activeSub": "ንቁ — ግዢዎችን ማድረግ ይችላል",
-      "inactiveSub": "ቦዘኔ — መለያው ታግዷል",
+      "inactiveSub": "እንቅስቃሴ-አልባ — መለያው ታግዷል",
       "saving": "በማስቀመጥ ላይ…"
     },
     "details": {
@@ -1075,7 +1096,7 @@
       "all": "ሁሉም የተመዘገቡ አቅራቢዎች",
       "active": "ንቁ አቅራቢዎች",
       "activeSub": "በአሁኑ ጊዜ የምንሰራባቸው",
-      "inactive": "ቦዘኔ አቅራቢዎች",
+      "inactive": "እንቅስቃሴ-አልባ አቅራቢዎች",
       "inactiveSub": "ግንኙነት የተቋረጠባቸው",
       "totalPurchases": "አጠቃላይ ግዢዎች",
       "totalPurchasesSub": "ከሁሉም አቅራቢዎች የተገዛ",
@@ -1096,7 +1117,7 @@
       "status": "ሁኔታ",
       "actions": "እርምጃዎች",
       "active": "ንቁ",
-      "inactive": "ቦዘኔ",
+      "inactive": "እንቅስቃሴ-አልባ",
       "view": "ዝርዝር እይ",
       "edit": "አቅራቢን አርትዕ",
       "delete": "አቅራቢን አጥፋ",
@@ -1123,7 +1144,7 @@
       "addressPlaceholder": "ለምሳሌ መርካቶ፣ አዲስ አበባ",
       "status": "ሁኔታ",
       "active": "ንቁ",
-      "inactive": "ቦዘኔ",
+      "inactive": "እንቅስቃሴ-አልባ",
       "cancel": "ሰርዝ",
       "saveChanges": "ለውጦችን አስቀምጥ",
       "createSupplier": "አቅራቢ መዝግብ",
@@ -1147,7 +1168,7 @@
       "emptyPurchases": "ከዚህ አቅራቢ የተፈጸሙ ምንም ግዢዎች የሉም።",
       "optional": "አማራጭ",
       "activeSub": "ንቁ — ለግዢ ትዕዛዞች ዝግጁ ነው",
-      "inactiveSub": "ቦዘኔ — አዳዲስ ግዢዎችን ከዚህ አቅራቢ ማድረግ አይቻልም",
+      "inactiveSub": "እንቅስቃሴ-አልባ — አዳዲስ ግዢዎችን ከዚህ አቅራቢ ማድረግ አይቻልም",
       "saving": "በማስቀመጥ ላይ…",
       "updateSupplier": "አቅራቢውን አዘምን",
       "saveSupplier": "አቅራቢ አስቀምጥ",
@@ -1902,6 +1923,36 @@
       "lost": "የጠፋ",
       "adjustment": "ማስተካከያ",
       "transfer": "ዝውውር"
+    },
+    "balanceStatus": "የርክክብ ሁኔታ",
+    "hasBalance": "ያልተመለሰ (ቀሪ አለው)",
+    "returnedNoBalance": "የተመለሰ (ቀሪ የለውም)",
+    "search": "ፈልግ",
+    "all": "ሁሉንም",
+    "inactive": "እንቅስቃሴ-አልባ",
+    "status": "ሁኔታ",
+    "reportType": "የሪፖርት አይነት",
+    "reportTypes": {
+      "movement": "የጠርሙስ እንቅስቃሴ",
+      "deposit": "የተቀማጭ ሪፖርት",
+      "customer": "የደንበኛ ቀሪ ሂሳብ",
+      "loss": "የጠፋ/የተበላሸ ሪፖርት"
     }
+  },
+  "forgotPassword": {
+    "title": "የይለፍ ቃልዎን ረሱት?",
+    "subtitle": "የኢሜል አድራሻዎን ያስገቡ እና የይለፍ ቃልዎን ዳግም ለማስጀመር አገናኝ እንልክልዎታለን።",
+    "sendLink": "የዳግም ማስጀመሪያ አገናኝ ላክ",
+    "sending": "በመላክ ላይ...",
+    "backToLogin": "ወደ መግቢያ ተመለስ"
+  },
+  "resetPassword": {
+    "title": "አዲስ የይለፍ ቃል ይፍጠሩ",
+    "subtitle": "አዲሱን ደህንነቱ የተጠበቀ የይለፍ ቃል ከዚህ በታች ያስገቡ እና ያረጋግጡ።",
+    "newPassword": "አዲስ የይለፍ ቃል",
+    "confirmPassword": "የይለፍ ቃል አረጋግጥ",
+    "resetBtn": "የይለፍ ቃል ዳግም አስጀምር",
+    "resetting": "ዳግም በማስጀመር ላይ...",
+    "invalidLink": "ይህ የይለፍ ቃል ዳግም ማስጀመሪያ አገናኝ ልክ ያልሆነ ወይም ጊዜው ያለፈበት ነው።"
   }
 }

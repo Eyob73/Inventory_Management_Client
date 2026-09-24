@@ -130,10 +130,16 @@
                   }
                   <span class="meta-dot">•</span>
                   @if (tx.customerName) {
-                    <span class="meta-item"><mat-icon>person</mat-icon> {{ tx.customerName }}</span>
+                    <span class="meta-item" [title]="tx.customerName">
+                      <mat-icon>person</mat-icon> 
+                      <span class="truncate-text">{{ tx.customerName }}</span>
+                    </span>
                     <span class="meta-dot">•</span>
                   }
-                  <span class="meta-item"><mat-icon>account_circle</mat-icon> {{ tx.createdBy || 'System' }}</span>
+                  <span class="meta-item" [title]="tx.createdBy || 'System'">
+                    <mat-icon>account_circle</mat-icon> 
+                    <span class="truncate-text">{{ tx.createdBy || 'System' }}</span>
+                  </span>
                 </div>
               </div>
             </div>

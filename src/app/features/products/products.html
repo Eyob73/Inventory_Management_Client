@@ -85,11 +85,16 @@
           (keyup)="applyFilter($event)"
         />
         <mat-icon matPrefix>search</mat-icon>
-        @if (searchInput.value) {
-          <button matSuffix mat-icon-button (click)="clearSearch(searchInput)" [attr.aria-label]="t('products.filters.clearSearch')">
-            <mat-icon>close</mat-icon>
+        <div matSuffix style="display: flex; align-items: center;">
+          @if (searchInput.value) {
+            <button mat-icon-button (click)="clearSearch(searchInput)" [attr.aria-label]="t('products.filters.clearSearch')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <button type="button" mat-icon-button (click)="openScanner()" [attr.aria-label]="t('products.filters.scanBarcode') || 'Scan Barcode'" [matTooltip]="t('products.filters.scanBarcode') || 'Scan Barcode'">
+            <mat-icon>qr_code_scanner</mat-icon>
           </button>
-        }
+        </div>
       </mat-form-field>
       
       <mat-form-field appearance="outline">
@@ -99,6 +104,15 @@
           @for (cat of categories(); track cat.id) {
             <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
           }
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('products.filters.stockStatus') || 'Stock Status' }}</mat-label>
+        <mat-select [ngModel]="store.status()" (ngModelChange)="onStatusChange($event)">
+          <mat-option [value]="null">{{ t('products.filters.allProducts') || 'All Products' }}</mat-option>
+          <mat-option [value]="1">{{ t('products.filters.lowStock') || 'Low Stock' }}</mat-option>
+          <mat-option [value]="2">{{ t('products.filters.outOfStock') || 'Out of Stock' }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>

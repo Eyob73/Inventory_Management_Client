@@ -2,8 +2,8 @@
   "name": "Inventory_management",
   "short_name": "Inventory_management",
   "display": "standalone",
-  "scope": "./",
-  "start_url": "./",
+  "scope": "/",
+  "start_url": "/",
   "icons": [
     {
       "src": "icons/icon-72x72.png",
