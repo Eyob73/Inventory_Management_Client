@@ -152,6 +152,7 @@
       "search": "Search Products",
       "searchPlaceholder": "e.g. name, SKU, barcode, or category...",
       "clearSearch": "Clear search",
+      "scanBarcode": "Scan Barcode",
       "category": "Category",
       "allCategories": "All Categories",
       "stockStatus": "Stock Status",

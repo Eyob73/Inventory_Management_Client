@@ -108,6 +108,7 @@ export class EditUserComponent implements OnInit {
         lastName: val.lastName || '',
         phoneNumber: val.phoneNumber || undefined,
         role: val.role!,
+        tenantId: this.user()?.tenantId || undefined,
       })
       .subscribe({
         next: () => {

@@ -162,6 +162,7 @@ export class ProfileComponent {
         lastName: this.editLastName,
         userName: this.editUserName || undefined,
         role: roleVal,
+        tenantId: u.tenantId || undefined,
       })
       .subscribe({
         next: (updatedUser) => {
