@@ -137,8 +137,15 @@ export interface DataViewAction {
       display: flex;
       align-items: center;
     }
+    .data-view-toggle mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+    }
     .toggle-text {
       margin-left: 4px;
+      font-size: 13px;
     }
     .cards-grid {
       display: grid;
@@ -147,8 +154,8 @@ export interface DataViewAction {
       margin-bottom: 16px;
     }
     .data-card {
-      background: var(--card-bg, #ffffff);
-      border: 1px solid var(--border-color, #e0e0e0);
+      background: var(--mat-sys-surface, var(--card-bg, #ffffff));
+      border: 1px solid var(--mat-sys-outline-variant, var(--border-color, #e0e0e0));
       border-radius: 8px;
       overflow: hidden;
       display: flex;
@@ -226,9 +233,15 @@ export interface DataViewAction {
       display: flex;
       justify-content: flex-end;
       padding: 8px;
-      border-top: 1px solid var(--border-color, #e0e0e0);
-      background: var(--mat-sys-surface, #fafafa);
+      border-top: 1px solid var(--mat-sys-outline-variant, var(--border-color, #e0e0e0));
+      background: var(--mat-sys-surface-container, var(--mat-sys-surface, #fafafa));
       gap: 4px;
+    }
+    .data-card-actions mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
     }
     :host-context(.dark-theme) .data-card-actions {
       border-color: var(--mat-sys-outline-variant);
