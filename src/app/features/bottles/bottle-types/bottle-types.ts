@@ -1,5 +1,5 @@
 import { TranslocoModule } from '@jsverse/transloco';
-import { Component, OnInit, OnDestroy, inject, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,11 +16,26 @@ import { BottleTypeDialogComponent } from './bottle-type-dialog/bottle-type-dial
 import { BottleTypesStore } from '../../../store/bottle-types.store';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
 import { ConfirmDialogService } from '../../../ui/confirm-dialog/confirm-dialog.service';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-bottle-types',
   standalone: true,
-  imports: [TranslocoModule, CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatPaginatorModule, TableSkeleton, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+  imports: [
+    TranslocoModule, 
+    CommonModule, 
+    MatTableModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    MatDialogModule, 
+    MatPaginatorModule, 
+    TableSkeleton, 
+    FormsModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatSelectModule,
+    DataViewComponent
+  ],
   templateUrl: './bottle-types.html',
   styleUrls: ['./bottle-types.scss']
 })
@@ -32,6 +47,21 @@ export class BottleTypesComponent implements OnInit, OnDestroy {
   pageSizeOptions = [5, 10, 25, 50];
   searchTerm: string = '';
   private searchSubject = new Subject<string>();
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'name', label: 'Name', type: 'text' },
+    { key: 'depositAmount', label: 'Deposit', type: 'currency' }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => [
+    { id: 'edit', icon: 'edit', label: 'Edit' },
+    { id: 'delete', icon: 'delete_outline', label: 'Delete', color: 'warn' }
+  ]);
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'edit') this.editType(event.item);
+    else if (event.actionId === 'delete') this.deleteType(event.item);
+  }
 
 
 

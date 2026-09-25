@@ -1,5 +1,5 @@
 import { TranslocoModule } from '@jsverse/transloco';
-import { Component, OnInit, OnDestroy, inject, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,11 +16,26 @@ import { CustomerBottleBalance } from '../../../core/services/customer-bottles';
 import { CustomerBottlesStore } from '../../../store/customer-bottles.store';
 import { BottleTypesStore } from '../../../store/bottle-types.store';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-customer-bottles',
   standalone: true,
-  imports: [TranslocoModule, CommonModule, MatTableModule, MatDialogModule, MatButtonModule, MatIconModule, MatPaginatorModule, TableSkeleton, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+  imports: [
+    TranslocoModule, 
+    CommonModule, 
+    MatTableModule, 
+    MatDialogModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    MatPaginatorModule, 
+    TableSkeleton, 
+    FormsModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatSelectModule,
+    DataViewComponent
+  ],
   templateUrl: './customer-bottles.html',
   styleUrls: ['./customer-bottles.scss']
 })
@@ -33,6 +48,21 @@ export class CustomerBottlesComponent implements OnInit, OnDestroy {
   pageSizeOptions = [5, 10, 25, 50];
   searchTerm: string = '';
   private searchSubject = new Subject<string>();
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'customerName', label: 'Customer', type: 'text' },
+    { key: 'bottleTypeName', label: 'Bottle Type', type: 'text' },
+    { key: 'balance', label: 'Unreturned Bottles', type: 'badge', badgeClassFn: (t) => t.balance > 0 ? 'status--active' : 'status--inactive', valueFn: (t) => String(t.balance) },
+    { key: 'totalDeposit', label: 'Total Deposit', type: 'currency' }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => [
+    { id: 'return', icon: 'keyboard_return', label: 'Return', hideFn: (t: any) => t.balance === 0 }
+  ]);
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'return') this.openReturnDialog(event.item);
+  }
 
   constructor(private dialog: MatDialog) {
     effect(() => {

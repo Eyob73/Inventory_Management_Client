@@ -1,5 +1,5 @@
 import { TranslocoModule } from '@jsverse/transloco';
-import { Component, OnInit, OnDestroy, inject, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,11 +15,25 @@ import { AdjustInventoryDialogComponent } from './adjust-inventory-dialog/adjust
 import { OpeningBalanceDialogComponent } from './opening-balance-dialog/opening-balance-dialog';
 import { BottleInventoryStore } from '../../../store/bottle-inventory.store';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-bottle-inventory',
   standalone: true,
-  imports: [TranslocoModule, CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatPaginatorModule, TableSkeleton, FormsModule, MatFormFieldModule, MatInputModule],
+  imports: [
+    TranslocoModule, 
+    CommonModule, 
+    MatTableModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    MatDialogModule, 
+    MatPaginatorModule, 
+    TableSkeleton, 
+    FormsModule, 
+    MatFormFieldModule, 
+    MatInputModule,
+    DataViewComponent
+  ],
   templateUrl: './bottle-inventory.html',
   styleUrls: ['./bottle-inventory.scss']
 })
@@ -31,6 +45,15 @@ export class BottleInventoryComponent implements OnInit, OnDestroy {
   pageSizeOptions = [5, 10, 25, 50];
   searchTerm: string = '';
   private searchSubject = new Subject<string>();
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'bottleTypeName', label: 'Bottle Type', type: 'text' },
+    { key: 'fullBottles', label: 'Full', type: 'text', valueFn: (i: any) => String(i.fullBottles || 0) },
+    { key: 'emptyQuantity', label: 'Empty', type: 'text', valueFn: (i: any) => String(i.emptyQuantity || 0) },
+    { key: 'damagedBottles', label: 'Damaged', type: 'text', valueFn: (i: any) => String(i.damagedBottles || 0) },
+    { key: 'lostBottles', label: 'Lost', type: 'text', valueFn: (i: any) => String(i.lostBottles || 0) },
+    { key: 'lastUpdatedAt', label: 'Last Updated', type: 'date' }
+  ]);
 
   constructor(
     private dialog: MatDialog

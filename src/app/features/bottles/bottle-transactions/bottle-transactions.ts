@@ -1,5 +1,5 @@
 import { TranslocoModule } from '@jsverse/transloco';
-import { Component, OnInit, OnDestroy, inject, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,11 +13,25 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { BottleTransaction } from '../../../core/services/bottle-transactions';
 import { BottleTransactionsStore } from '../../../store/bottle-transactions.store';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
+import { DataViewComponent, DataViewCardField } from '../../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-bottle-transactions',
   standalone: true,
-  imports: [TranslocoModule, CommonModule, MatTableModule, MatIconModule, MatButtonModule, MatPaginatorModule, TableSkeleton, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+  imports: [
+    TranslocoModule, 
+    CommonModule, 
+    MatTableModule, 
+    MatIconModule, 
+    MatButtonModule, 
+    MatPaginatorModule, 
+    TableSkeleton, 
+    FormsModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatSelectModule,
+    DataViewComponent
+  ],
   templateUrl: './bottle-transactions.html',
   styleUrls: ['./bottle-transactions.scss']
 })
@@ -29,6 +43,16 @@ export class BottleTransactionsComponent implements OnInit, OnDestroy {
   pageSizeOptions = [5, 10, 25, 50];
   searchTerm: string = '';
   private searchSubject = new Subject<string>();
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'createdAt', label: 'Date', type: 'date' },
+    { key: 'bottleTypeName', label: 'Bottle Type', type: 'text' },
+    { key: 'transactionType', label: 'Type', type: 'badge', badgeClassFn: () => 'status--active', valueFn: (t) => t.transactionType },
+    { key: 'customerName', label: 'Customer', type: 'text', valueFn: (t) => t.customerName || '-' },
+    { key: 'quantity', label: 'Quantity', type: 'text', valueFn: (t) => t.quantity > 0 ? `+${t.quantity}` : String(t.quantity) },
+    { key: 'depositAmount', label: 'Deposit', type: 'currency' },
+    { key: 'createdBy', label: 'User', type: 'text' }
+  ]);
 
   constructor() {
     effect(() => {
