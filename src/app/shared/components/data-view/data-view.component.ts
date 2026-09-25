@@ -154,21 +154,21 @@ export interface DataViewAction {
       margin-bottom: 16px;
     }
     .data-card {
-      background: var(--mat-sys-surface, var(--card-bg, #ffffff));
-      border: 1px solid var(--mat-sys-outline-variant, var(--border-color, #e0e0e0));
-      border-radius: 8px;
+      background: var(--surface, var(--mat-sys-surface, #ffffff));
+      border: 1px solid var(--border, var(--mat-sys-outline-variant, #e0e0e0));
+      border-radius: 16px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
+      transition: box-shadow 0.2s var(--ease, ease), border-color 0.2s var(--ease, ease), transform 0.2s var(--ease, ease);
     }
     .data-card:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow-md, 0 4px 8px rgba(0,0,0,0.1));
     }
     :host-context(.dark-theme) .data-card {
-      background: var(--mat-sys-surface-container);
-      border-color: var(--mat-sys-outline-variant);
+      background: var(--surface, var(--mat-sys-surface-container));
+      border-color: var(--border, var(--mat-sys-outline-variant));
     }
     .data-card-content {
       padding: 16px;
@@ -233,8 +233,8 @@ export interface DataViewAction {
       display: flex;
       justify-content: flex-end;
       padding: 8px;
-      border-top: 1px solid var(--mat-sys-outline-variant, var(--border-color, #e0e0e0));
-      background: var(--mat-sys-surface-container, var(--mat-sys-surface, #fafafa));
+      border-top: 1px solid var(--border, var(--mat-sys-outline-variant, #e0e0e0));
+      background: var(--paper, var(--mat-sys-surface-container, #fafafa));
       gap: 4px;
     }
     .data-card-actions mat-icon {
@@ -244,8 +244,8 @@ export interface DataViewAction {
       line-height: 20px;
     }
     :host-context(.dark-theme) .data-card-actions {
-      border-color: var(--mat-sys-outline-variant);
-      background: var(--mat-sys-surface-container-high);
+      border-color: var(--border, var(--mat-sys-outline-variant));
+      background: var(--paper, var(--mat-sys-surface-container-high));
     }
     .status-badge {
       padding: 2px 8px;
