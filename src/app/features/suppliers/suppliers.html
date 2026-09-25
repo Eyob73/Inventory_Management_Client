@@ -107,128 +107,138 @@
   @if (store.isLoading()) {
     <app-table-skeleton [rows]="8" [columns]="skeletonColumns" />
   } @else {
-    <div class="table-card">
-      <div class="table-wrapper">
-        <table mat-table [dataSource]="dataSource" matSort class="app-table">
-          <ng-container matColumnDef="no">
-            <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.table.no') }}</th>
-            <td mat-cell *matCellDef="let row; let i = index" class="font-mono text-secondary">
-              {{ (store.pageIndex() - 1) * store.pageSize() + i + 1 }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.name') }}</th>
-            <td mat-cell *matCellDef="let row">
-              <span class="customer-name-cell" (click)="openDetailsDialog(row)">{{
-                row.name
-              }}</span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="contactName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.contact') }}</th>
-            <td mat-cell *matCellDef="let row" class="text-secondary">
-              {{ row.contactName || '—' }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="phoneNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.phone') }}</th>
-            <td mat-cell *matCellDef="let row" class="font-mono text-secondary">
-              {{ row.phoneNumber || '—' }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.email') }}</th>
-            <td mat-cell *matCellDef="let row" class="text-secondary">{{ row.email || '—' }}</td>
-          </ng-container>
-          <ng-container matColumnDef="createdAt">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.createdDate') }}</th>
-            <td mat-cell *matCellDef="let row" class="text-secondary">
-              {{ row.createdAt ? (row.createdAt | date: 'mediumDate') : '—' }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.status') }}</th>
-            <td mat-cell *matCellDef="let row">
-              <span
-                class="status-badge"
-                [class.status--active]="row.isActive !== false"
-                [class.status--inactive]="row.isActive === false"
-              >
-                {{ row.isActive !== false ? t('suppliers.table.active') : t('suppliers.table.inactive') }}
-              </span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('suppliers.table.actions') }}</th>
-            <td mat-cell *matCellDef="let row">
-              <div class="actions-cell">
-                <button
-                  type="button"
-                  class="action-btn action-btn--view"
-                  (click)="openDetailsDialog(row)"
-                  [matTooltip]="t('suppliers.table.view')"
-                  [attr.aria-label]="t('suppliers.table.view')"
-                >
-                  <mat-icon>visibility</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    type="button"
-                    class="action-btn action-btn--edit"
-                    (click)="openEditDialog(row)"
-                    [matTooltip]="t('suppliers.table.edit')"
-                    [attr.aria-label]="t('suppliers.table.edit')"
+    <app-data-view
+      pageName="suppliers"
+      [data]="dataSource.data"
+      [cardFields]="cardFields()"
+      [actions]="cardActions()"
+      (actionClicked)="onCardAction($event)"
+    >
+      <ng-container table-view>
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="dataSource" matSort class="app-table">
+              <ng-container matColumnDef="no">
+                <th mat-header-cell *matHeaderCellDef>{{ t('suppliers.table.no') }}</th>
+                <td mat-cell *matCellDef="let row; let i = index" class="font-mono text-secondary">
+                  {{ (store.pageIndex() - 1) * store.pageSize() + i + 1 }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.name') }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="customer-name-cell" (click)="openDetailsDialog(row)">{{
+                    row.name
+                  }}</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="contactName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.contact') }}</th>
+                <td mat-cell *matCellDef="let row" class="text-secondary">
+                  {{ row.contactName || '—' }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="phoneNumber">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.phone') }}</th>
+                <td mat-cell *matCellDef="let row" class="font-mono text-secondary">
+                  {{ row.phoneNumber || '—' }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.email') }}</th>
+                <td mat-cell *matCellDef="let row" class="text-secondary">{{ row.email || '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.createdDate') }}</th>
+                <td mat-cell *matCellDef="let row" class="text-secondary">
+                  {{ row.createdAt ? (row.createdAt | date: 'mediumDate') : '—' }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('suppliers.table.status') }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <span
+                    class="status-badge"
+                    [class.status--active]="row.isActive !== false"
+                    [class.status--inactive]="row.isActive === false"
                   >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                }
-                @if (canDelete) {
-                  <button
-                    type="button"
-                    class="action-btn action-btn--delete"
-                    (click)="onDelete(row)"
-                    [matTooltip]="t('suppliers.table.delete')"
-                    [attr.aria-label]="t('suppliers.table.delete')"
-                  >
-                    <mat-icon>delete_outline</mat-icon>
-                  </button>
-                }
-              </div>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          <tr class="mat-row" *matNoDataRow>
-            <td class="table-empty" [attr.colspan]="displayedColumns.length">
-              <div class="empty-state">
-                <mat-icon class="empty-icon">local_shipping</mat-icon>
-                <p class="empty-title">{{ t('suppliers.table.noMatch') }}</p>
-                <p class="empty-subtitle">
-                  @if (store.search()) {
-                    {{ t('suppliers.table.noMatchSearch') }}
-                  } @else {
-                    {{ t('suppliers.table.noMatchAdd') }}
-                  }
-                </p>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <mat-paginator
-        class="customers-paginator"
-        [length]="store.totalCount()"
-        [pageSize]="store.pageSize()"
-        [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
-        [pageSizeOptions]="pageSizeOptions"
-        [showFirstLastButtons]="true"
-        (page)="onPageChange($event)"
-        aria-label="Select page of suppliers"
-      />
-    </div>
+                    {{ row.isActive !== false ? t('suppliers.table.active') : t('suppliers.table.inactive') }}
+                  </span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="text-center">{{ t('suppliers.table.actions') }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <div class="actions-cell">
+                    <button
+                      type="button"
+                      class="action-btn action-btn--view"
+                      (click)="openDetailsDialog(row)"
+                      [matTooltip]="t('suppliers.table.view')"
+                      [attr.aria-label]="t('suppliers.table.view')"
+                    >
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        type="button"
+                        class="action-btn action-btn--edit"
+                        (click)="openEditDialog(row)"
+                        [matTooltip]="t('suppliers.table.edit')"
+                        [attr.aria-label]="t('suppliers.table.edit')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
+                    @if (canDelete) {
+                      <button
+                        type="button"
+                        class="action-btn action-btn--delete"
+                        (click)="onDelete(row)"
+                        [matTooltip]="t('suppliers.table.delete')"
+                        [attr.aria-label]="t('suppliers.table.delete')"
+                      >
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container empty-state>
+        <div class="empty-state">
+          <mat-icon class="empty-icon">local_shipping</mat-icon>
+          <p class="empty-title">{{ t('suppliers.table.noMatch') }}</p>
+          <p class="empty-subtitle">
+            @if (store.search()) {
+              {{ t('suppliers.table.noMatchSearch') }}
+            } @else {
+              {{ t('suppliers.table.noMatchAdd') }}
+            }
+          </p>
+        </div>
+      </ng-container>
+
+      <ng-container paginator>
+        <mat-paginator
+          class="customers-paginator"
+          [length]="store.totalCount()"
+          [pageSize]="store.pageSize()"
+          [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
+          [pageSizeOptions]="pageSizeOptions"
+          [showFirstLastButtons]="true"
+          (page)="onPageChange($event)"
+          aria-label="Select page of suppliers"
+        />
+      </ng-container>
+    </app-data-view>
   }
 </div>
-
-
 
 </ng-container>

@@ -18,6 +18,7 @@ import { InventoryTransaction } from '../../models/inventory.model';
 import { Product } from '../../models/products.model';
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { StockAdjustmentDialogComponent } from './stock-adjustment-dialog/stock-adjustment-dialog';
+import { DataViewComponent, DataViewCardField } from '../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-inventory',
@@ -34,7 +35,10 @@ import { StockAdjustmentDialogComponent } from './stock-adjustment-dialog/stock-
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    TableSkeleton, TranslocoDirective],
+    TableSkeleton, 
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './inventory.html',
   styleUrl: './inventory.scss',
 })
@@ -66,6 +70,16 @@ export class Inventory implements OnInit {
   pageSizeOptions = [10, 20, 50, 100];
 
   displayedColumns = ['createdAt', 'productName', 'sku', 'type', 'quantity', 'previousQuantity', 'newQuantity', 'notes'];
+  
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'productName', type: 'text' },
+    { key: 'sku', label: 'SKU', type: 'code' },
+    { key: 'type', label: 'Type', type: 'badge', badgeClassFn: (t) => this.typeClass(t.type), valueFn: (t) => t.type },
+    { key: 'quantity', label: 'Quantity', type: 'text', valueFn: (t) => t.quantity > 0 ? `+${t.quantity}` : String(t.quantity) },
+    { key: 'newQuantity', label: 'New Stock', type: 'text' },
+    { key: 'createdAt', label: 'Date', type: 'date' }
+  ]);
+
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '14%' },
     { width: '18%' },

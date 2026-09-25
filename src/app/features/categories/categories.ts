@@ -1,5 +1,5 @@
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Component, OnInit, inject, signal, effect, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, ViewChild, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -24,6 +24,7 @@ import { Category } from '../../models/category.model';
 import { CategoryDialogComponent } from './category-dialog/category-dialog';
 import { CategoryDetailsDialogComponent } from './category-details-dialog/category-details-dialog';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-categories',
@@ -42,7 +43,10 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule,
-    TableSkeleton, TranslocoDirective],
+    TableSkeleton, 
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })
@@ -65,6 +69,33 @@ export class Categories implements OnInit {
     'productCount',
     'actions',
   ];
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'name', type: 'text' },
+    { key: 'description', type: 'text' },
+    { key: 'createdAt', label: 'Created', type: 'date' },
+    { key: 'status', label: 'Status', type: 'badge', badgeClassFn: (c) => c.isActive !== false ? 'status--active' : 'status--inactive', valueFn: (c) => c.isActive !== false ? 'Active' : 'Inactive' },
+    { key: 'productCount', label: 'Products', type: 'badge', badgeClassFn: () => 'products-count-badge', valueFn: (c) => c.productCount || 0 }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => {
+    const actions: DataViewAction[] = [
+      { id: 'view', icon: 'visibility', label: 'View Details' }
+    ];
+    if (this.canEditCategory) {
+      actions.push({ id: 'edit', icon: 'edit', label: 'Edit Category' });
+    }
+    if (this.canDeleteCategory) {
+      actions.push({ id: 'delete', icon: 'delete_outline', label: 'Delete Category', color: 'warn' });
+    }
+    return actions;
+  });
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'view') this.openDetailsDialog(event.item);
+    else if (event.actionId === 'edit') this.openEditDialog(event.item);
+    else if (event.actionId === 'delete') this.deleteCategory(event.item);
+  }
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '5%' },

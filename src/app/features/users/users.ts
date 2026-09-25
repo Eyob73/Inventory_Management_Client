@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ViewChild, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, effect, computed } from '@angular/core';
 import {  CommonModule } from '@angular/common';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -17,6 +17,7 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
 import { UserService, SystemUser } from '../../services/user.service';
 import { UserStore } from '../../store/users.store';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-users',
@@ -35,7 +36,10 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    TableSkeleton, TranslocoDirective],
+    TableSkeleton, 
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
@@ -57,6 +61,27 @@ export class UsersComponent implements OnInit {
 
   readonly displayedColumns = ['no', 'user', 'email', 'role', 'status', 'actions'];
   readonly ROLES = ['Admin', 'Manager', 'Sales', 'User'];
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'name', type: 'text', valueFn: (u) => this.getUserName(u) },
+    { key: 'email', label: 'Email', type: 'text' },
+    { key: 'role', label: 'Role', type: 'text', valueFn: (u) => this.getPrimaryRole(u) },
+    { key: 'status', label: 'Status', type: 'badge', badgeClassFn: (u) => u.isActive ? 'status--active' : 'status--inactive', valueFn: (u) => u.isActive ? 'Active' : 'Inactive' }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => {
+    return [
+      { id: 'toggle', icon: 'power_settings_new', label: 'Toggle Status' },
+      { id: 'edit', icon: 'edit', label: 'Edit User' },
+      { id: 'delete', icon: 'delete_outline', label: 'Delete User', color: 'warn' }
+    ];
+  });
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'toggle') this.toggleStatus(event.item);
+    else if (event.actionId === 'edit') this.editUser(event.item);
+    else if (event.actionId === 'delete') this.deleteUser(event.item);
+  }
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '6%' },

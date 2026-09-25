@@ -1,6 +1,6 @@
 import { TranslocoDirective } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit, effect, inject } from '@angular/core';
+import { Component, OnInit, effect, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -21,6 +21,7 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { SupplierDialogComponent } from './supplier-dialog/supplier-dialog';
 import { SupplierDetailsDialogComponent } from './supplier-details-dialog/supplier-details-dialog';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-suppliers',
@@ -38,7 +39,10 @@ import { SupplierDetailsDialogComponent } from './supplier-details-dialog/suppli
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    TableSkeleton, TranslocoDirective],
+    TableSkeleton, 
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './suppliers.html',
   styleUrl: './suppliers.scss',
 })
@@ -62,6 +66,34 @@ export class Suppliers implements OnInit {
     'status',
     'actions',
   ];
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'name', type: 'text' },
+    { key: 'contactName', label: 'Contact', type: 'text' },
+    { key: 'phoneNumber', label: 'Phone', type: 'code' },
+    { key: 'email', label: 'Email', type: 'text' },
+    { key: 'createdAt', label: 'Created', type: 'date' },
+    { key: 'status', label: 'Status', type: 'badge', badgeClassFn: (s) => s.isActive !== false ? 'status--active' : 'status--inactive', valueFn: (s) => s.isActive !== false ? 'Active' : 'Inactive' }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => {
+    const actions: DataViewAction[] = [
+      { id: 'view', icon: 'visibility', label: 'View Details' }
+    ];
+    if (this.canEdit) {
+      actions.push({ id: 'edit', icon: 'edit', label: 'Edit Supplier' });
+    }
+    if (this.canDelete) {
+      actions.push({ id: 'delete', icon: 'delete_outline', label: 'Delete Supplier', color: 'warn' });
+    }
+    return actions;
+  });
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'view') this.openDetailsDialog(event.item);
+    else if (event.actionId === 'edit') this.openEditDialog(event.item);
+    else if (event.actionId === 'delete') this.onDelete(event.item);
+  }
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '4%' },

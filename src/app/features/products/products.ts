@@ -24,6 +24,7 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
 import { CardSkeleton } from '../../ui/card-skeleton/card-skeleton';
 import { AuthStore } from '../../store/auth.store';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 import {
   canAddProduct,
   canDeleteProduct,
@@ -51,7 +52,9 @@ import { environment } from '../../../environments/environment.development';
     MatTooltipModule,
     TableSkeleton,
     CardSkeleton,
-    TranslocoDirective],
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })
@@ -76,6 +79,45 @@ export class Products implements OnInit {
       : ['no', 'name', 'sku', 'price', 'cost', 'quantityInStock', 'actions']
   );
 
+  cardFields = computed<DataViewCardField[]>(() => {
+    const fields: DataViewCardField[] = [
+      { key: 'imageUrl', type: 'image', imageFallbackIcon: 'inventory_2', valueFn: (p) => p.imageUrl ? this.baseUrl + p.imageUrl : null },
+      { key: 'name', type: 'text' },
+      { key: 'sku', label: 'SKU', type: 'code' },
+      { key: 'price', label: 'Price', type: 'currency' }
+    ];
+    if (!this.isSales()) {
+      fields.push({ key: 'cost', label: 'Cost', type: 'currency' });
+    }
+    fields.push({
+      key: 'quantityInStock',
+      label: 'Stock',
+      type: 'badge',
+      badgeClassFn: (p) => getStockStatus(p.quantityInStock).class,
+      valueFn: (p) => `${getStockStatus(p.quantityInStock).label} (${p.quantityInStock})`
+    });
+    return fields;
+  });
+
+  cardActions = computed<DataViewAction[]>(() => {
+    const actions: DataViewAction[] = [
+      { id: 'view', icon: 'visibility', label: 'View Details' }
+    ];
+    if (this.canEditProducts()) {
+      actions.push({ id: 'edit', icon: 'edit', label: 'Edit Product' });
+    }
+    if (this.canDeleteProducts()) {
+      actions.push({ id: 'delete', icon: 'delete_outline', label: 'Delete Product', color: 'warn' });
+    }
+    return actions;
+  });
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'view') this.viewDetails(event.item);
+    else if (event.actionId === 'edit') this.editProduct(event.item);
+    else if (event.actionId === 'delete') this.deleteProduct(event.item);
+  }
+
   dataSource = new MatTableDataSource<Product>([]);
   pageSizeOptions = [5, 10, 15, 25, 50];
 
@@ -94,8 +136,6 @@ export class Products implements OnInit {
       this.dataSource.sort = sort;
     }
   }
-
-  
 
   constructor() {
     effect(() => {
@@ -117,7 +157,6 @@ export class Products implements OnInit {
     });
   }
 
-  
   onCategoryChange(categoryId: string): void {
     this.store.loadProducts({ pageIndex: 1, pageSize: this.store.pageSize(), search: this.store.search(), categoryId, status: this.store.status() });
   }

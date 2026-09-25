@@ -1,6 +1,6 @@
 import { TranslocoDirective } from '@jsverse/transloco';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit, ViewChild, effect, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, effect, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -20,6 +20,7 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { CustomerDialogComponent } from './customer-dialog/customer-dialog';
 import { CustomerDetailsDialogComponent } from './customer-details-dialog/customer-details-dialog';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 
 @Component({
   selector: 'app-customers',
@@ -37,7 +38,10 @@ import { CustomerDetailsDialogComponent } from './customer-details-dialog/custom
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    TableSkeleton, TranslocoDirective],
+    TableSkeleton, 
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './customers.html',
   styleUrl: './customers.scss',
 })
@@ -62,6 +66,35 @@ export class Customers implements OnInit {
     'totalSalesCount',
     'actions',
   ];
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'name', type: 'text' },
+    { key: 'phoneNumber', label: 'Phone', type: 'code' },
+    { key: 'email', label: 'Email', type: 'text' },
+    { key: 'address', label: 'Address', type: 'text' },
+    { key: 'createdAt', label: 'Created', type: 'date' },
+    { key: 'status', label: 'Status', type: 'badge', badgeClassFn: (c) => c.isActive !== false ? 'status--active' : 'status--inactive', valueFn: (c) => c.isActive !== false ? 'Active' : 'Inactive' },
+    { key: 'totalSalesCount', label: 'Sales', type: 'badge', badgeClassFn: () => 'sales-count-badge', valueFn: (c) => c.totalSalesCount || 0 }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => {
+    const actions: DataViewAction[] = [
+      { id: 'view', icon: 'visibility', label: 'View Details' }
+    ];
+    if (this.canEditCustomer) {
+      actions.push({ id: 'edit', icon: 'edit', label: 'Edit Customer' });
+    }
+    if (this.canDeleteCustomer) {
+      actions.push({ id: 'delete', icon: 'delete_outline', label: 'Delete Customer', color: 'warn' });
+    }
+    return actions;
+  });
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'view') this.openDetailsDialog(event.item);
+    else if (event.actionId === 'edit') this.openEditDialog(event.item);
+    else if (event.actionId === 'delete') this.onDelete(event.item);
+  }
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '4%' },

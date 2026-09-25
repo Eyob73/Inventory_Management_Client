@@ -1,5 +1,5 @@
 import { TranslocoDirective } from '@jsverse/transloco';
-import { Component, OnInit, signal, inject, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, inject, ViewChild, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -25,6 +25,7 @@ import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/tabl
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 
 // Services & Models
 import { SaleService } from '../../services/sale.service';
@@ -51,8 +52,10 @@ import { Sale, SaleFilter } from '../../models/sale.model';
     MatTooltipModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    TableSkeleton
-  , TranslocoDirective],
+    TableSkeleton, 
+    TranslocoDirective,
+    DataViewComponent
+  ],
   templateUrl: './sales-history.html',
   styleUrl: './sales-history.scss'
 })
@@ -98,6 +101,31 @@ export class SalesHistoryComponent implements OnInit {
     'status',
     'actions'
   ];
+
+  cardFields = computed<DataViewCardField[]>(() => [
+    { key: 'saleNumber', label: 'Sale Number', type: 'code' },
+    { key: 'customerName', label: 'Customer', type: 'text', valueFn: (s) => s.customerName || 'Walk-in Customer' },
+    { key: 'cashierName', label: 'Cashier', type: 'text' },
+    { key: 'saleDate', label: 'Date', type: 'date' },
+    { key: 'paymentMethod', label: 'Payment', type: 'text' },
+    { key: 'totalAmount', label: 'Amount', type: 'currency' },
+    { key: 'status', label: 'Status', type: 'badge', badgeClassFn: (s) => s.status === 'Completed' ? 'status--active' : (s.status === 'Cancelled' ? 'status--inactive' : 'status--draft'), valueFn: (s) => s.status }
+  ]);
+
+  cardActions = computed<DataViewAction[]>(() => {
+    const actions: DataViewAction[] = [
+      { id: 'view', icon: 'receipt_long', label: 'View Receipt' }
+    ];
+    if (this.canCancelSale) {
+      actions.push({ id: 'cancel', icon: 'cancel', label: 'Cancel Sale', color: 'warn' });
+    }
+    return actions;
+  });
+
+  onCardAction(event: { actionId: string, item: any }) {
+    if (event.actionId === 'view') this.viewDetails(event.item);
+    else if (event.actionId === 'cancel') this.cancelSale(event.item);
+  }
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '4%' },
