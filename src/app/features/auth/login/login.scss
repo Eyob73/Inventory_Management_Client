@@ -327,6 +327,9 @@
 @media (max-width: 900px) {
     .stage {
         grid-template-columns: 1fr;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
     }
 
     .brand-panel {
@@ -338,7 +341,9 @@
     }
 
     .form-panel {
-        padding: 2.25rem 1.5rem 3rem;
+        padding: 1rem;
+        height: 100%;
+        overflow: hidden;
     }
 }
 
