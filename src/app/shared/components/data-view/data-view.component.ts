@@ -138,10 +138,10 @@ export interface DataViewAction {
       align-items: center;
     }
     .data-view-toggle mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      line-height: 20px;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
     }
     .toggle-text {
       margin-left: 4px;
