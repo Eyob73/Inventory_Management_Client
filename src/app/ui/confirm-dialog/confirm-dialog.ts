@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface ConfirmDialogData {
   title: string;
@@ -12,12 +13,14 @@ export interface ConfirmDialogData {
   confirmText?: string;
   cancelText?: string;
   icon?: string;
+  isProcessing?: Signal<boolean>;
+  onConfirmCallback?: () => void;
 }
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatDialogModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
 })
@@ -47,11 +50,21 @@ export class ConfirmDialogComponent {
     return this.data.cancelText || this.transloco.translate('confirm.cancel');
   }
 
+  get isProcessing(): boolean {
+    return this.data.isProcessing ? this.data.isProcessing() : false;
+  }
+
   onConfirm() {
-    this.dialogRef.close(true);
+    if (this.data.onConfirmCallback) {
+      this.data.onConfirmCallback();
+    } else {
+      this.dialogRef.close(true);
+    }
   }
 
   onCancel() {
-    this.dialogRef.close(false);
+    if (!this.isProcessing) {
+      this.dialogRef.close(false);
+    }
   }
 }

@@ -14,11 +14,15 @@
 
   <!-- Actions -->
   <div class="dialog-actions">
-    <button type="button" class="btn btn--ghost" (click)="onCancel()">
+    <button type="button" class="btn btn--ghost" (click)="onCancel()" [disabled]="isProcessing">
       {{ cancelText }}
     </button>
-    <button type="button" class="btn" [class]="'btn--' + type" (click)="onConfirm()">
-      {{ confirmText }}
+    <button type="button" class="btn" [class]="'btn--' + type" (click)="onConfirm()" [disabled]="isProcessing">
+      @if (isProcessing) {
+        <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+      } @else {
+        {{ confirmText }}
+      }
     </button>
   </div>
 </div>

@@ -152,3 +152,6 @@
   }
 }
 
+
+.btn-spinner { display: inline-block; margin: 0 auto; }
+.btn-spinner ::ng-deep circle { stroke: currentColor; }

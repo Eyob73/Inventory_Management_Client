@@ -39,6 +39,7 @@ import { AuthStore } from '../../store/auth.store';
 import { NotificationService } from '../../services/notification.service';
 import { routeFadeAnimation } from '../../animations/fade.animation';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
+import { ConfirmDialogComponent } from '../../ui/confirm-dialog/confirm-dialog';
 import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 @Component({
@@ -281,18 +282,22 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
-    this.confirmService.confirm({
-      title: this.translocoService.translate('confirm.signOutTitle'),
-      message: this.translocoService.translate('confirm.signOutMessage'),
-      confirmText: this.translocoService.translate('confirm.signOut'),
-      cancelText: this.translocoService.translate('common.cancel'),
-      type: 'warning',
-      icon: 'logout'
-    }).pipe(
-      filter(Boolean),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.authStore.logout();
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: this.translocoService.translate('confirm.signOutTitle'),
+        message: this.translocoService.translate('confirm.signOutMessage'),
+        confirmText: this.translocoService.translate('confirm.signOut'),
+        cancelText: this.translocoService.translate('common.cancel'),
+        type: 'warning',
+        icon: 'logout',
+        isProcessing: this.authStore.isLoading,
+        onConfirmCallback: () => {
+          this.authStore.logout();
+        }
+      },
+      width: '440px',
+      panelClass: 'custom-confirm-dialog-panel',
+      disableClose: true,
     });
   }
 
