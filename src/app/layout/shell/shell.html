@@ -238,4 +238,11 @@
     </div>
   </mat-sidenav-content>
 
+  <!-- Global Logout Spinner Overlay -->
+  @if (authStore.isLoading()) {
+    <div class="logout-spinner-overlay">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  }
+
 </mat-sidenav-container>
