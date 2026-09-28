@@ -103,6 +103,7 @@ export class PosComponent implements OnInit, OnDestroy {
   amountReceived = signal<number>(0);
   discountAmount = signal<number>(0);
   taxRatePercent = signal<number>(0);
+  additionalBottleDeposit = signal<number>(0);
   saleNotes = signal<string>('');
   showNotes = signal<boolean>(false);
 
@@ -164,7 +165,7 @@ export class PosComponent implements OnInit, OnDestroy {
   });
 
   readonly grandTotal = computed(() =>
-    Math.max(0, this.cartSubtotal() - this.totalDiscount() + this.calculatedTax()) + this.totalBottleDeposit()
+    Math.max(0, this.cartSubtotal() - this.totalDiscount() + this.calculatedTax()) + this.totalBottleDeposit() + Math.max(0, this.additionalBottleDeposit())
   );
 
   readonly changeAmount = computed(() => {
@@ -368,6 +369,7 @@ export class PosComponent implements OnInit, OnDestroy {
   clearCart(): void {
     this.cart.set([]);
     this.discountAmount.set(0);
+    this.additionalBottleDeposit.set(0);
     this.amountReceived.set(0);
     this.manualCustomerName.set('');
     this.selectedCustomerId.set(null);
@@ -431,6 +433,7 @@ export class PosComponent implements OnInit, OnDestroy {
       amountReceived: grandTotalVal,
       discountAmount: this.discountAmount(),
       taxAmount: parseFloat(this.calculatedTax().toFixed(2)),
+      additionalBottleDeposit: this.additionalBottleDeposit(),
       notes: this.saleNotes().trim() || undefined,
       items: this.cart().map((item) => ({
         productId: item.product.id,

@@ -273,6 +273,11 @@
           <span>Bottle Deposits</span>
           <span>{{ totalBottleDeposit() | number:'1.2-2' }} ETB</span>
         </div>
+        <div class="totals-row totals-input-row" *ngIf="isBottleManagementEnabled()">
+          <span>Additional Bottle Deposit</span>
+          <input type="number" min="0" class="totals-input" [ngModel]="additionalBottleDeposit()"
+            (ngModelChange)="additionalBottleDeposit.set(+$event)" />
+        </div>
         <div class="totals-row" *ngIf="itemDiscountsTotal() > 0">
           <span>{{ t('pos.itemDiscounts') }}</span>
           <span class="totals-deduct">&minus;{{ itemDiscountsTotal() | number:'1.2-2' }} ETB</span>

@@ -33,6 +33,8 @@ export interface Sale {
   subtotal: number;
   discountAmount: number;
   taxAmount: number;
+  totalBottleDeposit?: number;
+  additionalBottleDeposit?: number;
   totalAmount: number;
   paymentMethod: 'Cash' | 'Card' | 'Mobile Payment' | string;
   amountReceived: number;
@@ -50,6 +52,7 @@ export interface CreateSaleRequest {
   amountReceived: number;
   discountAmount: number;
   taxAmount: number;
+  additionalBottleDeposit?: number;
   notes?: string | null;
   items: CreateSaleItemRequest[];
 }
