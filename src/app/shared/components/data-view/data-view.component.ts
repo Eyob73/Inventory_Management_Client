@@ -110,16 +110,16 @@ export interface DataViewAction {
             </div>
           }
         </div>
-        
-        @if (data && data.length === 0) {
-          <div class="data-view-empty">
-            <ng-content select="[empty-state]"></ng-content>
-          </div>
-        }
-        
-        <ng-content select="[paginator]"></ng-content>
       </div>
     }
+
+    @if (data && data.length === 0) {
+      <div class="data-view-empty">
+        <ng-content select="[empty-state]"></ng-content>
+      </div>
+    }
+    
+    <ng-content select="[paginator]"></ng-content>
   `,
   styles: [`
     .data-view-toolbar {
