@@ -16,7 +16,7 @@ import { ProductService } from "../../services/product";
 import { CategoryService } from "../../services/category";
 import { SupplierService } from '../../services/supplier';
 import { BottleTypesService } from '../../core/services/bottle-types';
-import { environment } from "../../../environments/environment.development";
+import { environment } from "../../../environments/environment";
 import { TenantApiService } from '../../services/tenant';
 
 import { MatIconModule } from "@angular/material/icon";

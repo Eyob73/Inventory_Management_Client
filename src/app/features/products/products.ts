@@ -32,7 +32,7 @@ import {
   canViewProductCost,
   getStockStatus,
 } from '../../utils/product-permissions';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-products',

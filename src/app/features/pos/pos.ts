@@ -33,7 +33,7 @@ import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/
 import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import { CustomerDialogComponent } from '../customers/customer-dialog/customer-dialog';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 export interface CartItem {
   product: Product;

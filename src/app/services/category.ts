@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Category, CategoryDetail, CreateCategoryDto, UpdateCategoryDto } from '../models/category.model';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 export type { Category, CategoryDetail, CreateCategoryDto, UpdateCategoryDto };
 

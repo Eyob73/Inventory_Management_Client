@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Product } from '../../../models/products.model';
 import { getStockStatus } from '../../../utils/product-permissions';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { ImagePreviewDialogComponent } from '../../../ui/image-preview-dialog/image-preview-dialog.component';
 
 @Component({
