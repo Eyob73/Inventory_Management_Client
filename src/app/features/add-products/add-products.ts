@@ -333,7 +333,7 @@ export class AddProducts implements OnInit {
   private patchForm(product: Product): void {
     if (product.imageUrl) {
       const baseUrl = environment.apiUrl.replace('/api', '');
-      this.imagePreview.set(`${baseUrl}${product.imageUrl}`);
+      this.imagePreview.set(product.imageUrl.startsWith('http') ? product.imageUrl : `${baseUrl}${product.imageUrl}`);
     }
     this.productForm.patchValue({
       name: product.name || '',

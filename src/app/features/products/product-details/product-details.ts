@@ -28,7 +28,7 @@ export class ProductDetails {
   readonly imageUrl = computed(() => {
     const url = this.product().imageUrl;
     const baseUrl = environment.apiUrl.replace('/api', '');
-    return url ? `${baseUrl}${url}` : null;
+    return url ? (url.startsWith('http') ? url : `${baseUrl}${url}`) : null;
   });
   readonly minStock = computed(() => this.product().minimumStockLevel ?? null);
   

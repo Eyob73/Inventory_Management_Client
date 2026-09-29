@@ -100,7 +100,7 @@
 
               <div class="tile-image-wrapper">
                 @if (product.imageUrl) {
-                <img [src]="baseUrl + product.imageUrl" [alt]="product.name" class="tile-image">
+                <img [src]="product.imageUrl.startsWith('http') ? product.imageUrl : baseUrl + product.imageUrl" [alt]="product.name" class="tile-image">
                 } @else {
                 <div class="tile-image-placeholder">
                   <mat-icon>inventory_2</mat-icon>

@@ -81,7 +81,7 @@ export class Products implements OnInit {
 
   cardFields = computed<DataViewCardField[]>(() => {
     const fields: DataViewCardField[] = [
-      { key: 'imageUrl', type: 'image', imageFallbackIcon: 'inventory_2', valueFn: (p) => p.imageUrl ? this.baseUrl + p.imageUrl : null },
+      { key: 'imageUrl', type: 'image', imageFallbackIcon: 'inventory_2', valueFn: (p) => p.imageUrl ? (p.imageUrl.startsWith('http') ? p.imageUrl : this.baseUrl + p.imageUrl) : null },
       { key: 'name', type: 'text' },
       { key: 'sku', label: 'SKU', type: 'code' },
       { key: 'price', label: 'Price', type: 'currency' }

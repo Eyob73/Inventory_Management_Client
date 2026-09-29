@@ -147,7 +147,7 @@
                   <div class="product-cell">
                     <div class="product-cell__media">
                       @if (element.imageUrl) {
-                        <img [src]="baseUrl + element.imageUrl" [alt]="element.name" class="product-cell__image" />
+                        <img [src]="element.imageUrl.startsWith('http') ? element.imageUrl : baseUrl + element.imageUrl" [alt]="element.name" class="product-cell__image" />
                       } @else {
                         <div class="product-cell__placeholder" aria-hidden="true">
                           <mat-icon>inventory_2</mat-icon>
