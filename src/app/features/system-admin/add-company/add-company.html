@@ -81,14 +81,22 @@
 
           <mat-form-field appearance="outline">
             <mat-label>{{ t('addCompany.password') }}</mat-label>
-            <input matInput formControlName="adminPassword" type="password" />
+            <input matInput formControlName="adminPassword" [type]="hidePassword ? 'password' : 'text'" />
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button"
+              [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
             <mat-error *ngIf="form.get('adminPassword')?.hasError('required')">{{ t('addCompany.passwordRequired') }}</mat-error>
             <mat-error *ngIf="form.get('adminPassword')?.hasError('minlength')">{{ t('addCompany.min8Chars') }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ t('addCompany.confirmPassword') }}</mat-label>
-            <input matInput formControlName="confirmPassword" type="password" />
+            <input matInput formControlName="confirmPassword" [type]="hideConfirmPassword ? 'password' : 'text'" />
+            <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button"
+              [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword">
+              <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
             <mat-error *ngIf="form.hasError('mismatch')">{{ t('addCompany.passwordsMismatch') }}</mat-error>
           </mat-form-field>
         </div>

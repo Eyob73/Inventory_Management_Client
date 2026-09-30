@@ -51,6 +51,8 @@ export class AddCompanyComponent {
 
   loading = false;
   error: string | null = null;
+  hidePassword = true;
+  hideConfirmPassword = true;
 
   passwordMatchValidator(g: any) {
     return g.get('adminPassword').value === g.get('confirmPassword').value
