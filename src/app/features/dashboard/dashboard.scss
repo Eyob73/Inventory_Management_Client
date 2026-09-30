@@ -275,7 +275,10 @@
     max-width: 440px;
     margin: 0 auto;
 
-    .widget-slot {
+    .widget-slot,
+    .widget-slot.col-span-2,
+    .widget-slot.col-span-3,
+    .widget-slot.col-span-4 {
       grid-column: span 1 !important;
     }
   }
