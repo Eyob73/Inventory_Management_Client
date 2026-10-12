@@ -2,8 +2,8 @@
   <router-outlet #outlet="outlet" />
 </div>
 
-@if (showOfflineOverlay()) {
-  <app-offline-view [isOverlay]="true" />
+@if (showOfflineToast()) {
+  <app-offline-toast />
 }
 
 @if (connectionService.showReconnectedBanner()) {

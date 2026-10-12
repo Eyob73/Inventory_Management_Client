@@ -4,12 +4,12 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { routeFadeAnimation } from './animations/fade.animation';
 import { ConnectionService } from './services/connection.service';
-import { OfflineComponent } from './features/offline/offline';
+import { OfflineToastComponent } from './features/offline/offline-toast';
 import { ReconnectedBannerComponent } from './features/offline/reconnected-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, OfflineComponent, ReconnectedBannerComponent],
+  imports: [RouterOutlet, OfflineToastComponent, ReconnectedBannerComponent],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.scss',
@@ -28,7 +28,7 @@ export class App implements OnInit {
     return url === '/offline' || url.startsWith('/offline?');
   });
 
-  readonly showOfflineOverlay = computed(() => {
+  readonly showOfflineToast = computed(() => {
     return this.connectionService.isDisconnected() && !this.isOfflineRoute();
   });
 
