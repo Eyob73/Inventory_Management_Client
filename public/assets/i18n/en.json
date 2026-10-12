@@ -1954,5 +1954,27 @@
     "resetBtn": "Reset Password",
     "resetting": "Resetting...",
     "invalidLink": "This password reset link is invalid or has expired."
+  },
+  "offline": {
+    "title": "You're Offline",
+    "serverUnavailable": "Server Unavailable",
+    "backOnline": "You're Back Online!",
+    "message": "Your internet connection has been lost. Please check your network and try again.",
+    "serverMessage": "Your device is connected to the internet, but the Inventory Management server is currently unreachable. Please check if the server is running or try again shortly.",
+    "reconnectedMessage": "Network connection has been restored. Your session and data are ready.",
+    "retry": "Retry Connection",
+    "checking": "Checking connection…",
+    "deviceNetwork": "Device Network",
+    "applicationApi": "Application API",
+    "unsavedData": "Unsaved Data",
+    "protected": "Protected",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "online": "Online",
+    "unreachable": "Unreachable",
+    "troubleshooting": "Troubleshooting Steps",
+    "hideDiagnostics": "Hide Diagnostics",
+    "returnToApp": "Return to Application",
+    "autoReconnect": "Automatic reconnect monitoring is active. Your view will restore automatically once connectivity returns."
   }
 }

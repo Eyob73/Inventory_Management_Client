@@ -25,6 +25,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/unauthorized/unauthorized').then((m) => m.UnauthorizedComponent),
   },
+  {
+    path: 'offline',
+    loadComponent: () =>
+      import('./features/offline/offline').then((m) => m.OfflineComponent),
+  },
 
 
   // ── Authenticated Shell (requires any logged-in user) ───────────

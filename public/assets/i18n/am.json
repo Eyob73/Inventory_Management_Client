@@ -1954,5 +1954,27 @@
     "resetBtn": "የይለፍ ቃል ዳግም አስጀምር",
     "resetting": "ዳግም በማስጀመር ላይ...",
     "invalidLink": "ይህ የይለፍ ቃል ዳግም ማስጀመሪያ አገናኝ ልክ ያልሆነ ወይም ጊዜው ያለፈበት ነው።"
+  },
+  "offline": {
+    "title": "ከመስመር ውጭ ነዎት",
+    "serverUnavailable": "አገልጋይ አይገኝም",
+    "backOnline": "ወደ መስመር ተመልሰዋል!",
+    "message": "የበይነመረብ ግንኙነትዎ ተቋርጧል። እባክዎ አውታረ መረብዎን ያረጋግጡና እንደገና ይሞክሩ።",
+    "serverMessage": "መሣሪያዎ ከበይነመረብ ጋር ተገናኝቷል፣ ነገር ግን የአሰራር አገልጋዩ አልተገኘም። እባክዎ ቆይተው እንደገና ይሞክሩ።",
+    "reconnectedMessage": "የአውታረ መረብ ግንኙነት ተመልሷል። ስርዓቱ ዝግጁ ነው።",
+    "retry": "ግንኙነትን እንደገና ሞክር",
+    "checking": "በማረጋገጥ ላይ…",
+    "deviceNetwork": "የመሣሪያ አውታረ መረብ",
+    "applicationApi": "የመተግበሪያ አገልጋይ",
+    "unsavedData": "ያልተቀመጠ ውሂብ",
+    "protected": "የተጠበቀ",
+    "connected": "የተገናኘ",
+    "disconnected": "የተቋረጠ",
+    "online": "መስመር ላይ",
+    "unreachable": "አይገኝም",
+    "troubleshooting": "የመላ መፈለጊያ እርምጃዎች",
+    "hideDiagnostics": "መመርመሪያ ደብቅ",
+    "returnToApp": "ወደ መተግበሪያ ተመለስ",
+    "autoReconnect": "ራስ-ሰር ዳግም ግንኙነት ክትትል ነቅቷል። አንዴ ግንኙነቱ ሲመለስ ገጽዎ ወዲያውኑ ይመለሳል።"
   }
 }

@@ -1954,5 +1954,27 @@
     "resetBtn": "Iggitii Haaromsi",
     "resetting": "Haaromsaa jira...",
     "invalidLink": "Geessituun iggitii haaromsuu kun sirrii miti ykn yeroon isaa darbeera."
+  },
+  "offline": {
+    "title": "Toora Irraa Baateetta",
+    "serverUnavailable": "Tajaajilaan Hin Jiru",
+    "backOnline": "Gara Tooraatti Deebiteetta!",
+    "message": "Walitti hidhamiinsi intarneetii keessanii citeera. Maaloo toora keessan mirkaneessaa irra deebi'aa yaalaa.",
+    "serverMessage": "Meeshaan keessan intarneetii qaba, garuu tajaajilaan kutaalee hojii yeroof hin jiru. Maaloo muraasa booda yaalaa.",
+    "reconnectedMessage": "Walitti hidhamiinsi deebi'eera. Hojii keessan itti fufuu dandeessu.",
+    "retry": "Irra Deebi'ii Yaali",
+    "checking": "Mirkaneessaa jira…",
+    "deviceNetwork": "Toora Meeshaa",
+    "applicationApi": "Tajaajilaa Hojii",
+    "unsavedData": "Daataa Hin Qophoofne",
+    "protected": "Eegameera",
+    "connected": "Walqabateera",
+    "disconnected": "Citeera",
+    "online": "Toora Irra",
+    "unreachable": "Hin Dhaqqabamu",
+    "troubleshooting": "Tarkaanfiiwwan Rakkoo Hiikuu",
+    "hideDiagnostics": "Qorannoo Dhoksi",
+    "returnToApp": "Gara Hojiitti Deebi'i",
+    "autoReconnect": "Hordoffiin walitti hidhamiinsaa ofumaan hojjeta. Yeroo toorri deebi'u ofumaan deebi'a."
   }
 }

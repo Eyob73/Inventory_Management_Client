@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { AuthService } from '../services/auth';
+import { ConnectionService } from '../services/connection.service';
 
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
@@ -10,9 +11,19 @@ const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
+  const connectionService = inject(ConnectionService);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
+      // Check for network connection drops or server unreachable (status 0, timeout, or 502/503/504)
+      if (err.status === 0 || err.status === 408 || err.status === 502 || err.status === 503 || err.status === 504) {
+        connectionService.reportHttpError(err.status, req.url, err.message);
+        const networkMessage = err.status === 0
+          ? 'Network connection error or server unreachable. Please verify your connection.'
+          : 'The server is temporarily unavailable. Please try again in a few moments.';
+        return throwError(() => new Error(networkMessage));
+      }
+
       const detailMessage = err.error?.detail ?? err.error?.message ?? 'A system error occurred. Please try again.';
       
       if (err.status === 401) {

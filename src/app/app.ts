@@ -1,11 +1,15 @@
-import { ChangeDetectionStrategy, Component, signal, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, computed, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 import { routeFadeAnimation } from './animations/fade.animation';
+import { ConnectionService } from './services/connection.service';
+import { OfflineComponent } from './features/offline/offline';
+import { ReconnectedBannerComponent } from './features/offline/reconnected-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, OfflineComponent, ReconnectedBannerComponent],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.scss',
@@ -13,8 +17,28 @@ import { routeFadeAnimation } from './animations/fade.animation';
 })
 export class App implements OnInit {
   protected readonly title = signal('Inventory Management');
+  protected readonly connectionService = inject(ConnectionService);
+  private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+  private readonly currentUrl = signal(this.router.url);
+
+  readonly isOfflineRoute = computed(() => {
+    const url = this.currentUrl();
+    return url === '/offline' || url.startsWith('/offline?');
+  });
+
+  readonly showOfflineOverlay = computed(() => {
+    return this.connectionService.isDisconnected() && !this.isOfflineRoute();
+  });
+
+  constructor() {
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        this.currentUrl.set(e.urlAfterRedirects || e.url);
+      });
+  }
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
