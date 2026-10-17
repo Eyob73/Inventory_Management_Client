@@ -1,6 +1,6 @@
 {
-  "name": "Inventory_management",
-  "short_name": "Inventory_management",
+  "name": "TrackStack",
+  "short_name": "TrackStack",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",

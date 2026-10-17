@@ -68,7 +68,7 @@ export class OfflineComponent {
     }
     if (this.isApiUnreachable()) {
       const t = this.transloco?.translate('offline.serverMessage');
-      return t && t !== 'offline.serverMessage' ? t : 'Your device is connected to the internet, but the Inventory Management server is currently unreachable. Please check if the server is running or try again shortly.';
+      return t && t !== 'offline.serverMessage' ? t : 'Your device is connected to the internet, but the TrackStack server is currently unreachable. Please check if the server is running or try again shortly.';
     }
     const t = this.transloco?.translate('offline.message');
     return t && t !== 'offline.message' ? t : 'Your internet connection has been lost. Please check your network and try again.';

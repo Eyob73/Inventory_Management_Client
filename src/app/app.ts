@@ -16,7 +16,7 @@ import { ReconnectedBannerComponent } from './features/offline/reconnected-banne
   animations: [routeFadeAnimation],
 })
 export class App implements OnInit {
-  protected readonly title = signal('Inventory Management');
+  protected readonly title = signal('TrackStack');
   protected readonly connectionService = inject(ConnectionService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);

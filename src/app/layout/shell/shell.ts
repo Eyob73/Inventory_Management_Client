@@ -131,7 +131,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   });
 
   readonly tenantName = computed(() => {
-    return this.authStore.user()?.tenantName || 'INV-MGNT';
+    return this.authStore.user()?.tenantName || 'TrackStack';
   });
 
   readonly userInitials = computed(() => {
