@@ -1,4 +1,4 @@
-const DEFAULT_BACKEND_ORIGIN = 'https://trackstack.runasp.net';
+const DEFAULT_BACKEND_ORIGIN = 'http://trackstack.runasp.net';
 
 export async function proxyRequest(request: Request, env?: { BACKEND_URL?: string }): Promise<Response> {
   const backendOrigin = (env?.BACKEND_URL || DEFAULT_BACKEND_ORIGIN).replace(/\/+$/, '');
@@ -36,48 +36,19 @@ export async function proxyRequest(request: Request, env?: { BACKEND_URL?: strin
     init.duplex = 'half';
   }
 
-  let response: Response;
-  try {
-    response = await fetch(targetUrl.toString(), init);
-  } catch (err: any) {
-    // If backend https fails to connect, try http fallback
-    if (backendOrigin.startsWith('https://')) {
-      const fallbackOrigin = backendOrigin.replace('https://', 'http://');
-      const fallbackUrl = new URL(url.pathname + url.search, fallbackOrigin);
-      const fallbackHeaders = new Headers(headers);
-      fallbackHeaders.set('Host', new URL(fallbackOrigin).host);
-      
-      const fallbackInit: RequestInit = {
-        ...init,
-        headers: fallbackHeaders,
-      };
+  let response = await fetch(targetUrl.toString(), init);
 
-      try {
-        response = await fetch(fallbackUrl.toString(), fallbackInit);
-      } catch (fallbackErr: any) {
-        return new Response(
-          JSON.stringify({
-            error: 'Backend Unreachable',
-            message: `Could not connect to backend at ${backendOrigin} or ${fallbackOrigin}: ${fallbackErr?.message || fallbackErr}`,
-          }),
-          {
-            status: 502,
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
-      }
-    } else {
-      return new Response(
-        JSON.stringify({
-          error: 'Backend Unreachable',
-          message: `Could not connect to backend at ${backendOrigin}: ${err?.message || err}`,
-        }),
-        {
-          status: 502,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-    }
+  // If HTTPS was requested but origin has SSL handshake failure (525/526), fallback to HTTP
+  if ((response.status === 525 || response.status === 526) && backendOrigin.startsWith('https://')) {
+    const fallbackOrigin = backendOrigin.replace('https://', 'http://');
+    const fallbackUrl = new URL(url.pathname + url.search, fallbackOrigin);
+    const fallbackHeaders = new Headers(headers);
+    fallbackHeaders.set('Host', new URL(fallbackOrigin).host);
+
+    response = await fetch(fallbackUrl.toString(), {
+      ...init,
+      headers: fallbackHeaders,
+    });
   }
 
   // Preserve response headers and status
