@@ -1,7 +1,13 @@
+:host {
+  display: block;
+  font-family: var(--font-family-base);
+  color: var(--ink);
+}
+
 .purchase-form-page {
-  padding: 1.5rem;
-  max-width: 960px;
+  width: 100%;
   margin: 0 auto;
+  padding: 8px 0px 80px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -184,7 +190,7 @@
 
   &__fields {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) 110px 140px 140px;
+    grid-template-columns: minmax(0, 3fr) minmax(110px, 1fr) minmax(130px, 1.2fr) minmax(130px, 1.2fr);
     gap: 0.75rem 1rem;
     align-items: start;
 

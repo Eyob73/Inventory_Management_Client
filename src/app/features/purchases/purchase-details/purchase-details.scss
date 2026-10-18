@@ -1,7 +1,13 @@
+:host {
+  display: block;
+  font-family: var(--font-family-base);
+  color: var(--ink);
+}
+
 .purchase-form-page {
-  padding: 1.5rem;
-  max-width: 960px;
+  width: 100%;
   margin: 0 auto;
+  padding: 8px 0px 80px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -13,7 +19,8 @@
   gap: 1.5rem;
   background: transparent;
   color: var(--ink);
-  max-width: 960px;
+  width: 100%;
+  max-width: none;
   margin: 0;
   padding: 0;
 }
@@ -404,7 +411,7 @@
 
 @media (max-width: 768px) {
   .purchase-form-page {
-    padding: 1rem;
+    padding: 8px 0px 60px;
   }
 
   .pdp-header {
