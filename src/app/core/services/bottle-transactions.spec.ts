@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { BottleTransactionsService } from './bottle-transactions';
 
-import { BottleTransactions } from './bottle-transactions';
-
-describe('BottleTransactions', () => {
-  let service: BottleTransactions;
+describe('BottleTransactionsService', () => {
+  let service: BottleTransactionsService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(BottleTransactions);
+    TestBed.configureTestingModule({
+      providers: [BottleTransactionsService, provideHttpClient(), provideHttpClientTesting()]
+    });
+    service = TestBed.inject(BottleTransactionsService);
   });
 
   it('should be created', () => {

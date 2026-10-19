@@ -1,19 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { BottleReportsComponent } from './bottle-reports';
 
-import { BottleReports } from './bottle-reports';
-
-describe('BottleReports', () => {
-  let component: BottleReports;
-  let fixture: ComponentFixture<BottleReports>;
+describe('BottleReportsComponent', () => {
+  let component: BottleReportsComponent;
+  let fixture: ComponentFixture<BottleReportsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BottleReports],
+      imports: [BottleReportsComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BottleReports);
+    fixture = TestBed.createComponent(BottleReportsComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {

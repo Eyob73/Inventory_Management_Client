@@ -41,6 +41,9 @@ export interface Sale {
   changeAmount: number;
   notes?: string | null;
   status: 'Completed' | 'Cancelled' | string;
+  paymentVerificationId?: string | null;
+  isPaymentVerified?: boolean;
+  paymentVerificationStatus?: string | null;
   createdAt: string;
   items: SaleItem[];
 }
@@ -54,6 +57,8 @@ export interface CreateSaleRequest {
   taxAmount: number;
   additionalBottleDeposit?: number;
   notes?: string | null;
+  paymentVerificationId?: string | null;
+  verificationSkipped?: boolean;
   items: CreateSaleItemRequest[];
 }
 

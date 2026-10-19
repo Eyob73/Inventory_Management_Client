@@ -91,6 +91,14 @@ export const routes: Routes = [
         canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
       },
       {
+        path: 'payments/verification',
+        loadComponent: () =>
+          import('./features/payment-verification/payment-verification').then(
+            (m) => m.PaymentVerificationComponent
+          ),
+        canActivate: [roleGuard(['Admin', 'Manager', 'Sales'])],
+      },
+      {
         path: 'sales',
         redirectTo: 'pos',
         pathMatch: 'full'

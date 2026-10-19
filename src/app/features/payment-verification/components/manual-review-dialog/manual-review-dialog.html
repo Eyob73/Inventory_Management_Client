@@ -1,0 +1,102 @@
+<div class="review-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">rate_review</mat-icon>
+      <h2>Authorize Manual Payment Review</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <div class="dialog-body">
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Review context banner -->
+  <div class="context-card">
+    <div class="context-row">
+      <span class="label">Sale Number:</span>
+      <span class="value font-semibold">#{{ saleNumber }}</span>
+    </div>
+    <div class="context-row">
+      <span class="label">Transaction Ref:</span>
+      <span class="value font-mono">{{ submittedReference }}</span>
+    </div>
+    <div class="context-row">
+      <span class="label">Verified Amount:</span>
+      <span class="value font-bold text-moss">ETB {{ verifiedAmount | number:'1.2-2' }}</span>
+    </div>
+    <div class="context-row">
+      <span class="label">Current Status:</span>
+      <span class="value">{{ verification.status }}</span>
+    </div>
+    @if (verification.failureMessage) {
+      <div class="context-row failure-msg">
+        <span class="label">Reason / Flag:</span>
+        <span class="value text-amber">{{ verification.failureMessage }}</span>
+      </div>
+    }
+  </div>
+
+    <!-- Decision Radio -->
+    <div class="decision-group">
+      <label class="section-label">Audit Decision</label>
+      <mat-radio-group formControlName="decision" class="radio-options">
+        <mat-radio-button value="approve" color="primary">
+          <div class="radio-content">
+            <span class="radio-title">Approve & Confirm Sale</span>
+            <span class="radio-desc">Mark transaction as verified and apply payment to Sale #{{ saleNumber }}.</span>
+          </div>
+        </mat-radio-button>
+
+        <mat-radio-button value="reject" color="warn">
+          <div class="radio-content">
+            <span class="radio-title">Reject Payment</span>
+            <span class="radio-desc">Decline this transaction verification attempt. Sale remains unpaid.</span>
+          </div>
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <!-- Reviewer Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Reviewer Audit Justification / Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="3"
+        placeholder="Document the justification for this decision (e.g. Verified via direct CBE bank statement, customer presented valid stamped paper receipt)..."></textarea>
+      @if (reviewForm.get('notes')?.hasError('required')) {
+        <mat-error>Audit notes are required for compliance tracking</mat-error>
+      }
+      @if (reviewForm.get('notes')?.hasError('minlength')) {
+        <mat-error>Notes must be at least 5 characters</mat-error>
+      }
+    </mat-form-field>
+    </div>
+
+    <!-- Dialog Actions -->
+    <div class="dialog-actions">
+      <button type="button" mat-stroked-button class="cancel-btn" (click)="onCancel()" [disabled]="isSubmitting()">
+        Cancel
+      </button>
+      <button type="submit" mat-flat-button class="submit-btn" [class.approve]="reviewForm.get('decision')?.value === 'approve'" [class.reject]="reviewForm.get('decision')?.value === 'reject'"
+        [disabled]="reviewForm.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="btn-inner">
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+            <span>Saving Decision...</span>
+          </span>
+        } @else {
+          <span class="btn-inner">
+            <mat-icon>{{ reviewForm.get('decision')?.value === 'approve' ? 'check_circle' : 'cancel' }}</mat-icon>
+            <span>Submit Decision</span>
+          </span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

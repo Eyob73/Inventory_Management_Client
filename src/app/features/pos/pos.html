@@ -347,14 +347,14 @@
           [ngModel]="saleNotes()" (ngModelChange)="saleNotes.set($event)"></textarea>
 
         <!-- Submit -->
-        <button type="button" class="btn btn--primary submit-btn" [disabled]="isSubmitting() || cart().length === 0"
+        <button type="button" class="btn btn--primary submit-btn" [disabled]="isSubmitting() || cart().length === 0 || checkoutState() === 'verifyingPayment' || checkoutState() === 'confirmingSale'"
           (click)="completeSale()">
-          <ng-container *ngIf="isSubmitting(); else btnLabel">
+          <ng-container *ngIf="isSubmitting() || checkoutState() === 'verifyingPayment' || checkoutState() === 'confirmingSale'; else btnLabel">
             <mat-spinner diameter="18"></mat-spinner>
-            <span>{{ t('pos.processing') }}</span>
+            <span>{{ isSubmitting() ? t('pos.processing') : 'Verifying / Confirming...' }}</span>
           </ng-container>
           <ng-template #btnLabel>
-            <mat-icon>point_of_sale</mat-icon>
+            <mat-icon>{{ isElectronicPayment(paymentMethod()) && checkoutState() === 'paymentVerified' ? 'verified' : 'point_of_sale' }}</mat-icon>
             <span>{{ t('pos.submit') }} &nbsp;{{ grandTotal() | number:'1.2-2' }} ETB</span>
           </ng-template>
         </button>

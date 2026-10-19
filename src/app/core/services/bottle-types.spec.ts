@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { BottleTypesService } from './bottle-types';
 
-import { BottleTypes } from './bottle-types';
-
-describe('BottleTypes', () => {
-  let service: BottleTypes;
+describe('BottleTypesService', () => {
+  let service: BottleTypesService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(BottleTypes);
+    TestBed.configureTestingModule({
+      providers: [BottleTypesService, provideHttpClient(), provideHttpClientTesting()]
+    });
+    service = TestBed.inject(BottleTypesService);
   });
 
   it('should be created', () => {

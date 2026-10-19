@@ -1,0 +1,140 @@
+<div class="destination-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">{{ isEditMode ? 'edit_note' : 'add_card' }}</mat-icon>
+      <h2>{{ isEditMode ? 'Edit Payment Destination' : 'Add Payment Destination' }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="destinationForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <div class="dialog-body">
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Destination Label / Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Destination Name / Label</mat-label>
+      <mat-icon matPrefix>label</mat-icon>
+      <input matInput formControlName="name" placeholder="e.g. Main CBE Account, Cashier Telebirr" />
+      @if (destinationForm.get('name')?.hasError('required')) {
+        <mat-error>Destination name is required</mat-error>
+      }
+      @if (destinationForm.get('name')?.hasError('minlength')) {
+        <mat-error>Name must be at least 2 characters</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Destination Type -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Destination Type</mat-label>
+      <mat-icon matPrefix>category</mat-icon>
+      <mat-select formControlName="type">
+        @for (item of destinationTypes; track item.value) {
+          <mat-option [value]="item.value">
+            <div class="type-option">
+              <mat-icon class="opt-icon">{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </div>
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (destinationForm.get('type')?.value === 'BankAccount') {
+      <!-- Bank Selector -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Supported Bank</mat-label>
+        <mat-icon matPrefix>account_balance</mat-icon>
+        <mat-select formControlName="bankCode">
+          @if (isLoadingBanks()) {
+            <mat-option disabled>Loading banks...</mat-option>
+          }
+          @for (bank of supportedBanks(); track bank.id) {
+            <mat-option [value]="bank.id">
+              {{ bank.name }} ({{ bank.id | uppercase }})
+            </mat-option>
+          }
+        </mat-select>
+        @if (destinationForm.get('bankCode')?.hasError('required')) {
+          <mat-error>Please select a bank</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Account Number -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ isEditMode ? 'New Account Number (leave blank to keep current)' : 'Account Number' }}</mat-label>
+        <mat-icon matPrefix>pin</mat-icon>
+        <input matInput formControlName="accountNumber" placeholder="e.g. 1000123456789" />
+        <mat-hint>Account numbers are securely masked in the system</mat-hint>
+        @if (destinationForm.get('accountNumber')?.hasError('required')) {
+          <mat-error>Account number is required</mat-error>
+        }
+        @if (destinationForm.get('accountNumber')?.hasError('minlength')) {
+          <mat-error>Account number must be at least 5 digits</mat-error>
+        }
+      </mat-form-field>
+    } @else {
+      <!-- Telebirr Phone Number -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ isEditMode ? 'New Receiving Phone (leave blank to keep)' : 'Telebirr Phone Number' }}</mat-label>
+        <mat-icon matPrefix>phone_android</mat-icon>
+        <input matInput formControlName="phoneNumber" placeholder="0911234567 or +251911234567" />
+        <mat-hint>Ethiopian mobile format (09... or 07...)</mat-hint>
+        @if (destinationForm.get('phoneNumber')?.hasError('required')) {
+          <mat-error>Phone number is required</mat-error>
+        }
+        @if (destinationForm.get('phoneNumber')?.hasError('pattern')) {
+          <mat-error>Enter a valid Ethiopian phone number (+2519..., 09..., or 07...)</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <!-- Account Holder Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Account / Receiver Name (Optional)</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput formControlName="accountHolderName" placeholder="e.g. ABC Trading PLC" />
+    </mat-form-field>
+
+    <!-- Toggles Row -->
+    <div class="toggle-row">
+      <mat-slide-toggle formControlName="isDefault" color="primary">
+        Set as default payment destination
+      </mat-slide-toggle>
+
+      @if (isEditMode) {
+        <mat-slide-toggle formControlName="isActive" color="primary">
+          Active
+        </mat-slide-toggle>
+      }
+    </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="dialog-actions">
+      <button type="button" mat-stroked-button class="cancel-btn" (click)="onCancel()" [disabled]="isSubmitting()">
+        Cancel
+      </button>
+      <button type="submit" mat-flat-button class="submit-btn" [disabled]="destinationForm.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="btn-inner">
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+            <span>Saving...</span>
+          </span>
+        } @else {
+          <span class="btn-inner">
+            <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+            <span>{{ isEditMode ? 'Save Changes' : 'Register Destination' }}</span>
+          </span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

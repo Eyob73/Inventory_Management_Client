@@ -1,0 +1,228 @@
+<div class="pos-verification-dialog" role="dialog" aria-labelledby="dialog-title" aria-describedby="dialog-desc">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-icon-wrapper" [class.verified]="isVerified()">
+      <mat-icon>{{ isVerified() ? 'verified' : 'verified_user' }}</mat-icon>
+    </div>
+    <div class="header-titles">
+      <h2 id="dialog-title" class="dialog-title">Verify Payment</h2>
+      <p id="dialog-desc" class="dialog-subtitle">Verify the customer's bank or Telebirr transaction before confirming this sale.</p>
+    </div>
+    <button mat-icon-button type="button" class="close-btn" (click)="cancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Scrollable Dialog Body -->
+  <div class="dialog-body">
+    <!-- Sale Context Summary Card -->
+    <div class="sale-summary-card">
+    <div class="summary-item">
+      <span class="label">Customer</span>
+      <span class="value font-medium">{{ data.customerName || 'Walk-in Customer' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Payment Method</span>
+      <span class="value badge-method">
+        <mat-icon class="inline-icon">{{ isTelebirr() ? 'phone_android' : 'account_balance' }}</mat-icon>
+        {{ data.paymentMethod }}
+      </span>
+    </div>
+    <div class="summary-item total-item">
+      <span class="label">Total Amount</span>
+      <span class="value amount-highlight">{{ data.totalAmount | number:'1.2-2' }} <small>ETB</small></span>
+    </div>
+    <div class="summary-item" *ngIf="data.saleReference">
+      <span class="label">Order Ref</span>
+      <span class="value font-mono">{{ data.saleReference }}</span>
+    </div>
+  </div>
+
+  <!-- Verification Form -->
+  <form [formGroup]="verificationForm" (ngSubmit)="verifyPayment()" class="verification-form">
+    <!-- Receiving Destination Selector -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Receiving Destination</mat-label>
+      <mat-select formControlName="destinationId" (selectionChange)="onDestinationChange($event.value)" required>
+        <mat-option *ngIf="isLoadingDestinations()" disabled>
+          <div class="select-loading">
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>Loading active destinations...</span>
+          </div>
+        </mat-option>
+        <mat-option *ngFor="let dest of activeDestinations()" [value]="dest.id">
+          <div class="destination-option">
+            <mat-icon class="dest-icon">{{ dest.type === 'Telebirr' || dest.type === 2 ? 'phone_android' : 'account_balance' }}</mat-icon>
+            <div class="dest-details">
+              <span class="dest-name">{{ dest.name }} ({{ dest.bankName || dest.typeName }})</span>
+              <span class="dest-account font-mono text-muted">
+                {{ dest.maskedAccountNumber || dest.maskedPhoneNumber || 'No account digits' }}
+              </span>
+            </div>
+            <span *ngIf="dest.isDefault" class="default-chip">Default</span>
+          </div>
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix class="field-prefix-icon">account_balance_wallet</mat-icon>
+      <mat-error *ngIf="verificationForm.get('destinationId')?.hasError('required')">
+        A receiving business destination is required.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Selected Destination Quick Indicator -->
+    <div class="destination-preview" *ngIf="selectedDestination() as dest">
+      <div class="preview-row">
+        <span class="preview-label">Registered Receiver:</span>
+        <span class="preview-value font-mono">{{ dest.maskedAccountNumber || dest.maskedPhoneNumber }}</span>
+        <span class="preview-holder text-muted" *ngIf="dest.accountHolderName">({{ dest.accountHolderName }})</span>
+      </div>
+    </div>
+
+    <!-- Transaction Reference / Receipt URL -->
+    <mat-form-field appearance="outline" class="w-full mt-2">
+      <mat-label>Transaction Reference or Receipt Link</mat-label>
+      <input
+        matInput
+        formControlName="submittedReference"
+        placeholder="e.g. FT2409876543 or https://..."
+        autocomplete="off"
+        (input)="onReferenceInput()"
+        required
+      />
+      <mat-icon matPrefix class="field-prefix-icon">receipt_long</mat-icon>
+      <mat-hint>Enter the unique bank transaction ID, SMS reference code, or official receipt URL.</mat-hint>
+      <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('required')">
+        Transaction reference or receipt link is required.
+      </mat-error>
+      <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('minlength')">
+        Reference must be at least 3 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Telebirr specific: Payer Phone -->
+    <div *ngIf="isTelebirr()" class="provider-fields">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Customer Phone Number (Optional)</mat-label>
+        <input
+          matInput
+          formControlName="payerPhone"
+          placeholder="e.g. 0911223344"
+          autocomplete="off"
+        />
+        <mat-icon matPrefix class="field-prefix-icon">phone</mat-icon>
+        <mat-hint>Helps accelerate Telebirr transaction matching.</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- Verification Result Banner -->
+    <div
+      *ngIf="verificationResult() as result"
+      class="result-banner"
+      [ngClass]="getStatusBadgeClass(result.status)"
+    >
+      <div class="result-header">
+        <mat-icon class="result-icon">{{ getStatusIcon(result.status) }}</mat-icon>
+        <div class="result-title-group">
+          <span class="result-status-text font-semibold">{{ result.statusName }}</span>
+          <span class="result-message">{{ result.failureMessage || (isVerified() ? 'Transaction verified and matched.' : '') }}</span>
+        </div>
+      </div>
+
+      <div class="result-details" *ngIf="isVerified()">
+        <div class="detail-row">
+          <span class="dt-label">Verified Ref:</span>
+          <span class="dt-value font-mono">{{ result.verifiedReference || result.submittedReference }}</span>
+        </div>
+        <div class="detail-row" *ngIf="result.verifiedAmount">
+          <span class="dt-label">Verified Amount:</span>
+          <span class="dt-value font-semibold">{{ result.verifiedAmount | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="detail-row" *ngIf="result.payerName">
+          <span class="dt-label">Payer:</span>
+          <span class="dt-value">{{ result.payerName }}</span>
+        </div>
+        <div class="detail-row" *ngIf="result.receiverAccount">
+          <span class="dt-label">Destination:</span>
+          <span class="dt-value font-mono">{{ result.receiverAccount }}</span>
+        </div>
+      </div>
+
+      <div class="result-details text-danger" *ngIf="!isVerified() && result.expectedAmount && result.verifiedAmount">
+        <div class="detail-row">
+          <span class="dt-label">Expected:</span>
+          <span class="dt-value">{{ result.expectedAmount | number:'1.2-2' }} ETB</span>
+        </div>
+        <div class="detail-row">
+          <span class="dt-label">Received:</span>
+          <span class="dt-value">{{ result.verifiedAmount | number:'1.2-2' }} ETB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- General Error Banner -->
+    <div *ngIf="errorMessage()" class="result-banner badge-failed">
+      <div class="result-header">
+        <mat-icon class="result-icon">error_outline</mat-icon>
+        <div class="result-title-group">
+          <span class="result-status-text font-semibold">Verification Request Failed</span>
+          <span class="result-message">{{ errorMessage() }}</span>
+        </div>
+      </div>
+    </div>
+  </form>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div class="dialog-actions">
+    <!-- Cancel action -->
+    <button mat-stroked-button type="button" class="cancel-btn" (click)="cancel()" [disabled]="isVerifying()">
+      Cancel
+    </button>
+
+    <div class="actions-right">
+      <!-- Skip Verification Secondary Action -->
+      <button
+        *ngIf="!isVerified()"
+        mat-stroked-button
+        type="button"
+        class="skip-btn"
+        (click)="skipVerification()"
+        [disabled]="isVerifying()"
+        matTooltip="Proceed with sale without verifying the transaction reference with the bank"
+      >
+        <mat-icon>fast_forward</mat-icon>
+        Skip Verification
+      </button>
+
+      <!-- Verify Payment Primary Action -->
+      <button
+        *ngIf="!isVerified()"
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="verify-btn"
+        (click)="verifyPayment()"
+        [disabled]="isVerifying() || verificationForm.invalid"
+      >
+        <mat-spinner *ngIf="isVerifying()" diameter="20" class="btn-spinner"></mat-spinner>
+        <mat-icon *ngIf="!isVerifying()">verified</mat-icon>
+        <span>{{ isVerifying() ? 'Verifying...' : 'Verify Payment' }}</span>
+      </button>
+
+      <!-- Proceed Action (Shown when verified) -->
+      <button
+        *ngIf="isVerified()"
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="proceed-btn"
+        (click)="proceedWithVerifiedPayment()"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+        <span>Continue to Confirm Sale</span>
+      </button>
+    </div>
+  </div>
+</div>
