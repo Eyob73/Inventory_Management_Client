@@ -46,19 +46,20 @@
     </div>
   </div>
 
-  <div class="table-card">
-
-    @if (store.isLoading() && (!store.balances() || store.balances()?.length === 0)) {
+  @if (store.isLoading() && (!store.balances() || store.balances()?.length === 0)) {
+    <div class="table-card">
       <app-table-skeleton [columns]="5"></app-table-skeleton>
-    } @else {
-      <app-data-view
-        pageName="customer-bottles"
-        [data]="dataSource.data"
-        [cardFields]="cardFields()"
-        [actions]="cardActions()"
-        (actionClicked)="onCardAction($event)"
-      >
-        <ng-container table-view>
+    </div>
+  } @else {
+    <app-data-view
+      pageName="customer-bottles"
+      [data]="dataSource.data"
+      [cardFields]="cardFields()"
+      [actions]="cardActions()"
+      (actionClicked)="onCardAction($event)"
+    >
+      <ng-container table-view>
+        <div class="table-card">
           <div class="table-wrapper">
             <table mat-table [dataSource]="dataSource" class="app-table">
               <ng-container matColumnDef="customerName">
@@ -100,30 +101,30 @@
               <tr mat-row *matRowDef="let row; columns: ['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions'];"></tr>
             </table>
           </div>
-        </ng-container>
-        
-        <ng-container empty-state>
-          <div class="empty-state">
-            <mat-icon class="empty-icon">people</mat-icon>
-            <p class="empty-title">{{ t('noCustomerBottles') }}</p>
-            <p class="empty-subtitle">{{ t('noCustomerBottlesSubtitle') }}</p>
-          </div>
-        </ng-container>
+        </div>
+      </ng-container>
+      
+      <ng-container empty-state>
+        <div class="empty-state">
+          <mat-icon class="empty-icon">people</mat-icon>
+          <p class="empty-title">{{ t('noCustomerBottles') }}</p>
+          <p class="empty-subtitle">{{ t('noCustomerBottlesSubtitle') }}</p>
+        </div>
+      </ng-container>
 
-        <ng-container paginator>
-          <mat-paginator
-            [length]="store.totalCount()"
-            [pageSize]="store.pageSize()"
-            [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
-            (page)="onPageChange($event)"
-            [pageSizeOptions]="pageSizeOptions"
-            [showFirstLastButtons]="true"
-            aria-label="Select page">
-          </mat-paginator>
-        </ng-container>
-      </app-data-view>
-    }
-  </div>
+      <ng-container paginator>
+        <mat-paginator
+          [length]="store.totalCount()"
+          [pageSize]="store.pageSize()"
+          [pageIndex]="store.pageIndex() > 0 ? store.pageIndex() - 1 : 0"
+          (page)="onPageChange($event)"
+          [pageSizeOptions]="pageSizeOptions"
+          [showFirstLastButtons]="true"
+          aria-label="Select page">
+        </mat-paginator>
+      </ng-container>
+    </app-data-view>
+  }
 </div>
 
 

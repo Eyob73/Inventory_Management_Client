@@ -2,6 +2,10 @@
   "app": {
     "title": "TrackStack"
   },
+  "viewToggle": {
+    "table": "የሰንጠረዥ እይታ",
+    "card": "የካርድ እይታ"
+  },
   "scanner": {
     "scanBarcode": "ባርኮድ ስካን ያድርጉ",
     "scanProductBarcode": "የምርት ባርኮድ ስካን ያድርጉ",
@@ -53,7 +57,8 @@
     "confirm": "አረጋግጥ",
     "reset": "Reset",
     "saveChanges": "Save Changes",
-    "all": "ሁሉንም"
+    "all": "ሁሉንም",
+    "close": "ዝጋ"
   },
   "dashboard": {
     "title": {
@@ -955,7 +960,14 @@
     "processing": "ክፍያውን በማካሄድ ላይ...",
     "submit": "ሽያጭ አረጋግጥ",
     "next": "ቀጣይ",
-    "back": "ተመለስ"
+    "back": "ተመለስ",
+    "scanBarcode": "ባርኮድ ስካን ያድርጉ ወይም ያስገቡ...",
+    "scanWithCamera": "በካሜራ ስካን ያድርጉ",
+    "productInactive": "ምርቱ ንቁ አይደለም።",
+    "barcodeNotFound": "⚠ ባርኮድ አልተገኘም፡ {{barcode}}",
+    "barcodeError": "ባርኮድ በመፈለግ ላይ ስህተት ተከስቷል።",
+    "barcodeDetected": "✓ ባርኮድ ተገኝቷል",
+    "close": "ዝጋ"
   },
   "salesHistory": {
     "title": "የሽያጭ ታሪክ",

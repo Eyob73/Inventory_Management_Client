@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter, inject, signal, effect, ContentChild, TemplateRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 export interface DataViewCardField {
   key: string;
@@ -25,21 +25,71 @@ export interface DataViewAction {
 @Component({
   selector: 'app-data-view',
   standalone: true,
-  imports: [CommonModule, MatButtonToggleModule, MatIconModule, MatTooltipModule, MatButtonModule],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, MatButtonModule, TranslocoPipe],
   template: `
     <div class="data-view-toolbar">
       <div class="data-view-toolbar-content">
         <ng-content select="[toolbar-start]"></ng-content>
       </div>
       <div class="data-view-toggle">
-        <mat-button-toggle-group [value]="viewMode()" (change)="onViewChange($event.value)" aria-label="View Mode">
-          <mat-button-toggle value="table" matTooltip="Table View">
-            <mat-icon>table_rows</mat-icon> <span class="toggle-text">Table</span>
-          </mat-button-toggle>
-          <mat-button-toggle value="card" matTooltip="Card View">
-            <mat-icon>grid_view</mat-icon> <span class="toggle-text">Cards</span>
-          </mat-button-toggle>
-        </mat-button-toggle-group>
+        <div class="view-toggle-group" role="group" aria-label="View mode">
+          <button
+            type="button"
+            class="view-toggle-btn"
+            [class.view-toggle-btn--active]="viewMode() === 'table'"
+            (click)="onViewChange('table')"
+            [attr.aria-label]="'viewToggle.table' | transloco"
+            [attr.aria-pressed]="viewMode() === 'table'"
+          >
+            <svg
+              class="view-toggle-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3v18" />
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M3 9h18" />
+              <path d="M3 15h18" />
+            </svg>
+            <span class="view-toggle-tooltip" role="tooltip" aria-hidden="true">
+              {{ 'viewToggle.table' | transloco }}
+            </span>
+          </button>
+          <button
+            type="button"
+            class="view-toggle-btn"
+            [class.view-toggle-btn--active]="viewMode() === 'card'"
+            (click)="onViewChange('card')"
+            [attr.aria-label]="'viewToggle.card' | transloco"
+            [attr.aria-pressed]="viewMode() === 'card'"
+          >
+            <svg
+              class="view-toggle-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="7" height="7" x="3" y="3" rx="1" />
+              <rect width="7" height="7" x="14" y="3" rx="1" />
+              <rect width="7" height="7" x="14" y="14" rx="1" />
+              <rect width="7" height="7" x="3" y="14" rx="1" />
+            </svg>
+            <span class="view-toggle-tooltip" role="tooltip" aria-hidden="true">
+              {{ 'viewToggle.card' | transloco }}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -134,18 +184,139 @@ export interface DataViewAction {
       flex: 1;
     }
     .data-view-toggle {
-      display: flex;
+      display: inline-flex;
       align-items: center;
     }
-    .data-view-toggle mat-icon {
-      font-size: 16px;
+    .view-toggle-group {
+      display: inline-flex;
+      align-items: center;
+      background: var(--canvas, #f5f5f4);
+      border: 1px solid var(--border, #e1e1df);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+      box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.04);
+      transition: background-color var(--transition-fast, 0.15s ease),
+                  border-color var(--transition-fast, 0.15s ease);
+    }
+    :host-context(.dark-theme) .view-toggle-group {
+      background: var(--paper, #0a0a0b);
+      border-color: var(--line, #232326);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+    .view-toggle-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted, var(--slate, #6b6b6b));
+      cursor: pointer;
+      user-select: none;
+      transition: background-color var(--transition-fast, 0.15s cubic-bezier(0.4, 0, 0.2, 1)),
+                  color var(--transition-fast, 0.15s cubic-bezier(0.4, 0, 0.2, 1)),
+                  border-color var(--transition-fast, 0.15s cubic-bezier(0.4, 0, 0.2, 1)),
+                  box-shadow var(--transition-fast, 0.15s cubic-bezier(0.4, 0, 0.2, 1)),
+                  transform var(--transition-fast, 0.15s cubic-bezier(0.4, 0, 0.2, 1));
+    }
+    .view-toggle-btn:hover:not(.view-toggle-btn--active) {
+      color: var(--ink, #0a0a0a);
+      background: rgba(10, 10, 10, 0.05);
+    }
+    :host-context(.dark-theme) .view-toggle-btn:hover:not(.view-toggle-btn--active) {
+      color: var(--ink, #f4f4f3);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .view-toggle-btn--active {
+      background: var(--surface, #ffffff);
+      color: var(--ink, #0a0a0a);
+      border-color: rgba(10, 10, 10, 0.08);
+      box-shadow: 0 1px 3px rgba(10, 10, 10, 0.08), 0 1px 2px rgba(10, 10, 10, 0.04);
+    }
+    :host-context(.dark-theme) .view-toggle-btn--active {
+      background: var(--surface, #151517);
+      color: var(--ink, #f4f4f3);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+    .view-toggle-btn:focus-visible {
+      outline: 2px solid var(--primary, #5b7553);
+      outline-offset: 1px;
+      z-index: 1;
+    }
+    .view-toggle-btn:active {
+      transform: scale(0.96);
+    }
+    .view-toggle-icon {
       width: 16px;
       height: 16px;
-      line-height: 16px;
+      stroke-width: 2;
+      display: block;
+      flex-shrink: 0;
+      pointer-events: none;
     }
-    .toggle-text {
-      margin-left: 4px;
-      font-size: 13px;
+    .view-toggle-tooltip {
+      position: absolute;
+      bottom: calc(100% + 7px);
+      left: 50%;
+      transform: translate(-50%, 4px);
+      background: #1e1e24;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.2;
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 100;
+      transition: opacity 180ms ease,
+                  transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 180ms;
+    }
+    .view-toggle-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: #1e1e24;
+    }
+    :host-context(.dark-theme) .view-toggle-tooltip {
+      background: #28282e;
+      color: #f4f4f3;
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+    :host-context(.dark-theme) .view-toggle-tooltip::after {
+      border-top-color: #28282e;
+    }
+    .view-toggle-btn:hover .view-toggle-tooltip,
+    .view-toggle-btn:focus-visible .view-toggle-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
+    }
+    @media (hover: none) {
+      .view-toggle-tooltip {
+        display: none !important;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .view-toggle-tooltip {
+        transition: none !important;
+        transform: translate(-50%, 0) !important;
+      }
     }
     .cards-grid {
       display: grid;
@@ -287,9 +458,6 @@ export interface DataViewAction {
       color: #ffb74d;
     }
     @media (max-width: 600px) {
-      .toggle-text {
-        display: none;
-      }
       .data-view-toolbar {
         flex-direction: column;
         align-items: stretch;

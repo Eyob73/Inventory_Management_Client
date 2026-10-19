@@ -2,6 +2,10 @@
   "app": {
     "title": "TrackStack"
   },
+  "viewToggle": {
+    "table": "Ilaalcha gabatee",
+    "card": "Ilaalcha kaardii"
+  },
   "scanner": {
     "scanBarcode": "Baarkoodii Skaan Godhi",
     "scanProductBarcode": "Baarkoodii Oomishaa Skaan Godhi",
@@ -53,7 +57,8 @@
     "confirm": "Mirkaneessi",
     "reset": "Reset",
     "saveChanges": "Save Changes",
-    "all": "Hunda"
+    "all": "Hunda",
+    "close": "Cufi"
   },
   "dashboard": {
     "title": {
@@ -955,7 +960,14 @@
     "processing": "Adeemsisaa jira…",
     "submit": "Mirkaneessi",
     "next": "Itti aanee",
-    "back": "Duuba"
+    "back": "Duuba",
+    "scanBarcode": "Baarkoodii skaan godhi ykn galchi…",
+    "scanWithCamera": "Kaameeraan skaan godhi",
+    "productInactive": "Oomishni kun hin hojjetu.",
+    "barcodeNotFound": "⚠ Baarkoodiin hin argamne: {{barcode}}",
+    "barcodeError": "Baarkoodii barbaaduu irratti dogoggorri uumameera.",
+    "barcodeDetected": "✓ Baarkoodiin argameera",
+    "close": "Cufi"
   },
   "salesHistory": {
     "title": "Seenaa Gurgurtaa",

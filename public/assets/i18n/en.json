@@ -2,6 +2,10 @@
   "app": {
     "title": "TrackStack"
   },
+  "viewToggle": {
+    "table": "Table view",
+    "card": "Card view"
+  },
   "scanner": {
     "scanBarcode": "Scan Barcode",
     "scanProductBarcode": "Scan Product Barcode",
@@ -53,7 +57,8 @@
     "confirm": "Confirm",
     "reset": "Reset",
     "saveChanges": "Save Changes",
-    "all": "All"
+    "all": "All",
+    "close": "Close"
   },
   "dashboard": {
     "title": {
@@ -955,7 +960,14 @@
     "processing": "Processing…",
     "submit": "Submit",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "scanBarcode": "Scan or enter barcode…",
+    "scanWithCamera": "Scan with Camera",
+    "productInactive": "Product is inactive.",
+    "barcodeNotFound": "⚠ Barcode not found: {{barcode}}",
+    "barcodeError": "Error looking up barcode.",
+    "barcodeDetected": "✓ Barcode detected",
+    "close": "Close"
   },
   "salesHistory": {
     "title": "Sales History",

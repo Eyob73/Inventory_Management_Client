@@ -20,10 +20,10 @@
           </mat-form-field>
           <mat-form-field appearance="outline" class="search-form-field catalog-search barcode-scan" style="flex: 1;">
             <mat-icon matPrefix class="search-icon">qr_code_scanner</mat-icon>
-            <input matInput #barcodeInput type="text" placeholder="Scan or enter barcode..." autocomplete="off"
+            <input matInput #barcodeInput type="text" [placeholder]="t('pos.scanBarcode')" autocomplete="off"
               inputmode="none" (keyup.enter)="onBarcodeScanned(barcodeInput.value); barcodeInput.value = ''" />
-            <button matSuffix mat-icon-button (click)="openCameraScanner()" aria-label="Scan with Camera"
-              matTooltip="Scan with Camera">
+            <button matSuffix mat-icon-button (click)="openCameraScanner()" [attr.aria-label]="t('pos.scanWithCamera')"
+              [matTooltip]="t('pos.scanWithCamera')">
               <mat-icon>camera_alt</mat-icon>
             </button>
           </mat-form-field>

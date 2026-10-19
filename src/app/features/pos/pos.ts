@@ -231,16 +231,28 @@ export class PosComponent implements OnInit, OnDestroy {
     this.productService.getByBarcode(trimmed).subscribe({
       next: (product: Product) => {
         if (!product.isActive) {
-          this.snackBar.open(`Product is inactive.`, 'Close', { duration: 3000 });
+          this.snackBar.open(
+            this.translocoService.translate('pos.productInactive'),
+            this.translocoService.translate('pos.close'),
+            { duration: 3000 }
+          );
           return;
         }
         this.addToCart(product);
       },
       error: (err) => {
         if (err.status === 404) {
-          this.snackBar.open(`⚠ Barcode not found: ${trimmed}`, 'Close', { duration: 3000 });
+          this.snackBar.open(
+            this.translocoService.translate('pos.barcodeNotFound', { barcode: trimmed }),
+            this.translocoService.translate('pos.close'),
+            { duration: 3000 }
+          );
         } else {
-          this.snackBar.open('Error looking up barcode.', 'Close', { duration: 3000 });
+          this.snackBar.open(
+            this.translocoService.translate('pos.barcodeError'),
+            this.translocoService.translate('pos.close'),
+            { duration: 3000 }
+          );
         }
       }
     });
@@ -254,7 +266,11 @@ export class PosComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
       if (barcode) {
-        this.snackBar.open(`✓ Barcode detected`, 'Close', { duration: 1500 });
+        this.snackBar.open(
+          this.translocoService.translate('pos.barcodeDetected'),
+          this.translocoService.translate('pos.close'),
+          { duration: 1500 }
+        );
         this.onBarcodeScanned(barcode);
       }
     });
