@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -23,6 +23,7 @@ describe('PosPaymentVerificationDialogComponent', () => {
   let fixture: ComponentFixture<PosPaymentVerificationDialogComponent>;
 
   let dialogRefSpy: any;
+  let dialogSpy: any;
   let verificationServiceSpy: any;
   let destinationServiceSpy: any;
 
@@ -91,6 +92,12 @@ describe('PosPaymentVerificationDialogComponent', () => {
       getSupportedBanks: vi.fn().mockReturnValue(of([]))
     };
 
+    dialogSpy = {
+      open: vi.fn().mockReturnValue({
+        afterClosed: () => of(undefined)
+      })
+    };
+
     await TestBed.configureTestingModule({
       imports: [PosPaymentVerificationDialogComponent],
       providers: [
@@ -98,6 +105,7 @@ describe('PosPaymentVerificationDialogComponent', () => {
         provideHttpClientTesting(),
         provideAnimations(),
         { provide: MatDialogRef, useValue: dialogRefSpy },
+        { provide: MatDialog, useValue: dialogSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         { provide: PaymentVerificationService, useValue: verificationServiceSpy },
         { provide: PaymentDestinationService, useValue: destinationServiceSpy },
@@ -161,6 +169,12 @@ describe('PosPaymentVerificationDialogComponent', () => {
 
     expect(component.isVerified()).toBe(true);
     expect(component.verificationResult()).toEqual(mockResponse);
+    expect(dialogSpy.open).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        data: expect.objectContaining({ result: mockResponse })
+      })
+    );
 
     // Click proceed
     component.proceedWithVerifiedPayment();
@@ -215,6 +229,12 @@ describe('PosPaymentVerificationDialogComponent', () => {
 
     expect(component.isVerified()).toBe(false);
     expect(component.verificationResult()).toEqual(rejectedResponse);
+    expect(dialogSpy.open).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        data: expect.objectContaining({ result: rejectedResponse })
+      })
+    );
     // Dialog should NOT have been closed!
     expect(dialogRefSpy.close).not.toHaveBeenCalled();
   });

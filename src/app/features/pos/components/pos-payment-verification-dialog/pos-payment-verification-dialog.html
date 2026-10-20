@@ -143,6 +143,10 @@
           <span class="dt-label">Payer:</span>
           <span class="dt-value">{{ result.payerName }}</span>
         </div>
+        <div class="detail-row" *ngIf="result.payerAccount">
+          <span class="dt-label">Payer Account:</span>
+          <span class="dt-value font-mono">{{ result.payerAccount }}</span>
+        </div>
         <div class="detail-row" *ngIf="result.receiverAccount">
           <span class="dt-label">Destination:</span>
           <span class="dt-value font-mono">{{ result.receiverAccount }}</span>

@@ -307,6 +307,18 @@
     display: flex !important;
     flex-direction: column !important;
   }
+
+  @media (max-width: 600px) {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin: 0 auto;
+
+    .mat-mdc-dialog-container,
+    .mdc-dialog__surface {
+      border-radius: 12px !important;
+      max-height: calc(100dvh - 1.5rem) !important;
+    }
+  }
 }
 
 /* ─── 4. Menu & Dropdown Panels ────────────────────────────────────────── */

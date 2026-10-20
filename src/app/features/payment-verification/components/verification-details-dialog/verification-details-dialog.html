@@ -47,6 +47,16 @@
     </div>
 
     <div class="item">
+      <span class="lbl">Payer Name</span>
+      <span class="val">{{ verification.payerName || 'N/A' }}</span>
+    </div>
+
+    <div class="item">
+      <span class="lbl">Payer Account</span>
+      <span class="val font-mono">{{ verification.payerAccount || 'N/A' }}</span>
+    </div>
+
+    <div class="item">
       <span class="lbl">Expected Amount</span>
       <span class="val">{{ verification.expectedAmount | currency:verification.currency:'symbol':'1.2-2' }}</span>
     </div>

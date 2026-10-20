@@ -11,6 +11,7 @@ import { ManualReviewDialogComponent } from '../manual-review-dialog/manual-revi
 
 export interface VerificationResultDialogData {
   result: VerifyPaymentResponse;
+  showProceedAction?: boolean;
 }
 
 @Component({
@@ -36,6 +37,11 @@ export class VerificationResultDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: VerificationResultDialogData) {
     this.result = data.result;
+  }
+
+  get isVerified(): boolean {
+    const st = String(this.result?.status || '');
+    return st === 'Verified' || st === '2' || st === '1';
   }
 
   get isManagerOrAdmin(): boolean {
@@ -179,7 +185,11 @@ export class VerificationResultDialogComponent {
     });
   }
 
+  onProceed(): void {
+    this.dialogRef.close({ action: 'proceed' });
+  }
+
   onClose(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({ action: 'dismiss' });
   }
 }

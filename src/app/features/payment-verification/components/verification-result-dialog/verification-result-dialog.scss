@@ -19,7 +19,7 @@
   padding: 0;
   background: var(--surface);
   color: var(--ink);
-  min-width: 320px;
+  min-width: 0;
   max-width: 580px;
   width: 100%;
   box-sizing: border-box;
@@ -284,7 +284,8 @@
     }
   }
 
-  .review-btn {
+  .review-btn,
+  .proceed-btn {
     height: 44px;
     min-height: 44px;
     background: var(--moss);
@@ -332,3 +333,73 @@
     }
   }
 }
+
+@media (max-width: 600px) {
+  .dialog-header {
+    padding: 1rem 1rem 0.75rem;
+
+    .status-header-block {
+      gap: 0.65rem;
+
+      .status-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+
+      .status-text-block {
+        h2 {
+          font-size: 1.1rem;
+        }
+        .status-sub {
+          font-size: 0.775rem;
+        }
+      }
+    }
+  }
+
+  .dialog-body {
+    padding: 0.75rem 1rem;
+  }
+
+  .alert-box {
+    padding: 0.75rem 0.85rem;
+    margin-bottom: 1rem;
+    font-size: 0.825rem;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.85rem;
+    margin-bottom: 1rem;
+
+    .grid-item {
+      .label {
+        font-size: 0.72rem;
+      }
+      .value {
+        font-size: 0.875rem;
+
+        &.amount-val {
+          font-size: 1.05rem;
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: 0.75rem 1rem 1rem;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+
+    .dismiss-btn,
+    .review-btn,
+    .proceed-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0 1rem;
+    }
+  }
+}
+

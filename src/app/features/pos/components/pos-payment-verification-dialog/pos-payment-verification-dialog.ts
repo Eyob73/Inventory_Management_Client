@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -14,6 +14,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaymentVerificationService } from '../../../../core/services/payment-verification.service';
 import { PaymentVerificationStore } from '../../../../store/payment-verification.store';
+import { VerificationResultDialogComponent } from '../../../payment-verification/components/verification-result-dialog/verification-result-dialog';
 import {
   PaymentDestination,
   VerifyPaymentRequest,
@@ -58,6 +59,7 @@ export type PosPaymentVerificationDialogResult =
 export class PosPaymentVerificationDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<PosPaymentVerificationDialogComponent, PosPaymentVerificationDialogResult>);
+  private dialog = inject(MatDialog);
   private verificationService = inject(PaymentVerificationService);
   readonly store = inject(PaymentVerificationStore);
   private snackBar = inject(MatSnackBar);
@@ -85,7 +87,7 @@ export class PosPaymentVerificationDialogComponent implements OnInit {
   readonly isVerified = computed(() => {
     const res = this.verificationResult();
     if (!res) return false;
-    return res.status === 'Verified' || res.status === 1;
+    return res.status === 'Verified' || res.status === 2 || res.status === 1;
   });
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: PosPaymentVerificationDialogData) {}
@@ -162,24 +164,68 @@ export class PosPaymentVerificationDialogComponent implements OnInit {
         this.isVerifying.set(false);
         this.verificationResult.set(response);
 
-        if (response.status === 'Verified' || response.status === 1) {
+        if (response.status === 'Verified' || response.status === 2 || response.status === 1) {
           this.snackBar.open('Payment successfully verified by bank!', 'Success', {
             duration: 2500,
             panelClass: ['snackbar-success']
           });
         }
+
+        // Show verification result in new dialog modal
+        this.openResultDialog(response);
       },
       error: (err) => {
         this.isVerifying.set(false);
         const detail = err?.error?.detail || err?.error?.message || err?.message || 'Verification service communication failed.';
         this.errorMessage.set(detail);
+
+        // Show failure message in new dialog modal
+        const failedResponse: VerifyPaymentResponse = {
+          verificationId: '',
+          submittedReference: formVal.submittedReference.trim(),
+          status: 'Failed',
+          statusName: 'Failed',
+          failureCode: 'VerificationError',
+          failureMessage: detail,
+          currency: 'ETB',
+          expectedAmount: this.data.totalAmount,
+          provider: dest?.bankName || dest?.name || 'Payment Destination',
+          bankCode: dest?.bankCode || '',
+          destinationMatchStatus: 'NotApplicable',
+          destinationMatchStatusName: 'Not Applicable',
+          isEligibleForRetry: true,
+          needsManualReview: false,
+          saleUpdated: false,
+          verificationTimestamp: new Date().toISOString()
+        };
+        this.openResultDialog(failedResponse);
+      }
+    });
+  }
+
+  openResultDialog(result: VerifyPaymentResponse): void {
+    const resultDialogRef = this.dialog.open(VerificationResultDialogComponent, {
+      width: '560px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'payment-verification-dialog-panel',
+      autoFocus: false,
+      data: {
+        result,
+        showProceedAction: true
+      }
+    });
+
+    resultDialogRef.afterClosed().subscribe((res) => {
+      if (res?.action === 'proceed') {
+        this.proceedWithVerifiedPayment();
       }
     });
   }
 
   proceedWithVerifiedPayment(): void {
     const res = this.verificationResult();
-    if (!res || (res.status !== 'Verified' && res.status !== 1)) return;
+    if (!res || (res.status !== 'Verified' && res.status !== 2 && res.status !== 1)) return;
     this.dialogRef.close({ action: 'verified', verification: res });
   }
 

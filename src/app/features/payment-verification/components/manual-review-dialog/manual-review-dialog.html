@@ -36,6 +36,18 @@
       <span class="label">Current Status:</span>
       <span class="value">{{ verification.status }}</span>
     </div>
+    @if (verification.payerName) {
+      <div class="context-row">
+        <span class="label">Payer Name:</span>
+        <span class="value">{{ verification.payerName }}</span>
+      </div>
+    }
+    @if (verification.payerAccount) {
+      <div class="context-row">
+        <span class="label">Payer Account:</span>
+        <span class="value font-mono">{{ verification.payerAccount }}</span>
+      </div>
+    }
     @if (verification.failureMessage) {
       <div class="context-row failure-msg">
         <span class="label">Reason / Flag:</span>

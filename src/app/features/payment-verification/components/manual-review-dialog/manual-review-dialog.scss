@@ -19,7 +19,7 @@
   padding: 0;
   background: var(--surface);
   color: var(--ink);
-  min-width: 320px;
+  min-width: 0;
   max-width: 540px;
   width: 100%;
   box-sizing: border-box;
@@ -335,3 +335,68 @@
     }
   }
 }
+
+@media (max-width: 600px) {
+  .dialog-header {
+    padding: 1rem 1rem 0.75rem;
+
+    .header-title {
+      gap: 0.5rem;
+
+      .header-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .dialog-body {
+    padding: 0.75rem 1rem;
+    gap: 0.85rem;
+  }
+
+  .context-card {
+    padding: 0.85rem;
+    margin-bottom: 1rem;
+
+    .context-row {
+      font-size: 0.825rem;
+      flex-wrap: wrap;
+      gap: 0.2rem;
+    }
+  }
+
+  .decision-group {
+    .radio-options {
+      gap: 0.5rem;
+
+      .radio-content {
+        .radio-title {
+          font-size: 0.9rem;
+        }
+        .radio-desc {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: 0.75rem 1rem 1rem;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+
+    .cancel-btn,
+    .submit-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0 1rem;
+    }
+  }
+}
+

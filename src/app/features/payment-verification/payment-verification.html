@@ -6,20 +6,21 @@
         <mat-icon class="page-icon">verified_user</mat-icon>
         <div>
           <h1 class="page-title">Payment Verification</h1>
-          <p class="page-subtitle">Verify customer payments via Cheki.et and manage business receiving accounts</p>
+          <p class="page-subtitle">Verify customer payments and manage business receiving accounts</p>
         </div>
       </div>
     </div>
     <div class="header-actions">
-      <button mat-stroked-button class="btn-refresh" (click)="loadAllData()" [disabled]="isLoadingHistory() || isLoadingDestinations()">
+      <button mat-stroked-button class="btn-refresh" (click)="loadAllData()"
+        [disabled]="isLoadingHistory() || isLoadingDestinations()">
         <mat-icon>refresh</mat-icon>
         <span>Refresh</span>
       </button>
       @if (isManagerOrAdmin) {
-        <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
-          <mat-icon>add_card</mat-icon>
-          <span>Add Payment Destination</span>
-        </button>
+      <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
+        <mat-icon>add_card</mat-icon>
+        <span>Add Payment Destination</span>
+      </button>
       }
     </div>
   </div>
@@ -55,7 +56,7 @@
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ summary().verifiedTransactions }}</div>
-        <span class="stat-sub">Confirmed via Cheki.et</span>
+        <span class="stat-sub">Confirmed</span>
       </div>
     </div>
 
@@ -68,14 +69,16 @@
         <div class="stat-value" [class.text-amber]="summary().needsReviewTransactions > 0">
           {{ summary().needsReviewTransactions }}
         </div>
-        <span class="stat-sub">{{ summary().needsReviewTransactions > 0 ? 'Pending manual audit' : 'No audit backlog' }}</span>
+        <span class="stat-sub">{{ summary().needsReviewTransactions > 0 ? 'Pending manual audit' : 'No audit backlog'
+          }}</span>
       </div>
     </div>
   </div>
 
   <!-- Main Tabs -->
   <div class="tabs-container">
-    <mat-tab-group animationDuration="200ms" [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab-group animationDuration="200ms" [selectedIndex]="selectedTabIndex()"
+      (selectedIndexChange)="onTabChange($event)">
 
       <!-- TAB 1: Verify Customer Payment -->
       <mat-tab>
@@ -89,44 +92,49 @@
             <!-- Left Side: Form -->
             <div class="verify-form-column">
               <div class="section-title-box">
-                <h2>Customer Payment Verification</h2>
-                <p>Select an outstanding sale, your receiving account, and input the payment receipt reference</p>
+                <h2>Payment Verification</h2>
+                <p>Select your receiving account and input the payment receipt reference</p>
               </div>
 
               @if (verifyErrorMessage()) {
-                <div class="error-banner">
-                  <mat-icon>error_outline</mat-icon>
-                  <span>{{ verifyErrorMessage() }}</span>
-                </div>
+              <div class="error-banner">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ verifyErrorMessage() }}</span>
+              </div>
               }
 
               @if (isVerifying()) {
-                <div class="verifying-indicator">
-                  <mat-progress-bar mode="indeterminate" class="verification-progress"></mat-progress-bar>
-                  <div class="indicator-text">
-                    <mat-spinner diameter="20"></mat-spinner>
-                    <span>Verifying transaction with Cheki.et API...</span>
-                  </div>
+              <div class="verifying-indicator">
+                <mat-progress-bar mode="indeterminate" class="verification-progress"></mat-progress-bar>
+                <div class="indicator-text">
+                  <span>Verifying transaction...</span>
                 </div>
+              </div>
               }
 
               <form [formGroup]="verifyForm" (ngSubmit)="onVerifySubmit()" class="verify-form">
-                <!-- Sale Selection -->
+                <!-- Optional Sale ID -->
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Select Unpaid / Partial Sale</mat-label>
+                  <mat-label>Sale ID (Optional)</mat-label>
                   <mat-icon matPrefix>receipt</mat-icon>
-                  <mat-select formControlName="saleId">
-                    @if (isLoadingSales()) {
-                      <mat-option disabled>Loading eligible sales...</mat-option>
+                  <input matInput formControlName="saleId" [matAutocomplete]="autoSale"
+                    placeholder="Enter Sale ID or select an eligible sale" />
+                  <mat-autocomplete #autoSale="matAutocomplete">
+                    @for (sale of filteredSales(); track sale.id) {
+                    <mat-option [value]="sale.id">
+                      <div class="sale-option">
+                        <span class="sale-opt-number">#{{ sale.saleNumber }}</span>
+                        <span class="sale-opt-customer">{{ sale.customerName || 'Walk-in' }}</span>
+                        <span class="sale-opt-balance">Balance: {{ sale.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }}</span>
+                      </div>
+                    </mat-option>
                     }
-                    @for (sale of eligibleSales(); track sale.id) {
-                      <mat-option [value]="sale.id">
-                        Sale #{{ sale.saleNumber }} - {{ sale.customerName || 'Walk-in' }} (Balance: {{ sale.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }})
-                      </mat-option>
-                    }
-                  </mat-select>
-                  @if (verifyForm.get('saleId')?.hasError('required')) {
-                    <mat-error>Please select a sale to verify payment for</mat-error>
+                  </mat-autocomplete>
+                  <mat-hint>Optionally link this payment to a sale to auto-apply and complete it</mat-hint>
+                  @if (verifyForm.get('saleId')?.value) {
+                  <button mat-icon-button matSuffix type="button" (click)="clearSaleId()" matTooltip="Clear Sale ID">
+                    <mat-icon>clear</mat-icon>
+                  </button>
                   }
                 </mat-form-field>
 
@@ -136,24 +144,25 @@
                   <mat-icon matPrefix>account_balance</mat-icon>
                   <mat-select formControlName="paymentDestinationId">
                     @for (dest of destinations(); track dest.id) {
-                      <mat-option [value]="dest.id" [disabled]="!dest.isActive">
-                        <div class="dest-option">
-                          <span class="dest-opt-name">{{ dest.name }}</span>
-                          <span class="dest-opt-details">
-                            ({{ dest.bankName || dest.typeName }} &bull; {{ dest.maskedAccountNumber || dest.maskedPhoneNumber }})
-                          </span>
-                          @if (dest.isDefault) {
-                            <span class="opt-default-badge">DEFAULT</span>
-                          }
-                          @if (!dest.isActive) {
-                            <span class="opt-inactive-badge">(Inactive)</span>
-                          }
-                        </div>
-                      </mat-option>
+                    <mat-option [value]="dest.id" [disabled]="!dest.isActive">
+                      <div class="dest-option">
+                        <span class="dest-opt-name">{{ dest.name }}</span>
+                        <span class="dest-opt-details">
+                          ({{ dest.bankName || dest.typeName }} &bull; {{ dest.maskedAccountNumber ||
+                          dest.maskedPhoneNumber }})
+                        </span>
+                        @if (dest.isDefault) {
+                        <span class="opt-default-badge">DEFAULT</span>
+                        }
+                        @if (!dest.isActive) {
+                        <span class="opt-inactive-badge">(Inactive)</span>
+                        }
+                      </div>
+                    </mat-option>
                     }
                   </mat-select>
                   @if (verifyForm.get('paymentDestinationId')?.hasError('required')) {
-                    <mat-error>Please select the business receiving account</mat-error>
+                  <mat-error>Please select the business receiving account</mat-error>
                   }
                 </mat-form-field>
 
@@ -165,10 +174,10 @@
                     placeholder="e.g. CBE receipt URL (https://apps.cbe.com.et:4130/...) or txn reference" />
                   <mat-hint>Paste full bank receipt URL or unique transfer reference ID</mat-hint>
                   @if (verifyForm.get('submittedReference')?.hasError('required')) {
-                    <mat-error>Transaction reference is required</mat-error>
+                  <mat-error>Transaction reference is required</mat-error>
                   }
                   @if (verifyForm.get('submittedReference')?.hasError('minlength')) {
-                    <mat-error>Reference must be at least 4 characters</mat-error>
+                  <mat-error>Reference must be at least 4 characters</mat-error>
                   }
                 </mat-form-field>
 
@@ -176,7 +185,8 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Payer Phone Number (Optional)</mat-label>
                   <mat-icon matPrefix>phone</mat-icon>
-                  <input matInput formControlName="payerPhone" placeholder="09... or +2519... (if required by provider)" />
+                  <input matInput formControlName="payerPhone"
+                    placeholder="09... or +2519... (if required by provider)" />
                   <mat-hint>Required for some Telebirr / SMS receipt verifications</mat-hint>
                 </mat-form-field>
 
@@ -184,91 +194,106 @@
                   <button type="submit" mat-flat-button class="verify-btn"
                     [disabled]="verifyForm.invalid || isVerifying()">
                     @if (isVerifying()) {
-                      <span class="btn-inner">
-                        <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
-                        <span>Verifying...</span>
-                      </span>
+                    <span class="btn-inner">
+                      <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+                      <span>Verifying...</span>
+                    </span>
                     } @else {
-                      <span class="btn-inner">
-                        <mat-icon>verified</mat-icon>
-                        <span>Verify & Apply Payment</span>
-                      </span>
+                    <span class="btn-inner">
+                      <mat-icon>verified</mat-icon>
+                      <span>Verify Payment</span>
+                    </span>
                     }
                   </button>
                 </div>
               </form>
             </div>
 
-            <!-- Right Side: Sale Context & Verification Outcome -->
+            <!-- Right Side: Verification Guidance & Outcome -->
             <div class="verify-context-column">
               <!-- Selected Sale Information Card -->
               @if (selectedSale()) {
-                <div class="sale-summary-card">
-                  <div class="card-head">
-                    <div class="sale-badge">
-                      <mat-icon>receipt</mat-icon>
-                      <span>Sale #{{ selectedSale()?.saleNumber }}</span>
-                    </div>
-                    <span class="sale-status-chip">{{ selectedSale()?.saleStatus }}</span>
+              <div class="sale-summary-card">
+                <div class="card-head">
+                  <div class="sale-badge">
+                    <mat-icon>receipt</mat-icon>
+                    <span>Sale #{{ selectedSale()?.saleNumber }}</span>
                   </div>
+                  <span class="sale-status-chip">{{ selectedSale()?.saleStatus }}</span>
+                </div>
 
-                  <div class="sale-metrics">
-                    <div class="sale-metric-item">
-                      <span class="lbl">Customer</span>
-                      <span class="val">{{ selectedSale()?.customerName || 'Walk-in Customer' }}</span>
-                    </div>
-                    <div class="sale-metric-item">
-                      <span class="lbl">Sale Total</span>
-                      <span class="val">{{ selectedSale()?.totalAmount | currency:'ETB':'symbol':'1.2-2' }}</span>
-                    </div>
-                    <div class="sale-metric-item">
-                      <span class="lbl">Already Paid</span>
-                      <span class="val text-slate">{{ selectedSale()?.amountAlreadyPaid | currency:'ETB':'symbol':'1.2-2' }}</span>
-                    </div>
-                    <div class="sale-metric-item balance-highlight">
-                      <span class="lbl">Outstanding Balance</span>
-                      <span class="val text-moss bold">{{ selectedSale()?.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }}</span>
-                    </div>
+                <div class="sale-metrics">
+                  <div class="sale-metric-item">
+                    <span class="lbl">Customer</span>
+                    <span class="val">{{ selectedSale()?.customerName || 'Walk-in Customer' }}</span>
                   </div>
-                  <div class="security-notice">
-                    <mat-icon>lock</mat-icon>
-                    <span>Expected amount is strictly determined by the server to prevent tampering.</span>
+                  <div class="sale-metric-item">
+                    <span class="lbl">Sale Total</span>
+                    <span class="val">{{ selectedSale()?.totalAmount | currency:'ETB':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <div class="sale-metric-item">
+                    <span class="lbl">Already Paid</span>
+                    <span class="val text-slate">{{ selectedSale()?.amountAlreadyPaid | currency:'ETB':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <div class="sale-metric-item balance-highlight">
+                    <span class="lbl">Outstanding Balance</span>
+                    <span class="val text-moss bold">{{ selectedSale()?.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }}</span>
                   </div>
                 </div>
-              } @else {
-                <div class="empty-context-placeholder">
-                  <mat-icon>touch_app</mat-icon>
-                  <h3>Select a Sale</h3>
-                  <p>Choose an unpaid or partial sale on the left to review its outstanding balance and verify customer payment.</p>
+                <div class="security-notice">
+                  <mat-icon>lock</mat-icon>
+                  <span>Expected amount is strictly determined by the server to prevent tampering.</span>
                 </div>
+              </div>
+              }
+
+              @if (!selectedSale() && !verificationResult()) {
+              <div class="empty-context-placeholder">
+                <mat-icon>verified_user</mat-icon>
+                <h3>Payment Verification</h3>
+                <p>Enter the transaction reference or paste a bank receipt URL to instantly verify customer transfers
+                </p>
+                <p>Verification validates transfer authenticity, amount, and recipient account in real time.</p>
+              </div>
               }
 
               <!-- Verification Outcome Panel (inline) -->
               @if (verificationResult()) {
-                <div class="outcome-card" [ngClass]="getOutcomeStatusClass(verificationResult())">
-                  <div class="outcome-header">
-                    <div class="outcome-title">
-                      <mat-icon>
-                        {{ verificationResult()?.status === 'Verified' ? 'check_circle' : 'warning' }}
-                      </mat-icon>
-                      <h4>{{ verificationResult()?.status }}</h4>
-                    </div>
-                    <button mat-button class="details-link" (click)="openResultDialog(verificationResult()!)">
-                      View Full Details
-                    </button>
+              <div class="outcome-card" [ngClass]="getOutcomeStatusClass(verificationResult())">
+                <div class="outcome-header">
+                  <div class="outcome-title">
+                    <mat-icon>
+                      {{ verificationResult()?.status === 'Verified' ? 'check_circle' : 'warning' }}
+                    </mat-icon>
+                    <h4>{{ verificationResult()?.status }}</h4>
                   </div>
-
-                  <div class="outcome-body">
-                    <p class="outcome-msg">
-                      {{ verificationResult()?.failureMessage || 'Payment verified with Cheki.et and applied to sale.' }}
-                    </p>
-
-                    <div class="outcome-details-row">
-                      <span><strong>Verified:</strong> {{ verificationResult()?.verifiedAmount | currency:'ETB':'symbol':'1.2-2' }}</span>
-                      <span><strong>Destination Match:</strong> {{ verificationResult()?.destinationMatchStatus }}</span>
-                    </div>
-                  </div>
+                  <button mat-button class="details-link" (click)="openResultDialog(verificationResult()!)">
+                    View Full Details
+                  </button>
                 </div>
+
+                <div class="outcome-body">
+                  <p class="outcome-msg">
+                    {{ verificationResult()?.failureMessage || 'Payment verified and applied to sale.' }}
+                  </p>
+
+                  <div class="outcome-details-row">
+                    <span><strong>Verified:</strong> {{ verificationResult()?.verifiedAmount |
+                      currency:'ETB':'symbol':'1.2-2' }}</span>
+                    <span><strong>Destination Match:</strong> {{ verificationResult()?.destinationMatchStatus }}</span>
+                  </div>
+                  @if (verificationResult()?.payerName || verificationResult()?.payerAccount) {
+                  <div class="outcome-details-row" style="margin-top: 0.35rem;">
+                    @if (verificationResult()?.payerName) {
+                    <span><strong>Payer:</strong> {{ verificationResult()?.payerName }}</span>
+                    }
+                    @if (verificationResult()?.payerAccount) {
+                    <span><strong>Account:</strong> {{ verificationResult()?.payerAccount }}</span>
+                    }
+                  </div>
+                  }
+                </div>
+              </div>
               }
             </div>
           </div>
@@ -289,96 +314,99 @@
               <p>Business bank accounts and Telebirr receiving phone numbers</p>
             </div>
             @if (isManagerOrAdmin) {
-              <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
-                <mat-icon>add_card</mat-icon>
-                <span>Add Destination</span>
-              </button>
+            <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
+              <mat-icon>add_card</mat-icon>
+              <span>Add Destination</span>
+            </button>
             }
           </div>
 
           @if (isLoadingDestinations()) {
-            <div class="loading-state">
-              <mat-spinner diameter="32"></mat-spinner>
-              <span>Loading destinations...</span>
-            </div>
+          <div class="loading-state">
+            <mat-spinner diameter="32"></mat-spinner>
+            <span>Loading destinations...</span>
+          </div>
           } @else if (destinations().length === 0) {
-            <div class="empty-state">
-              <mat-icon>account_balance</mat-icon>
-              <h3>No Payment Destinations Registered</h3>
-              <p>Add your business bank account or Telebirr phone number to start verifying customer payments.</p>
-              @if (isManagerOrAdmin) {
-                <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
-                  <mat-icon>add_card</mat-icon>
-                  <span>Add First Destination</span>
-                </button>
-              }
-            </div>
+          <div class="empty-state">
+            <mat-icon>account_balance</mat-icon>
+            <h3>No Payment Destinations Registered</h3>
+            <p>Add your business bank account or Telebirr phone number to start verifying customer payments.</p>
+            @if (isManagerOrAdmin) {
+            <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
+              <mat-icon>add_card</mat-icon>
+              <span>Add First Destination</span>
+            </button>
+            }
+          </div>
           } @else {
-            <div class="destinations-grid">
-              @for (dest of destinations(); track dest.id) {
-                <div class="destination-card" [class.is-default]="dest.isDefault" [class.is-inactive]="!dest.isActive">
-                  <div class="dest-card-head">
-                    <div class="dest-type-badge">
-                      <mat-icon>{{ dest.typeName === 'Telebirr' || dest.type === 2 ? 'phone_android' : 'account_balance' }}</mat-icon>
-                      <span>{{ dest.bankName || dest.typeName }}</span>
-                    </div>
-
-                    <div class="dest-badges">
-                      @if (dest.isDefault) {
-                        <span class="default-badge">
-                          <mat-icon>star</mat-icon> DEFAULT
-                        </span>
-                      }
-                      <span class="status-indicator" [class.active]="dest.isActive">
-                        {{ dest.isActive ? 'Active' : 'Inactive' }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <h3 class="dest-name">{{ dest.name }}</h3>
-
-                  <div class="dest-account-box">
-                    <span class="acc-label">{{ dest.typeName === 'Telebirr' || dest.type === 2 ? 'Phone Number' : 'Account Number' }}:</span>
-                    <span class="acc-val mono">{{ dest.maskedAccountNumber || dest.maskedPhoneNumber }}</span>
-                  </div>
-
-                  @if (dest.accountHolderName) {
-                    <div class="dest-holder">
-                      <mat-icon>person</mat-icon>
-                      <span>{{ dest.accountHolderName }}</span>
-                    </div>
-                  }
-
-                  <div class="dest-card-footer">
-                    @if (isManagerOrAdmin) {
-                      <div class="footer-left">
-                        @if (!dest.isDefault && dest.isActive) {
-                          <button mat-button class="btn-text-action" (click)="onSetDefaultDestination(dest)"
-                            matTooltip="Set as default receiving destination">
-                            <mat-icon>star_border</mat-icon>
-                            <span>Set Default</span>
-                          </button>
-                        }
-                      </div>
-
-                      <div class="footer-actions">
-                        <mat-slide-toggle [checked]="dest.isActive" (change)="onToggleDestinationStatus(dest, $event)"
-                          matTooltip="Activate or deactivate destination" color="primary">
-                        </mat-slide-toggle>
-
-                        <button mat-icon-button (click)="openEditDestinationDialog(dest)" matTooltip="Edit destination">
-                          <mat-icon>edit</mat-icon>
-                        </button>
-
-                        <button mat-icon-button color="warn" (click)="onDeleteDestination(dest)" matTooltip="Delete destination">
-                          <mat-icon>delete_outline</mat-icon>
-                        </button>
-                      </div>
-                    }
-                  </div>
+          <div class="destinations-grid">
+            @for (dest of destinations(); track dest.id) {
+            <div class="destination-card" [class.is-default]="dest.isDefault" [class.is-inactive]="!dest.isActive">
+              <div class="dest-card-head">
+                <div class="dest-type-badge">
+                  <mat-icon>{{ dest.typeName === 'Telebirr' || dest.type === 2 ? 'phone_android' : 'account_balance'
+                    }}</mat-icon>
+                  <span>{{ dest.bankName || dest.typeName }}</span>
                 </div>
+
+                <div class="dest-badges">
+                  @if (dest.isDefault) {
+                  <span class="default-badge">
+                    <mat-icon>star</mat-icon> DEFAULT
+                  </span>
+                  }
+                  <span class="status-indicator" [class.active]="dest.isActive">
+                    {{ dest.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+              </div>
+
+              <h3 class="dest-name">{{ dest.name }}</h3>
+
+              <div class="dest-account-box">
+                <span class="acc-label">{{ dest.typeName === 'Telebirr' || dest.type === 2 ? 'Phone Number' : 'Account
+                  Number' }}:</span>
+                <span class="acc-val mono">{{ dest.maskedAccountNumber || dest.maskedPhoneNumber }}</span>
+              </div>
+
+              @if (dest.accountHolderName) {
+              <div class="dest-holder">
+                <mat-icon>person</mat-icon>
+                <span>{{ dest.accountHolderName }}</span>
+              </div>
               }
+
+              <div class="dest-card-footer">
+                @if (isManagerOrAdmin) {
+                <div class="footer-left">
+                  @if (!dest.isDefault && dest.isActive) {
+                  <button mat-button class="btn-text-action" (click)="onSetDefaultDestination(dest)"
+                    matTooltip="Set as default receiving destination">
+                    <mat-icon>star_border</mat-icon>
+                    <span>Set Default</span>
+                  </button>
+                  }
+                </div>
+
+                <div class="footer-actions">
+                  <mat-slide-toggle [checked]="dest.isActive" (change)="onToggleDestinationStatus(dest, $event)"
+                    matTooltip="Activate or deactivate destination" color="primary">
+                  </mat-slide-toggle>
+
+                  <button mat-icon-button (click)="openEditDestinationDialog(dest)" matTooltip="Edit destination">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  <button mat-icon-button color="warn" (click)="onDeleteDestination(dest)"
+                    matTooltip="Delete destination">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+                }
+              </div>
             </div>
+            }
+          </div>
           }
         </div>
       </mat-tab>
@@ -397,7 +425,8 @@
             <mat-form-field appearance="outline" class="search-input">
               <mat-label>Search Reference or Sale #</mat-label>
               <mat-icon matPrefix>search</mat-icon>
-              <input matInput [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)" placeholder="Search..." />
+              <input matInput [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)"
+                placeholder="Search..." />
             </mat-form-field>
 
             <!-- Provider Filter -->
@@ -406,7 +435,7 @@
               <mat-select [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
                 <mat-option value="">All Providers</mat-option>
                 @for (bank of supportedBanks(); track bank.id) {
-                  <mat-option [value]="bank.id">{{ bank.name }}</mat-option>
+                <mat-option [value]="bank.id">{{ bank.name }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -432,148 +461,158 @@
             </button>
           </div>
 
-          <!-- History Table -->
+          <!-- History Data View (Table / Card) -->
           @if (isLoadingHistory()) {
-            <app-table-skeleton [columns]="7"></app-table-skeleton>
-          } @else if (verifications().length === 0) {
-            <div class="empty-state">
-              <mat-icon>history_toggle_off</mat-icon>
-              <h3>No Verification Records Found</h3>
-              <p>Transactions verified via Cheki.et will appear here.</p>
-            </div>
+          <app-table-skeleton [columns]="7"></app-table-skeleton>
           } @else {
-            <div class="table-responsive">
-              <table mat-table [dataSource]="historyDataSource" matSort class="history-table">
+          <app-data-view pageName="payment-verifications" [data]="verifications()" [cardFields]="cardFields()"
+            [actions]="cardActions()" (actionClicked)="onCardAction($event)">
+            <ng-container table-view>
+              @if (verifications().length > 0) {
+              <div class="table-responsive">
+                <table mat-table [dataSource]="historyDataSource" matSort class="history-table">
 
-                <!-- Reference Column -->
-                <ng-container matColumnDef="submittedReference">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
-                  <td mat-cell *matCellDef="let row">
-                    <div class="ref-cell">
-                      <span class="mono ref-text" [matTooltip]="row.submittedReference">{{ row.submittedReference }}</span>
-                      <button mat-icon-button class="copy-btn" (click)="copyToClipboard(row.submittedReference)" matTooltip="Copy reference">
-                        <mat-icon>content_copy</mat-icon>
-                      </button>
-                    </div>
-                  </td>
-                </ng-container>
+                  <!-- Reference Column -->
+                  <ng-container matColumnDef="submittedReference">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="ref-cell">
+                        <span class="mono ref-text" [matTooltip]="row.submittedReference">{{ row.submittedReference
+                          }}</span>
+                        <button mat-icon-button class="copy-btn" (click)="copyToClipboard(row.submittedReference)"
+                          matTooltip="Copy reference">
+                          <mat-icon>content_copy</mat-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
 
-                <!-- Sale Number Column -->
-                <ng-container matColumnDef="saleNumber">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Sale #</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="font-semibold">#{{ row.saleNumber }}</span>
-                  </td>
-                </ng-container>
+                  <!-- Sale Number Column -->
+                  <ng-container matColumnDef="saleNumber">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Sale #</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="font-semibold">#{{ row.saleNumber }}</span>
+                    </td>
+                  </ng-container>
 
-                <!-- Customer Column -->
-                <ng-container matColumnDef="customerName">
-                  <th mat-header-cell *matHeaderCellDef>Customer</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.customerName || 'Walk-in Customer' }}
-                  </td>
-                </ng-container>
+                  <!-- Customer Column -->
+                  <ng-container matColumnDef="customerName">
+                    <th mat-header-cell *matHeaderCellDef>Customer</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.customerName || 'Walk-in Customer' }}
+                    </td>
+                  </ng-container>
 
-                <!-- Provider Column -->
-                <ng-container matColumnDef="provider">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Provider</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="provider-tag">{{ row.provider }}</span>
-                  </td>
-                </ng-container>
+                  <!-- Provider Column -->
+                  <ng-container matColumnDef="provider">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Provider</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="provider-tag">{{ row.provider }}</span>
+                    </td>
+                  </ng-container>
 
-                <!-- Destination Column -->
-                <ng-container matColumnDef="paymentDestinationName">
-                  <th mat-header-cell *matHeaderCellDef>Destination</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.paymentDestinationName || 'None' }}
-                  </td>
-                </ng-container>
+                  <!-- Destination Column -->
+                  <ng-container matColumnDef="paymentDestinationName">
+                    <th mat-header-cell *matHeaderCellDef>Destination</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.paymentDestinationName || 'None' }}
+                    </td>
+                  </ng-container>
 
-                <!-- Expected Amount Column -->
-                <ng-container matColumnDef="expectedAmount">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Expected</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.expectedAmount | currency:row.currency:'symbol':'1.2-2' }}
-                  </td>
-                </ng-container>
+                  <!-- Expected Amount Column -->
+                  <ng-container matColumnDef="expectedAmount">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Expected</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.expectedAmount | currency:row.currency:'symbol':'1.2-2' }}
+                    </td>
+                  </ng-container>
 
-                <!-- Verified Amount Column -->
-                <ng-container matColumnDef="verifiedAmount">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Verified</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="font-bold" [class.text-moss]="row.status === 'Verified'">
-                      {{ (row.verifiedAmount ?? 0) | currency:row.currency:'symbol':'1.2-2' }}
-                    </span>
-                  </td>
-                </ng-container>
+                  <!-- Verified Amount Column -->
+                  <ng-container matColumnDef="verifiedAmount">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Verified</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="font-bold" [class.text-moss]="row.status === 'Verified'">
+                        {{ (row.verifiedAmount ?? 0) | currency:row.currency:'symbol':'1.2-2' }}
+                      </span>
+                    </td>
+                  </ng-container>
 
-                <!-- Status Column -->
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="status-chip" [ngClass]="getStatusClass(row.status)">
-                      {{ row.status }}
-                    </span>
-                  </td>
-                </ng-container>
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="status-chip" [ngClass]="getStatusClass(row.status)">
+                        {{ row.status }}
+                      </span>
+                    </td>
+                  </ng-container>
 
-                <!-- Destination Match Status Column -->
-                <ng-container matColumnDef="destinationMatchStatus">
-                  <th mat-header-cell *matHeaderCellDef>Dest Match</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="match-chip" [ngClass]="getMatchClass(row.destinationMatchStatus)">
-                      {{ row.destinationMatchStatus }}
-                    </span>
-                  </td>
-                </ng-container>
+                  <!-- Destination Match Status Column -->
+                  <ng-container matColumnDef="destinationMatchStatus">
+                    <th mat-header-cell *matHeaderCellDef>Dest Match</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="match-chip" [ngClass]="getMatchClass(row.destinationMatchStatus)">
+                        {{ row.destinationMatchStatus }}
+                      </span>
+                    </td>
+                  </ng-container>
 
-                <!-- Created Date Column -->
-                <ng-container matColumnDef="createdAtUtc">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.createdAtUtc | date:'short' }}
-                  </td>
-                </ng-container>
+                  <!-- Created Date Column -->
+                  <ng-container matColumnDef="createdAtUtc">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.createdAtUtc | date:'short' }}
+                    </td>
+                  </ng-container>
 
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Actions</th>
-                  <td mat-cell *matCellDef="let row">
-                    <div class="row-actions">
-                      <button mat-icon-button (click)="viewVerificationDetails(row)" matTooltip="View details">
-                        <mat-icon>visibility</mat-icon>
-                      </button>
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="row-actions">
+                        <button mat-icon-button (click)="viewVerificationDetails(row)" matTooltip="View details">
+                          <mat-icon>visibility</mat-icon>
+                        </button>
 
-                      @if (row.status === 'Failed' || row.status === 'Rejected') {
+                        @if (row.status === 'Failed' || row.status === 'Rejected') {
                         <button mat-icon-button (click)="onRetryVerification(row)" matTooltip="Retry verification">
                           <mat-icon>replay</mat-icon>
                         </button>
-                      }
+                        }
 
-                      @if (isManagerOrAdmin && (row.status === 'NeedsManualReview' || row.status === 'UnableToConfirmDestination' || row.status === 'AmountMismatch' || row.status === 'DestinationMismatch')) {
-                        <button mat-icon-button color="warn" (click)="openManualReviewFor(row)" matTooltip="Manual review">
+                        @if (isManagerOrAdmin && (row.status === 'NeedsManualReview' || row.status ===
+                        'UnableToConfirmDestination' || row.status === 'AmountMismatch' || row.status ===
+                        'DestinationMismatch')) {
+                        <button mat-icon-button color="warn" (click)="openManualReviewFor(row)"
+                          matTooltip="Manual review">
                           <mat-icon>rate_review</mat-icon>
                         </button>
-                      }
-                    </div>
-                  </td>
-                </ng-container>
+                        }
+                      </div>
+                    </td>
+                  </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
-            </div>
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+              }
+            </ng-container>
 
-            <!-- Paginator -->
-            <mat-paginator
-              [length]="totalHistoryCount()"
-              [pageSize]="pageSize()"
-              [pageIndex]="pageIndex() - 1"
-              [pageSizeOptions]="[5, 10, 25, 50]"
-              (page)="onPageChange($event)"
-              showFirstLastButtons>
-            </mat-paginator>
+            <ng-container empty-state>
+              <div class="empty-state">
+                <mat-icon>history_toggle_off</mat-icon>
+                <h3>No Verification Records Found</h3>
+                <p>Transactions verified will appear here.</p>
+              </div>
+            </ng-container>
+
+            <ng-container paginator>
+              <mat-paginator [length]="totalHistoryCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex() - 1"
+                [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+              </mat-paginator>
+            </ng-container>
+          </app-data-view>
           }
         </div>
       </mat-tab>
