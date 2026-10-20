@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { PaymentVerificationStore } from '../../../../store/payment-verification.store';
 import {
   PaymentDestination,
@@ -36,7 +37,8 @@ export interface PaymentDestinationDialogData {
     MatIconModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TranslocoDirective
   ],
   templateUrl: './payment-destination-dialog.html',
   styleUrl: './payment-destination-dialog.scss'

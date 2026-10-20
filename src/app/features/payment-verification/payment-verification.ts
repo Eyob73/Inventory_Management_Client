@@ -30,6 +30,7 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
 import { TableSkeleton } from '../../ui/table-skeleton/table-skeleton';
 import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
 import { ReceiptScannerService } from '../../core/services/receipt-scanner.service';
+import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import {
   PaymentDestination,
@@ -75,7 +76,8 @@ import { VerificationDetailsDialogComponent } from './components/verification-de
     MatSlideToggleModule,
     MatMenuModule,
     TableSkeleton,
-    DataViewComponent
+    DataViewComponent,
+    TranslocoDirective
   ],
   templateUrl: './payment-verification.html',
   styleUrl: './payment-verification.scss'
@@ -88,6 +90,7 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private confirmDialog = inject(ConfirmDialogService);
   private scannerService = inject(ReceiptScannerService);
+  readonly transloco = inject(TranslocoService);
 
   // Scanner & Upload states
   scanMode = signal<ReceiptScanMode>('manual');
@@ -170,22 +173,22 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
   ];
 
   cardFields = computed<DataViewCardField[]>(() => [
-    { key: 'submittedReference', label: 'Reference', type: 'code' },
+    { key: 'submittedReference', label: this.transloco.translate('paymentVerification.history.columns.reference') || 'Reference', type: 'code' },
     {
       key: 'saleNumber',
-      label: 'Sale #',
+      label: this.transloco.translate('paymentVerification.history.columns.saleNumber') || 'Sale #',
       type: 'text',
       valueFn: (item: PaymentVerificationItem) => (item.saleNumber ? `#${item.saleNumber}` : '—')
     },
     {
       key: 'customerName',
-      label: 'Customer',
+      label: this.transloco.translate('paymentVerification.history.columns.customer') || 'Customer',
       type: 'text',
-      valueFn: (item: PaymentVerificationItem) => item.customerName || 'Walk-in Customer'
+      valueFn: (item: PaymentVerificationItem) => item.customerName || this.transloco.translate('paymentVerification.context.walkInCustomer') || 'Walk-in Customer'
     },
     {
       key: 'payer',
-      label: 'Payer',
+      label: this.transloco.translate('paymentVerification.review.payerInfo') || 'Payer',
       type: 'text',
       valueFn: (item: PaymentVerificationItem) => {
         if (item.payerName && item.payerAccount) {
@@ -196,64 +199,68 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
     },
     {
       key: 'provider',
-      label: 'Provider',
+      label: this.transloco.translate('paymentVerification.history.columns.provider') || 'Provider',
       type: 'text',
       valueFn: (item: PaymentVerificationItem) => item.provider || '—'
     },
     {
       key: 'paymentDestinationName',
-      label: 'Destination',
+      label: this.transloco.translate('paymentVerification.history.columns.destination') || 'Destination',
       type: 'text',
       valueFn: (item: PaymentVerificationItem) => item.paymentDestinationName || 'None'
     },
     {
       key: 'expectedAmount',
-      label: 'Expected',
+      label: this.transloco.translate('paymentVerification.history.columns.expected') || 'Expected',
       type: 'currency',
       valueFn: (item: PaymentVerificationItem) => item.expectedAmount
     },
     {
       key: 'verifiedAmount',
-      label: 'Verified',
+      label: this.transloco.translate('paymentVerification.history.columns.verified') || 'Verified',
       type: 'currency',
       valueFn: (item: PaymentVerificationItem) => item.verifiedAmount ?? 0
     },
     {
       key: 'status',
-      label: 'Status',
+      label: this.transloco.translate('paymentVerification.history.columns.status') || 'Status',
       type: 'badge',
       badgeClassFn: (item: PaymentVerificationItem) => {
-        const s = String(item.status);
-        if (s === 'Verified') return 'status--active';
-        if (s === 'Failed' || s === 'Rejected') return 'status--danger';
+        const s = String(item.status || '').toLowerCase();
+        if (s === 'verified' || s === '2') return 'status--active';
+        if (s === 'failed' || s === 'rejected' || s === '8' || s === '3') return 'status--danger';
         if (
-          s === 'NeedsManualReview' ||
-          s === 'AmountMismatch' ||
-          s === 'DestinationMismatch' ||
-          s === 'UnableToConfirmDestination'
+          s === 'needsmanualreview' ||
+          s === 'amountmismatch' ||
+          s === 'destinationmismatch' ||
+          s === 'unabletoconfirmdestination' ||
+          s === '4' ||
+          s === '5' ||
+          s === '6' ||
+          s === '7'
         ) {
           return 'status--low status--low-stock';
         }
         return 'status--inactive';
       },
-      valueFn: (item: PaymentVerificationItem) => item.status
+      valueFn: (item: PaymentVerificationItem) => this.formatStatus(item.status)
     },
     {
       key: 'destinationMatchStatus',
-      label: 'Dest Match',
+      label: this.transloco.translate('paymentVerification.history.columns.destMatch') || 'Dest Match',
       type: 'badge',
       badgeClassFn: (item: PaymentVerificationItem) => {
-        const m = String(item.destinationMatchStatus);
-        if (m === 'Matched') return 'status--active';
-        if (m === 'Mismatched') return 'status--danger';
-        if (m === 'UnableToConfirm') return 'status--low status--low-stock';
+        const m = String(item.destinationMatchStatus || '').toLowerCase();
+        if (m === 'matched' || m === '1') return 'status--active';
+        if (m === 'mismatched' || m === '2') return 'status--danger';
+        if (m === 'unabletoconfirm' || m === '3') return 'status--low status--low-stock';
         return 'status--inactive';
       },
-      valueFn: (item: PaymentVerificationItem) => item.destinationMatchStatus || '—'
+      valueFn: (item: PaymentVerificationItem) => this.formatDestinationMatch(item.destinationMatchStatus)
     },
     {
       key: 'createdAtUtc',
-      label: 'Date',
+      label: this.transloco.translate('paymentVerification.history.columns.date') || 'Date',
       type: 'date',
       valueFn: (item: PaymentVerificationItem) => item.createdAtUtc
     }
@@ -261,12 +268,12 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
 
   cardActions = computed<DataViewAction[]>(() => {
     const actions: DataViewAction[] = [
-      { id: 'view', icon: 'visibility', label: 'View Details' },
-      { id: 'copy', icon: 'content_copy', label: 'Copy Reference' },
+      { id: 'view', icon: 'visibility', label: this.transloco.translate('paymentVerification.history.viewDetailsTooltip') || 'View Details' },
+      { id: 'copy', icon: 'content_copy', label: this.transloco.translate('paymentVerification.history.copyTooltip') || 'Copy Reference' },
       {
         id: 'retry',
         icon: 'replay',
-        label: 'Retry Verification',
+        label: this.transloco.translate('paymentVerification.history.retryTooltip') || 'Retry Verification',
         visibleFn: (item: PaymentVerificationItem) => item.status === 'Failed' || item.status === 'Rejected'
       }
     ];
@@ -275,7 +282,7 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
       actions.push({
         id: 'manual-review',
         icon: 'rate_review',
-        label: 'Manual Review',
+        label: this.transloco.translate('paymentVerification.history.manualReviewTooltip') || 'Manual Review',
         color: 'warn',
         visibleFn: (item: PaymentVerificationItem) =>
           item.status === 'NeedsManualReview' ||
@@ -855,28 +862,122 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
     this.snackBar.open('Reference copied to clipboard', '', { duration: 1500 });
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'Verified': return 'chip-verified';
-      case 'AmountMismatch':
-      case 'DestinationMismatch':
-      case 'UnableToConfirmDestination':
-      case 'NeedsManualReview':
+  formatStatus(status: any): string {
+    const s = String(status || '').trim().toLowerCase();
+    switch (s) {
+      case 'verified':
+      case '2': {
+        const val = this.transloco.translate('paymentVerification.statuses.verified');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Verified';
+      }
+      case 'rejected':
+      case '3': {
+        const val = this.transloco.translate('paymentVerification.statuses.rejected');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Rejected';
+      }
+      case 'amountmismatch':
+      case '4': {
+        const val = this.transloco.translate('paymentVerification.statuses.amountMismatch');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Amount Mismatch';
+      }
+      case 'destinationmismatch':
+      case '5': {
+        const val = this.transloco.translate('paymentVerification.statuses.destinationMismatch');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Destination Mismatch';
+      }
+      case 'unabletoconfirmdestination':
+      case '6': {
+        const val = this.transloco.translate('paymentVerification.statuses.unableToConfirmDestination');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Unable to Confirm Dest';
+      }
+      case 'needsmanualreview':
+      case '7': {
+        const val = this.transloco.translate('paymentVerification.statuses.needsManualReview');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Needs Manual Review';
+      }
+      case 'failed':
+      case '8': {
+        const val = this.transloco.translate('paymentVerification.statuses.failed');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Failed';
+      }
+      case 'pending':
+      case '1': {
+        const val = this.transloco.translate('paymentVerification.statuses.pending');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Pending';
+      }
+      default:
+        return status ? String(status) : '—';
+    }
+  }
+
+  formatDestinationMatch(match: any): string {
+    const m = String(match || '').trim().toLowerCase();
+    switch (m) {
+      case 'matched':
+      case '1': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.matched');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Matched';
+      }
+      case 'mismatched':
+      case '2': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.mismatched');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Mismatched';
+      }
+      case 'unabletoconfirm':
+      case '3': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.unableToConfirm');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Unable to Confirm';
+      }
+      case 'notapplicable':
+      case '0':
+      case '4': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.notApplicable');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Not Applicable';
+      }
+      default:
+        return match ? String(match) : '—';
+    }
+  }
+
+  getStatusClass(status: any): string {
+    const s = String(status || '').trim().toLowerCase();
+    switch (s) {
+      case 'verified':
+      case '2':
+        return 'chip-verified';
+      case 'amountmismatch':
+      case 'destinationmismatch':
+      case 'unabletoconfirmdestination':
+      case 'needsmanualreview':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
         return 'chip-warning';
-      case 'Rejected':
-      case 'Failed':
+      case 'rejected':
+      case 'failed':
+      case '3':
+      case '8':
         return 'chip-danger';
       default:
         return 'chip-pending';
     }
   }
 
-  getMatchClass(matchStatus: string): string {
-    switch (matchStatus) {
-      case 'Matched': return 'match-matched';
-      case 'Mismatched': return 'match-mismatched';
-      case 'UnableToConfirm': return 'match-unabletoconfirm';
-      default: return 'match-notapplicable';
+  getMatchClass(matchStatus: any): string {
+    const m = String(matchStatus || '').trim().toLowerCase();
+    switch (m) {
+      case 'matched':
+      case '1':
+        return 'match-matched';
+      case 'mismatched':
+      case '2':
+        return 'match-mismatched';
+      case 'unabletoconfirm':
+      case '3':
+        return 'match-unabletoconfirm';
+      default:
+        return 'match-notapplicable';
     }
   }
 

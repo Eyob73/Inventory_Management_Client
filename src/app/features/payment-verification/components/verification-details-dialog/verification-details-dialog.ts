@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PaymentVerificationItem } from '../../../../models/payment-verification.model';
 import { AuthService } from '../../../../services/auth';
 import { ManualReviewDialogComponent } from '../manual-review-dialog/manual-review-dialog';
@@ -18,7 +19,8 @@ export interface VerificationDetailsDialogData {
     CommonModule,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    TranslocoDirective
   ],
   templateUrl: './verification-details-dialog.html',
   styleUrl: './verification-details-dialog.scss'
@@ -27,6 +29,7 @@ export class VerificationDetailsDialogComponent {
   private dialogRef = inject(MatDialogRef<VerificationDetailsDialogComponent>);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
+  private transloco = inject(TranslocoService);
 
   verification: PaymentVerificationItem;
 
@@ -90,6 +93,83 @@ export class VerificationDetailsDialogComponent {
         return 'status-error';
       default:
         return 'status-pending';
+    }
+  }
+
+  formatStatus(status: any): string {
+    const s = String(status || '').trim().toLowerCase();
+    switch (s) {
+      case 'verified':
+      case '2': {
+        const val = this.transloco.translate('paymentVerification.statuses.verified');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Verified';
+      }
+      case 'rejected':
+      case '3': {
+        const val = this.transloco.translate('paymentVerification.statuses.rejected');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Rejected';
+      }
+      case 'amountmismatch':
+      case '4': {
+        const val = this.transloco.translate('paymentVerification.statuses.amountMismatch');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Amount Mismatch';
+      }
+      case 'destinationmismatch':
+      case '5': {
+        const val = this.transloco.translate('paymentVerification.statuses.destinationMismatch');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Destination Mismatch';
+      }
+      case 'unabletoconfirmdestination':
+      case '6': {
+        const val = this.transloco.translate('paymentVerification.statuses.unableToConfirmDestination');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Unable to Confirm Dest';
+      }
+      case 'needsmanualreview':
+      case '7': {
+        const val = this.transloco.translate('paymentVerification.statuses.needsManualReview');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Needs Manual Review';
+      }
+      case 'failed':
+      case '8': {
+        const val = this.transloco.translate('paymentVerification.statuses.failed');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Failed';
+      }
+      case 'pending':
+      case '1': {
+        const val = this.transloco.translate('paymentVerification.statuses.pending');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Pending';
+      }
+      default:
+        return status ? String(status) : '—';
+    }
+  }
+
+  formatDestinationMatch(match: any): string {
+    const m = String(match || '').trim().toLowerCase();
+    switch (m) {
+      case 'matched':
+      case '1': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.matched');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Matched';
+      }
+      case 'mismatched':
+      case '2': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.mismatched');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Mismatched';
+      }
+      case 'unabletoconfirm':
+      case '3': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.unableToConfirm');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Unable to Confirm';
+      }
+      case 'notapplicable':
+      case '0':
+      case '4': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.notApplicable');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Not Applicable';
+      }
+      default:
+        return match ? String(match) : '—';
     }
   }
 

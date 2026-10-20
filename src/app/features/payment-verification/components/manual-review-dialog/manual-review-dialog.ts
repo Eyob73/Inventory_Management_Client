@@ -8,6 +8,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PaymentVerificationStore } from '../../../../store/payment-verification.store';
 import {
   VerifyPaymentResponse,
@@ -31,7 +32,8 @@ export interface ManualReviewDialogData {
     MatRadioModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslocoDirective
   ],
   templateUrl: './manual-review-dialog.html',
   styleUrl: './manual-review-dialog.scss'
@@ -40,6 +42,7 @@ export class ManualReviewDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ManualReviewDialogComponent>);
   private store = inject(PaymentVerificationStore);
+  private transloco = inject(TranslocoService);
 
   reviewForm!: FormGroup;
   isSubmitting = signal<boolean>(false);
@@ -101,6 +104,54 @@ export class ManualReviewDialogComponent implements OnInit {
         this.errorMessage.set(msg);
       }
     });
+  }
+
+  formatStatus(status: any): string {
+    const s = String(status || '').trim().toLowerCase();
+    switch (s) {
+      case 'verified':
+      case '2': {
+        const val = this.transloco.translate('paymentVerification.statuses.verified');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Verified';
+      }
+      case 'rejected':
+      case '3': {
+        const val = this.transloco.translate('paymentVerification.statuses.rejected');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Rejected';
+      }
+      case 'amountmismatch':
+      case '4': {
+        const val = this.transloco.translate('paymentVerification.statuses.amountMismatch');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Amount Mismatch';
+      }
+      case 'destinationmismatch':
+      case '5': {
+        const val = this.transloco.translate('paymentVerification.statuses.destinationMismatch');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Destination Mismatch';
+      }
+      case 'unabletoconfirmdestination':
+      case '6': {
+        const val = this.transloco.translate('paymentVerification.statuses.unableToConfirmDestination');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Unable to Confirm Dest';
+      }
+      case 'needsmanualreview':
+      case '7': {
+        const val = this.transloco.translate('paymentVerification.statuses.needsManualReview');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Needs Manual Review';
+      }
+      case 'failed':
+      case '8': {
+        const val = this.transloco.translate('paymentVerification.statuses.failed');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Failed';
+      }
+      case 'pending':
+      case '1': {
+        const val = this.transloco.translate('paymentVerification.statuses.pending');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Pending';
+      }
+      default:
+        return status ? String(status) : '—';
+    }
   }
 
   onCancel(): void {

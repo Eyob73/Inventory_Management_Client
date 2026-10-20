@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { VerifyPaymentResponse, PaymentVerificationStatus } from '../../../../models/payment-verification.model';
 import { AuthService } from '../../../../services/auth';
 import { ManualReviewDialogComponent } from '../manual-review-dialog/manual-review-dialog';
@@ -23,7 +24,8 @@ export interface VerificationResultDialogData {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatDividerModule
+    MatDividerModule,
+    TranslocoDirective
   ],
   templateUrl: './verification-result-dialog.html',
   styleUrl: './verification-result-dialog.scss'
@@ -32,6 +34,7 @@ export class VerificationResultDialogComponent {
   private dialogRef = inject(MatDialogRef<VerificationResultDialogComponent>);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
+  private transloco = inject(TranslocoService);
 
   result: VerifyPaymentResponse;
 
@@ -143,36 +146,65 @@ export class VerificationResultDialogComponent {
 
   getStatusTitle(status: any): string {
     if (this.result?.failureCode === 'TELEBIRR_DIRECT_VERIFICATION_REQUIRED') {
-      return 'Telebirr Receipt Verification Required';
+      return this.transloco.translate('paymentVerification.resultDialog.titleTelebirrDirect');
     }
 
     const st = String(status || '');
     switch (st) {
       case 'Verified':
       case '2':
-        return 'Payment Verified Successfully';
+        return this.transloco.translate('paymentVerification.resultDialog.titleVerified');
       case 'AmountMismatch':
       case '4':
-        return 'Amount Mismatch';
+        return this.transloco.translate('paymentVerification.resultDialog.titleAmountMismatch');
       case 'DestinationMismatch':
       case '5':
-        return 'Destination Mismatch';
+        return this.transloco.translate('paymentVerification.resultDialog.titleDestMismatch');
       case 'UnableToConfirmDestination':
       case '6':
-        return 'Unable to Confirm Destination';
+        return this.transloco.translate('paymentVerification.resultDialog.titleUnableConfirm');
       case 'NeedsManualReview':
       case '7':
-        return 'Manual Review Required';
+        return this.transloco.translate('paymentVerification.resultDialog.titleManualReview');
       case 'Rejected':
       case '3':
-        return 'Transaction Rejected';
+        return this.transloco.translate('paymentVerification.resultDialog.titleRejected');
       case 'Pending':
       case '1':
-        return 'Verification Pending';
+        return this.transloco.translate('paymentVerification.resultDialog.titlePending');
       case 'Failed':
       case '8':
       default:
-        return 'Verification Failed';
+        return this.transloco.translate('paymentVerification.resultDialog.titleFailed');
+    }
+  }
+
+  formatDestinationMatch(match: any): string {
+    const m = String(match || '').trim().toLowerCase();
+    switch (m) {
+      case 'matched':
+      case '1': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.matched');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Matched';
+      }
+      case 'mismatched':
+      case '2': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.mismatched');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Mismatched';
+      }
+      case 'unabletoconfirm':
+      case '3': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.unableToConfirm');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Unable to Confirm';
+      }
+      case 'notapplicable':
+      case '0':
+      case '4': {
+        const val = this.transloco.translate('paymentVerification.destinationMatches.notApplicable');
+        return val && !val.startsWith('paymentVerification.') ? val : 'Not Applicable';
+      }
+      default:
+        return match ? String(match) : '—';
     }
   }
 

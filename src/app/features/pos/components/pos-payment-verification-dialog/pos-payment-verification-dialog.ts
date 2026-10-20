@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Html5Qrcode } from 'html5-qrcode';
 import { PaymentVerificationService } from '../../../../core/services/payment-verification.service';
 import { PaymentVerificationStore } from '../../../../store/payment-verification.store';
@@ -55,7 +56,8 @@ export type PosPaymentVerificationDialogResult =
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatDividerModule,
-    MatChipsModule
+    MatChipsModule,
+    TranslocoDirective
   ],
   templateUrl: './pos-payment-verification-dialog.html',
   styleUrl: './pos-payment-verification-dialog.scss'
@@ -68,6 +70,7 @@ export class PosPaymentVerificationDialogComponent implements OnInit, OnDestroy 
   private scannerService = inject(ReceiptScannerService);
   readonly store = inject(PaymentVerificationStore);
   private snackBar = inject(MatSnackBar);
+  private transloco = inject(TranslocoService);
 
   verificationForm!: FormGroup;
   isVerifying = signal<boolean>(false);

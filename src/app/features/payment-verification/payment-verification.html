@@ -1,3 +1,4 @@
+<ng-container *transloco="let t">
 <div class="payment-verification-container">
   <!-- Page Header -->
   <div class="page-header">
@@ -5,8 +6,8 @@
       <div class="title-row">
         <mat-icon class="page-icon">verified_user</mat-icon>
         <div>
-          <h1 class="page-title">Payment Verification</h1>
-          <p class="page-subtitle">Verify customer payments and manage business receiving accounts</p>
+          <h1 class="page-title">{{ t('paymentVerification.title') }}</h1>
+          <p class="page-subtitle">{{ t('paymentVerification.subtitle') }}</p>
         </div>
       </div>
     </div>
@@ -14,12 +15,12 @@
       <button mat-stroked-button class="btn-refresh" (click)="loadAllData()"
         [disabled]="isLoadingHistory() || isLoadingDestinations()">
         <mat-icon>refresh</mat-icon>
-        <span>Refresh</span>
+        <span>{{ t('paymentVerification.refresh') }}</span>
       </button>
       @if (isManagerOrAdmin) {
       <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
         <mat-icon>add_card</mat-icon>
-        <span>Add Payment Destination</span>
+        <span>{{ t('paymentVerification.addDestination') }}</span>
       </button>
       }
     </div>
@@ -30,46 +31,46 @@
     <div class="stat-card teal">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>account_balance_wallet</mat-icon></span>
-        <span class="stat-title">Total Destinations</span>
+        <span class="stat-title">{{ t('paymentVerification.stats.totalDestinations') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ summary().totalDestinations }}</div>
-        <span class="stat-sub">Registered receiving accounts</span>
+        <span class="stat-sub">{{ t('paymentVerification.stats.totalDestinationsSub') }}</span>
       </div>
     </div>
 
     <div class="stat-card green">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>check_circle</mat-icon></span>
-        <span class="stat-title">Active Destinations</span>
+        <span class="stat-title">{{ t('paymentVerification.stats.activeDestinations') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ summary().activeDestinations }}</div>
-        <span class="stat-sub">Ready for receiving payments</span>
+        <span class="stat-sub">{{ t('paymentVerification.stats.activeDestinationsSub') }}</span>
       </div>
     </div>
 
     <div class="stat-card blue">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>verified</mat-icon></span>
-        <span class="stat-title">Verified Transactions</span>
+        <span class="stat-title">{{ t('paymentVerification.stats.verifiedTransactions') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value">{{ summary().verifiedTransactions }}</div>
-        <span class="stat-sub">Confirmed</span>
+        <span class="stat-sub">{{ t('paymentVerification.stats.verifiedTransactionsSub') }}</span>
       </div>
     </div>
 
     <div class="stat-card amber" [class.highlight-warning]="summary().needsReviewTransactions > 0">
       <div class="stat-card-header">
         <span class="stat-icon-wrap"><mat-icon>rate_review</mat-icon></span>
-        <span class="stat-title">Requires Review</span>
+        <span class="stat-title">{{ t('paymentVerification.stats.requiresReview') }}</span>
       </div>
       <div class="stat-card-body">
         <div class="stat-value" [class.text-amber]="summary().needsReviewTransactions > 0">
           {{ summary().needsReviewTransactions }}
         </div>
-        <span class="stat-sub">{{ summary().needsReviewTransactions > 0 ? 'Pending manual audit' : 'No audit backlog'
+        <span class="stat-sub">{{ summary().needsReviewTransactions > 0 ? t('paymentVerification.stats.pendingAudit') : t('paymentVerification.stats.noAuditBacklog')
           }}</span>
       </div>
     </div>
@@ -84,7 +85,7 @@
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">fact_check</mat-icon>
-          <span>Verify Customer Payment</span>
+          <span>{{ t('paymentVerification.tabs.verify') }}</span>
         </ng-template>
 
         <div class="tab-body-card">
@@ -92,8 +93,8 @@
             <!-- Left Side: Form -->
             <div class="verify-form-column">
               <div class="section-title-box">
-                <h2>Payment Verification</h2>
-                <p>Select your receiving account and input the payment receipt reference</p>
+                <h2>{{ t('paymentVerification.form.formTitle') }}</h2>
+                <p>{{ t('paymentVerification.form.formSubtitle') }}</p>
               </div>
 
               <!-- Mode Selector Tabs -->
@@ -105,7 +106,7 @@
                   (click)="setScanMode('manual')"
                 >
                   <mat-icon>keyboard</mat-icon>
-                  <span>Manual Reference</span>
+                  <span>{{ t('paymentVerification.modes.manual') }}</span>
                 </button>
 
                 <button
@@ -115,7 +116,7 @@
                   (click)="setScanMode('camera')"
                 >
                   <mat-icon>qr_code_scanner</mat-icon>
-                  <span>Scan QR Code</span>
+                  <span>{{ t('paymentVerification.modes.camera') }}</span>
                 </button>
 
                 <button
@@ -125,7 +126,7 @@
                   (click)="setScanMode('upload')"
                 >
                   <mat-icon>upload_file</mat-icon>
-                  <span>Upload Receipt</span>
+                  <span>{{ t('paymentVerification.modes.upload') }}</span>
                 </button>
               </div>
 
@@ -139,7 +140,7 @@
                   @if (isCameraLoading()) {
                   <div class="scanner-overlay loading-overlay">
                     <mat-spinner diameter="36"></mat-spinner>
-                    <span>Starting camera preview...</span>
+                    <span>{{ t('paymentVerification.scanner.startingCamera') }}</span>
                   </div>
                   }
 
@@ -153,7 +154,7 @@
                       <span class="bracket br"></span>
                       <div class="scanning-laser"></div>
                     </div>
-                    <p class="viewfinder-text">Align receipt QR code within the frame</p>
+                    <p class="viewfinder-text">{{ t('paymentVerification.scanner.alignQr') }}</p>
                   </div>
                   }
 
@@ -161,16 +162,16 @@
                   @if (cameraError()) {
                   <div class="scanner-overlay error-overlay">
                     <mat-icon class="err-icon">videocam_off</mat-icon>
-                    <p class="err-title">Camera Unavailable</p>
+                    <p class="err-title">{{ t('paymentVerification.scanner.cameraUnavailable') }}</p>
                     <p class="err-desc">{{ cameraError() }}</p>
                     <div class="err-actions">
                       <button mat-flat-button color="primary" type="button" (click)="startCameraScan()">
                         <mat-icon>refresh</mat-icon>
-                        Retry Camera
+                        {{ t('paymentVerification.scanner.retryCamera') }}
                       </button>
                       <button mat-stroked-button type="button" (click)="setScanMode('manual')">
                         <mat-icon>edit</mat-icon>
-                        Enter Manually
+                        {{ t('paymentVerification.scanner.enterManually') }}
                       </button>
                     </div>
                   </div>
@@ -181,11 +182,11 @@
                 <div class="scanner-controls-bar">
                   <button mat-stroked-button type="button" (click)="stopCameraScan()" class="stop-camera-btn">
                     <mat-icon>stop</mat-icon>
-                    Stop Camera
+                    {{ t('paymentVerification.scanner.stopCamera') }}
                   </button>
                   <button mat-stroked-button type="button" (click)="setScanMode('upload')">
                     <mat-icon>upload_file</mat-icon>
-                    Upload Image Instead
+                    {{ t('paymentVerification.scanner.uploadInstead') }}
                   </button>
                 </div>
                 }
@@ -204,7 +205,7 @@
                   (drop)="onFileDrop($event)"
                   role="button"
                   tabindex="0"
-                  aria-label="Upload receipt image"
+                  [attr.aria-label]="t('paymentVerification.scanner.dropzoneTitle')"
                 >
                   <input
                     #pageReceiptFileInput
@@ -220,11 +221,11 @@
                     <div class="icon-bubble">
                       <mat-icon>add_photo_alternate</mat-icon>
                     </div>
-                    <p class="dz-title">Select or Drop Receipt Image</p>
-                    <p class="dz-subtitle">Supports JPEG, PNG, or WebP receipts up to 5 MB</p>
+                    <p class="dz-title">{{ t('paymentVerification.scanner.dropzoneTitle') }}</p>
+                    <p class="dz-subtitle">{{ t('paymentVerification.scanner.dropzoneSubtitle') }}</p>
                     <button mat-stroked-button type="button" class="browse-btn" (click)="$event.stopPropagation(); pageReceiptFileInput.click()">
                       <mat-icon>folder_open</mat-icon>
-                      Browse Device
+                      {{ t('paymentVerification.scanner.browseDevice') }}
                     </button>
                   </div>
                   }
@@ -233,8 +234,8 @@
                   @if (isDecodingImage()) {
                   <div class="dropzone-content decoding-content">
                     <mat-spinner diameter="36"></mat-spinner>
-                    <p class="dz-title">Scanning Image for QR Code...</p>
-                    <p class="dz-subtitle">Decoding embedded payment information locally</p>
+                    <p class="dz-title">{{ t('paymentVerification.scanner.scanningImage') }}</p>
+                    <p class="dz-subtitle">{{ t('paymentVerification.scanner.decodingInfo') }}</p>
                   </div>
                   }
 
@@ -257,11 +258,11 @@
                 <div class="upload-actions-bar">
                   <button mat-stroked-button type="button" (click)="pageReceiptFileInput.click()">
                     <mat-icon>sync</mat-icon>
-                    Replace Image
+                    {{ t('paymentVerification.scanner.replaceImage') }}
                   </button>
                   <button mat-stroked-button color="warn" type="button" (click)="removeSelectedFile()">
                     <mat-icon>delete_outline</mat-icon>
-                    Remove
+                    {{ t('paymentVerification.scanner.remove') }}
                   </button>
                 </div>
                 }
@@ -273,7 +274,7 @@
                   <div class="box-text">
                     <p class="box-message">{{ uploadError() }}</p>
                     <button mat-button class="manual-fallback-link" type="button" (click)="setScanMode('manual')">
-                      Enter reference manually &rarr;
+                      {{ t('paymentVerification.scanner.enterRefManually') }}
                     </button>
                   </div>
                 </div>
@@ -288,11 +289,11 @@
                   <div class="review-title-group">
                     <mat-icon class="review-badge-icon">qr_code_2</mat-icon>
                     <div>
-                      <h3 class="review-title">Scanned Receipt Review</h3>
-                      <p class="review-desc">Verify extracted details against customer receipt before verifying</p>
+                      <h3 class="review-title">{{ t('paymentVerification.review.title') }}</h3>
+                      <p class="review-desc">{{ t('paymentVerification.review.subtitle') }}</p>
                     </div>
                   </div>
-                  <button mat-icon-button type="button" class="dismiss-review-btn" (click)="clearScannedDetails()" matTooltip="Clear scanned details">
+                  <button mat-icon-button type="button" class="dismiss-review-btn" (click)="clearScannedDetails()" [matTooltip]="t('paymentVerification.review.clearTooltip')">
                     <mat-icon>close</mat-icon>
                   </button>
                 </div>
@@ -300,29 +301,29 @@
                 <div class="review-grid">
                   @if (scanned.providerName || scanned.provider) {
                   <div class="review-item">
-                    <span class="r-label">Detected Provider</span>
+                    <span class="r-label">{{ t('paymentVerification.review.detectedProvider') }}</span>
                     <span class="r-value font-semibold">{{ scanned.providerName || scanned.provider }}</span>
                   </div>
                   }
 
                   @if (scanned.transactionReference) {
                   <div class="review-item">
-                    <span class="r-label">Extracted Reference</span>
+                    <span class="r-label">{{ t('paymentVerification.review.extractedReference') }}</span>
                     <span class="r-value font-mono">{{ scanned.transactionReference }}</span>
                   </div>
                   }
 
                   @if (scanned.amount !== undefined && scanned.amount !== null) {
                   <div class="review-item">
-                    <span class="r-label">Scanned Amount</span>
+                    <span class="r-label">{{ t('paymentVerification.review.scannedAmount') }}</span>
                     <span class="r-value font-semibold font-mono" [class.match-text]="isScannedAmountMatch()" [class.mismatch-text]="!isScannedAmountMatch()">
                       {{ scanned.amount | number:'1.2-2' }} {{ scanned.currency || 'ETB' }}
                       @if (selectedSale() && isScannedAmountMatch()) {
-                      <span class="status-pill match-pill">&check; Matches Sale Balance</span>
+                      <span class="status-pill match-pill">{{ t('paymentVerification.review.matchesBalance') }}</span>
                       }
                       @if (selectedSale() && !isScannedAmountMatch()) {
                       <span class="status-pill mismatch-pill">
-                        &ne; Expected {{ selectedSale()?.outstandingBalance | number:'1.2-2' }} ETB
+                        {{ t('paymentVerification.review.expectedBalance', { expected: (selectedSale()?.outstandingBalance | number:'1.2-2') }) }}
                       </span>
                       }
                     </span>
@@ -331,21 +332,21 @@
 
                   @if (scanned.transactionDate) {
                   <div class="review-item">
-                    <span class="r-label">Transaction Date</span>
+                    <span class="r-label">{{ t('paymentVerification.review.transactionDate') }}</span>
                     <span class="r-value">{{ scanned.transactionDate }}</span>
                   </div>
                   }
 
                   @if (scanned.payerName || scanned.payerPhone) {
                   <div class="review-item">
-                    <span class="r-label">Payer Information</span>
+                    <span class="r-label">{{ t('paymentVerification.review.payerInfo') }}</span>
                     <span class="r-value">{{ scanned.payerName || '' }} {{ scanned.payerPhone ? '(' + scanned.payerPhone + ')' : '' }}</span>
                   </div>
                   }
 
                   @if (scanned.receiverAccountMasked) {
                   <div class="review-item">
-                    <span class="r-label">Receiver Account</span>
+                    <span class="r-label">{{ t('paymentVerification.review.receiverAccount') }}</span>
                     <span class="r-value font-mono">{{ scanned.receiverAccountMasked }}</span>
                   </div>
                   }
@@ -356,8 +357,8 @@
                 <div class="review-alert-banner warning-alert">
                   <mat-icon>warning_amber</mat-icon>
                   <div class="alert-body">
-                    <strong>Payment Instruction Detected</strong>
-                    <p>This QR code appears to be a merchant payment request or instruction, not proof of a completed transaction. Please ask the customer for their bank confirmation SMS or completed payment receipt.</p>
+                    <strong>{{ t('paymentVerification.review.instructionDetected') }}</strong>
+                    <p>{{ t('paymentVerification.review.instructionWarning') }}</p>
                   </div>
                 </div>
                 }
@@ -387,7 +388,7 @@
               <div class="verifying-indicator">
                 <mat-progress-bar mode="indeterminate" class="verification-progress"></mat-progress-bar>
                 <div class="indicator-text">
-                  <span>Verifying transaction...</span>
+                  <span>{{ t('paymentVerification.form.verifyingIndicator') }}</span>
                 </div>
               </div>
               }
@@ -395,24 +396,24 @@
               <form [formGroup]="verifyForm" (ngSubmit)="onVerifySubmit()" class="verify-form">
                 <!-- Optional Sale ID -->
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Sale ID (Optional)</mat-label>
+                  <mat-label>{{ t('paymentVerification.form.saleId') }}</mat-label>
                   <mat-icon matPrefix>receipt</mat-icon>
                   <input matInput formControlName="saleId" [matAutocomplete]="autoSale"
-                    placeholder="Enter Sale ID or select an eligible sale" />
+                    [placeholder]="t('paymentVerification.form.saleIdPlaceholder')" />
                   <mat-autocomplete #autoSale="matAutocomplete">
                     @for (sale of filteredSales(); track sale.id) {
                     <mat-option [value]="sale.id">
                       <div class="sale-option">
                         <span class="sale-opt-number">#{{ sale.saleNumber }}</span>
-                        <span class="sale-opt-customer">{{ sale.customerName || 'Walk-in' }}</span>
-                        <span class="sale-opt-balance">Balance: {{ sale.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }}</span>
+                        <span class="sale-opt-customer">{{ sale.customerName || t('paymentVerification.context.walkInCustomer') }}</span>
+                        <span class="sale-opt-balance">{{ t('paymentVerification.form.balance') }}: {{ sale.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }}</span>
                       </div>
                     </mat-option>
                     }
                   </mat-autocomplete>
-                  <mat-hint>Optionally link this payment to a sale to auto-apply and complete it</mat-hint>
+                  <mat-hint>{{ t('paymentVerification.form.saleIdHint') }}</mat-hint>
                   @if (verifyForm.get('saleId')?.value) {
-                  <button mat-icon-button matSuffix type="button" (click)="clearSaleId()" matTooltip="Clear Sale ID">
+                  <button mat-icon-button matSuffix type="button" (click)="clearSaleId()" [matTooltip]="t('paymentVerification.form.saleIdClearTooltip')">
                     <mat-icon>clear</mat-icon>
                   </button>
                   }
@@ -420,7 +421,7 @@
 
                 <!-- Receiving Payment Destination -->
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Receiving Payment Destination</mat-label>
+                  <mat-label>{{ t('paymentVerification.form.destination') }}</mat-label>
                   <mat-icon matPrefix>account_balance</mat-icon>
                   <mat-select formControlName="paymentDestinationId">
                     @for (dest of destinations(); track dest.id) {
@@ -432,33 +433,33 @@
                           dest.maskedPhoneNumber }})
                         </span>
                         @if (dest.isDefault) {
-                        <span class="opt-default-badge">DEFAULT</span>
+                        <span class="opt-default-badge">{{ t('paymentVerification.form.defaultBadge') }}</span>
                         }
                         @if (!dest.isActive) {
-                        <span class="opt-inactive-badge">(Inactive)</span>
+                        <span class="opt-inactive-badge">{{ t('paymentVerification.form.inactiveBadge') }}</span>
                         }
                       </div>
                     </mat-option>
                     }
                   </mat-select>
                   @if (verifyForm.get('paymentDestinationId')?.hasError('required')) {
-                  <mat-error>Please select the business receiving account</mat-error>
+                  <mat-error>{{ t('paymentVerification.form.destinationRequired') }}</mat-error>
                   }
                 </mat-form-field>
 
                 <!-- Transaction Reference / Receipt URL -->
                 <div class="reference-field-container">
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Transaction Reference or Receipt URL</mat-label>
+                    <mat-label>{{ t('paymentVerification.form.reference') }}</mat-label>
                     <mat-icon matPrefix>confirmation_number</mat-icon>
                     <input matInput formControlName="submittedReference"
-                      placeholder="e.g. CBE receipt URL (https://apps.cbe.com.et:4130/...) or txn reference" />
-                    <mat-hint>Paste full bank receipt URL or unique transfer reference ID</mat-hint>
+                      [placeholder]="t('paymentVerification.form.referencePlaceholder')" />
+                    <mat-hint>{{ t('paymentVerification.form.referenceHint') }}</mat-hint>
                     @if (verifyForm.get('submittedReference')?.hasError('required')) {
-                    <mat-error>Transaction reference is required</mat-error>
+                    <mat-error>{{ t('paymentVerification.form.referenceRequired') }}</mat-error>
                     }
                     @if (verifyForm.get('submittedReference')?.hasError('minlength')) {
-                    <mat-error>Reference must be at least 4 characters</mat-error>
+                    <mat-error>{{ t('paymentVerification.form.referenceMinLength') }}</mat-error>
                     }
                   </mat-form-field>
 
@@ -470,10 +471,10 @@
                       type="button"
                       class="scan-receipt-action-btn"
                       (click)="setScanMode('camera')"
-                      matTooltip="Scan receipt QR code using device camera"
+                      [matTooltip]="t('paymentVerification.scanner.scanReceiptTooltip')"
                     >
                       <mat-icon>qr_code_scanner</mat-icon>
-                      <span>Scan Receipt</span>
+                      <span>{{ t('paymentVerification.scanner.scanReceipt') }}</span>
                     </button>
                   </div>
                   }
@@ -481,11 +482,11 @@
 
                 <!-- Optional Payer Phone Number -->
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Payer Phone Number (Optional)</mat-label>
+                  <mat-label>{{ t('paymentVerification.form.payerPhone') }}</mat-label>
                   <mat-icon matPrefix>phone</mat-icon>
                   <input matInput formControlName="payerPhone"
-                    placeholder="09... or +2519... (if required by provider)" />
-                  <mat-hint>Required for some Telebirr / SMS receipt verifications</mat-hint>
+                    [placeholder]="t('paymentVerification.form.payerPhonePlaceholder')" />
+                  <mat-hint>{{ t('paymentVerification.form.payerPhoneHint') }}</mat-hint>
                 </mat-form-field>
 
                 <div class="form-submit-row">
@@ -494,12 +495,12 @@
                     @if (isVerifying()) {
                     <span class="btn-inner">
                       <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
-                      <span>Verifying...</span>
+                      <span>{{ t('paymentVerification.form.verifying') }}</span>
                     </span>
                     } @else {
                     <span class="btn-inner">
                       <mat-icon>verified</mat-icon>
-                      <span>Verify Payment</span>
+                      <span>{{ t('paymentVerification.form.verifyPayment') }}</span>
                     </span>
                     }
                   </button>
@@ -515,32 +516,32 @@
                 <div class="card-head">
                   <div class="sale-badge">
                     <mat-icon>receipt</mat-icon>
-                    <span>Sale #{{ selectedSale()?.saleNumber }}</span>
+                    <span>{{ t('paymentVerification.context.saleNumber', { saleNumber: selectedSale()?.saleNumber }) }}</span>
                   </div>
                   <span class="sale-status-chip">{{ selectedSale()?.saleStatus }}</span>
                 </div>
 
                 <div class="sale-metrics">
                   <div class="sale-metric-item">
-                    <span class="lbl">Customer</span>
-                    <span class="val">{{ selectedSale()?.customerName || 'Walk-in Customer' }}</span>
+                    <span class="lbl">{{ t('paymentVerification.context.customer') }}</span>
+                    <span class="val">{{ selectedSale()?.customerName || t('paymentVerification.context.walkInCustomer') }}</span>
                   </div>
                   <div class="sale-metric-item">
-                    <span class="lbl">Sale Total</span>
+                    <span class="lbl">{{ t('paymentVerification.context.saleTotal') }}</span>
                     <span class="val">{{ selectedSale()?.totalAmount | currency:'ETB':'symbol':'1.2-2' }}</span>
                   </div>
                   <div class="sale-metric-item">
-                    <span class="lbl">Already Paid</span>
+                    <span class="lbl">{{ t('paymentVerification.context.alreadyPaid') }}</span>
                     <span class="val text-slate">{{ selectedSale()?.amountAlreadyPaid | currency:'ETB':'symbol':'1.2-2' }}</span>
                   </div>
                   <div class="sale-metric-item balance-highlight">
-                    <span class="lbl">Outstanding Balance</span>
+                    <span class="lbl">{{ t('paymentVerification.context.outstandingBalance') }}</span>
                     <span class="val text-moss bold">{{ selectedSale()?.outstandingBalance | currency:'ETB':'symbol':'1.2-2' }}</span>
                   </div>
                 </div>
                 <div class="security-notice">
                   <mat-icon>lock</mat-icon>
-                  <span>Expected amount is strictly determined by the server to prevent tampering.</span>
+                  <span>{{ t('paymentVerification.context.securityNotice') }}</span>
                 </div>
               </div>
               }
@@ -548,10 +549,9 @@
               @if (!selectedSale() && !verificationResult()) {
               <div class="empty-context-placeholder">
                 <mat-icon>verified_user</mat-icon>
-                <h3>Payment Verification</h3>
-                <p>Enter the transaction reference or paste a bank receipt URL to instantly verify customer transfers
-                </p>
-                <p>Verification validates transfer authenticity, amount, and recipient account in real time.</p>
+                <h3>{{ t('paymentVerification.context.placeholderTitle') }}</h3>
+                <p>{{ t('paymentVerification.context.placeholderDesc1') }}</p>
+                <p>{{ t('paymentVerification.context.placeholderDesc2') }}</p>
               </div>
               }
 
@@ -563,30 +563,30 @@
                     <mat-icon>
                       {{ verificationResult()?.status === 'Verified' ? 'check_circle' : 'warning' }}
                     </mat-icon>
-                    <h4>{{ verificationResult()?.status }}</h4>
+                    <h4>{{ formatStatus(verificationResult()?.status) }}</h4>
                   </div>
                   <button mat-button class="details-link" (click)="openResultDialog(verificationResult()!)">
-                    View Full Details
+                    {{ t('paymentVerification.context.viewFullDetails') }}
                   </button>
                 </div>
 
                 <div class="outcome-body">
                   <p class="outcome-msg">
-                    {{ verificationResult()?.failureMessage || 'Payment verified and applied to sale.' }}
+                    {{ verificationResult()?.failureMessage || t('paymentVerification.context.verifiedDefaultMsg') }}
                   </p>
 
                   <div class="outcome-details-row">
-                    <span><strong>Verified:</strong> {{ verificationResult()?.verifiedAmount |
+                    <span><strong>{{ t('paymentVerification.context.verifiedLabel') }}</strong> {{ verificationResult()?.verifiedAmount |
                       currency:'ETB':'symbol':'1.2-2' }}</span>
-                    <span><strong>Destination Match:</strong> {{ verificationResult()?.destinationMatchStatus }}</span>
+                    <span><strong>{{ t('paymentVerification.context.destMatchLabel') }}</strong> {{ formatDestinationMatch(verificationResult()?.destinationMatchStatus) }}</span>
                   </div>
                   @if (verificationResult()?.payerName || verificationResult()?.payerAccount) {
                   <div class="outcome-details-row" style="margin-top: 0.35rem;">
                     @if (verificationResult()?.payerName) {
-                    <span><strong>Payer:</strong> {{ verificationResult()?.payerName }}</span>
+                    <span><strong>{{ t('paymentVerification.context.payerLabel') }}</strong> {{ verificationResult()?.payerName }}</span>
                     }
                     @if (verificationResult()?.payerAccount) {
-                    <span><strong>Account:</strong> {{ verificationResult()?.payerAccount }}</span>
+                    <span><strong>{{ t('paymentVerification.context.accountLabel') }}</strong> {{ verificationResult()?.payerAccount }}</span>
                     }
                   </div>
                   }
@@ -602,19 +602,19 @@
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">account_balance</mat-icon>
-          <span>Payment Destinations</span>
+          <span>{{ t('paymentVerification.tabs.destinations') }}</span>
         </ng-template>
 
         <div class="tab-body-card">
           <div class="section-toolbar">
             <div>
-              <h2>Registered Payment Destinations</h2>
-              <p>Business bank accounts and Telebirr receiving phone numbers</p>
+              <h2>{{ t('paymentVerification.destinations.title') }}</h2>
+              <p>{{ t('paymentVerification.destinations.subtitle') }}</p>
             </div>
             @if (isManagerOrAdmin) {
             <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
               <mat-icon>add_card</mat-icon>
-              <span>Add Destination</span>
+              <span>{{ t('paymentVerification.destinations.addDestination') }}</span>
             </button>
             }
           </div>
@@ -622,17 +622,17 @@
           @if (isLoadingDestinations()) {
           <div class="loading-state">
             <mat-spinner diameter="32"></mat-spinner>
-            <span>Loading destinations...</span>
+            <span>{{ t('paymentVerification.destinations.loading') }}</span>
           </div>
           } @else if (destinations().length === 0) {
           <div class="empty-state">
             <mat-icon>account_balance</mat-icon>
-            <h3>No Payment Destinations Registered</h3>
-            <p>Add your business bank account or Telebirr phone number to start verifying customer payments.</p>
+            <h3>{{ t('paymentVerification.destinations.emptyTitle') }}</h3>
+            <p>{{ t('paymentVerification.destinations.emptySubtitle') }}</p>
             @if (isManagerOrAdmin) {
             <button mat-flat-button class="btn-primary" (click)="openAddDestinationDialog()">
               <mat-icon>add_card</mat-icon>
-              <span>Add First Destination</span>
+              <span>{{ t('paymentVerification.destinations.addFirstDestination') }}</span>
             </button>
             }
           </div>
@@ -650,11 +650,11 @@
                 <div class="dest-badges">
                   @if (dest.isDefault) {
                   <span class="default-badge">
-                    <mat-icon>star</mat-icon> DEFAULT
+                    <mat-icon>star</mat-icon> {{ t('paymentVerification.destinations.defaultBadge') }}
                   </span>
                   }
                   <span class="status-indicator" [class.active]="dest.isActive">
-                    {{ dest.isActive ? 'Active' : 'Inactive' }}
+                    {{ dest.isActive ? t('paymentVerification.destinations.active') : t('paymentVerification.destinations.inactive') }}
                   </span>
                 </div>
               </div>
@@ -662,8 +662,7 @@
               <h3 class="dest-name">{{ dest.name }}</h3>
 
               <div class="dest-account-box">
-                <span class="acc-label">{{ dest.typeName === 'Telebirr' || dest.type === 2 ? 'Phone Number' : 'Account
-                  Number' }}:</span>
+                <span class="acc-label">{{ dest.typeName === 'Telebirr' || dest.type === 2 ? t('paymentVerification.destinations.phoneLabel') : t('paymentVerification.destinations.accountLabel') }}:</span>
                 <span class="acc-val mono">{{ dest.maskedAccountNumber || dest.maskedPhoneNumber }}</span>
               </div>
 
@@ -679,24 +678,24 @@
                 <div class="footer-left">
                   @if (!dest.isDefault && dest.isActive) {
                   <button mat-button class="btn-text-action" (click)="onSetDefaultDestination(dest)"
-                    matTooltip="Set as default receiving destination">
+                    [matTooltip]="t('paymentVerification.destinations.setDefaultTooltip')">
                     <mat-icon>star_border</mat-icon>
-                    <span>Set Default</span>
+                    <span>{{ t('paymentVerification.destinations.setDefault') }}</span>
                   </button>
                   }
                 </div>
 
                 <div class="footer-actions">
                   <mat-slide-toggle [checked]="dest.isActive" (change)="onToggleDestinationStatus(dest, $event)"
-                    matTooltip="Activate or deactivate destination" color="primary">
+                    [matTooltip]="t('paymentVerification.destinations.toggleTooltip')" color="primary">
                   </mat-slide-toggle>
 
-                  <button mat-icon-button (click)="openEditDestinationDialog(dest)" matTooltip="Edit destination">
+                  <button mat-icon-button (click)="openEditDestinationDialog(dest)" [matTooltip]="t('paymentVerification.destinations.editTooltip')">
                     <mat-icon>edit</mat-icon>
                   </button>
 
                   <button mat-icon-button color="warn" (click)="onDeleteDestination(dest)"
-                    matTooltip="Delete destination">
+                    [matTooltip]="t('paymentVerification.destinations.deleteTooltip')">
                     <mat-icon>delete_outline</mat-icon>
                   </button>
                 </div>
@@ -713,7 +712,7 @@
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">history</mat-icon>
-          <span>Verification History</span>
+          <span>{{ t('paymentVerification.tabs.history') }}</span>
         </ng-template>
 
         <div class="tab-body-card">
@@ -721,17 +720,17 @@
           <div class="filters-bar">
             <!-- Search -->
             <mat-form-field appearance="outline" class="search-input">
-              <mat-label>Search Reference or Sale #</mat-label>
+              <mat-label>{{ t('paymentVerification.history.searchLabel') }}</mat-label>
               <mat-icon matPrefix>search</mat-icon>
               <input matInput [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)"
-                placeholder="Search..." />
+                [placeholder]="t('paymentVerification.history.searchPlaceholder')" />
             </mat-form-field>
 
             <!-- Provider Filter -->
             <mat-form-field appearance="outline" class="filter-select">
-              <mat-label>Provider</mat-label>
+              <mat-label>{{ t('paymentVerification.history.providerLabel') }}</mat-label>
               <mat-select [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
-                <mat-option value="">All Providers</mat-option>
+                <mat-option value="">{{ t('paymentVerification.history.allProviders') }}</mat-option>
                 @for (bank of supportedBanks(); track bank.id) {
                 <mat-option [value]="bank.id">{{ bank.name }}</mat-option>
                 }
@@ -740,22 +739,22 @@
 
             <!-- Status Filter -->
             <mat-form-field appearance="outline" class="filter-select">
-              <mat-label>Status</mat-label>
+              <mat-label>{{ t('paymentVerification.history.statusLabel') }}</mat-label>
               <mat-select [ngModel]="selectedStatus()" (ngModelChange)="onStatusChange($event)">
-                <mat-option value="">All Statuses</mat-option>
-                <mat-option value="Verified">Verified</mat-option>
-                <mat-option value="NeedsManualReview">Needs Manual Review</mat-option>
-                <mat-option value="UnableToConfirmDestination">Unable to Confirm Dest</mat-option>
-                <mat-option value="AmountMismatch">Amount Mismatch</mat-option>
-                <mat-option value="DestinationMismatch">Destination Mismatch</mat-option>
-                <mat-option value="Rejected">Rejected</mat-option>
-                <mat-option value="Failed">Failed</mat-option>
+                <mat-option value="">{{ t('paymentVerification.history.allStatuses') }}</mat-option>
+                <mat-option value="Verified">{{ t('paymentVerification.statuses.verified') }}</mat-option>
+                <mat-option value="NeedsManualReview">{{ t('paymentVerification.statuses.needsManualReview') }}</mat-option>
+                <mat-option value="UnableToConfirmDestination">{{ t('paymentVerification.statuses.unableToConfirmDestination') }}</mat-option>
+                <mat-option value="AmountMismatch">{{ t('paymentVerification.statuses.amountMismatch') }}</mat-option>
+                <mat-option value="DestinationMismatch">{{ t('paymentVerification.statuses.destinationMismatch') }}</mat-option>
+                <mat-option value="Rejected">{{ t('paymentVerification.statuses.rejected') }}</mat-option>
+                <mat-option value="Failed">{{ t('paymentVerification.statuses.failed') }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <button mat-stroked-button (click)="resetFilters()" class="reset-btn">
               <mat-icon>filter_alt_off</mat-icon>
-              <span>Reset</span>
+              <span>{{ t('paymentVerification.history.reset') }}</span>
             </button>
           </div>
 
@@ -772,13 +771,13 @@
 
                   <!-- Reference Column -->
                   <ng-container matColumnDef="submittedReference">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.reference') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <div class="ref-cell">
                         <span class="mono ref-text" [matTooltip]="row.submittedReference">{{ row.submittedReference
                           }}</span>
                         <button mat-icon-button class="copy-btn" (click)="copyToClipboard(row.submittedReference)"
-                          matTooltip="Copy reference">
+                          [matTooltip]="t('paymentVerification.history.copyTooltip')">
                           <mat-icon>content_copy</mat-icon>
                         </button>
                       </div>
@@ -787,7 +786,7 @@
 
                   <!-- Sale Number Column -->
                   <ng-container matColumnDef="saleNumber">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Sale #</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.saleNumber') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <span class="font-semibold">#{{ row.saleNumber }}</span>
                     </td>
@@ -795,15 +794,15 @@
 
                   <!-- Customer Column -->
                   <ng-container matColumnDef="customerName">
-                    <th mat-header-cell *matHeaderCellDef>Customer</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ t('paymentVerification.history.columns.customer') }}</th>
                     <td mat-cell *matCellDef="let row">
-                      {{ row.customerName || 'Walk-in Customer' }}
+                      {{ row.customerName || t('paymentVerification.context.walkInCustomer') }}
                     </td>
                   </ng-container>
 
                   <!-- Provider Column -->
                   <ng-container matColumnDef="provider">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Provider</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.provider') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <span class="provider-tag">{{ row.provider }}</span>
                     </td>
@@ -811,7 +810,7 @@
 
                   <!-- Destination Column -->
                   <ng-container matColumnDef="paymentDestinationName">
-                    <th mat-header-cell *matHeaderCellDef>Destination</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ t('paymentVerification.history.columns.destination') }}</th>
                     <td mat-cell *matCellDef="let row">
                       {{ row.paymentDestinationName || 'None' }}
                     </td>
@@ -819,7 +818,7 @@
 
                   <!-- Expected Amount Column -->
                   <ng-container matColumnDef="expectedAmount">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Expected</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.expected') }}</th>
                     <td mat-cell *matCellDef="let row">
                       {{ row.expectedAmount | currency:row.currency:'symbol':'1.2-2' }}
                     </td>
@@ -827,7 +826,7 @@
 
                   <!-- Verified Amount Column -->
                   <ng-container matColumnDef="verifiedAmount">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Verified</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.verified') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <span class="font-bold" [class.text-moss]="row.status === 'Verified'">
                         {{ (row.verifiedAmount ?? 0) | currency:row.currency:'symbol':'1.2-2' }}
@@ -837,27 +836,27 @@
 
                   <!-- Status Column -->
                   <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.status') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <span class="status-chip" [ngClass]="getStatusClass(row.status)">
-                        {{ row.status }}
+                        {{ formatStatus(row.status) }}
                       </span>
                     </td>
                   </ng-container>
 
                   <!-- Destination Match Status Column -->
                   <ng-container matColumnDef="destinationMatchStatus">
-                    <th mat-header-cell *matHeaderCellDef>Dest Match</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ t('paymentVerification.history.columns.destMatch') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <span class="match-chip" [ngClass]="getMatchClass(row.destinationMatchStatus)">
-                        {{ row.destinationMatchStatus }}
+                        {{ formatDestinationMatch(row.destinationMatchStatus) }}
                       </span>
                     </td>
                   </ng-container>
 
                   <!-- Created Date Column -->
                   <ng-container matColumnDef="createdAtUtc">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ t('paymentVerification.history.columns.date') }}</th>
                     <td mat-cell *matCellDef="let row">
                       {{ row.createdAtUtc | date:'short' }}
                     </td>
@@ -865,15 +864,15 @@
 
                   <!-- Actions Column -->
                   <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <th mat-header-cell *matHeaderCellDef>{{ t('paymentVerification.history.columns.actions') }}</th>
                     <td mat-cell *matCellDef="let row">
                       <div class="row-actions">
-                        <button mat-icon-button (click)="viewVerificationDetails(row)" matTooltip="View details">
+                        <button mat-icon-button (click)="viewVerificationDetails(row)" [matTooltip]="t('paymentVerification.history.viewDetailsTooltip')">
                           <mat-icon>visibility</mat-icon>
                         </button>
 
                         @if (row.status === 'Failed' || row.status === 'Rejected') {
-                        <button mat-icon-button (click)="onRetryVerification(row)" matTooltip="Retry verification">
+                        <button mat-icon-button (click)="onRetryVerification(row)" [matTooltip]="t('paymentVerification.history.retryTooltip')">
                           <mat-icon>replay</mat-icon>
                         </button>
                         }
@@ -882,7 +881,7 @@
                         'UnableToConfirmDestination' || row.status === 'AmountMismatch' || row.status ===
                         'DestinationMismatch')) {
                         <button mat-icon-button color="warn" (click)="openManualReviewFor(row)"
-                          matTooltip="Manual review">
+                          [matTooltip]="t('paymentVerification.history.manualReviewTooltip')">
                           <mat-icon>rate_review</mat-icon>
                         </button>
                         }
@@ -900,8 +899,8 @@
             <ng-container empty-state>
               <div class="empty-state">
                 <mat-icon>history_toggle_off</mat-icon>
-                <h3>No Verification Records Found</h3>
-                <p>Transactions verified will appear here.</p>
+                <h3>{{ t('paymentVerification.history.emptyTitle') }}</h3>
+                <p>{{ t('paymentVerification.history.emptySubtitle') }}</p>
               </div>
             </ng-container>
 
@@ -917,3 +916,4 @@
     </mat-tab-group>
   </div>
 </div>
+</ng-container>

@@ -108,6 +108,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
       'Reports': 'reports',
       'Users': 'users',
       'Settings': 'settings',
+      'Payment Verification': 'paymentVerification',
     };
     return map[label] || label.toLowerCase().replace(/ /g, '');
   }
