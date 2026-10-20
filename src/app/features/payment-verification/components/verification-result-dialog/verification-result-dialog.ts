@@ -48,6 +48,20 @@ export class VerificationResultDialogComponent {
     return this.authService.hasRole('Admin') || this.authService.hasRole('Manager');
   }
 
+  get sourceUrl(): string | null {
+    if (this.result?.sourceUrl) {
+      return this.result.sourceUrl;
+    }
+    const bankCode = (this.result?.bankCode || '').toUpperCase();
+    const provider = (this.result?.provider || '').toLowerCase();
+    const isTelebirr = bankCode === 'TELEBIRR' || provider.includes('telebirr');
+    const ref = this.result?.verifiedReference || this.result?.submittedReference;
+    if (isTelebirr && ref && ref.trim().length > 3 && !ref.startsWith('http')) {
+      return `https://transactioninfo.ethiotelecom.et/receipt/${ref.trim()}`;
+    }
+    return null;
+  }
+
   get canManualReview(): boolean {
     const st = String(this.result?.status || '');
     return (

@@ -12,106 +12,139 @@
   <div class="dialog-body">
     <!-- Status banner -->
     <div class="status-banner" [ngClass]="getStatusClass(verification.status)">
-    <div class="status-headline">
-      <span class="status-name">{{ verification.status }}</span>
-      <span class="dest-match-badge" [ngClass]="getMatchClass(verification.destinationMatchStatus)">
-        Destination: {{ verification.destinationMatchStatus }}
-      </span>
-    </div>
-    @if (verification.failureMessage) {
+      <div class="status-headline">
+        <span class="status-name">{{ verification.status }}</span>
+        <span class="dest-match-badge" [ngClass]="getMatchClass(verification.destinationMatchStatus)">
+          Destination: {{ verification.destinationMatchStatus }}
+        </span>
+      </div>
+      @if (verification.failureMessage) {
       <div class="failure-text">
         <strong>{{ verification.failureCode || 'Note' }}:</strong> {{ verification.failureMessage }}
       </div>
+      }
+    </div>
+
+    <!-- Official Web Receipt Card -->
+    @if (sourceUrl) {
+    <div class="web-receipt-card">
+      <div class="receipt-card-left">
+        <div class="receipt-badge-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="receipt-card-text">
+          <span class="card-title">Official Web Receipt</span>
+          <span class="card-desc">Click below to verify details:</span>
+        </div>
+      </div>
+      <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="open-receipt-action-btn">
+        <span>Open Official Web Receipt</span>
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </div>
     }
-  </div>
 
-  <div class="details-grid">
-    <div class="item">
-      <span class="lbl">Sale Reference</span>
-      <span class="val font-semibold">Sale #{{ verification.saleNumber }}</span>
-    </div>
+    <div class="details-grid">
+      <div class="item">
+        <span class="lbl">Sale Reference</span>
+        <span class="val font-semibold">Sale #{{ verification.saleNumber }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Customer</span>
-      <span class="val">{{ verification.customerName || 'Walk-in Customer' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Customer</span>
+        <span class="val">{{ verification.customerName || 'Walk-in Customer' }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Provider / Bank</span>
-      <span class="val">{{ verification.provider }} ({{ verification.bankCode | uppercase }})</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Provider / Bank</span>
+        <span class="val">{{ verification.provider }} ({{ verification.bankCode | uppercase }})</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Registered Destination</span>
-      <span class="val">{{ verification.paymentDestinationName || 'None' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Registered Destination</span>
+        <span class="val">{{ verification.paymentDestinationName || 'None' }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Payer Name</span>
-      <span class="val">{{ verification.payerName || 'N/A' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Payer Name</span>
+        <span class="val">{{ verification.payerName || 'N/A' }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Payer Account</span>
-      <span class="val font-mono">{{ verification.payerAccount || 'N/A' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Payer Account</span>
+        <span class="val font-mono">{{ verification.payerAccount || 'N/A' }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Expected Amount</span>
-      <span class="val">{{ verification.expectedAmount | currency:verification.currency:'symbol':'1.2-2' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Expected Amount</span>
+        <span class="val">{{ verification.expectedAmount | currency:verification.currency:'symbol':'1.2-2' }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Verified Amount</span>
-      <span class="val font-bold" [class.text-moss]="verification.status === 'Verified'">
-        {{ (verification.verifiedAmount ?? 0) | currency:verification.currency:'symbol':'1.2-2' }}
-      </span>
-    </div>
+      <div class="item">
+        <span class="lbl">Verified Amount</span>
+        <span class="val font-bold" [class.text-moss]="verification.status === 'Verified'">
+          {{ (verification.verifiedAmount ?? 0) | currency:verification.currency:'symbol':'1.2-2' }}
+        </span>
+      </div>
 
-    <div class="item full">
-      <span class="lbl">Submitted Reference</span>
-      <span class="val font-mono">{{ verification.submittedReference }}</span>
-    </div>
+      <div class="item full">
+        <span class="lbl">Submitted Reference</span>
+        <span class="val font-mono">{{ verification.submittedReference }}</span>
+      </div>
 
-    @if (verification.verifiedReference && verification.verifiedReference !== verification.submittedReference) {
+      @if (verification.verifiedReference && verification.verifiedReference !== verification.submittedReference) {
       <div class="item full">
         <span class="lbl">Normalized / Extracted Reference</span>
         <span class="val font-mono">{{ verification.verifiedReference }}</span>
       </div>
-    }
+      }
 
-    @if (verification.providerTransactionId) {
+      @if (verification.providerTransactionId) {
       <div class="item full">
         <span class="lbl">Provider Transaction ID</span>
         <span class="val font-mono">{{ verification.providerTransactionId }}</span>
       </div>
-    }
+      }
 
-    <div class="item">
-      <span class="lbl">Created At (UTC)</span>
-      <span class="val">{{ verification.createdAtUtc | date:'medium' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Created At (UTC)</span>
+        <span class="val">{{ verification.createdAtUtc | date:'medium' }}</span>
+      </div>
 
-    <div class="item">
-      <span class="lbl">Transaction Date</span>
-      <span class="val">{{ verification.transactionDateUtc ? (verification.transactionDateUtc | date:'medium') : 'N/A' }}</span>
-    </div>
+      <div class="item">
+        <span class="lbl">Transaction Date</span>
+        <span class="val">{{ verification.transactionDateUtc ? (verification.transactionDateUtc | date:'medium') : 'N/A'
+          }}</span>
+      </div>
 
-    <div class="item full">
-      <span class="lbl">Verified By</span>
-      <span class="val">{{ verification.verifiedByUserName || 'System' }}</span>
-    </div>
+      <div class="item full">
+        <span class="lbl">Verified By</span>
+        <span class="val">{{ verification.verifiedByUserName || 'System' }}</span>
+      </div>
 
-    @if (verification.manualReviewNotes) {
+      @if (sourceUrl) {
+      <div class="item full receipt-item">
+        <span class="lbl">Official Web Receipt</span>
+        <span class="val">
+          <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="receipt-direct-link">
+            <span>{{ sourceUrl }}</span>
+            <mat-icon>open_in_new</mat-icon>
+          </a>
+        </span>
+      </div>
+      }
+
+      @if (verification.manualReviewNotes) {
       <div class="item full review-section">
         <span class="lbl">Manual Review Audit Notes</span>
         <div class="review-box">
           <p>{{ verification.manualReviewNotes }}</p>
-          <span class="review-meta">Reviewed by {{ verification.reviewedByUserName || 'Staff' }} on {{ verification.reviewedAtUtc | date:'medium' }}</span>
+          <span class="review-meta">Reviewed by {{ verification.reviewedByUserName || 'Staff' }} on {{
+            verification.reviewedAtUtc | date:'medium' }}</span>
         </div>
       </div>
-    }
-  </div>
+      }
+    </div>
   </div>
 
   <div class="dialog-actions">
@@ -119,10 +152,10 @@
       Close
     </button>
     @if (canManualReview) {
-      <button type="button" mat-flat-button class="review-action-btn" (click)="openManualReview()">
-        <mat-icon>rate_review</mat-icon>
-        <span>Manual Review</span>
-      </button>
+    <button type="button" mat-flat-button class="review-action-btn" (click)="openManualReview()">
+      <mat-icon>rate_review</mat-icon>
+      <span>Manual Review</span>
+    </button>
     }
   </div>
 </div>

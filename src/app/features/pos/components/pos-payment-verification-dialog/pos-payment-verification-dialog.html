@@ -6,7 +6,8 @@
     </div>
     <div class="header-titles">
       <h2 id="dialog-title" class="dialog-title">Verify Payment</h2>
-      <p id="dialog-desc" class="dialog-subtitle">Verify the customer's bank or Telebirr payment receipt before confirming this sale.</p>
+      <p id="dialog-desc" class="dialog-subtitle">Verify the customer's bank or Telebirr payment receipt before
+        confirming this sale.</p>
     </div>
     <button mat-icon-button type="button" class="close-btn" (click)="cancel()" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
@@ -42,32 +43,17 @@
 
     <!-- Mode Selector Tabs -->
     <div class="verification-mode-bar" *ngIf="!isVerified()">
-      <button
-        type="button"
-        class="mode-btn"
-        [class.active]="scanMode() === 'manual'"
-        (click)="setScanMode('manual')"
-      >
+      <button type="button" class="mode-btn" [class.active]="scanMode() === 'manual'" (click)="setScanMode('manual')">
         <mat-icon>keyboard</mat-icon>
         <span>Manual Reference</span>
       </button>
 
-      <button
-        type="button"
-        class="mode-btn"
-        [class.active]="scanMode() === 'camera'"
-        (click)="setScanMode('camera')"
-      >
+      <button type="button" class="mode-btn" [class.active]="scanMode() === 'camera'" (click)="setScanMode('camera')">
         <mat-icon>qr_code_scanner</mat-icon>
         <span>Scan QR Code</span>
       </button>
 
-      <button
-        type="button"
-        class="mode-btn"
-        [class.active]="scanMode() === 'upload'"
-        (click)="setScanMode('upload')"
-      >
+      <button type="button" class="mode-btn" [class.active]="scanMode() === 'upload'" (click)="setScanMode('upload')">
         <mat-icon>upload_file</mat-icon>
         <span>Upload Receipt</span>
       </button>
@@ -128,24 +114,11 @@
 
     <!-- Mode 2: Receipt Image Upload -->
     <div *ngIf="scanMode() === 'upload' && !isVerified()" class="upload-section">
-      <div
-        class="upload-dropzone"
-        [class.has-preview]="!!selectedFile()"
-        [class.is-decoding]="isDecodingImage()"
-        (click)="fileInput.click()"
-        (dragover)="onDragOver($event)"
-        (drop)="onFileDrop($event)"
-        role="button"
-        tabindex="0"
-        aria-label="Upload receipt image"
-      >
-        <input
-          #fileInput
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          class="hidden-file-input"
-          (change)="onFileSelected($event)"
-        />
+      <div class="upload-dropzone" [class.has-preview]="!!selectedFile()" [class.is-decoding]="isDecodingImage()"
+        (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onFileDrop($event)" role="button"
+        tabindex="0" aria-label="Upload receipt image">
+        <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden-file-input"
+          (change)="onFileSelected($event)" />
 
         <!-- Empty State -->
         <div *ngIf="!selectedFile() && !isDecodingImage()" class="dropzone-content">
@@ -154,7 +127,8 @@
           </div>
           <p class="dz-title">Select or Drop Receipt Image</p>
           <p class="dz-subtitle">Supports JPEG, PNG, or WebP receipts up to 5 MB</p>
-          <button mat-stroked-button type="button" class="browse-btn" (click)="$event.stopPropagation(); fileInput.click()">
+          <button mat-stroked-button type="button" class="browse-btn"
+            (click)="$event.stopPropagation(); fileInput.click()">
             <mat-icon>folder_open</mat-icon>
             Browse Device
           </button>
@@ -213,7 +187,8 @@
             <p class="review-desc">Verify extracted details against customer receipt before contacting Cheki.et</p>
           </div>
         </div>
-        <button mat-icon-button type="button" class="dismiss-review-btn" (click)="clearScannedDetails()" matTooltip="Clear scanned details">
+        <button mat-icon-button type="button" class="dismiss-review-btn" (click)="clearScannedDetails()"
+          matTooltip="Clear scanned details">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -231,7 +206,8 @@
 
         <div class="review-item" *ngIf="scanned.amount !== undefined && scanned.amount !== null">
           <span class="r-label">Scanned Amount</span>
-          <span class="r-value font-semibold font-mono" [class.match-text]="isScannedAmountMatch()" [class.mismatch-text]="!isScannedAmountMatch()">
+          <span class="r-value font-semibold font-mono" [class.match-text]="isScannedAmountMatch()"
+            [class.mismatch-text]="!isScannedAmountMatch()">
             {{ scanned.amount | number:'1.2-2' }} {{ scanned.currency || 'ETB' }}
             <span *ngIf="isScannedAmountMatch()" class="status-pill match-pill">&check; Matches Sale Total</span>
             <span *ngIf="!isScannedAmountMatch()" class="status-pill mismatch-pill">
@@ -247,7 +223,8 @@
 
         <div class="review-item" *ngIf="scanned.payerName || scanned.payerPhone">
           <span class="r-label">Payer Information</span>
-          <span class="r-value">{{ scanned.payerName || '' }} {{ scanned.payerPhone ? '(' + scanned.payerPhone + ')' : '' }}</span>
+          <span class="r-value">{{ scanned.payerName || '' }} {{ scanned.payerPhone ? '(' + scanned.payerPhone + ')' :
+            '' }}</span>
         </div>
 
         <div class="review-item" *ngIf="scanned.receiverAccountMasked">
@@ -261,7 +238,8 @@
         <mat-icon>warning_amber</mat-icon>
         <div class="alert-body">
           <strong>Payment Instruction Detected</strong>
-          <p>This QR code appears to be a merchant payment request or instruction, not proof of a completed transaction. Please ask the customer for their bank confirmation SMS or completed payment receipt.</p>
+          <p>This QR code appears to be a merchant payment request or instruction, not proof of a completed transaction.
+            Please ask the customer for their bank confirmation SMS or completed payment receipt.</p>
         </div>
       </div>
 
@@ -288,7 +266,8 @@
           </mat-option>
           <mat-option *ngFor="let dest of activeDestinations()" [value]="dest.id">
             <div class="destination-option">
-              <mat-icon class="dest-icon">{{ dest.type === 'Telebirr' || dest.type === 2 ? 'phone_android' : 'account_balance' }}</mat-icon>
+              <mat-icon class="dest-icon">{{ dest.type === 'Telebirr' || dest.type === 2 ? 'phone_android' :
+                'account_balance' }}</mat-icon>
               <div class="dest-details">
                 <span class="dest-name">{{ dest.name }} ({{ dest.bankName || dest.typeName }})</span>
                 <span class="dest-account font-mono text-muted">
@@ -318,14 +297,8 @@
       <div class="reference-field-container">
         <mat-form-field appearance="outline" class="w-full ref-input-field">
           <mat-label>Transaction Reference or Receipt Link</mat-label>
-          <input
-            matInput
-            formControlName="submittedReference"
-            placeholder="e.g. FT2409876543 or https://..."
-            autocomplete="off"
-            (input)="onReferenceInput()"
-            required
-          />
+          <input matInput formControlName="submittedReference" placeholder="e.g. FT2409876543 or https://..."
+            autocomplete="off" (input)="onReferenceInput()" required />
           <mat-icon matPrefix class="field-prefix-icon">receipt_long</mat-icon>
           <mat-hint>Enter the unique bank transaction ID, SMS reference code, or official receipt URL.</mat-hint>
           <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('required')">
@@ -336,47 +309,27 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Quick Scan Trigger (shown when in manual mode to quickly launch scanner) -->
-        <div class="scan-quick-actions" *ngIf="scanMode() === 'manual' && !isVerified()">
-          <button
-            mat-stroked-button
-            type="button"
-            class="scan-receipt-action-btn"
-            (click)="setScanMode('camera')"
-            matTooltip="Scan receipt QR code using device camera"
-          >
-            <mat-icon>qr_code_scanner</mat-icon>
-            <span>Scan Receipt</span>
-          </button>
-        </div>
+
       </div>
 
       <!-- Telebirr specific: Payer Phone -->
       <div *ngIf="isTelebirr()" class="provider-fields">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Customer Phone Number (Optional)</mat-label>
-          <input
-            matInput
-            formControlName="payerPhone"
-            placeholder="e.g. 0911223344"
-            autocomplete="off"
-          />
+          <input matInput formControlName="payerPhone" placeholder="e.g. 0911223344" autocomplete="off" />
           <mat-icon matPrefix class="field-prefix-icon">phone</mat-icon>
           <mat-hint>Helps accelerate Telebirr transaction matching.</mat-hint>
         </mat-form-field>
       </div>
 
       <!-- Verification Result Banner -->
-      <div
-        *ngIf="verificationResult() as result"
-        class="result-banner"
-        [ngClass]="getStatusBadgeClass(result.status)"
-      >
+      <div *ngIf="verificationResult() as result" class="result-banner" [ngClass]="getStatusBadgeClass(result.status)">
         <div class="result-header">
           <mat-icon class="result-icon">{{ getStatusIcon(result.status) }}</mat-icon>
           <div class="result-title-group">
             <span class="result-status-text font-semibold">{{ result.statusName }}</span>
-            <span class="result-message">{{ result.failureMessage || (isVerified() ? 'Transaction verified and matched.' : '') }}</span>
+            <span class="result-message">{{ result.failureMessage || (isVerified() ? 'Transaction verified and matched.'
+              : '') }}</span>
           </div>
         </div>
 
@@ -437,43 +390,24 @@
 
     <div class="actions-right">
       <!-- Skip Verification Secondary Action -->
-      <button
-        *ngIf="!isVerified()"
-        mat-stroked-button
-        type="button"
-        class="skip-btn"
-        (click)="skipVerification()"
+      <button *ngIf="!isVerified()" mat-stroked-button type="button" class="skip-btn" (click)="skipVerification()"
         [disabled]="isVerifying()"
-        matTooltip="Proceed with sale without verifying the transaction reference with the bank"
-      >
+        matTooltip="Proceed with sale without verifying the transaction reference with the bank">
         <mat-icon>fast_forward</mat-icon>
         Skip Verification
       </button>
 
       <!-- Verify Payment Primary Action -->
-      <button
-        *ngIf="!isVerified()"
-        mat-flat-button
-        color="primary"
-        type="button"
-        class="verify-btn"
-        (click)="verifyPayment()"
-        [disabled]="isVerifying() || verificationForm.invalid"
-      >
+      <button *ngIf="!isVerified()" mat-flat-button color="primary" type="button" class="verify-btn"
+        (click)="verifyPayment()" [disabled]="isVerifying() || verificationForm.invalid">
         <mat-spinner *ngIf="isVerifying()" diameter="20" class="btn-spinner"></mat-spinner>
         <mat-icon *ngIf="!isVerifying()">verified</mat-icon>
         <span>{{ isVerifying() ? 'Verifying...' : 'Verify Payment' }}</span>
       </button>
 
       <!-- Proceed Action (Shown when verified) -->
-      <button
-        *ngIf="isVerified()"
-        mat-flat-button
-        color="primary"
-        type="button"
-        class="proceed-btn"
-        (click)="proceedWithVerifiedPayment()"
-      >
+      <button *ngIf="isVerified()" mat-flat-button color="primary" type="button" class="proceed-btn"
+        (click)="proceedWithVerifiedPayment()">
         <mat-icon>arrow_forward</mat-icon>
         <span>Continue to Confirm Sale</span>
       </button>

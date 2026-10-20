@@ -38,13 +38,33 @@ export class VerificationDetailsDialogComponent {
     return this.authService.hasRole('Admin') || this.authService.hasRole('Manager');
   }
 
+  get sourceUrl(): string | null {
+    if (this.verification?.sourceUrl) {
+      return this.verification.sourceUrl;
+    }
+    const bankCode = (this.verification?.bankCode || '').toUpperCase();
+    const provider = (this.verification?.provider || '').toLowerCase();
+    const isTelebirr = bankCode === 'TELEBIRR' || provider.includes('telebirr');
+    const ref = this.verification?.verifiedReference || this.verification?.submittedReference;
+    if (isTelebirr && ref && ref.trim().length > 3 && !ref.startsWith('http')) {
+      return `https://transactioninfo.ethiotelecom.et/receipt/${ref.trim()}`;
+    }
+    return null;
+  }
+
   get canManualReview(): boolean {
+    const st = String(this.verification?.status || '');
     return (
       this.isManagerOrAdmin &&
-      (this.verification.status === 'NeedsManualReview' ||
-       this.verification.status === 'UnableToConfirmDestination' ||
-       this.verification.status === 'AmountMismatch' ||
-       this.verification.status === 'DestinationMismatch')
+      (st === 'NeedsManualReview' ||
+       st === '7' ||
+       st === 'UnableToConfirmDestination' ||
+       st === '6' ||
+       st === 'AmountMismatch' ||
+       st === '4' ||
+       st === 'DestinationMismatch' ||
+       st === '5' ||
+       this.verification?.failureCode === 'TELEBIRR_DIRECT_VERIFICATION_REQUIRED')
     );
   }
 

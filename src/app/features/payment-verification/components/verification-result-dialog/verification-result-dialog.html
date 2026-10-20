@@ -7,7 +7,7 @@
         <h2>{{ getStatusTitle(result.status) }}</h2>
         <span class="status-sub">
           @if (result.saleNumber) {
-            <span>Sale #{{ result.saleNumber }} &bull; </span>
+          <span>Sale #{{ result.saleNumber }} &bull; </span>
           }
           <span>Ref: {{ result.verifiedReference || result.submittedReference }}</span>
         </span>
@@ -25,7 +25,8 @@
       <mat-icon>info</mat-icon>
       <div class="alert-content">
         <strong>{{ result.failureCode || 'Notice' }}:</strong>
-        <span>{{ result.failureMessage || 'This transaction could not be fully confirmed. Automatic sale confirmation is prevented.' }}</span>
+        <span>{{ result.failureMessage || 'This transaction could not be fully confirmed. Automatic sale confirmation is
+          prevented.' }}</span>
       </div>
     </div>
     } @else {
@@ -33,25 +34,26 @@
       <mat-icon>verified</mat-icon>
       <div class="alert-content">
         <strong>Confirmed:</strong>
-        <span>Payment was successfully verified{{ result.saleNumber ? ' and applied to Sale #' + result.saleNumber : '.' }}</span>
+        <span>Payment was successfully verified{{ result.saleNumber ? ' and applied to Sale #' + result.saleNumber : '.'
+          }}</span>
       </div>
     </div>
     }
 
     <!-- Official Receipt Link (e.g. for Telebirr when cloud IP is blocked by Ethio Telecom) -->
-    @if (result.sourceUrl) {
+    @if (sourceUrl) {
     <div class="telebirr-receipt-card">
       <div class="receipt-card-left">
         <div class="receipt-badge-icon">
           <mat-icon>receipt_long</mat-icon>
         </div>
         <div class="receipt-card-text">
-          <span class="card-title">Official Telebirr Web Receipt</span>
-          <span class="card-desc">Ethio Telecom hosts this receipt directly on their local network. Click below to verify details:</span>
+          <span class="card-title">Official Web Receipt</span>
+          <span class="card-desc">Click below to verify details:</span>
         </div>
       </div>
-      <a [href]="result.sourceUrl" target="_blank" rel="noopener noreferrer" class="open-receipt-action-btn">
-        <span>Open Receipt</span>
+      <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="open-receipt-action-btn">
+        <span>Open Official Web Receipt</span>
         <mat-icon>open_in_new</mat-icon>
       </a>
     </div>
@@ -124,6 +126,12 @@
     <button type="button" mat-stroked-button class="dismiss-btn" (click)="onClose()">
       {{ isVerified && data.showProceedAction ? 'Close' : 'Dismiss' }}
     </button>
+    @if (sourceUrl) {
+    <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" mat-stroked-button class="receipt-action-btn">
+      <mat-icon>open_in_new</mat-icon>
+      <span>Open Official Web Receipt</span>
+    </a>
+    }
     @if (canManualReview) {
     <button type="button" mat-flat-button class="review-btn" (click)="openManualReview()">
       <mat-icon>rate_review</mat-icon>
