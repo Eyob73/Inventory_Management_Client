@@ -1328,6 +1328,15 @@
     "navInventoryAlerts": "Akeekkachiisa Kuusaa",
     "navNotifications": "Beeksisa",
     "navSecurity": "Nageenya",
+    "navPaymentVerification": "Mirkaneessa Kaffaltii POS",
+    "posPaymentVerificationTitle": "Mirkaneessa Kaffaltii POS",
+    "posPaymentVerificationDesc": "Gurgurtaa POS mirkaneessuu dura mirkaneessa kaffaltii Cheki.et dandeessisi ykn dhaamsi.",
+    "posPaymentVerificationToggle": "Mirkaneessa Kaffaltii POS",
+    "posPaymentVerificationHint": "Kaffaltiin elektirooniksii yeroo baasii mirkaneessa Cheki.et akka barbaadu to'ata",
+    "paymentVerificationSaved": "Qindaa'inni mirkaneessa kaffaltii POS milkaa'inaan haaromfameera.",
+    "paymentVerificationSaveFailed": "Qindaa'ina mirkaneessa kaffaltii POS haaromsuun hin danda'amne.",
+    "enabled": "Bantameera",
+    "disabled": "Cufameera",
     "headingStoreCurrencyPref": "Maallaqa Suuqii fi Filannoo Gabatee Ragaa",
     "headerSales": "Filannoo Gurgurtaa",
     "headerManager": "To'annoo Hogganaa fi Qindaa'ina Suuqii",
@@ -1336,6 +1345,13 @@
     "subSales": "Amala kaffaltii POS, agarsiisa maashinii, akeekkachiisa galma dhuunfaa fi tarkaanfii saffisaa sirreessi.",
     "subManager": "Seera irra-ajajaa kuusaa, daaqii hir'isina gurgurtaa, akeekkachiisa hogganaa fi filannoo suuqii qindeessi.",
     "subAdmin": "Ragaa dhaabbataa, daaqii kuusaa, imaammata nageenyaa fi idilee sirnichaa qindeessi."
+  },
+  "common": {
+    "enabled": "Bantameera",
+    "disabled": "Cufameera",
+    "close": "Cufi",
+    "cancel": "Dhiisi",
+    "save": "Olkaawi"
   },
   "confirm": {
     "deleteTitle": "{{ entity }} Haqi",

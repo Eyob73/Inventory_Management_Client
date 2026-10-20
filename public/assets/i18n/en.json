@@ -1324,6 +1324,15 @@
     "navInventoryAlerts": "Inventory Alerts",
     "navNotifications": "Notifications",
     "navSecurity": "Security",
+    "navPaymentVerification": "POS Payment Verification",
+    "posPaymentVerificationTitle": "POS Payment Verification",
+    "posPaymentVerificationDesc": "Enable or disable payment verification through Cheki.et before confirming POS sales.",
+    "posPaymentVerificationToggle": "POS Payment Verification",
+    "posPaymentVerificationHint": "Controls whether electronic payments require Cheki.et verification during checkout",
+    "paymentVerificationSaved": "POS Payment Verification setting updated successfully.",
+    "paymentVerificationSaveFailed": "Failed to update POS Payment Verification setting.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "headingStoreCurrencyPref": "Store Currency & Table View Preferences",
     "headerSales": "Sales Preferences",
     "headerManager": "Manager Control & Store Settings",
@@ -1332,6 +1341,13 @@
     "subSales": "Customize point-of-sale checkout behaviors, terminal display settings, personal target alerts, and quick actions.",
     "subManager": "Configure inventory reorder rules, sales discount thresholds, manager alerts, and store preferences.",
     "subAdmin": "Configure company details, inventory thresholds, security policies, and system defaults."
+  },
+  "common": {
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "confirm": {
     "deleteTitle": "Delete {{ entity }}",

@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { AuthStore } from '../../store/auth.store';
 import { TenantApiService } from '../../services/tenant';
 import { LanguageService } from '../../services/language.service';
@@ -34,8 +35,10 @@ export interface SettingsSection {
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
-  , TranslocoDirective],
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    TranslocoDirective
+  ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -44,6 +47,7 @@ export class SettingsComponent implements OnInit {
   protected authStore = inject(AuthStore);
   private tenantApi = inject(TenantApiService);
   public languageService = inject(LanguageService);
+  private snackBar = inject(MatSnackBar);
 
   readonly userRole = computed(() => this.authStore.userRole());
   readonly normalizedRole = computed(() => (this.userRole() || '').toLowerCase());
@@ -53,6 +57,8 @@ export class SettingsComponent implements OnInit {
   resetSuccess = signal<boolean>(false);
   isLoading = signal<boolean>(false);
   isEditingCompany = signal<boolean>(false);
+  isSavingPaymentVerification = signal<boolean>(false);
+  posPaymentVerificationEnabled = signal<boolean>(true);
 
   preferredLanguage = 'en';
 
@@ -83,7 +89,8 @@ export class SettingsComponent implements OnInit {
         { id: 'inventory', label: 'settingsFull.navStockReorderRules', icon: 'inventory_2' },
         { id: 'salesPolicies', label: 'settingsFull.navSalesDiscountPolicies', icon: 'local_offer' },
         commonSection,
-        { id: 'managerNotifications', label: 'settingsFull.navNotificationsDigests', icon: 'notifications' }
+        { id: 'managerNotifications', label: 'settingsFull.navNotificationsDigests', icon: 'notifications' },
+        { id: 'posPaymentVerification', label: 'settingsFull.posPaymentVerificationTitle', icon: 'verified_user' },
       ];
     }
 
@@ -95,6 +102,7 @@ export class SettingsComponent implements OnInit {
       { id: 'notifications', label: 'settingsFull.navNotifications', icon: 'notifications' },
       { id: 'security', label: 'settingsFull.navSecurity', icon: 'security' },
       { id: 'bottle', label: 'bottles.settingsTitle', icon: 'liquor' },
+      { id: 'posPaymentVerification', label: 'settingsFull.posPaymentVerificationTitle', icon: 'verified_user' },
     ];
   });
 
@@ -261,7 +269,7 @@ export class SettingsComponent implements OnInit {
         }
       }
       
-      if (role === 'admin') {
+      if (role === 'admin' || role === 'manager') {
         const cachedTenant = localStorage.getItem('inv_tenant_cache');
         if (cachedTenant) {
           try {
@@ -272,6 +280,9 @@ export class SettingsComponent implements OnInit {
             }
             if (parsed.enableBottleManagement !== undefined) {
               this.adminBottle.enableBottleManagement = parsed.enableBottleManagement;
+            }
+            if (parsed.posPaymentVerificationEnabled !== undefined) {
+              this.posPaymentVerificationEnabled.set(parsed.posPaymentVerificationEnabled);
             }
           } catch (e) {}
         }
@@ -293,19 +304,25 @@ export class SettingsComponent implements OnInit {
               if (tenant.enableBottleManagement !== undefined) {
                 this.adminBottle.enableBottleManagement = tenant.enableBottleManagement;
               }
+              if (tenant.posPaymentVerificationEnabled !== undefined) {
+                this.posPaymentVerificationEnabled.set(tenant.posPaymentVerificationEnabled);
+                this.tenantApi.isPaymentVerificationEnabled.set(tenant.posPaymentVerificationEnabled);
+              }
               // Update local cache silently
               const currentStored = localStorage.getItem(this.getStorageKey());
               const p = currentStored ? JSON.parse(currentStored) : {};
               p.company = this.company;
               p.adminInventory = this.adminInventory;
               p.adminBottle = this.adminBottle;
+              p.posPaymentVerificationEnabled = this.posPaymentVerificationEnabled();
               localStorage.setItem(this.getStorageKey(), JSON.stringify(p));
 
               // Update the specific tenant cache
               localStorage.setItem('inv_tenant_cache', JSON.stringify({
                 company: this.company,
                 lowStockThreshold: this.adminInventory.lowStockThreshold,
-                enableBottleManagement: this.adminBottle.enableBottleManagement
+                enableBottleManagement: this.adminBottle.enableBottleManagement,
+                posPaymentVerificationEnabled: this.posPaymentVerificationEnabled()
               }));
             }
           },
@@ -361,11 +378,12 @@ export class SettingsComponent implements OnInit {
       this.saveSuccess.set(true);
       setTimeout(() => this.saveSuccess.set(false), 3000);
 
-      if (role === 'admin') {
+      if (role === 'admin' || role === 'manager') {
         localStorage.setItem('inv_tenant_cache', JSON.stringify({
           company: this.company,
           lowStockThreshold: this.adminInventory.lowStockThreshold,
-          enableBottleManagement: this.adminBottle.enableBottleManagement
+          enableBottleManagement: this.adminBottle.enableBottleManagement,
+          posPaymentVerificationEnabled: this.posPaymentVerificationEnabled()
         }));
 
         this.tenantApi.updateMyTenant({
@@ -377,9 +395,11 @@ export class SettingsComponent implements OnInit {
           taxId: this.company.taxId,
           lowStockThreshold: this.adminInventory.lowStockThreshold,
           enableBottleManagement: this.adminBottle.enableBottleManagement,
+          posPaymentVerificationEnabled: this.posPaymentVerificationEnabled(),
         }).subscribe({
           next: () => {
             this.tenantApi.isBottleManagementEnabled.set(this.adminBottle.enableBottleManagement);
+            this.tenantApi.isPaymentVerificationEnabled.set(this.posPaymentVerificationEnabled());
           },
           error: (err) => console.error('Failed to update tenant profile', err)
         });
@@ -387,6 +407,54 @@ export class SettingsComponent implements OnInit {
     } catch (e) {
       console.error('Failed to save settings', e);
     }
+  }
+
+  onPaymentVerificationToggleChange(enabled: boolean): void {
+    const previous = this.posPaymentVerificationEnabled();
+    this.isSavingPaymentVerification.set(true);
+
+    this.tenantApi.updatePosPaymentVerification(enabled).subscribe({
+      next: (res) => {
+        const newValue = res.enabled;
+        this.posPaymentVerificationEnabled.set(newValue);
+        this.tenantApi.isPaymentVerificationEnabled.set(newValue);
+        this.isSavingPaymentVerification.set(false);
+
+        const cached = localStorage.getItem('inv_tenant_cache');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            parsed.posPaymentVerificationEnabled = newValue;
+            localStorage.setItem('inv_tenant_cache', JSON.stringify(parsed));
+          } catch (e) {}
+        }
+
+        const currentStored = localStorage.getItem(this.getStorageKey());
+        if (currentStored) {
+          try {
+            const p = JSON.parse(currentStored);
+            p.posPaymentVerificationEnabled = newValue;
+            localStorage.setItem(this.getStorageKey(), JSON.stringify(p));
+          } catch (e) {}
+        }
+
+        this.snackBar.open(
+          this.transloco.translate('settingsFull.paymentVerificationSaved'),
+          this.transloco.translate('common.close'),
+          { duration: 3000 }
+        );
+      },
+      error: (err) => {
+        console.error('Failed to update POS payment verification setting', err);
+        this.posPaymentVerificationEnabled.set(previous);
+        this.isSavingPaymentVerification.set(false);
+        this.snackBar.open(
+          this.transloco.translate('settingsFull.paymentVerificationSaveFailed'),
+          this.transloco.translate('common.close'),
+          { duration: 4000 }
+        );
+      }
+    });
   }
 
   saveCompanyProfile() {

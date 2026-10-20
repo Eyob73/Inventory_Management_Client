@@ -66,9 +66,11 @@ export const AuthStore = signalStore(
                       localStorage.setItem('inv_tenant_cache', JSON.stringify({
                         company: tenant,
                         lowStockThreshold: tenant.lowStockThreshold,
-                        enableBottleManagement: tenant.enableBottleManagement
+                        enableBottleManagement: tenant.enableBottleManagement,
+                        posPaymentVerificationEnabled: tenant.posPaymentVerificationEnabled ?? true
                       }));
                       tenantService.isBottleManagementEnabled.set(tenant.enableBottleManagement ?? false);
+                      tenantService.isPaymentVerificationEnabled.set(tenant.posPaymentVerificationEnabled ?? true);
                     }),
                     catchError(() => of(null)),
                     switchMap(() => of(user))
@@ -130,9 +132,11 @@ export const AuthStore = signalStore(
                           localStorage.setItem('inv_tenant_cache', JSON.stringify({
                             company: tenant,
                             lowStockThreshold: tenant.lowStockThreshold,
-                            enableBottleManagement: tenant.enableBottleManagement
+                            enableBottleManagement: tenant.enableBottleManagement,
+                            posPaymentVerificationEnabled: tenant.posPaymentVerificationEnabled ?? true
                           }));
                           tenantService.isBottleManagementEnabled.set(tenant.enableBottleManagement ?? false);
+                          tenantService.isPaymentVerificationEnabled.set(tenant.posPaymentVerificationEnabled ?? true);
                         }),
                         catchError(() => of(null)),
                         switchMap(() => of(user))

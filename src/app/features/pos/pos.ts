@@ -97,6 +97,7 @@ export class PosComponent implements OnInit, OnDestroy {
   // State Signals
   products = signal<Product[]>([]);
   isBottleManagementEnabled = this.tenantService.isBottleManagementEnabled;
+  isPaymentVerificationEnabled = this.tenantService.isPaymentVerificationEnabled;
   categories = signal<Category[]>([]);
   customers = signal<Customer[]>([]);
   cart = signal<CartItem[]>([]);
@@ -196,6 +197,20 @@ export class PosComponent implements OnInit, OnDestroy {
     this.loadProducts();
     this.loadCategories();
     this.loadCustomers();
+    this.loadPaymentVerificationSetting();
+  }
+
+  loadPaymentVerificationSetting(): void {
+    this.tenantService.getPosPaymentVerification().subscribe({
+      next: (setting) => {
+        if (setting && typeof setting.enabled === 'boolean') {
+          this.tenantService.isPaymentVerificationEnabled.set(setting.enabled);
+        }
+      },
+      error: (err) => {
+        console.warn('Could not fetch POS payment verification setting, using cached state', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -503,8 +518,8 @@ export class PosComponent implements OnInit, OnDestroy {
       }))
     };
 
-    // If electronic payment method, open verification modal before confirmation modal
-    if (this.isElectronicPayment(this.paymentMethod())) {
+    // If electronic payment method AND POS payment verification is enabled, open verification modal before confirmation modal
+    if (this.isPaymentVerificationEnabled() && this.isElectronicPayment(this.paymentMethod())) {
       this.openPaymentVerificationModal(payload, customerName);
     } else {
       this.openConfirmSaleModal(payload, customerName);

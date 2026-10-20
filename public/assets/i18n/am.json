@@ -1328,6 +1328,15 @@
     "navInventoryAlerts": "የክምችት ማስጠንቀቂያዎች",
     "navNotifications": "ማሳወቂያዎች",
     "navSecurity": "ደህንነት (Security)",
+    "navPaymentVerification": "የሽያጭ መክፈያ ማረጋገጫ",
+    "posPaymentVerificationTitle": "የሽያጭ መክፈያ ማረጋገጫ",
+    "posPaymentVerificationDesc": "የPOS ሽያጮችን ከማረጋገጥዎ በፊት በCheki.et በኩል የክፍያ ማረጋገጫን ያብሩ ወይም ያጥፉ።",
+    "posPaymentVerificationToggle": "የሽያጭ መክፈያ ማረጋገጫ",
+    "posPaymentVerificationHint": "በሽያጭ ጊዜ የኤሌክትሮኒክ ክፍያዎች የCheki.et ማረጋገጫ እንደሚያስፈልጋቸው ይቆጣጠራል",
+    "paymentVerificationSaved": "የPOS ክፍያ ማረጋገጫ ቅንብር በተሳካ ሁኔታ ተዘምኗል።",
+    "paymentVerificationSaveFailed": "የPOS ክፍያ ማረጋገጫ ቅንብርን ማዘመን አልተሳካም።",
+    "enabled": "በርቷል",
+    "disabled": "ጠፍቷል",
     "headingStoreCurrencyPref": "የሱቅ ምንዛሬ እና የሰንጠረዥ እይታ ምርጫዎች",
     "headerSales": "የሽያጭ ቅንብሮች ምርጫዎች",
     "headerManager": "የስራ አስኪያጅ (Manager) የሱቅ መቆጣጠሪያ ቅንብሮች",
@@ -1336,6 +1345,13 @@
     "subSales": "የሽያጭ ማሽን ባህሪያትን፣ ማያ ገጽ እይታን፣ የግል ሽያጭ ግቦችን እና ፈጣን እርምጃዎችን ያብጁ።",
     "subManager": "የክምችት መሙያ ህጎችን፣ የሽያጭ ቅናሽ ገደቦችን፣ የስራ አስኪያጅ ማስጠንቀቂያዎችን እና የሱቅ ምርጫዎችን ያዋቅሩ።",
     "subAdmin": "የድርጅት ዝርዝሮችን፣ የደህንነት ፖሊሲዎችን እና አጠቃላይ የስርዓት መቆጣጠሪያዎችን ያዋቅሩ።"
+  },
+  "common": {
+    "enabled": "በርቷል",
+    "disabled": "ጠፍቷል",
+    "close": "ዝጋ",
+    "cancel": "ሰርዝ",
+    "save": "አስቀምጥ"
   },
   "confirm": {
     "deleteTitle": "{{ entity }} ያጥፉ",
