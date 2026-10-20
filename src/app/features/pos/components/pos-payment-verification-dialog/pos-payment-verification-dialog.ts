@@ -449,8 +449,15 @@ export class PosPaymentVerificationDialogComponent implements OnInit, OnDestroy 
     });
 
     resultDialogRef.afterClosed().subscribe((res) => {
-      if (res?.action === 'proceed') {
-        this.proceedWithVerifiedPayment();
+      if (res?.action === 'proceed' || res?.reviewCompleted) {
+        const approvedVerif = res?.updatedVerification || this.verificationResult();
+        const isApproved = approvedVerif && (approvedVerif.status === 'Verified' || approvedVerif.status === 2 || approvedVerif.isManualReviewApproved);
+        if (isApproved) {
+          this.stopCameraScan();
+          this.dialogRef.close({ action: 'verified', verification: approvedVerif });
+        } else {
+          this.proceedWithVerifiedPayment();
+        }
       }
     });
   }

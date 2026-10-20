@@ -121,6 +121,7 @@ export interface VerifyPaymentResponse {
   saleUpdated: boolean;
   newSaleStatus?: string;
   newOutstandingBalance?: number;
+  sourceUrl?: string;
 }
 
 export interface PaymentVerificationItem {
@@ -156,6 +157,7 @@ export interface PaymentVerificationItem {
   manualReviewNotes?: string;
   reviewedByUserName?: string;
   reviewedAtUtc?: string;
+  sourceUrl?: string;
 }
 
 export interface PaymentVerificationFilter {

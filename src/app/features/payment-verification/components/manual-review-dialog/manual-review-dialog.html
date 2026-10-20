@@ -54,6 +54,16 @@
         <span class="value text-amber">{{ verification.failureMessage }}</span>
       </div>
     }
+    @if (verification.sourceUrl) {
+      <div class="context-row">
+        <span class="label">Official Receipt:</span>
+        <span class="value">
+          <a [href]="verification.sourceUrl" target="_blank" rel="noopener noreferrer" style="color: #0284c7; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+            Open Telebirr Receipt ↗
+          </a>
+        </span>
+      </div>
+    }
   </div>
 
     <!-- Decision Radio -->

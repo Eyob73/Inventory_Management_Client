@@ -49,12 +49,19 @@ export class VerificationResultDialogComponent {
   }
 
   get canManualReview(): boolean {
+    const st = String(this.result?.status || '');
     return (
       this.isManagerOrAdmin &&
-      (this.result.status === 'NeedsManualReview' ||
-       this.result.status === 'UnableToConfirmDestination' ||
-       this.result.status === 'AmountMismatch' ||
-       this.result.status === 'DestinationMismatch')
+      (st === 'NeedsManualReview' ||
+       st === '7' ||
+       st === 'UnableToConfirmDestination' ||
+       st === '6' ||
+       st === 'AmountMismatch' ||
+       st === '4' ||
+       st === 'DestinationMismatch' ||
+       st === '5' ||
+       this.result?.needsManualReview === true ||
+       this.result?.failureCode === 'TELEBIRR_DIRECT_VERIFICATION_REQUIRED')
     );
   }
 
@@ -121,6 +128,10 @@ export class VerificationResultDialogComponent {
   }
 
   getStatusTitle(status: any): string {
+    if (this.result?.failureCode === 'TELEBIRR_DIRECT_VERIFICATION_REQUIRED') {
+      return 'Telebirr Receipt Verification Required';
+    }
+
     const st = String(status || '');
     switch (st) {
       case 'Verified':
@@ -180,7 +191,12 @@ export class VerificationResultDialogComponent {
 
     reviewRef.afterClosed().subscribe((updated) => {
       if (updated) {
-        this.dialogRef.close({ reviewCompleted: true });
+        const isApproved = updated.status === 'Verified' || updated.status === 2 || updated.isManualReviewApproved;
+        if (this.data?.showProceedAction && isApproved) {
+          this.dialogRef.close({ action: 'proceed', updatedVerification: updated });
+        } else {
+          this.dialogRef.close({ reviewCompleted: true, updatedVerification: updated });
+        }
       }
     });
   }

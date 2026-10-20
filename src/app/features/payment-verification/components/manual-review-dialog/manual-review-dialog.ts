@@ -67,7 +67,7 @@ export class ManualReviewDialogComponent implements OnInit {
   }
 
   get verifiedAmount(): number {
-    return this.verification.verifiedAmount ?? 0;
+    return this.verification.verifiedAmount ?? (this.verification as any).expectedAmount ?? 0;
   }
 
   get submittedReference(): string {

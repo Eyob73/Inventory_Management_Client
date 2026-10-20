@@ -38,6 +38,25 @@
     </div>
     }
 
+    <!-- Official Receipt Link (e.g. for Telebirr when cloud IP is blocked by Ethio Telecom) -->
+    @if (result.sourceUrl) {
+    <div class="telebirr-receipt-card">
+      <div class="receipt-card-left">
+        <div class="receipt-badge-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="receipt-card-text">
+          <span class="card-title">Official Telebirr Web Receipt</span>
+          <span class="card-desc">Ethio Telecom hosts this receipt directly on their local network. Click below to verify details:</span>
+        </div>
+      </div>
+      <a [href]="result.sourceUrl" target="_blank" rel="noopener noreferrer" class="open-receipt-action-btn">
+        <span>Open Receipt</span>
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </div>
+    }
+
     <!-- Detail Grid -->
     <div class="detail-grid">
       <div class="grid-item">
