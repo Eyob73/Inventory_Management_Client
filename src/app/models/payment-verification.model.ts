@@ -191,3 +191,25 @@ export interface PaginatedResponse<T> {
   hasPrevious: boolean;
   hasNext: boolean;
 }
+
+export type ReceiptScanMode = 'manual' | 'camera' | 'upload';
+
+export interface ExtractedReceiptDetails {
+  rawContent: string;
+  provider?: string;
+  providerName?: string;
+  transactionReference?: string;
+  amount?: number;
+  currency?: string;
+  transactionDate?: string;
+  payerName?: string;
+  payerPhone?: string;
+  payerAccountMasked?: string;
+  receiverAccountMasked?: string;
+  receiverName?: string;
+  receiptUrl?: string;
+  isPaymentRequestOnly?: boolean;
+  parseWarnings?: string[];
+  parseErrors?: string[];
+}
+

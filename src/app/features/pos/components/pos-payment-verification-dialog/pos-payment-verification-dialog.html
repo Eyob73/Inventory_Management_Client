@@ -6,7 +6,7 @@
     </div>
     <div class="header-titles">
       <h2 id="dialog-title" class="dialog-title">Verify Payment</h2>
-      <p id="dialog-desc" class="dialog-subtitle">Verify the customer's bank or Telebirr transaction before confirming this sale.</p>
+      <p id="dialog-desc" class="dialog-subtitle">Verify the customer's bank or Telebirr payment receipt before confirming this sale.</p>
     </div>
     <button mat-icon-button type="button" class="close-btn" (click)="cancel()" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
@@ -19,163 +19,413 @@
   <div class="dialog-body">
     <!-- Sale Context Summary Card -->
     <div class="sale-summary-card">
-    <div class="summary-item">
-      <span class="label">Customer</span>
-      <span class="value font-medium">{{ data.customerName || 'Walk-in Customer' }}</span>
-    </div>
-    <div class="summary-item">
-      <span class="label">Payment Method</span>
-      <span class="value badge-method">
-        <mat-icon class="inline-icon">{{ isTelebirr() ? 'phone_android' : 'account_balance' }}</mat-icon>
-        {{ data.paymentMethod }}
-      </span>
-    </div>
-    <div class="summary-item total-item">
-      <span class="label">Total Amount</span>
-      <span class="value amount-highlight">{{ data.totalAmount | number:'1.2-2' }} <small>ETB</small></span>
-    </div>
-    <div class="summary-item" *ngIf="data.saleReference">
-      <span class="label">Order Ref</span>
-      <span class="value font-mono">{{ data.saleReference }}</span>
-    </div>
-  </div>
-
-  <!-- Verification Form -->
-  <form [formGroup]="verificationForm" (ngSubmit)="verifyPayment()" class="verification-form">
-    <!-- Receiving Destination Selector -->
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Receiving Destination</mat-label>
-      <mat-select formControlName="destinationId" (selectionChange)="onDestinationChange($event.value)" required>
-        <mat-option *ngIf="isLoadingDestinations()" disabled>
-          <div class="select-loading">
-            <mat-spinner diameter="18"></mat-spinner>
-            <span>Loading active destinations...</span>
-          </div>
-        </mat-option>
-        <mat-option *ngFor="let dest of activeDestinations()" [value]="dest.id">
-          <div class="destination-option">
-            <mat-icon class="dest-icon">{{ dest.type === 'Telebirr' || dest.type === 2 ? 'phone_android' : 'account_balance' }}</mat-icon>
-            <div class="dest-details">
-              <span class="dest-name">{{ dest.name }} ({{ dest.bankName || dest.typeName }})</span>
-              <span class="dest-account font-mono text-muted">
-                {{ dest.maskedAccountNumber || dest.maskedPhoneNumber || 'No account digits' }}
-              </span>
-            </div>
-            <span *ngIf="dest.isDefault" class="default-chip">Default</span>
-          </div>
-        </mat-option>
-      </mat-select>
-      <mat-icon matPrefix class="field-prefix-icon">account_balance_wallet</mat-icon>
-      <mat-error *ngIf="verificationForm.get('destinationId')?.hasError('required')">
-        A receiving business destination is required.
-      </mat-error>
-    </mat-form-field>
-
-    <!-- Selected Destination Quick Indicator -->
-    <div class="destination-preview" *ngIf="selectedDestination() as dest">
-      <div class="preview-row">
-        <span class="preview-label">Registered Receiver:</span>
-        <span class="preview-value font-mono">{{ dest.maskedAccountNumber || dest.maskedPhoneNumber }}</span>
-        <span class="preview-holder text-muted" *ngIf="dest.accountHolderName">({{ dest.accountHolderName }})</span>
+      <div class="summary-item">
+        <span class="label">Customer</span>
+        <span class="value font-medium">{{ data.customerName || 'Walk-in Customer' }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">Payment Method</span>
+        <span class="value badge-method">
+          <mat-icon class="inline-icon">{{ isTelebirr() ? 'phone_android' : 'account_balance' }}</mat-icon>
+          {{ data.paymentMethod }}
+        </span>
+      </div>
+      <div class="summary-item total-item">
+        <span class="label">Total Amount</span>
+        <span class="value amount-highlight">{{ data.totalAmount | number:'1.2-2' }} <small>ETB</small></span>
+      </div>
+      <div class="summary-item" *ngIf="data.saleReference">
+        <span class="label">Order Ref</span>
+        <span class="value font-mono">{{ data.saleReference }}</span>
       </div>
     </div>
 
-    <!-- Transaction Reference / Receipt URL -->
-    <mat-form-field appearance="outline" class="w-full mt-2">
-      <mat-label>Transaction Reference or Receipt Link</mat-label>
-      <input
-        matInput
-        formControlName="submittedReference"
-        placeholder="e.g. FT2409876543 or https://..."
-        autocomplete="off"
-        (input)="onReferenceInput()"
-        required
-      />
-      <mat-icon matPrefix class="field-prefix-icon">receipt_long</mat-icon>
-      <mat-hint>Enter the unique bank transaction ID, SMS reference code, or official receipt URL.</mat-hint>
-      <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('required')">
-        Transaction reference or receipt link is required.
-      </mat-error>
-      <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('minlength')">
-        Reference must be at least 3 characters.
-      </mat-error>
-    </mat-form-field>
+    <!-- Mode Selector Tabs -->
+    <div class="verification-mode-bar" *ngIf="!isVerified()">
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="scanMode() === 'manual'"
+        (click)="setScanMode('manual')"
+      >
+        <mat-icon>keyboard</mat-icon>
+        <span>Manual Reference</span>
+      </button>
 
-    <!-- Telebirr specific: Payer Phone -->
-    <div *ngIf="isTelebirr()" class="provider-fields">
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Customer Phone Number (Optional)</mat-label>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="scanMode() === 'camera'"
+        (click)="setScanMode('camera')"
+      >
+        <mat-icon>qr_code_scanner</mat-icon>
+        <span>Scan QR Code</span>
+      </button>
+
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="scanMode() === 'upload'"
+        (click)="setScanMode('upload')"
+      >
+        <mat-icon>upload_file</mat-icon>
+        <span>Upload Receipt</span>
+      </button>
+    </div>
+
+    <!-- Mode 1: Live Camera Scanner -->
+    <div *ngIf="scanMode() === 'camera' && !isVerified()" class="scanner-section">
+      <div class="camera-card">
+        <div id="qr-reader" class="camera-viewport"></div>
+
+        <!-- Camera Loading Overlay -->
+        <div *ngIf="isCameraLoading()" class="scanner-overlay loading-overlay">
+          <mat-spinner diameter="36"></mat-spinner>
+          <span>Starting camera preview...</span>
+        </div>
+
+        <!-- Camera Active Viewfinder Overlay -->
+        <div *ngIf="isCameraScanning() && !isCameraLoading()" class="scanner-overlay viewfinder-overlay">
+          <div class="target-frame">
+            <span class="bracket tl"></span>
+            <span class="bracket tr"></span>
+            <span class="bracket bl"></span>
+            <span class="bracket br"></span>
+            <div class="scanning-laser"></div>
+          </div>
+          <p class="viewfinder-text">Align receipt QR code within the frame</p>
+        </div>
+
+        <!-- Camera Error Overlay -->
+        <div *ngIf="cameraError()" class="scanner-overlay error-overlay">
+          <mat-icon class="err-icon">videocam_off</mat-icon>
+          <p class="err-title">Camera Unavailable</p>
+          <p class="err-desc">{{ cameraError() }}</p>
+          <div class="err-actions">
+            <button mat-flat-button color="primary" type="button" (click)="startCameraScan()">
+              <mat-icon>refresh</mat-icon>
+              Retry Camera
+            </button>
+            <button mat-stroked-button type="button" (click)="setScanMode('manual')">
+              <mat-icon>edit</mat-icon>
+              Enter Manually
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="scanner-controls-bar" *ngIf="isCameraScanning()">
+        <button mat-stroked-button type="button" (click)="stopCameraScan()" class="stop-camera-btn">
+          <mat-icon>stop</mat-icon>
+          Stop Camera
+        </button>
+        <button mat-stroked-button type="button" (click)="setScanMode('upload')">
+          <mat-icon>upload_file</mat-icon>
+          Upload Image Instead
+        </button>
+      </div>
+    </div>
+
+    <!-- Mode 2: Receipt Image Upload -->
+    <div *ngIf="scanMode() === 'upload' && !isVerified()" class="upload-section">
+      <div
+        class="upload-dropzone"
+        [class.has-preview]="!!selectedFile()"
+        [class.is-decoding]="isDecodingImage()"
+        (click)="fileInput.click()"
+        (dragover)="onDragOver($event)"
+        (drop)="onFileDrop($event)"
+        role="button"
+        tabindex="0"
+        aria-label="Upload receipt image"
+      >
         <input
-          matInput
-          formControlName="payerPhone"
-          placeholder="e.g. 0911223344"
-          autocomplete="off"
+          #fileInput
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          class="hidden-file-input"
+          (change)="onFileSelected($event)"
         />
-        <mat-icon matPrefix class="field-prefix-icon">phone</mat-icon>
-        <mat-hint>Helps accelerate Telebirr transaction matching.</mat-hint>
+
+        <!-- Empty State -->
+        <div *ngIf="!selectedFile() && !isDecodingImage()" class="dropzone-content">
+          <div class="icon-bubble">
+            <mat-icon>add_photo_alternate</mat-icon>
+          </div>
+          <p class="dz-title">Select or Drop Receipt Image</p>
+          <p class="dz-subtitle">Supports JPEG, PNG, or WebP receipts up to 5 MB</p>
+          <button mat-stroked-button type="button" class="browse-btn" (click)="$event.stopPropagation(); fileInput.click()">
+            <mat-icon>folder_open</mat-icon>
+            Browse Device
+          </button>
+        </div>
+
+        <!-- Decoding State -->
+        <div *ngIf="isDecodingImage()" class="dropzone-content decoding-content">
+          <mat-spinner diameter="36"></mat-spinner>
+          <p class="dz-title">Scanning Image for QR Code...</p>
+          <p class="dz-subtitle">Decoding embedded payment information locally</p>
+        </div>
+
+        <!-- Preview State -->
+        <div *ngIf="selectedFile() && !isDecodingImage()" class="dropzone-content preview-content">
+          <div class="preview-img-wrapper" (click)="$event.stopPropagation()">
+            <img [src]="imagePreviewUrl()" alt="Receipt preview" class="preview-thumb" />
+          </div>
+          <div class="file-info-bar">
+            <span class="file-name">{{ selectedFile()?.name }}</span>
+            <span class="file-size">{{ (selectedFile()!.size / 1024) | number:'1.0-0' }} KB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Actions (when image is loaded) -->
+      <div *ngIf="selectedFile() && !isDecodingImage()" class="upload-actions-bar">
+        <button mat-stroked-button type="button" (click)="fileInput.click()">
+          <mat-icon>sync</mat-icon>
+          Replace Image
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="removeSelectedFile()">
+          <mat-icon>delete_outline</mat-icon>
+          Remove
+        </button>
+      </div>
+
+      <!-- Upload / Decode Error -->
+      <div *ngIf="uploadError()" class="upload-error-box">
+        <mat-icon class="box-icon">info</mat-icon>
+        <div class="box-text">
+          <p class="box-message">{{ uploadError() }}</p>
+          <button mat-button class="manual-fallback-link" type="button" (click)="setScanMode('manual')">
+            Enter reference manually &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scanned Details Review Card (Displayed whenever receipt is scanned/decoded) -->
+    <div *ngIf="scannedDetails() as scanned" class="scanned-review-card">
+      <div class="review-header">
+        <div class="review-title-group">
+          <mat-icon class="review-badge-icon">qr_code_2</mat-icon>
+          <div>
+            <h3 class="review-title">Scanned Receipt Review</h3>
+            <p class="review-desc">Verify extracted details against customer receipt before contacting Cheki.et</p>
+          </div>
+        </div>
+        <button mat-icon-button type="button" class="dismiss-review-btn" (click)="clearScannedDetails()" matTooltip="Clear scanned details">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="review-grid">
+        <div class="review-item" *ngIf="scanned.providerName || scanned.provider">
+          <span class="r-label">Detected Provider</span>
+          <span class="r-value font-semibold">{{ scanned.providerName || scanned.provider }}</span>
+        </div>
+
+        <div class="review-item" *ngIf="scanned.transactionReference">
+          <span class="r-label">Extracted Reference</span>
+          <span class="r-value font-mono">{{ scanned.transactionReference }}</span>
+        </div>
+
+        <div class="review-item" *ngIf="scanned.amount !== undefined && scanned.amount !== null">
+          <span class="r-label">Scanned Amount</span>
+          <span class="r-value font-semibold font-mono" [class.match-text]="isScannedAmountMatch()" [class.mismatch-text]="!isScannedAmountMatch()">
+            {{ scanned.amount | number:'1.2-2' }} {{ scanned.currency || 'ETB' }}
+            <span *ngIf="isScannedAmountMatch()" class="status-pill match-pill">&check; Matches Sale Total</span>
+            <span *ngIf="!isScannedAmountMatch()" class="status-pill mismatch-pill">
+              &ne; Expected {{ data.totalAmount | number:'1.2-2' }} ETB
+            </span>
+          </span>
+        </div>
+
+        <div class="review-item" *ngIf="scanned.transactionDate">
+          <span class="r-label">Transaction Date</span>
+          <span class="r-value">{{ scanned.transactionDate }}</span>
+        </div>
+
+        <div class="review-item" *ngIf="scanned.payerName || scanned.payerPhone">
+          <span class="r-label">Payer Information</span>
+          <span class="r-value">{{ scanned.payerName || '' }} {{ scanned.payerPhone ? '(' + scanned.payerPhone + ')' : '' }}</span>
+        </div>
+
+        <div class="review-item" *ngIf="scanned.receiverAccountMasked">
+          <span class="r-label">Receiver Account</span>
+          <span class="r-value font-mono">{{ scanned.receiverAccountMasked }}</span>
+        </div>
+      </div>
+
+      <!-- Payment Request / Merchant QR Warning -->
+      <div *ngIf="scanned.isPaymentRequestOnly" class="review-alert-banner warning-alert">
+        <mat-icon>warning_amber</mat-icon>
+        <div class="alert-body">
+          <strong>Payment Instruction Detected</strong>
+          <p>This QR code appears to be a merchant payment request or instruction, not proof of a completed transaction. Please ask the customer for their bank confirmation SMS or completed payment receipt.</p>
+        </div>
+      </div>
+
+      <!-- Domain / Parsing Warnings -->
+      <div *ngIf="scanned.parseWarnings?.length" class="review-alert-banner info-alert">
+        <mat-icon>info</mat-icon>
+        <div class="alert-body">
+          <div *ngFor="let warning of scanned.parseWarnings">{{ warning }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Form -->
+    <form [formGroup]="verificationForm" (ngSubmit)="verifyPayment()" class="verification-form">
+      <!-- Receiving Destination Selector -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Receiving Destination</mat-label>
+        <mat-select formControlName="destinationId" (selectionChange)="onDestinationChange($event.value)" required>
+          <mat-option *ngIf="isLoadingDestinations()" disabled>
+            <div class="select-loading">
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>Loading active destinations...</span>
+            </div>
+          </mat-option>
+          <mat-option *ngFor="let dest of activeDestinations()" [value]="dest.id">
+            <div class="destination-option">
+              <mat-icon class="dest-icon">{{ dest.type === 'Telebirr' || dest.type === 2 ? 'phone_android' : 'account_balance' }}</mat-icon>
+              <div class="dest-details">
+                <span class="dest-name">{{ dest.name }} ({{ dest.bankName || dest.typeName }})</span>
+                <span class="dest-account font-mono text-muted">
+                  {{ dest.maskedAccountNumber || dest.maskedPhoneNumber || 'No account digits' }}
+                </span>
+              </div>
+              <span *ngIf="dest.isDefault" class="default-chip">Default</span>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix class="field-prefix-icon">account_balance_wallet</mat-icon>
+        <mat-error *ngIf="verificationForm.get('destinationId')?.hasError('required')">
+          A receiving business destination is required.
+        </mat-error>
       </mat-form-field>
-    </div>
 
-    <!-- Verification Result Banner -->
-    <div
-      *ngIf="verificationResult() as result"
-      class="result-banner"
-      [ngClass]="getStatusBadgeClass(result.status)"
-    >
-      <div class="result-header">
-        <mat-icon class="result-icon">{{ getStatusIcon(result.status) }}</mat-icon>
-        <div class="result-title-group">
-          <span class="result-status-text font-semibold">{{ result.statusName }}</span>
-          <span class="result-message">{{ result.failureMessage || (isVerified() ? 'Transaction verified and matched.' : '') }}</span>
+      <!-- Selected Destination Quick Indicator -->
+      <div class="destination-preview" *ngIf="selectedDestination() as dest">
+        <div class="preview-row">
+          <span class="preview-label">Registered Receiver:</span>
+          <span class="preview-value font-mono">{{ dest.maskedAccountNumber || dest.maskedPhoneNumber }}</span>
+          <span class="preview-holder text-muted" *ngIf="dest.accountHolderName">({{ dest.accountHolderName }})</span>
         </div>
       </div>
 
-      <div class="result-details" *ngIf="isVerified()">
-        <div class="detail-row">
-          <span class="dt-label">Verified Ref:</span>
-          <span class="dt-value font-mono">{{ result.verifiedReference || result.submittedReference }}</span>
-        </div>
-        <div class="detail-row" *ngIf="result.verifiedAmount">
-          <span class="dt-label">Verified Amount:</span>
-          <span class="dt-value font-semibold">{{ result.verifiedAmount | number:'1.2-2' }} ETB</span>
-        </div>
-        <div class="detail-row" *ngIf="result.payerName">
-          <span class="dt-label">Payer:</span>
-          <span class="dt-value">{{ result.payerName }}</span>
-        </div>
-        <div class="detail-row" *ngIf="result.payerAccount">
-          <span class="dt-label">Payer Account:</span>
-          <span class="dt-value font-mono">{{ result.payerAccount }}</span>
-        </div>
-        <div class="detail-row" *ngIf="result.receiverAccount">
-          <span class="dt-label">Destination:</span>
-          <span class="dt-value font-mono">{{ result.receiverAccount }}</span>
+      <!-- Transaction Reference / Receipt URL with prominent Scan Button alongside -->
+      <div class="reference-field-container">
+        <mat-form-field appearance="outline" class="w-full ref-input-field">
+          <mat-label>Transaction Reference or Receipt Link</mat-label>
+          <input
+            matInput
+            formControlName="submittedReference"
+            placeholder="e.g. FT2409876543 or https://..."
+            autocomplete="off"
+            (input)="onReferenceInput()"
+            required
+          />
+          <mat-icon matPrefix class="field-prefix-icon">receipt_long</mat-icon>
+          <mat-hint>Enter the unique bank transaction ID, SMS reference code, or official receipt URL.</mat-hint>
+          <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('required')">
+            Transaction reference or receipt link is required.
+          </mat-error>
+          <mat-error *ngIf="verificationForm.get('submittedReference')?.hasError('minlength')">
+            Reference must be at least 3 characters.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Quick Scan Trigger (shown when in manual mode to quickly launch scanner) -->
+        <div class="scan-quick-actions" *ngIf="scanMode() === 'manual' && !isVerified()">
+          <button
+            mat-stroked-button
+            type="button"
+            class="scan-receipt-action-btn"
+            (click)="setScanMode('camera')"
+            matTooltip="Scan receipt QR code using device camera"
+          >
+            <mat-icon>qr_code_scanner</mat-icon>
+            <span>Scan Receipt</span>
+          </button>
         </div>
       </div>
 
-      <div class="result-details text-danger" *ngIf="!isVerified() && result.expectedAmount && result.verifiedAmount">
-        <div class="detail-row">
-          <span class="dt-label">Expected:</span>
-          <span class="dt-value">{{ result.expectedAmount | number:'1.2-2' }} ETB</span>
-        </div>
-        <div class="detail-row">
-          <span class="dt-label">Received:</span>
-          <span class="dt-value">{{ result.verifiedAmount | number:'1.2-2' }} ETB</span>
-        </div>
+      <!-- Telebirr specific: Payer Phone -->
+      <div *ngIf="isTelebirr()" class="provider-fields">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Customer Phone Number (Optional)</mat-label>
+          <input
+            matInput
+            formControlName="payerPhone"
+            placeholder="e.g. 0911223344"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix class="field-prefix-icon">phone</mat-icon>
+          <mat-hint>Helps accelerate Telebirr transaction matching.</mat-hint>
+        </mat-form-field>
       </div>
-    </div>
 
-    <!-- General Error Banner -->
-    <div *ngIf="errorMessage()" class="result-banner badge-failed">
-      <div class="result-header">
-        <mat-icon class="result-icon">error_outline</mat-icon>
-        <div class="result-title-group">
-          <span class="result-status-text font-semibold">Verification Request Failed</span>
-          <span class="result-message">{{ errorMessage() }}</span>
+      <!-- Verification Result Banner -->
+      <div
+        *ngIf="verificationResult() as result"
+        class="result-banner"
+        [ngClass]="getStatusBadgeClass(result.status)"
+      >
+        <div class="result-header">
+          <mat-icon class="result-icon">{{ getStatusIcon(result.status) }}</mat-icon>
+          <div class="result-title-group">
+            <span class="result-status-text font-semibold">{{ result.statusName }}</span>
+            <span class="result-message">{{ result.failureMessage || (isVerified() ? 'Transaction verified and matched.' : '') }}</span>
+          </div>
+        </div>
+
+        <div class="result-details" *ngIf="isVerified()">
+          <div class="detail-row">
+            <span class="dt-label">Verified Ref:</span>
+            <span class="dt-value font-mono">{{ result.verifiedReference || result.submittedReference }}</span>
+          </div>
+          <div class="detail-row" *ngIf="result.verifiedAmount">
+            <span class="dt-label">Verified Amount:</span>
+            <span class="dt-value font-semibold">{{ result.verifiedAmount | number:'1.2-2' }} ETB</span>
+          </div>
+          <div class="detail-row" *ngIf="result.payerName">
+            <span class="dt-label">Payer:</span>
+            <span class="dt-value">{{ result.payerName }}</span>
+          </div>
+          <div class="detail-row" *ngIf="result.payerAccount">
+            <span class="dt-label">Payer Account:</span>
+            <span class="dt-value font-mono">{{ result.payerAccount }}</span>
+          </div>
+          <div class="detail-row" *ngIf="result.receiverAccount">
+            <span class="dt-label">Destination:</span>
+            <span class="dt-value font-mono">{{ result.receiverAccount }}</span>
+          </div>
+        </div>
+
+        <div class="result-details text-danger" *ngIf="!isVerified() && result.expectedAmount && result.verifiedAmount">
+          <div class="detail-row">
+            <span class="dt-label">Expected:</span>
+            <span class="dt-value">{{ result.expectedAmount | number:'1.2-2' }} ETB</span>
+          </div>
+          <div class="detail-row">
+            <span class="dt-label">Received:</span>
+            <span class="dt-value">{{ result.verifiedAmount | number:'1.2-2' }} ETB</span>
+          </div>
         </div>
       </div>
-    </div>
-  </form>
+
+      <!-- General Error Banner -->
+      <div *ngIf="errorMessage()" class="result-banner badge-failed">
+        <div class="result-header">
+          <mat-icon class="result-icon">error_outline</mat-icon>
+          <div class="result-title-group">
+            <span class="result-status-text font-semibold">Verification Request Failed</span>
+            <span class="result-message">{{ errorMessage() }}</span>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 
   <!-- Dialog Actions -->

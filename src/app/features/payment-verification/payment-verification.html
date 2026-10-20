@@ -96,6 +96,286 @@
                 <p>Select your receiving account and input the payment receipt reference</p>
               </div>
 
+              <!-- Mode Selector Tabs -->
+              <div class="verification-mode-bar">
+                <button
+                  type="button"
+                  class="mode-btn"
+                  [class.active]="scanMode() === 'manual'"
+                  (click)="setScanMode('manual')"
+                >
+                  <mat-icon>keyboard</mat-icon>
+                  <span>Manual Reference</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="mode-btn"
+                  [class.active]="scanMode() === 'camera'"
+                  (click)="setScanMode('camera')"
+                >
+                  <mat-icon>qr_code_scanner</mat-icon>
+                  <span>Scan QR Code</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="mode-btn"
+                  [class.active]="scanMode() === 'upload'"
+                  (click)="setScanMode('upload')"
+                >
+                  <mat-icon>upload_file</mat-icon>
+                  <span>Upload Receipt</span>
+                </button>
+              </div>
+
+              <!-- Mode 1: Live Camera Scanner -->
+              @if (scanMode() === 'camera') {
+              <div class="scanner-section">
+                <div class="camera-card">
+                  <div id="page-qr-reader" class="camera-viewport"></div>
+
+                  <!-- Camera Loading Overlay -->
+                  @if (isCameraLoading()) {
+                  <div class="scanner-overlay loading-overlay">
+                    <mat-spinner diameter="36"></mat-spinner>
+                    <span>Starting camera preview...</span>
+                  </div>
+                  }
+
+                  <!-- Camera Active Viewfinder Overlay -->
+                  @if (isCameraScanning() && !isCameraLoading()) {
+                  <div class="scanner-overlay viewfinder-overlay">
+                    <div class="target-frame">
+                      <span class="bracket tl"></span>
+                      <span class="bracket tr"></span>
+                      <span class="bracket bl"></span>
+                      <span class="bracket br"></span>
+                      <div class="scanning-laser"></div>
+                    </div>
+                    <p class="viewfinder-text">Align receipt QR code within the frame</p>
+                  </div>
+                  }
+
+                  <!-- Camera Error Overlay -->
+                  @if (cameraError()) {
+                  <div class="scanner-overlay error-overlay">
+                    <mat-icon class="err-icon">videocam_off</mat-icon>
+                    <p class="err-title">Camera Unavailable</p>
+                    <p class="err-desc">{{ cameraError() }}</p>
+                    <div class="err-actions">
+                      <button mat-flat-button color="primary" type="button" (click)="startCameraScan()">
+                        <mat-icon>refresh</mat-icon>
+                        Retry Camera
+                      </button>
+                      <button mat-stroked-button type="button" (click)="setScanMode('manual')">
+                        <mat-icon>edit</mat-icon>
+                        Enter Manually
+                      </button>
+                    </div>
+                  </div>
+                  }
+                </div>
+
+                @if (isCameraScanning()) {
+                <div class="scanner-controls-bar">
+                  <button mat-stroked-button type="button" (click)="stopCameraScan()" class="stop-camera-btn">
+                    <mat-icon>stop</mat-icon>
+                    Stop Camera
+                  </button>
+                  <button mat-stroked-button type="button" (click)="setScanMode('upload')">
+                    <mat-icon>upload_file</mat-icon>
+                    Upload Image Instead
+                  </button>
+                </div>
+                }
+              </div>
+              }
+
+              <!-- Mode 2: Receipt Image Upload -->
+              @if (scanMode() === 'upload') {
+              <div class="upload-section">
+                <div
+                  class="upload-dropzone"
+                  [class.has-preview]="!!selectedFile()"
+                  [class.is-decoding]="isDecodingImage()"
+                  (click)="pageReceiptFileInput.click()"
+                  (dragover)="onDragOver($event)"
+                  (drop)="onFileDrop($event)"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Upload receipt image"
+                >
+                  <input
+                    #pageReceiptFileInput
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    class="hidden-file-input"
+                    (change)="onFileSelected($event)"
+                  />
+
+                  <!-- Empty State -->
+                  @if (!selectedFile() && !isDecodingImage()) {
+                  <div class="dropzone-content">
+                    <div class="icon-bubble">
+                      <mat-icon>add_photo_alternate</mat-icon>
+                    </div>
+                    <p class="dz-title">Select or Drop Receipt Image</p>
+                    <p class="dz-subtitle">Supports JPEG, PNG, or WebP receipts up to 5 MB</p>
+                    <button mat-stroked-button type="button" class="browse-btn" (click)="$event.stopPropagation(); pageReceiptFileInput.click()">
+                      <mat-icon>folder_open</mat-icon>
+                      Browse Device
+                    </button>
+                  </div>
+                  }
+
+                  <!-- Decoding State -->
+                  @if (isDecodingImage()) {
+                  <div class="dropzone-content decoding-content">
+                    <mat-spinner diameter="36"></mat-spinner>
+                    <p class="dz-title">Scanning Image for QR Code...</p>
+                    <p class="dz-subtitle">Decoding embedded payment information locally</p>
+                  </div>
+                  }
+
+                  <!-- Preview State -->
+                  @if (selectedFile() && !isDecodingImage()) {
+                  <div class="dropzone-content preview-content">
+                    <div class="preview-img-wrapper" (click)="$event.stopPropagation()">
+                      <img [src]="imagePreviewUrl()" alt="Receipt preview" class="preview-thumb" />
+                    </div>
+                    <div class="file-info-bar">
+                      <span class="file-name">{{ selectedFile()?.name }}</span>
+                      <span class="file-size">{{ (selectedFile()!.size / 1024) | number:'1.0-0' }} KB</span>
+                    </div>
+                  </div>
+                  }
+                </div>
+
+                <!-- Upload Actions (when image is loaded) -->
+                @if (selectedFile() && !isDecodingImage()) {
+                <div class="upload-actions-bar">
+                  <button mat-stroked-button type="button" (click)="pageReceiptFileInput.click()">
+                    <mat-icon>sync</mat-icon>
+                    Replace Image
+                  </button>
+                  <button mat-stroked-button color="warn" type="button" (click)="removeSelectedFile()">
+                    <mat-icon>delete_outline</mat-icon>
+                    Remove
+                  </button>
+                </div>
+                }
+
+                <!-- Upload / Decode Error -->
+                @if (uploadError()) {
+                <div class="upload-error-box">
+                  <mat-icon class="box-icon">info</mat-icon>
+                  <div class="box-text">
+                    <p class="box-message">{{ uploadError() }}</p>
+                    <button mat-button class="manual-fallback-link" type="button" (click)="setScanMode('manual')">
+                      Enter reference manually &rarr;
+                    </button>
+                  </div>
+                </div>
+                }
+              </div>
+              }
+
+              <!-- Scanned Details Review Card -->
+              @if (scannedDetails(); as scanned) {
+              <div class="scanned-review-card">
+                <div class="review-header">
+                  <div class="review-title-group">
+                    <mat-icon class="review-badge-icon">qr_code_2</mat-icon>
+                    <div>
+                      <h3 class="review-title">Scanned Receipt Review</h3>
+                      <p class="review-desc">Verify extracted details against customer receipt before verifying</p>
+                    </div>
+                  </div>
+                  <button mat-icon-button type="button" class="dismiss-review-btn" (click)="clearScannedDetails()" matTooltip="Clear scanned details">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="review-grid">
+                  @if (scanned.providerName || scanned.provider) {
+                  <div class="review-item">
+                    <span class="r-label">Detected Provider</span>
+                    <span class="r-value font-semibold">{{ scanned.providerName || scanned.provider }}</span>
+                  </div>
+                  }
+
+                  @if (scanned.transactionReference) {
+                  <div class="review-item">
+                    <span class="r-label">Extracted Reference</span>
+                    <span class="r-value font-mono">{{ scanned.transactionReference }}</span>
+                  </div>
+                  }
+
+                  @if (scanned.amount !== undefined && scanned.amount !== null) {
+                  <div class="review-item">
+                    <span class="r-label">Scanned Amount</span>
+                    <span class="r-value font-semibold font-mono" [class.match-text]="isScannedAmountMatch()" [class.mismatch-text]="!isScannedAmountMatch()">
+                      {{ scanned.amount | number:'1.2-2' }} {{ scanned.currency || 'ETB' }}
+                      @if (selectedSale() && isScannedAmountMatch()) {
+                      <span class="status-pill match-pill">&check; Matches Sale Balance</span>
+                      }
+                      @if (selectedSale() && !isScannedAmountMatch()) {
+                      <span class="status-pill mismatch-pill">
+                        &ne; Expected {{ selectedSale()?.outstandingBalance | number:'1.2-2' }} ETB
+                      </span>
+                      }
+                    </span>
+                  </div>
+                  }
+
+                  @if (scanned.transactionDate) {
+                  <div class="review-item">
+                    <span class="r-label">Transaction Date</span>
+                    <span class="r-value">{{ scanned.transactionDate }}</span>
+                  </div>
+                  }
+
+                  @if (scanned.payerName || scanned.payerPhone) {
+                  <div class="review-item">
+                    <span class="r-label">Payer Information</span>
+                    <span class="r-value">{{ scanned.payerName || '' }} {{ scanned.payerPhone ? '(' + scanned.payerPhone + ')' : '' }}</span>
+                  </div>
+                  }
+
+                  @if (scanned.receiverAccountMasked) {
+                  <div class="review-item">
+                    <span class="r-label">Receiver Account</span>
+                    <span class="r-value font-mono">{{ scanned.receiverAccountMasked }}</span>
+                  </div>
+                  }
+                </div>
+
+                <!-- Payment Request / Merchant QR Warning -->
+                @if (scanned.isPaymentRequestOnly) {
+                <div class="review-alert-banner warning-alert">
+                  <mat-icon>warning_amber</mat-icon>
+                  <div class="alert-body">
+                    <strong>Payment Instruction Detected</strong>
+                    <p>This QR code appears to be a merchant payment request or instruction, not proof of a completed transaction. Please ask the customer for their bank confirmation SMS or completed payment receipt.</p>
+                  </div>
+                </div>
+                }
+
+                <!-- Domain / Parsing Warnings -->
+                @if (scanned.parseWarnings?.length) {
+                <div class="review-alert-banner info-alert">
+                  <mat-icon>info</mat-icon>
+                  <div class="alert-body">
+                    @for (warning of scanned.parseWarnings; track warning) {
+                    <div>{{ warning }}</div>
+                    }
+                  </div>
+                </div>
+                }
+              </div>
+              }
+
               @if (verifyErrorMessage()) {
               <div class="error-banner">
                 <mat-icon>error_outline</mat-icon>
@@ -167,19 +447,37 @@
                 </mat-form-field>
 
                 <!-- Transaction Reference / Receipt URL -->
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Transaction Reference or Receipt URL</mat-label>
-                  <mat-icon matPrefix>confirmation_number</mat-icon>
-                  <input matInput formControlName="submittedReference"
-                    placeholder="e.g. CBE receipt URL (https://apps.cbe.com.et:4130/...) or txn reference" />
-                  <mat-hint>Paste full bank receipt URL or unique transfer reference ID</mat-hint>
-                  @if (verifyForm.get('submittedReference')?.hasError('required')) {
-                  <mat-error>Transaction reference is required</mat-error>
+                <div class="reference-field-container">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Transaction Reference or Receipt URL</mat-label>
+                    <mat-icon matPrefix>confirmation_number</mat-icon>
+                    <input matInput formControlName="submittedReference"
+                      placeholder="e.g. CBE receipt URL (https://apps.cbe.com.et:4130/...) or txn reference" />
+                    <mat-hint>Paste full bank receipt URL or unique transfer reference ID</mat-hint>
+                    @if (verifyForm.get('submittedReference')?.hasError('required')) {
+                    <mat-error>Transaction reference is required</mat-error>
+                    }
+                    @if (verifyForm.get('submittedReference')?.hasError('minlength')) {
+                    <mat-error>Reference must be at least 4 characters</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <!-- Quick Scan Trigger -->
+                  @if (scanMode() === 'manual') {
+                  <div class="scan-quick-actions">
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      class="scan-receipt-action-btn"
+                      (click)="setScanMode('camera')"
+                      matTooltip="Scan receipt QR code using device camera"
+                    >
+                      <mat-icon>qr_code_scanner</mat-icon>
+                      <span>Scan Receipt</span>
+                    </button>
+                  </div>
                   }
-                  @if (verifyForm.get('submittedReference')?.hasError('minlength')) {
-                  <mat-error>Reference must be at least 4 characters</mat-error>
-                  }
-                </mat-form-field>
+                </div>
 
                 <!-- Optional Payer Phone Number -->
                 <mat-form-field appearance="outline" class="full-width">

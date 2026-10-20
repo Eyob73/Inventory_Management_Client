@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild, effect, computed, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -22,19 +22,23 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatMenuModule } from '@angular/material/menu';
+import { Html5Qrcode } from 'html5-qrcode';
 
 import { PaymentVerificationStore } from '../../store/payment-verification.store';
 import { AuthService } from '../../services/auth';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import { TableSkeleton } from '../../ui/table-skeleton/table-skeleton';
 import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shared/components/data-view/data-view.component';
+import { ReceiptScannerService } from '../../core/services/receipt-scanner.service';
 
 import {
   PaymentDestination,
   PaymentVerificationItem,
   EligibleSale,
   VerifyPaymentRequest,
-  VerifyPaymentResponse
+  VerifyPaymentResponse,
+  ReceiptScanMode,
+  ExtractedReceiptDetails
 } from '../../models/payment-verification.model';
 
 import { PaymentDestinationDialogComponent } from './components/payment-destination-dialog/payment-destination-dialog';
@@ -76,13 +80,37 @@ import { VerificationDetailsDialogComponent } from './components/verification-de
   templateUrl: './payment-verification.html',
   styleUrl: './payment-verification.scss'
 })
-export class PaymentVerificationComponent implements OnInit {
+export class PaymentVerificationComponent implements OnInit, OnDestroy {
   readonly store = inject(PaymentVerificationStore);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private confirmDialog = inject(ConfirmDialogService);
+  private scannerService = inject(ReceiptScannerService);
+
+  // Scanner & Upload states
+  scanMode = signal<ReceiptScanMode>('manual');
+  isCameraLoading = signal<boolean>(false);
+  isCameraScanning = signal<boolean>(false);
+  cameraError = signal<string | null>(null);
+  private cameraScanner: Html5Qrcode | null = null;
+
+  selectedFile = signal<File | null>(null);
+  imagePreviewUrl = signal<string | null>(null);
+  isDecodingImage = signal<boolean>(false);
+  uploadError = signal<string | null>(null);
+
+  // Extracted details review state
+  scannedDetails = signal<ExtractedReceiptDetails | null>(null);
+
+  readonly isScannedAmountMatch = computed(() => {
+    const details = this.scannedDetails();
+    if (!details || details.amount === undefined || details.amount === null) return true;
+    const sale = this.selectedSale();
+    if (!sale) return true;
+    return Math.abs(details.amount - sale.outstandingBalance) < 0.01;
+  });
 
   // Store signals exposed for template binding
   readonly selectedTabIndex = this.store.selectedTabIndex;
@@ -314,6 +342,11 @@ export class PaymentVerificationComponent implements OnInit {
     this.loadAllData();
   }
 
+  ngOnDestroy(): void {
+    this.stopCameraScan();
+    this.cleanupPreviewUrl();
+  }
+
   private initVerifyForm(): void {
     this.verifyForm = this.fb.group({
       saleId: [''],
@@ -359,6 +392,201 @@ export class PaymentVerificationComponent implements OnInit {
     this.verifyForm.get('saleId')?.setValue('');
     this.saleSearch.set('');
     this.store.setSelectedSale(null);
+  }
+
+  // --- Scan Mode & Camera Management ---
+
+  async setScanMode(mode: ReceiptScanMode): Promise<void> {
+    if (this.scanMode() === mode) return;
+
+    if (this.scanMode() === 'camera' || this.isCameraScanning() || this.cameraScanner) {
+      await this.stopCameraScan();
+    }
+
+    this.scanMode.set(mode);
+    this.uploadError.set(null);
+    this.cameraError.set(null);
+
+    if (mode === 'camera') {
+      setTimeout(() => this.startCameraScan(), 100);
+    }
+  }
+
+  async startCameraScan(): Promise<void> {
+    this.scanMode.set('camera');
+    this.cameraError.set(null);
+    this.isCameraLoading.set(true);
+    this.isCameraScanning.set(false);
+
+    try {
+      this.cameraScanner = await this.scannerService.startCamera(
+        'page-qr-reader',
+        (decodedText) => this.onQrScanned(decodedText),
+        (err) => {
+          this.cameraError.set(err?.message || 'Error occurred during camera scanning.');
+        }
+      );
+      this.isCameraLoading.set(false);
+      this.isCameraScanning.set(true);
+    } catch (err: any) {
+      this.isCameraLoading.set(false);
+      this.isCameraScanning.set(false);
+      this.cameraError.set(err?.message || 'Unable to access camera.');
+    }
+  }
+
+  async stopCameraScan(): Promise<void> {
+    this.isCameraLoading.set(false);
+    this.isCameraScanning.set(false);
+    if (this.cameraScanner) {
+      const scanner = this.cameraScanner;
+      this.cameraScanner = null;
+      await this.scannerService.stopCamera(scanner);
+    }
+  }
+
+  // --- File Upload Handling ---
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.processUploadedFile(file);
+    input.value = '';
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!event.dataTransfer?.files || event.dataTransfer.files.length === 0) return;
+    const file = event.dataTransfer.files[0];
+    this.processUploadedFile(file);
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  private processUploadedFile(file: File): void {
+    const validation = this.scannerService.validateReceiptImage(file);
+    if (!validation.valid) {
+      this.uploadError.set(validation.error || 'Invalid file format.');
+      return;
+    }
+
+    this.uploadError.set(null);
+    this.cleanupPreviewUrl();
+
+    this.selectedFile.set(file);
+    const objectUrl = URL.createObjectURL(file);
+    this.imagePreviewUrl.set(objectUrl);
+
+    this.decodeUploadedImage(file);
+  }
+
+  async decodeUploadedImage(file: File): Promise<void> {
+    this.isDecodingImage.set(true);
+    this.uploadError.set(null);
+
+    try {
+      const decodedText = await this.scannerService.decodeReceiptImage(file);
+      this.onQrScanned(decodedText);
+    } catch (err: any) {
+      this.uploadError.set(err?.message || 'Failed to decode receipt image.');
+    } finally {
+      this.isDecodingImage.set(false);
+    }
+  }
+
+  removeSelectedFile(): void {
+    this.cleanupPreviewUrl();
+    this.selectedFile.set(null);
+    this.uploadError.set(null);
+  }
+
+  private cleanupPreviewUrl(): void {
+    const url = this.imagePreviewUrl();
+    if (url) {
+      URL.revokeObjectURL(url);
+      this.imagePreviewUrl.set(null);
+    }
+  }
+
+  // --- QR Parsing & Form Population ---
+
+  onQrScanned(decodedText: string): void {
+    const extracted = this.scannerService.parseQrData(decodedText);
+    this.scannedDetails.set(extracted);
+
+    if (this.isCameraScanning()) {
+      this.stopCameraScan();
+    }
+
+    const formUpdates: any = {};
+
+    if (extracted.transactionReference) {
+      formUpdates.submittedReference = extracted.transactionReference;
+    } else if (extracted.receiptUrl) {
+      formUpdates.submittedReference = extracted.receiptUrl;
+    }
+
+    if (extracted.payerPhone) {
+      formUpdates.payerPhone = extracted.payerPhone;
+    }
+
+    if (extracted.rawContent) {
+      formUpdates.qrData = extracted.rawContent;
+    }
+
+    if (extracted.provider) {
+      const currentDestId = this.verifyForm.get('paymentDestinationId')?.value;
+      const destinations = this.destinations();
+      if (!currentDestId || currentDestId === '') {
+        const provLower = extracted.provider.toLowerCase();
+        const matched = destinations.find((d) => {
+          if (provLower.includes('telebirr') && (d.type === 'Telebirr' || (d as any).type === 2)) return true;
+          if (provLower.includes('cbe') && (d.bankCode?.toLowerCase() === 'cbe' || d.type === 'BankAccount' || (d as any).type === 1)) return true;
+          if (d.bankCode && provLower.includes(d.bankCode.toLowerCase())) return true;
+          return false;
+        });
+        if (matched) {
+          formUpdates.paymentDestinationId = matched.id;
+          if (matched.bankCode) {
+            formUpdates.bankCode = matched.bankCode;
+          }
+        }
+      }
+    }
+
+    this.verifyForm.patchValue(formUpdates);
+    this.verifyForm.markAsDirty();
+
+    if (extracted.isPaymentRequestOnly) {
+      this.snackBar.open(
+        'Warning: Scanned QR is a payment request instruction, not a completed receipt. Please enter the transaction ID from the customer SMS.',
+        'Dismiss',
+        { duration: 5000, panelClass: ['snack-error'] }
+      );
+    } else if (extracted.transactionReference) {
+      this.snackBar.open(
+        `Scanned reference ${extracted.transactionReference} extracted. Please review details before verifying.`,
+        'OK',
+        { duration: 3500, panelClass: ['snack-success'] }
+      );
+    } else {
+      this.snackBar.open('Receipt scanned. Please verify and complete the details before submitting.', 'OK', {
+        duration: 3500
+      });
+    }
+
+    this.scanMode.set('manual');
+  }
+
+  clearScannedDetails(): void {
+    this.scannedDetails.set(null);
   }
 
   loadAllData(): void {
@@ -419,9 +647,12 @@ export class PaymentVerificationComponent implements OnInit {
           });
           this.verifyForm.get('submittedReference')?.reset();
           this.verifyForm.get('payerPhone')?.reset();
+          this.verifyForm.get('qrData')?.reset();
           this.verifyForm.get('saleId')?.reset('');
           this.saleSearch.set('');
           this.store.setSelectedSale(null);
+          this.clearScannedDetails();
+          this.removeSelectedFile();
         } else {
           this.snackBar.open(`Verification completed with status: ${res.status}`, 'Close', {
             duration: 5000
@@ -537,6 +768,9 @@ export class PaymentVerificationComponent implements OnInit {
   // ── Tab & Filter Actions ──────────────────────────────────────────
 
   onTabChange(index: number): void {
+    if (index !== 0) {
+      this.stopCameraScan();
+    }
     this.store.setTabIndex(index);
   }
 
