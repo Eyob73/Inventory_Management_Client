@@ -183,6 +183,7 @@
   &__name {
     font-weight: 600;
     color: var(--ink);
+    transition: color 0.15s ease;
   }
 
   &__desc {
@@ -289,6 +290,19 @@
     background: rgba(239, 68, 68, 0.15);
     border-color: rgba(239, 68, 68, 0.4);
     color: #f87171;
+  }
+}
+
+.table-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--hover-bg, rgba(0, 0, 0, 0.03));
+
+    .product-cell__name {
+      color: var(--primary, #0ea5e9);
+    }
   }
 }
 

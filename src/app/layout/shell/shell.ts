@@ -113,6 +113,18 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     return map[label] || label.toLowerCase().replace(/ /g, '');
   }
 
+  getNavGroupKey(label: string): string {
+    const map: Record<string, string> = {
+      'Main': 'main',
+      'Bottle Management': 'bottleManagement',
+      'Transactions': 'transactions',
+      'Analytics': 'analytics',
+      'Administration': 'administration',
+      'System Admin': 'systemAdmin',
+    };
+    return map[label] || label.toLowerCase().replace(/ /g, '');
+  }
+
   // ========== Computed User Details ==========
   readonly userName = computed(() => {
     const u = this.authStore.user();

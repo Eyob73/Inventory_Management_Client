@@ -61,8 +61,8 @@ describe('PosComponent - Payment Verification Toggle Integration', () => {
     tenantApiService = TestBed.inject(TenantApiService);
   });
 
-  it('should initialize with payment verification enabled by default', () => {
-    expect(component.isPaymentVerificationEnabled()).toBe(true);
+  it('should initialize with payment verification disabled by default', () => {
+    expect(component.isPaymentVerificationEnabled()).toBe(false);
   });
 
   it('should open payment verification modal when setting is enabled and payment is electronic', () => {

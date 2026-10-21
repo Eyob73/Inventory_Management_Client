@@ -58,7 +58,7 @@ export class SettingsComponent implements OnInit {
   isLoading = signal<boolean>(false);
   isEditingCompany = signal<boolean>(false);
   isSavingPaymentVerification = signal<boolean>(false);
-  posPaymentVerificationEnabled = signal<boolean>(true);
+  posPaymentVerificationEnabled = signal<boolean>(false);
 
   preferredLanguage = 'en';
 

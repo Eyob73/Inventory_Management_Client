@@ -43,7 +43,15 @@
     "bottles-transactions": "Darbii Qaruuraa",
     "bottles-reports": "Gabaasota Qaruuraa",
     "bottles-settings": "Qindaa'inoota Qaruuraa",
-    "paymentVerification": "Mirkaneessa Kaffaltii"
+    "paymentVerification": "Mirkaneessa Kaffaltii",
+    "groups": {
+      "main": "Ijoo",
+      "bottleManagement": "Bulchiinsa Qaruuraa",
+      "transactions": "Daldalaawwan",
+      "analytics": "Xiinxala",
+      "administration": "Bulchiinsa",
+      "systemAdmin": "Bulchaa Sirnaa"
+    }
   },
   "common": {
     "save": "Olkaa'i",
@@ -59,7 +67,9 @@
     "reset": "Reset",
     "saveChanges": "Save Changes",
     "all": "Hunda",
-    "close": "Cufi"
+    "close": "Cufi",
+    "enabled": "Bantameera",
+    "disabled": "Cufameera"
   },
   "dashboard": {
     "title": {
@@ -190,6 +200,7 @@
       "identity": "Eenyummeessaa",
       "productName": "Maqaa Oomishaa",
       "productCode": "Koodii Oomishaa / SKU",
+      "barcode": "Baarkoodii",
       "category": "Ramaddii",
       "description": "Ibsa",
       "pricing": "Kaffaltii fi Gatii",
@@ -946,6 +957,8 @@
     "ea": "tokkoon tokkoon",
     "remove": "Haqi",
     "subtotal": "Ida'ama Gar-tokkee",
+    "bottleDeposits": "Qabsiisa Qaruuraa",
+    "additionalDeposit": "Qabsiisa Dabalataa",
     "itemDiscounts": "Hir'isina Gatii Meeshaa",
     "discount": "Hir'isina (ETB)",
     "taxPercent": "Taaksii (%)",
@@ -959,6 +972,7 @@
     "addNote": "Yaadannoo ajajaa ida'i",
     "notePlaceholder": "Kennaa haguuguu, qajeelfama addaa…",
     "processing": "Adeemsisaa jira…",
+    "verifyingConfirming": "Mirkaneessaa jira...",
     "submit": "Mirkaneessi",
     "next": "Itti aanee",
     "back": "Duuba",
@@ -1346,13 +1360,6 @@
     "subManager": "Seera irra-ajajaa kuusaa, daaqii hir'isina gurgurtaa, akeekkachiisa hogganaa fi filannoo suuqii qindeessi.",
     "subAdmin": "Ragaa dhaabbataa, daaqii kuusaa, imaammata nageenyaa fi idilee sirnichaa qindeessi."
   },
-  "common": {
-    "enabled": "Bantameera",
-    "disabled": "Cufameera",
-    "close": "Cufi",
-    "cancel": "Dhiisi",
-    "save": "Olkaawi"
-  },
   "confirm": {
     "deleteTitle": "{{ entity }} Haqi",
     "deleteMessageLabel": "\"{{ entityLabel }}\" haquu akka barbaaddan mirkaneeffattaniittuu? Gochi kun duubatti hin deebi'u.",
@@ -1525,6 +1532,7 @@
     },
     "notes": "Yaada:",
     "subtotal": "Ida'ama Gar-tokkee",
+    "bottleDeposits": "Qabsiisa Qaruuraa",
     "discount": "Hir'isina",
     "tax": "Taaksii (VAT)",
     "grandTotal": "Ida'ama Waliigalaa",

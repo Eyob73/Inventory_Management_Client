@@ -101,8 +101,8 @@ export interface DataViewAction {
       <div class="data-view-cards-container">
         <div class="cards-grid">
           @for (item of data; track item.id || $index) {
-            <div class="data-card">
-              <div class="data-card-content">
+            <div class="data-card" [class.data-card--clickable]="cardClicked.observed">
+              <div class="data-card-content" (click)="onCardContentClick(item)">
                 @for (field of cardFields; track field.key) {
                   @if (field.type === 'image') {
                     <div class="card-image-wrapper">
@@ -147,7 +147,7 @@ export interface DataViewAction {
                 }
               </div>
               @if (actions && actions.length > 0) {
-                <div class="data-card-actions">
+                <div class="data-card-actions" (click)="$event.stopPropagation()">
                   @for (action of actions; track action.id) {
                     @if (!action.visibleFn || action.visibleFn(item)) {
                       <button mat-icon-button [color]="action.color" [matTooltip]="action.label" [attr.aria-label]="action.label" (click)="onAction(action.id, item)">
@@ -337,6 +337,16 @@ export interface DataViewAction {
     .data-card:hover {
       box-shadow: var(--shadow-md, 0 4px 8px rgba(0,0,0,0.1));
     }
+    .data-card--clickable .data-card-content {
+      cursor: pointer;
+    }
+    .data-card--clickable:hover {
+      border-color: var(--primary, #0ea5e9);
+      transform: translateY(-2px);
+    }
+    .data-card--clickable:hover .card-field.field-text.card-title .field-value {
+      color: var(--primary, #0ea5e9);
+    }
     :host-context(.dark-theme) .data-card {
       background: var(--surface, var(--mat-sys-surface-container));
       border-color: var(--border, var(--mat-sys-outline-variant));
@@ -475,6 +485,7 @@ export class DataViewComponent implements OnInit {
   @Input() actions: DataViewAction[] = [];
   
   @Output() actionClicked = new EventEmitter<{ actionId: string, item: any }>();
+  @Output() cardClicked = new EventEmitter<any>();
   @ContentChild('customCardField') customCardField!: TemplateRef<any>;
 
   viewMode = signal<'table' | 'card'>('table');
@@ -492,6 +503,12 @@ export class DataViewComponent implements OnInit {
 
   onAction(actionId: string, item: any) {
     this.actionClicked.emit({ actionId, item });
+  }
+
+  onCardContentClick(item: any) {
+    if (this.cardClicked.observed) {
+      this.cardClicked.emit(item);
+    }
   }
 
   onViewChange(mode: 'table' | 'card') {

@@ -43,7 +43,15 @@
     "bottles-transactions": "Bottle Transactions",
     "bottles-reports": "Bottle Reports",
     "bottles-settings": "Bottle Settings",
-    "paymentVerification": "Payment Verification"
+    "paymentVerification": "Payment Verification",
+    "groups": {
+      "main": "Main",
+      "bottleManagement": "Bottle Management",
+      "transactions": "Transactions",
+      "analytics": "Analytics",
+      "administration": "Administration",
+      "systemAdmin": "System Admin"
+    }
   },
   "common": {
     "save": "Save",
@@ -59,7 +67,9 @@
     "reset": "Reset",
     "saveChanges": "Save Changes",
     "all": "All",
-    "close": "Close"
+    "close": "Close",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   },
   "dashboard": {
     "title": {
@@ -190,6 +200,7 @@
       "identity": "Identity",
       "productName": "Product name",
       "productCode": "Product code / SKU",
+      "barcode": "Barcode",
       "category": "Category",
       "description": "Description",
       "pricing": "Pricing",
@@ -946,6 +957,8 @@
     "ea": "ea.",
     "remove": "Remove",
     "subtotal": "Subtotal",
+    "bottleDeposits": "Bottle Deposits",
+    "additionalDeposit": "Additional Deposit",
     "itemDiscounts": "Item discounts",
     "discount": "Discount (ETB)",
     "taxPercent": "Tax (%)",
@@ -959,6 +972,7 @@
     "addNote": "Add order note",
     "notePlaceholder": "Gift wrap, special instructions…",
     "processing": "Processing…",
+    "verifyingConfirming": "Verifying / Confirming...",
     "submit": "Submit",
     "next": "Next",
     "back": "Back",
@@ -1342,13 +1356,6 @@
     "subManager": "Configure inventory reorder rules, sales discount thresholds, manager alerts, and store preferences.",
     "subAdmin": "Configure company details, inventory thresholds, security policies, and system defaults."
   },
-  "common": {
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "close": "Close",
-    "cancel": "Cancel",
-    "save": "Save"
-  },
   "confirm": {
     "deleteTitle": "Delete {{ entity }}",
     "deleteMessageLabel": "Are you sure you want to delete \"{{ entityLabel }}\"? This action cannot be undone.",
@@ -1521,6 +1528,7 @@
     },
     "notes": "Notes:",
     "subtotal": "Subtotal",
+    "bottleDeposits": "Bottle Deposits",
     "discount": "Discount",
     "tax": "Tax",
     "grandTotal": "Grand Total",

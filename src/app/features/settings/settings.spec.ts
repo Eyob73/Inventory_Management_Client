@@ -39,26 +39,11 @@ describe('SettingsComponent - POS Payment Verification', () => {
     localStorage.clear();
   });
 
-  it('should initialize with posPaymentVerificationEnabled as true by default', () => {
-    expect(component.posPaymentVerificationEnabled()).toBe(true);
-  });
-
-  it('should toggle posPaymentVerificationEnabled to false on toggle change and persist', () => {
-    const updateSpy = vi.spyOn(tenantApiService, 'updatePosPaymentVerification').mockReturnValue(
-      of({ enabled: false })
-    );
-
-    component.onPaymentVerificationToggleChange(false);
-
-    expect(updateSpy).toHaveBeenCalledWith(false);
+  it('should initialize with posPaymentVerificationEnabled as false by default', () => {
     expect(component.posPaymentVerificationEnabled()).toBe(false);
-    expect(tenantApiService.isPaymentVerificationEnabled()).toBe(false);
-    expect(component.isSavingPaymentVerification()).toBe(false);
   });
 
   it('should toggle posPaymentVerificationEnabled to true on toggle change and persist', () => {
-    component.posPaymentVerificationEnabled.set(false);
-
     const updateSpy = vi.spyOn(tenantApiService, 'updatePosPaymentVerification').mockReturnValue(
       of({ enabled: true })
     );
@@ -68,19 +53,34 @@ describe('SettingsComponent - POS Payment Verification', () => {
     expect(updateSpy).toHaveBeenCalledWith(true);
     expect(component.posPaymentVerificationEnabled()).toBe(true);
     expect(tenantApiService.isPaymentVerificationEnabled()).toBe(true);
+    expect(component.isSavingPaymentVerification()).toBe(false);
+  });
+
+  it('should toggle posPaymentVerificationEnabled to false on toggle change and persist', () => {
+    component.posPaymentVerificationEnabled.set(true);
+
+    const updateSpy = vi.spyOn(tenantApiService, 'updatePosPaymentVerification').mockReturnValue(
+      of({ enabled: false })
+    );
+
+    component.onPaymentVerificationToggleChange(false);
+
+    expect(updateSpy).toHaveBeenCalledWith(false);
+    expect(component.posPaymentVerificationEnabled()).toBe(false);
+    expect(tenantApiService.isPaymentVerificationEnabled()).toBe(false);
   });
 
   it('should restore previous state if updating pos payment verification fails', () => {
-    component.posPaymentVerificationEnabled.set(true);
+    component.posPaymentVerificationEnabled.set(false);
 
     vi.spyOn(tenantApiService, 'updatePosPaymentVerification').mockReturnValue(
       throwError(() => new Error('Network error'))
     );
 
-    component.onPaymentVerificationToggleChange(false);
+    component.onPaymentVerificationToggleChange(true);
 
-    // Should rollback to true
-    expect(component.posPaymentVerificationEnabled()).toBe(true);
+    // Should rollback to false
+    expect(component.posPaymentVerificationEnabled()).toBe(false);
     expect(component.isSavingPaymentVerification()).toBe(false);
   });
 

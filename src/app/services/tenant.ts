@@ -38,7 +38,7 @@ export interface PosPaymentVerificationSetting {
 })
 export class TenantApiService {
   public isBottleManagementEnabled = signal<boolean>(false);
-  public isPaymentVerificationEnabled = signal<boolean>(true);
+  public isPaymentVerificationEnabled = signal<boolean>(false);
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Tenants`;
   private settingsUrl = `${environment.apiUrl}/settings`;

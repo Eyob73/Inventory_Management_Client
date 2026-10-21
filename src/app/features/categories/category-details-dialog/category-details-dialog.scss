@@ -212,6 +212,19 @@
   }
 }
 
+.product-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--hover-bg, rgba(0, 0, 0, 0.03));
+
+    .font-medium {
+      color: var(--primary, #0ea5e9);
+    }
+  }
+}
+
 .sku-code {
   font-family: var(--font-family-mono);
   background: var(--paper);

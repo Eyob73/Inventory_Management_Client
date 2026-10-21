@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CategoryService, CategoryDetail } from '../../../services/category';
 import { Product } from '../../../models/products.model';
+import { Router } from '@angular/router';
 
 export interface CategoryDetailsDialogData {
   categoryId: string;
@@ -29,6 +30,7 @@ export interface CategoryDetailsDialogData {
 export class CategoryDetailsDialogComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private dialogRef = inject(MatDialogRef<CategoryDetailsDialogComponent>);
+  private router = inject(Router);
   public data = inject<CategoryDetailsDialogData>(MAT_DIALOG_DATA);
 
   categoryDetail = signal<CategoryDetail | null>(null);
@@ -54,6 +56,12 @@ export class CategoryDetailsDialogComponent implements OnInit {
         this.isLoading.set(false);
       },
     });
+  }
+
+  viewProduct(productId: string): void {
+    if (!productId) return;
+    this.dialogRef.close();
+    this.router.navigate(['/products', productId]);
   }
 
   close(): void {

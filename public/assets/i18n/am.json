@@ -43,7 +43,15 @@
     "bottles-transactions": "የጠርሙስ ዝውውሮች",
     "bottles-reports": "የጠርሙስ ሪፖርቶች",
     "bottles-settings": "የጠርሙስ ቅንብሮች",
-    "paymentVerification": "የክፍያ ማረጋገጫ"
+    "paymentVerification": "የክፍያ ማረጋገጫ",
+    "groups": {
+      "main": "ዋና",
+      "bottleManagement": "የጠርሙስ አስተዳደር",
+      "transactions": "ግብይቶች",
+      "analytics": "ትንታኔዎች",
+      "administration": "አስተዳደር",
+      "systemAdmin": "የስርዓት አስተዳዳሪ"
+    }
   },
   "common": {
     "save": "አስቀምጥ",
@@ -59,7 +67,9 @@
     "reset": "Reset",
     "saveChanges": "Save Changes",
     "all": "ሁሉንም",
-    "close": "ዝጋ"
+    "close": "ዝጋ",
+    "enabled": "በርቷል",
+    "disabled": "ጠፍቷል"
   },
   "dashboard": {
     "title": {
@@ -190,6 +200,7 @@
       "identity": "መለያ",
       "productName": "የምርት ስም",
       "productCode": "የምርት ኮድ / የእቃ መለያ (SKU)",
+      "barcode": "ባርኮድ",
       "category": "ምድብ",
       "description": "መግለጫ",
       "pricing": "የዋጋ አሰጣጥ",
@@ -946,6 +957,8 @@
     "ea": "በአንዱ",
     "remove": "አስወግድ",
     "subtotal": "ንዑስ ድምር",
+    "bottleDeposits": "የጠርሙስ ተቀማጭ",
+    "additionalDeposit": "ተጨማሪ ተቀማጭ",
     "itemDiscounts": "የዕቃ ቅናሾች",
     "discount": "ቅናሽ (ETB)",
     "taxPercent": "ታክስ (%)",
@@ -959,6 +972,7 @@
     "addNote": "የትዕዛዝ ማስታወሻ አክል",
     "notePlaceholder": "ልዩ መመሪያዎች ወይም ማስታወሻዎች...",
     "processing": "ክፍያውን በማካሄድ ላይ...",
+    "verifyingConfirming": "በማረጋገጥ ላይ...",
     "submit": "ሽያጭ አረጋግጥ",
     "next": "ቀጣይ",
     "back": "ተመለስ",
@@ -1346,13 +1360,6 @@
     "subManager": "የክምችት መሙያ ህጎችን፣ የሽያጭ ቅናሽ ገደቦችን፣ የስራ አስኪያጅ ማስጠንቀቂያዎችን እና የሱቅ ምርጫዎችን ያዋቅሩ።",
     "subAdmin": "የድርጅት ዝርዝሮችን፣ የደህንነት ፖሊሲዎችን እና አጠቃላይ የስርዓት መቆጣጠሪያዎችን ያዋቅሩ።"
   },
-  "common": {
-    "enabled": "በርቷል",
-    "disabled": "ጠፍቷል",
-    "close": "ዝጋ",
-    "cancel": "ሰርዝ",
-    "save": "አስቀምጥ"
-  },
   "confirm": {
     "deleteTitle": "{{ entity }} ያጥፉ",
     "deleteMessageLabel": "\"{{ entityLabel }}\" ማጥፋት (መሰረዝ) እንደሚፈልጉ እርግጠኛ ነዎት? ይህ እርምጃ ወደኋላ አይመለስም።",
@@ -1525,6 +1532,7 @@
     },
     "notes": "ማስታወሻ፡",
     "subtotal": "ንዑስ ድምር",
+    "bottleDeposits": "የጠርሙስ ተቀማጭ",
     "discount": "ቅናሽ",
     "tax": "ታክስ (VAT)",
     "grandTotal": "አጠቃላይ ድምር",
@@ -2109,7 +2117,7 @@
     "context": {
       "saleNumber": "ሽያጭ #{{saleNumber}}",
       "customer": "ደንበኛ",
-      "walkInCustomer": "ተራ ደንበኛ",
+      "walkInCustomer": "ያልተመዘገበ ደንበኛ",
       "saleTotal": "ጠቅላላ ሽያጭ",
       "alreadyPaid": "ቀደም ሲል የተከፈለ",
       "outstandingBalance": "የሚቀረው ቀሪ ሂሳብ",
