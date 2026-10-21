@@ -2032,8 +2032,11 @@
     },
     "tabs": {
       "verify": "Verify Customer Payment",
+      "verifyMobile": "Verify",
       "destinations": "Payment Destinations",
-      "history": "Verification History"
+      "destinationsMobile": "Destinations",
+      "history": "Verification History",
+      "historyMobile": "History"
     },
     "modes": {
       "manual": "Manual Reference",
@@ -2082,7 +2085,7 @@
       "formSubtitle": "Select your receiving account and input the payment receipt reference",
       "saleId": "Sale ID (Optional)",
       "saleIdPlaceholder": "Enter Sale ID or select an eligible sale",
-      "saleIdHint": "Optionally link this payment to a sale to auto-apply and complete it",
+      "saleIdHint": "Optionally link this payment to a sale",
       "saleIdClearTooltip": "Clear Sale ID",
       "balance": "Balance",
       "destination": "Receiving Payment Destination",

@@ -2032,8 +2032,11 @@
     },
     "tabs": {
       "verify": "የደንበኛ ክፍያ አረጋግጥ",
+      "verifyMobile": "ክፍያ አረጋግጥ",
       "destinations": "የክፍያ መቀበያ አካውንቶች",
-      "history": "የማረጋገጫ ታሪክ"
+      "destinationsMobile": "አካውንቶች",
+      "history": "የማረጋገጫ ታሪክ",
+      "historyMobile": "ታሪክ"
     },
     "modes": {
       "manual": "በእጅ ማስገቢያ",
@@ -2082,7 +2085,7 @@
       "formSubtitle": "የመቀበያ አካውንትዎን ይምረጡ እና የክፍያ ደረሰኝ ማመሳከሪያውን ያስገቡ",
       "saleId": "የሽያጭ መለያ (አማራጭ)",
       "saleIdPlaceholder": "የሽያጭ መለያ ያስገቡ ወይም ዝግጁ ሽያጭ ይምረጡ",
-      "saleIdHint": "ክፍያውን በቀጥታ ከሽያጭ ጋር ለማያያዝ እና ለማጠናቀቅ አማራጭ ነው",
+      "saleIdHint": "ክፍያውን በቀጥታ ከሽያጭ ጋር ለማያያዝ",
       "saleIdClearTooltip": "የሽያጭ መለያን አጽዳ",
       "balance": "ቀሪ ሂሳብ",
       "destination": "ገንዘብ ተቀባይ አካውንት",
