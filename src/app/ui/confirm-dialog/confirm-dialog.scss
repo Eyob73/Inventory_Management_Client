@@ -106,8 +106,14 @@
   border: none;
   transition: all 0.2s;
 
-  &:hover {
-    transform: translateY(-1px);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
@@ -116,8 +122,14 @@
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
 
-  &:hover {
-    filter: brightness(0.92);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      filter: brightness(0.92);
+    }
+  }
+
+  &:active {
+    filter: brightness(0.86);
   }
 }
 
@@ -126,8 +138,14 @@
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
 
-  &:hover {
-    filter: brightness(0.92);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      filter: brightness(0.92);
+    }
+  }
+
+  &:active {
+    filter: brightness(0.86);
   }
 }
 
@@ -136,8 +154,14 @@
   color: var(--btn-primary-fg, #ffffff);
   box-shadow: 0 4px 14px var(--teal-glow);
 
-  &:hover {
-    filter: brightness(0.92);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      filter: brightness(0.92);
+    }
+  }
+
+  &:active {
+    filter: brightness(0.86);
   }
 }
 
@@ -146,9 +170,15 @@
   color: var(--slate);
   border: 1px solid var(--border);
 
-  &:hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--row-hover);
+      color: var(--ink);
+    }
+  }
+
+  &:active {
     background: var(--row-hover);
-    color: var(--ink);
   }
 }
 

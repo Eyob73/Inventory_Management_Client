@@ -29,34 +29,8 @@
 }
 
 // ── Buttons ───────────────────────────────────────────────────────
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
+// Standard button styles (.btn, .btn--primary) are provided globally by styles.scss
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.btn--primary {
-  background: var(--moss);
-  color: var(--btn-primary-fg, #fff);
-  box-shadow: 0 4px 14px var(--teal-glow);
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    filter: brightness(0.92);
-  }
-}
 
 // ── Error Banner ─────────────────────────────────────────────────
 .error-banner {

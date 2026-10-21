@@ -443,31 +443,8 @@
   justify-content: flex-end;
 }
 
-.action-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--slate);
+// .action-btn styles are standardized globally in styles/_material.scss
 
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-
-  &:hover {
-    background: var(--surface-hover);
-    color: var(--ink);
-    border-color: var(--slate-soft);
-  }
-}
 
 /* Empty States */
 .empty-state-wrapper {
