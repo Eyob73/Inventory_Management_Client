@@ -1,7 +1,12 @@
+:host {
+  display: block;
+  font-family: var(--font-family-base);
+  color: var(--ink);
+}
+
 .payment-verification-container {
-  padding: 1.5rem;
-  max-width: 1440px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 8px 0px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -9,12 +14,12 @@
   color: var(--ink);
 
   @media (max-width: 768px) {
-    padding: 1rem;
+    padding: 4px 0px;
     gap: 1rem;
   }
 
   @media (max-width: 480px) {
-    padding: 0.75rem 0.5rem;
+    padding: 0;
     gap: 0.75rem;
   }
 }
@@ -108,6 +113,8 @@
       font-weight: 600;
       padding: 0.55rem 1.2rem;
       transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
 
       ::ng-deep .mdc-button__label {
         display: inline-flex;
@@ -129,9 +136,16 @@
         }
       }
 
-      &:hover:not([disabled]) {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover:not([disabled]) {
+          background: var(--paper);
+          color: var(--ink);
+        }
+      }
+
+      &:active:not([disabled]) {
+        transform: scale(0.98);
         background: var(--paper);
-        color: var(--ink);
       }
     }
 
@@ -144,6 +158,8 @@
       padding: 0.55rem 1.25rem;
       border: none;
       transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
 
       ::ng-deep .mdc-button__label {
         display: inline-flex;
@@ -165,9 +181,17 @@
         }
       }
 
-      &:hover:not([disabled]) {
-        background: var(--teal-dark, #465c3f);
-        transform: translateY(-1px);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover:not([disabled]) {
+          background: var(--teal-dark, #465c3f);
+          transform: translateY(-1px);
+        }
+      }
+
+      &:active:not([disabled]) {
+        transform: scale(0.98);
+        filter: brightness(0.88);
+        box-shadow: 0 2px 6px var(--teal-glow);
       }
 
       &:disabled {
@@ -340,6 +364,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  width: 100%;
 
   .tab-icon {
     margin-right: 0.5rem;
@@ -349,6 +374,33 @@
     vertical-align: middle;
     color: var(--slate);
     transition: color 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .tab-label-text {
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .tab-text-short {
+    display: none;
+  }
+
+  .tab-text-full {
+    display: inline;
+  }
+
+  @media (max-width: 680px) {
+    .tab-text-short {
+      display: inline;
+    }
+    .tab-text-full {
+      display: none;
+    }
   }
 
   .tab-body-card {
@@ -364,16 +416,26 @@
   }
 
   ::ng-deep {
+    .mat-mdc-tab-group {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
     .mat-mdc-tab-header {
       border-bottom: 1px solid var(--border);
       background: var(--paper);
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
     }
 
-    // Scrollable container for mobile / overflow without displaying ugly scrollbar tracks
+    // Container for stretched tabs without horizontal shifting or overflow scroll
     .mat-mdc-tab-label-container {
-      overflow-x: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+      overflow-x: hidden !important;
       overflow-y: hidden !important;
-      -webkit-overflow-scrolling: touch;
       scrollbar-width: none !important;
       -ms-overflow-style: none !important;
 
@@ -384,18 +446,45 @@
       }
     }
 
+    .mat-mdc-tab-list {
+      width: 100% !important;
+      max-width: 100% !important;
+      display: flex !important;
+      transform: none !important; // Enforce zero horizontal translation so empty space never appears after Tab 3
+    }
+
     .mat-mdc-tab-labels {
       display: flex !important;
+      width: 100% !important;
+      max-width: 100% !important;
       flex-wrap: nowrap !important;
     }
 
     .mat-mdc-tab {
-      flex-shrink: 0 !important;
-      white-space: nowrap !important;
-      padding: 0 1.25rem !important;
+      flex: 1 1 0% !important;
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      padding: 0 1rem !important;
+      justify-content: center !important;
+      text-align: center !important;
+      box-sizing: border-box !important;
 
       @media (max-width: 600px) {
-        padding: 0 0.85rem !important;
+        padding: 0 0.35rem !important;
+      }
+
+      @media (max-width: 380px) {
+        padding: 0 0.2rem !important;
+      }
+
+      .mdc-tab__content {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        justify-content: center !important;
+        align-items: center !important;
+        overflow: hidden !important;
       }
 
       .mdc-tab__text-label {
@@ -406,9 +495,17 @@
         white-space: nowrap !important;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
 
         @media (max-width: 600px) {
-          font-size: 0.825rem;
+          font-size: 0.8rem;
+        }
+
+        @media (max-width: 400px) {
+          font-size: 0.72rem;
         }
       }
 
@@ -436,16 +533,41 @@
     .mat-mdc-tab-header-pagination {
       display: none !important;
     }
+
+    .mat-mdc-tab-body-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
+    .mat-mdc-tab-body {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .mat-mdc-tab-body-content {
+      overflow-x: hidden !important;
+      max-width: 100% !important;
+    }
   }
 
   @media (max-width: 600px) {
     border-radius: 10px;
 
     .tab-icon {
-      margin-right: 0.35rem;
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      margin-right: 0.25rem;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .tab-icon {
+      margin-right: 0.15rem;
+      font-size: 15px;
+      width: 15px;
+      height: 15px;
     }
   }
 }
@@ -544,9 +666,12 @@
     border-radius: 10px;
     padding: 0.25rem;
     margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 
     .mode-btn {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -560,17 +685,39 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      box-sizing: border-box;
 
       mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
+        line-height: 18px;
         color: inherit;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
       }
 
-      &:hover {
-        color: var(--ink);
-        background: var(--moss-soft);
+      span {
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          color: var(--ink);
+          background: var(--moss-soft);
+        }
+      }
+
+      &:active {
+        transform: scale(0.97);
       }
 
       &.active {
@@ -582,6 +729,62 @@
 
         mat-icon {
           color: var(--moss);
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      gap: 0.35rem;
+      padding: 0.25rem;
+
+      .mode-btn {
+        flex-direction: column;
+        padding: 0.5rem 0.25rem;
+        gap: 0.25rem;
+        text-align: center;
+        min-height: 54px;
+        justify-content: center;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          margin: 0;
+          flex-shrink: 0;
+        }
+
+        span {
+          font-size: 0.72rem;
+          line-height: 1.15;
+          text-align: center;
+          white-space: normal;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          word-break: normal;
+        }
+      }
+    }
+
+    @media (max-width: 360px) {
+      gap: 0.2rem;
+      padding: 0.2rem;
+
+      .mode-btn {
+        padding: 0.45rem 0.15rem;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          line-height: 18px;
+        }
+
+        span {
+          font-size: 0.68rem;
         }
       }
     }

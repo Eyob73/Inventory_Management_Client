@@ -779,6 +779,19 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
       this.stopCameraScan();
     }
     this.store.setTabIndex(index);
+    // Ensure stretched tabs container is never shifted or scrolled horizontally on mobile
+    setTimeout(() => {
+      try {
+        const container = document.querySelector('.tabs-container .mat-mdc-tab-label-container');
+        if (container && container.scrollLeft !== 0) {
+          container.scrollLeft = 0;
+        }
+        const list = document.querySelector('.tabs-container .mat-mdc-tab-list') as HTMLElement;
+        if (list && list.style.transform && list.style.transform !== 'none') {
+          list.style.transform = 'none';
+        }
+      } catch {}
+    }, 0);
   }
 
   onSearchChange(text: string): void {

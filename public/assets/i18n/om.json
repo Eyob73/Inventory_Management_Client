@@ -2032,8 +2032,11 @@
     },
     "tabs": {
       "verify": "Kaffaltii Maamilaa Mirkaneessi",
+      "verifyMobile": "Mirkaneessi",
       "destinations": "Herregawwan Kaffaltii",
-      "history": "Seenaa Mirkaneessaa"
+      "destinationsMobile": "Herregawwan",
+      "history": "Seenaa Mirkaneessaa",
+      "historyMobile": "Seenaa"
     },
     "modes": {
       "manual": "Reeffaransii Harkaa",
