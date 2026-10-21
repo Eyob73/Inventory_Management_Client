@@ -2290,7 +2290,9 @@
       "auditNotes": "የበእጅ ክለሳ ማስታወሻ",
       "reviewedByOn": "የተገመገመው በ{{user}} በ{{date}}",
       "close": "ዝጋ",
-      "manualReview": "በእጅ ክለሳ"
+      "manualReview": "በእጅ ክለሳ",
+      "copyReference": "ማጣቀሻ ቅዳ",
+      "copied": "ተቀድቷል!"
     },
     "manualReview": {
       "title": "የክፍያ በእጅ ክለሳ ፍቃድ",

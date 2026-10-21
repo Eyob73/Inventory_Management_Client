@@ -826,8 +826,8 @@ export class PaymentVerificationComponent implements OnInit, OnDestroy {
   viewVerificationDetails(item: PaymentVerificationItem): void {
     const dialogRef = this.dialog.open(VerificationDetailsDialogComponent, {
       width: '600px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
+      maxWidth: '96vw',
+      maxHeight: '92dvh',
       panelClass: 'payment-verification-dialog-panel',
       autoFocus: false,
       data: { verification: item }
