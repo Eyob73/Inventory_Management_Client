@@ -1,8 +1,9 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PaymentVerificationItem } from '../../../../models/payment-verification.model';
 import { AuthService } from '../../../../services/auth';
@@ -20,6 +21,7 @@ export interface VerificationDetailsDialogData {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     TranslocoDirective
   ],
   templateUrl: './verification-details-dialog.html',
@@ -32,9 +34,19 @@ export class VerificationDetailsDialogComponent {
   private transloco = inject(TranslocoService);
 
   verification: PaymentVerificationItem;
+  copiedField = signal<string | null>(null);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: VerificationDetailsDialogData) {
     this.verification = data.verification;
+  }
+
+  copyReference(text?: string, field = 'submitted'): void {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    this.copiedField.set(field);
+    setTimeout(() => {
+      this.copiedField.set(null);
+    }, 2000);
   }
 
   get isManagerOrAdmin(): boolean {

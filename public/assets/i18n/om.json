@@ -2290,7 +2290,9 @@
       "auditNotes": "Yaada Qorannoo Harkaa",
       "reviewedByOn": "{{user}} tiin guyyaa {{date}} qoratame",
       "close": "Cufi",
-      "manualReview": "Qorannoo Harkaa"
+      "manualReview": "Qorannoo Harkaa",
+      "copyReference": "Wabii garagalchi",
+      "copied": "Garagalfameera!"
     },
     "manualReview": {
       "title": "Qorannoo Harkaa Kaffaltii Hayyami",

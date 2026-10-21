@@ -76,43 +76,69 @@
         <span class="val font-mono">{{ verification.payerAccount || 'N/A' }}</span>
       </div>
 
-      <div class="item">
+      <div class="item amount-item expected">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.expectedAmount') }}</span>
-        <span class="val">{{ verification.expectedAmount | currency:verification.currency:'symbol':'1.2-2' }}</span>
+        <span class="val amount-val">{{ verification.expectedAmount | currency:verification.currency:'symbol':'1.2-2' }}</span>
       </div>
 
-      <div class="item">
+      <div class="item amount-item verified">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.verifiedAmount') }}</span>
-        <span class="val font-bold" [class.text-moss]="verification.status === 'Verified'">
+        <span class="val amount-val font-bold" [class.text-moss]="verification.status === 'Verified'">
           {{ (verification.verifiedAmount ?? 0) | currency:verification.currency:'symbol':'1.2-2' }}
         </span>
       </div>
 
-      <div class="item full">
+      <div class="item full reference-item">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.submittedReference') }}</span>
-        <span class="val font-mono">{{ verification.submittedReference }}</span>
+        <div class="ref-row">
+          <span class="val font-mono">{{ verification.submittedReference }}</span>
+          @if (verification.submittedReference) {
+          <button type="button" class="copy-btn" 
+                  (click)="copyReference(verification.submittedReference, 'submitted')"
+                  [matTooltip]="copiedField() === 'submitted' ? (t('paymentVerification.detailsDialog.copied') || 'Copied!') : (t('paymentVerification.detailsDialog.copyReference') || 'Copy')"
+                  [attr.aria-label]="t('paymentVerification.detailsDialog.copyReference') || 'Copy reference'">
+            <mat-icon>{{ copiedField() === 'submitted' ? 'check' : 'content_copy' }}</mat-icon>
+          </button>
+          }
+        </div>
       </div>
 
       @if (verification.verifiedReference && verification.verifiedReference !== verification.submittedReference) {
-      <div class="item full">
+      <div class="item full reference-item">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.extractedReference') }}</span>
-        <span class="val font-mono">{{ verification.verifiedReference }}</span>
+        <div class="ref-row">
+          <span class="val font-mono">{{ verification.verifiedReference }}</span>
+          <button type="button" class="copy-btn" 
+                  (click)="copyReference(verification.verifiedReference, 'verified')"
+                  [matTooltip]="copiedField() === 'verified' ? (t('paymentVerification.detailsDialog.copied') || 'Copied!') : (t('paymentVerification.detailsDialog.copyReference') || 'Copy')"
+                  [attr.aria-label]="t('paymentVerification.detailsDialog.copyReference') || 'Copy reference'">
+            <mat-icon>{{ copiedField() === 'verified' ? 'check' : 'content_copy' }}</mat-icon>
+          </button>
+        </div>
       </div>
       }
 
       @if (verification.providerTransactionId) {
-      <div class="item full">
+      <div class="item full reference-item">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.providerTxnId') }}</span>
-        <span class="val font-mono">{{ verification.providerTransactionId }}</span>
+        <div class="ref-row">
+          <span class="val font-mono">{{ verification.providerTransactionId }}</span>
+          <button type="button" class="copy-btn" 
+                  (click)="copyReference(verification.providerTransactionId, 'txnId')"
+                  [matTooltip]="copiedField() === 'txnId' ? (t('paymentVerification.detailsDialog.copied') || 'Copied!') : (t('paymentVerification.detailsDialog.copyReference') || 'Copy')"
+                  [attr.aria-label]="t('paymentVerification.detailsDialog.copyReference') || 'Copy reference'">
+            <mat-icon>{{ copiedField() === 'txnId' ? 'check' : 'content_copy' }}</mat-icon>
+          </button>
+        </div>
       </div>
       }
 
-      <div class="item">
+      <div class="item date-item">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.createdAt') }}</span>
         <span class="val">{{ verification.createdAtUtc | date:'medium' }}</span>
       </div>
 
-      <div class="item">
+      <div class="item date-item">
         <span class="lbl">{{ t('paymentVerification.detailsDialog.transactionDate') }}</span>
         <span class="val">{{ verification.transactionDateUtc ? (verification.transactionDateUtc | date:'medium') : 'N/A'
           }}</span>
@@ -128,7 +154,7 @@
         <span class="lbl">{{ t('paymentVerification.detailsDialog.officialWebReceipt') }}</span>
         <span class="val">
           <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="receipt-direct-link">
-            <span>{{ sourceUrl }}</span>
+            <span class="receipt-url-text">{{ sourceUrl }}</span>
             <mat-icon>open_in_new</mat-icon>
           </a>
         </span>
