@@ -102,10 +102,16 @@
       transition: background-color var(--pos-transition);
     }
 
-    &:hover {
-      background: var(--paper);
-      color: var(--ink);
-      border-color: var(--moss);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: var(--paper);
+        color: var(--ink);
+        border-color: var(--moss);
+      }
+    }
+
+    &:active {
+      transform: scale(0.96);
     }
 
     &.cat-pill--active {
@@ -175,9 +181,15 @@
     height: 32px;
     padding: 4px;
 
-    &:hover:not([disabled]) {
-      color: var(--moss);
-      background-color: var(--moss-soft, var(--paper));
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not([disabled]) {
+        color: var(--moss);
+        background-color: var(--moss-soft, var(--paper));
+      }
+    }
+
+    &:active:not([disabled]) {
+      transform: scale(0.92);
     }
   }
 }
@@ -265,14 +277,16 @@
     z-index: 2;
   }
 
-  &:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--moss);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--moss);
+    }
   }
 
   &:active:not(:disabled) {
-    transform: translateY(-1px) scale(0.99);
+    transform: translateY(-1px) scale(0.98);
   }
 
   &.product-tile--oos {
@@ -521,8 +535,15 @@
     .order-clear-btn {
       color: var(--slate);
 
-      &:hover {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          color: var(--status-out-fg, #c0392b);
+        }
+      }
+
+      &:active {
         color: var(--status-out-fg, #c0392b);
+        transform: scale(0.92);
       }
     }
   }
@@ -619,9 +640,15 @@
         justify-content: center;
       }
 
-      &:hover {
-        background: var(--status-out-bg);
-        color: var(--status-out-fg, #c0392b);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background: var(--status-out-bg);
+          color: var(--status-out-fg, #c0392b);
+        }
+      }
+
+      &:active {
+        transform: scale(0.9);
       }
     }
   }
@@ -745,8 +772,14 @@
           height: 0.88rem;
         }
 
-        &:hover {
-          background: var(--border);
+        @media (hover: hover) and (pointer: fine) {
+          &:hover {
+            background: var(--border);
+          }
+        }
+
+        &:active {
+          transform: scale(0.9);
         }
       }
 
@@ -786,9 +819,15 @@
         height: 0.9rem;
       }
 
-      &:hover {
-        color: var(--status-out-fg, #c0392b);
-        background: var(--status-out-bg);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          color: var(--status-out-fg, #c0392b);
+          background: var(--status-out-bg);
+        }
+      }
+
+      &:active {
+        transform: scale(0.9);
       }
     }
   }
@@ -893,9 +932,15 @@
       height: 1.1rem;
     }
 
-    &:hover {
-      border-color: var(--moss);
-      color: var(--ink);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: var(--moss);
+        color: var(--ink);
+      }
+    }
+
+    &:active {
+      transform: scale(0.97);
     }
 
     &.pay-tab--active {
@@ -938,9 +983,15 @@
       border-radius: 4px;
       cursor: pointer;
 
-      &:hover {
-        border-color: var(--moss);
-        color: var(--moss);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          border-color: var(--moss);
+          color: var(--moss);
+        }
+      }
+
+      &:active {
+        transform: scale(0.96);
       }
     }
   }
@@ -996,8 +1047,15 @@
     height: 0.95rem;
   }
 
-  &:hover {
-    color: var(--moss);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--moss);
+    }
+  }
+
+  &:active {
+    opacity: 0.7;
+    transform: scale(0.97);
   }
 }
 
@@ -1116,14 +1174,17 @@
     overflow: hidden;
     transition: all var(--transition-fast, 0.15s ease);
 
-    &:hover {
-      filter: brightness(0.94);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px var(--teal-glow), var(--shadow-lg);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        filter: brightness(0.94);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px var(--teal-glow), var(--shadow-lg);
+      }
     }
 
     &:active {
-      transform: translateY(0);
+      transform: scale(0.98);
+      filter: brightness(0.88);
       box-shadow: 0 2px 8px var(--teal-glow), var(--shadow-md);
     }
 

@@ -34,6 +34,32 @@ export class AuthService {
     return normalized.includes(target);
   }
 
+  private refreshTimer: any = null;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'accessToken') {
+          if (event.newValue) {
+            this.scheduleTokenRefresh(event.newValue);
+            this.getCurrentUser().subscribe();
+          } else {
+            this.currentUser.set(null);
+            this.cancelTokenRefresh();
+          }
+        }
+      });
+    }
+  }
+
+  setTokens(accessToken: string, refreshToken?: string) {
+    this.setToken(accessToken);
+    if (refreshToken) {
+      this.setRefreshToken(refreshToken);
+    }
+    this.scheduleTokenRefresh(accessToken);
+  }
+
   setToken(token: string) {
     localStorage.setItem('accessToken', token);
   }
@@ -42,9 +68,69 @@ export class AuthService {
     return localStorage.getItem('accessToken');
   }
 
-  removeToken() {
+  setRefreshToken(refreshToken: string) {
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
+  removeTokens() {
+    this.cancelTokenRefresh();
     localStorage.removeItem('accessToken');
-    localStorage.removeItem('inventory-language');
+    localStorage.removeItem('refreshToken');
+  }
+
+  removeToken() {
+    this.removeTokens();
+  }
+
+  isTokenExpired(token?: string | null, bufferSeconds = 30): boolean {
+    const t = token ?? this.getToken();
+    if (!t) return true;
+    const decoded = this.decodeToken(t);
+    if (!decoded || !decoded.exp) return true;
+    const expiresAtMs = decoded.exp * 1000;
+    return Date.now() >= (expiresAtMs - (bufferSeconds * 1000));
+  }
+
+  scheduleTokenRefresh(token?: string | null): void {
+    this.cancelTokenRefresh();
+    const t = token ?? this.getToken();
+    if (!t || typeof window === 'undefined') return;
+
+    const decoded = this.decodeToken(t);
+    if (!decoded || !decoded.exp) return;
+
+    const expiresAtMs = decoded.exp * 1000;
+    const now = Date.now();
+    // Proactively refresh 2 minutes before access token expiry
+    const refreshBufferMs = 2 * 60 * 1000;
+    let delayMs = expiresAtMs - now - refreshBufferMs;
+
+    // If already within buffer or expired, schedule shortly
+    if (delayMs <= 0) {
+      delayMs = 5000;
+    }
+
+    this.refreshTimer = setTimeout(() => {
+      this.refresh().subscribe({
+        error: (err) => {
+          // If refresh fails due to temporary network error, retry after 15 seconds
+          if (err?.status === 0 || (err?.status >= 500 && err?.status <= 504)) {
+            this.refreshTimer = setTimeout(() => this.scheduleTokenRefresh(), 15000);
+          }
+        }
+      });
+    }, delayMs);
+  }
+
+  cancelTokenRefresh(): void {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+      this.refreshTimer = null;
+    }
   }
 
   private decodeToken(token: string): any {
@@ -64,7 +150,7 @@ export class AuthService {
       tap(res => {
         const token = res.accessToken || res.token;
         if (token) {
-          this.setToken(token);
+          this.setTokens(token, res.refreshToken);
         }
       })
     );
@@ -77,13 +163,14 @@ export class AuthService {
   }
 
   refresh(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, { refreshToken: null }, {
+    const refreshToken = this.getRefreshToken();
+    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, { refreshToken: refreshToken || null }, {
       withCredentials: true,
     }).pipe(
       tap(res => {
         const token = res.accessToken || res.token;
         if (token) {
-          this.setToken(token);
+          this.setTokens(token, res.refreshToken);
           this.getCurrentUser().subscribe(); // Re-decode and set current user
         }
       })
@@ -91,13 +178,14 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
+    const refreshToken = this.getRefreshToken();
+    return this.http.post<void>(`${this.baseUrl}/logout`, { refreshToken: refreshToken || null }, { withCredentials: true }).pipe(
       tap(() => {
-        this.removeToken();
+        this.removeTokens();
         this.currentUser.set(null);
       }),
       catchError(() => {
-        this.removeToken();
+        this.removeTokens();
         this.currentUser.set(null);
         return of(undefined);
       }),
@@ -136,6 +224,9 @@ export class AuthService {
 
     this.currentUser.set(user);
     this.languageService.initLanguage(user);
+    if (!this.isTokenExpired(token) && !this.refreshTimer) {
+      this.scheduleTokenRefresh(token);
+    }
     return of(user);
   }
 

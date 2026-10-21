@@ -56,7 +56,16 @@ export const AuthStore = signalStore(
             });
             return of(null);
           }
-          return authService.getCurrentUser().pipe(
+
+          const hasValidToken = !authService.isTokenExpired();
+          const authFlow$ = hasValidToken
+            ? authService.getCurrentUser()
+            : authService.refresh().pipe(
+                switchMap(() => authService.getCurrentUser()),
+                catchError(() => of(null))
+              );
+
+          return authFlow$.pipe(
             switchMap((user) => {
               if (user) {
                 const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
@@ -88,7 +97,11 @@ export const AuthStore = signalStore(
                 });
                 if (router.url.includes('/login')) {
                   const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
-                  if (r?.toLowerCase() === 'systemadmin') {
+                  const queryParams = router.routerState.snapshot.root.queryParams;
+                  const returnUrl = queryParams['returnUrl'];
+                  if (returnUrl && !returnUrl.includes('/login')) {
+                    router.navigateByUrl(returnUrl);
+                  } else if (r?.toLowerCase() === 'systemadmin') {
                     router.navigate(['/system-admin/dashboard']);
                   } else {
                     router.navigate(['/dashboard']);
@@ -154,7 +167,11 @@ export const AuthStore = signalStore(
                       error: null,
                     });
                     const r = Array.isArray(user.roles) ? user.roles[0] : user.roles;
-                    if (r?.toLowerCase() === 'systemadmin') {
+                    const queryParams = router.routerState.snapshot.root.queryParams;
+                    const returnUrl = queryParams['returnUrl'];
+                    if (returnUrl && !returnUrl.includes('/login')) {
+                      router.navigateByUrl(returnUrl);
+                    } else if (r?.toLowerCase() === 'systemadmin') {
                       router.navigate(['/system-admin/dashboard']);
                     } else {
                       router.navigate(['/dashboard']);

@@ -79,11 +79,21 @@
     .close-btn {
       color: var(--slate);
       border-radius: 8px;
-      transition: background 0.15s ease, color 0.15s ease;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
 
-      &:hover {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background: var(--paper);
+          color: var(--ink);
+        }
+      }
+
+      &:active {
         background: var(--paper);
         color: var(--ink);
+        transform: scale(0.95);
       }
     }
   }
@@ -184,6 +194,8 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
 
         mat-icon {
           font-size: 18px;
@@ -192,9 +204,15 @@
           color: inherit;
         }
 
-        &:hover {
-          color: var(--ink);
-          background: var(--moss-soft);
+        @media (hover: hover) and (pointer: fine) {
+          &:hover {
+            color: var(--ink);
+            background: var(--moss-soft);
+          }
+        }
+
+        &:active {
+          transform: scale(0.97);
         }
 
         &.active {
@@ -372,10 +390,19 @@
                 box-shadow: 0 2px 8px var(--teal-glow);
                 border: none !important;
                 transition: all 0.2s ease;
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
 
-                &:hover {
-                  background: var(--teal-dark, #465c3f) !important;
-                  transform: translateY(-1px);
+                @media (hover: hover) and (pointer: fine) {
+                  &:hover {
+                    background: var(--teal-dark, #465c3f) !important;
+                    transform: translateY(-1px);
+                  }
+                }
+
+                &:active {
+                  transform: scale(0.98);
+                  filter: brightness(0.88);
                 }
               }
 
@@ -387,11 +414,19 @@
                 font-weight: 500 !important;
                 font-size: 0.82rem !important;
                 transition: all 0.2s ease;
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
 
-                &:hover {
-                  background: rgba(255, 255, 255, 0.22) !important;
-                  border-color: rgba(255, 255, 255, 0.6) !important;
-                  transform: translateY(-1px);
+                @media (hover: hover) and (pointer: fine) {
+                  &:hover {
+                    background: rgba(255, 255, 255, 0.22) !important;
+                    border-color: rgba(255, 255, 255, 0.6) !important;
+                    transform: translateY(-1px);
+                  }
+                }
+
+                &:active {
+                  transform: scale(0.98);
                 }
               }
             }
@@ -413,14 +448,23 @@
           font-size: 0.82rem !important;
           padding: 0.45rem 1rem !important;
           transition: all 0.2s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
 
           mat-icon {
             color: var(--rose) !important;
           }
 
-          &:hover {
-            background: var(--rose-soft) !important;
-            color: var(--rose) !important;
+          @media (hover: hover) and (pointer: fine) {
+            &:hover {
+              background: var(--rose-soft) !important;
+              color: var(--rose) !important;
+            }
+          }
+
+          &:active {
+            transform: scale(0.98);
+            filter: brightness(0.9);
           }
         }
 
@@ -433,19 +477,27 @@
           font-size: 0.82rem !important;
           padding: 0.45rem 1rem !important;
           transition: all 0.2s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
 
           mat-icon {
             color: var(--slate) !important;
           }
 
-          &:hover {
-            background: var(--paper) !important;
-            border-color: var(--border-strong) !important;
-            color: var(--ink) !important;
-
-            mat-icon {
+          @media (hover: hover) and (pointer: fine) {
+            &:hover {
+              background: var(--paper) !important;
+              border-color: var(--border-strong) !important;
               color: var(--ink) !important;
+
+              mat-icon {
+                color: var(--ink) !important;
+              }
             }
+          }
+
+          &:active {
+            transform: scale(0.98);
           }
         }
       }
@@ -537,19 +589,28 @@
             padding: 0.45rem 1.15rem !important;
             box-shadow: var(--shadow-sm);
             transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
 
             mat-icon {
               color: var(--moss) !important;
             }
 
-            &:hover {
-              background: var(--moss) !important;
-              color: var(--btn-primary-fg, #ffffff) !important;
-              box-shadow: 0 2px 8px var(--teal-glow);
-
-              mat-icon {
+            @media (hover: hover) and (pointer: fine) {
+              &:hover {
+                background: var(--moss) !important;
                 color: var(--btn-primary-fg, #ffffff) !important;
+                box-shadow: 0 2px 8px var(--teal-glow);
+
+                mat-icon {
+                  color: var(--btn-primary-fg, #ffffff) !important;
+                }
               }
+            }
+
+            &:active {
+              transform: scale(0.98);
+              filter: brightness(0.88);
             }
           }
 
@@ -603,19 +664,27 @@
           font-weight: 500 !important;
           font-size: 0.82rem !important;
           transition: all 0.2s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
 
           mat-icon {
             color: var(--slate) !important;
           }
 
-          &:hover {
-            background: var(--paper) !important;
-            border-color: var(--border-strong) !important;
-            color: var(--ink) !important;
-
-            mat-icon {
+          @media (hover: hover) and (pointer: fine) {
+            &:hover {
+              background: var(--paper) !important;
+              border-color: var(--border-strong) !important;
               color: var(--ink) !important;
+
+              mat-icon {
+                color: var(--ink) !important;
+              }
             }
+          }
+
+          &:active {
+            transform: scale(0.98);
           }
         }
 
@@ -627,14 +696,22 @@
           font-weight: 500 !important;
           font-size: 0.82rem !important;
           transition: all 0.2s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
 
           mat-icon {
             color: var(--rose) !important;
           }
 
-          &:hover {
-            background: var(--rose-soft) !important;
-            color: var(--rose) !important;
+          @media (hover: hover) and (pointer: fine) {
+            &:hover {
+              background: var(--rose-soft) !important;
+              color: var(--rose) !important;
+            }
+          }
+
+          &:active {
+            transform: scale(0.98);
           }
         }
       }
@@ -733,11 +810,19 @@
           border-radius: 8px;
           margin-top: -4px;
           margin-right: -4px;
-          transition: background 0.15s ease, color 0.15s ease;
+          transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
 
-          &:hover {
-            background: var(--surface);
-            color: var(--ink);
+          @media (hover: hover) and (pointer: fine) {
+            &:hover {
+              background: var(--surface);
+              color: var(--ink);
+            }
+          }
+
+          &:active {
+            transform: scale(0.95);
           }
         }
       }
@@ -868,6 +953,8 @@
             height: 34px;
             padding: 0 0.85rem;
             transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
 
             mat-icon {
               font-size: 18px;
@@ -877,14 +964,21 @@
               color: var(--moss) !important;
             }
 
-            &:hover {
-              background: var(--moss) !important;
-              color: var(--btn-primary-fg, #ffffff) !important;
-              box-shadow: 0 2px 8px var(--teal-glow);
-
-              mat-icon {
+            @media (hover: hover) and (pointer: fine) {
+              &:hover {
+                background: var(--moss) !important;
                 color: var(--btn-primary-fg, #ffffff) !important;
+                box-shadow: 0 2px 8px var(--teal-glow);
+
+                mat-icon {
+                  color: var(--btn-primary-fg, #ffffff) !important;
+                }
               }
+            }
+
+            &:active {
+              transform: scale(0.98);
+              filter: brightness(0.88);
             }
           }
         }
@@ -1101,10 +1195,19 @@
       font-weight: 600;
       padding: 0.55rem 1.2rem;
       transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
 
-      &:hover:not(:disabled) {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover:not(:disabled) {
+          background: var(--paper);
+          color: var(--ink);
+        }
+      }
+
+      &:active:not(:disabled) {
+        transform: scale(0.98);
         background: var(--paper);
-        color: var(--ink);
       }
     }
 
@@ -1121,6 +1224,8 @@
         font-weight: 600;
         padding: 0.55rem 1.2rem;
         transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
 
         ::ng-deep .mdc-button__label {
           display: inline-flex;
@@ -1142,9 +1247,16 @@
           }
         }
 
-        &:hover:not(:disabled) {
+        @media (hover: hover) and (pointer: fine) {
+          &:hover:not(:disabled) {
+            background: var(--paper);
+            color: var(--ink);
+          }
+        }
+
+        &:active:not(:disabled) {
+          transform: scale(0.98);
           background: var(--paper);
-          color: var(--ink);
         }
       }
 
@@ -1158,6 +1270,8 @@
         box-shadow: 0 4px 14px var(--teal-glow);
         border: none;
         transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
 
         ::ng-deep .mdc-button__label {
           display: inline-flex;
@@ -1195,9 +1309,17 @@
           }
         }
 
-        &:hover:not(:disabled) {
-          background: var(--teal-dark, #465c3f);
-          transform: translateY(-1px);
+        @media (hover: hover) and (pointer: fine) {
+          &:hover:not(:disabled) {
+            background: var(--teal-dark, #465c3f);
+            transform: translateY(-1px);
+          }
+        }
+
+        &:active:not(:disabled) {
+          transform: scale(0.98);
+          filter: brightness(0.88);
+          box-shadow: 0 2px 6px var(--teal-glow);
         }
 
         &:disabled {
@@ -1216,6 +1338,8 @@
         box-shadow: 0 4px 14px var(--teal-glow);
         border: none;
         transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
 
         ::ng-deep .mdc-button__label {
           display: inline-flex;
@@ -1242,9 +1366,17 @@
           }
         }
 
-        &:hover:not(:disabled) {
-          background: var(--teal-dark, #465c3f);
-          transform: translateY(-1px);
+        @media (hover: hover) and (pointer: fine) {
+          &:hover:not(:disabled) {
+            background: var(--teal-dark, #465c3f);
+            transform: translateY(-1px);
+          }
+        }
+
+        &:active:not(:disabled) {
+          transform: scale(0.98);
+          filter: brightness(0.88);
+          box-shadow: 0 2px 6px var(--teal-glow);
         }
       }
     }

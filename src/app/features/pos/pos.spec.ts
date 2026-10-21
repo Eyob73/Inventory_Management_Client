@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -135,4 +136,29 @@ describe('PosComponent - Payment Verification Toggle Integration', () => {
     expect(openVerificationSpy).not.toHaveBeenCalled();
     expect(openConfirmSpy).toHaveBeenCalled();
   });
+
+  it('should reset all cart and customer state when clearCart is called', () => {
+    component.cart.set([
+      {
+        product: { id: 'p1', name: 'Product 1', price: 100, quantityInStock: 10 } as any,
+        quantity: 1,
+        discountAmount: 0,
+        isBottleExchange: false,
+        bottleDepositAmount: 0
+      }
+    ]);
+    component.selectedCustomerId.set('cust-1');
+    component.manualCustomerName.set('Test Customer');
+    component.discountAmount.set(50);
+    component.amountReceived.set(100);
+
+    component.clearCart();
+
+    expect(component.cart().length).toBe(0);
+    expect(component.selectedCustomerId()).toBeNull();
+    expect(component.manualCustomerName()).toBe('');
+    expect(component.discountAmount()).toBe(0);
+    expect(component.amountReceived()).toBe(0);
+  });
 });
+

@@ -22,51 +22,7 @@ import { TenantApiService } from '../../services/tenant';
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
-let dbPromise: Promise<IDBDatabase> | null = null;
-function getDB(): Promise<IDBDatabase> {
-  if (!dbPromise) {
-    dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open('InventoryDraftsDB', 1);
-      request.onupgradeneeded = () => request.result.createObjectStore('drafts');
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-  return dbPromise;
-}
-
-async function setDraft(key: string, value: any) {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('drafts', 'readwrite');
-    tx.objectStore('drafts').put(value, key);
-  } catch (e) {
-    console.error('IndexedDB save failed', e);
-  }
-}
-
-async function getDraft(key: string): Promise<any> {
-  try {
-    const db = await getDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction('drafts', 'readonly');
-      const req = tx.objectStore('drafts').get(key);
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-  } catch (e) {
-    console.error('IndexedDB read failed', e);
-    return null;
-  }
-}
-
-async function removeDraft(key: string) {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('drafts', 'readwrite');
-    tx.objectStore('drafts').delete(key);
-  } catch (e) {}
-}
+import { setDraft, getDraft, removeDraft } from '../../utils/draft-storage';
 
 @Component({
   selector: 'app-add-products',

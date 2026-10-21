@@ -285,9 +285,26 @@
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
-  transition: all 0.2s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
-  &:hover,
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--paper);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+
+      .chevron-icon {
+        transform: rotate(180deg);
+        color: var(--ink);
+      }
+
+      .avatar-initials {
+        box-shadow: 0 3px 10px var(--teal-glow);
+      }
+    }
+  }
+
   &.mat-mdc-menu-trigger-opened {
     background: var(--paper);
     border-color: var(--border-strong);
@@ -301,6 +318,10 @@
     .avatar-initials {
       box-shadow: 0 3px 10px var(--teal-glow);
     }
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   &:focus-visible {
@@ -548,12 +569,21 @@
     margin-right: 12px !important;
   }
 
-  &:hover {
-    color: var(--teal) !important;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
-    mat-icon {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
       color: var(--teal) !important;
+
+      mat-icon {
+        color: var(--teal) !important;
+      }
     }
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   &.active-link {
@@ -708,6 +738,8 @@
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast) ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
   mat-icon {
     font-size: 18px;
@@ -715,9 +747,17 @@
     height: 18px;
   }
 
-  &:hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--warn);
+      background: color-mix(in srgb, var(--warn) 10%, transparent);
+    }
+  }
+
+  &:active {
     color: var(--warn);
     background: color-mix(in srgb, var(--warn) 10%, transparent);
+    transform: scale(0.92);
   }
 }
 
@@ -773,11 +813,20 @@
     justify-content: center;
     border-radius: 50%;
     background: transparent;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 
-    &:hover {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: var(--surface);
+        border-color: transparent;
+        box-shadow: none;
+      }
+    }
+
+    &:active {
       background: var(--surface);
-      border-color: transparent;
-      box-shadow: none;
+      transform: scale(0.95);
     }
 
     .search-text,

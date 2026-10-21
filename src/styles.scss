@@ -53,6 +53,8 @@ a {
 button {
   font-family: inherit;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* ─── Global Custom Scrollbar Styles ── */
@@ -169,6 +171,21 @@ input[placeholder*="search" i] {
 }
 
 /* ─── Global Button Component Styles ────────────────────────────── */
+button,
+[role="button"],
+.btn,
+.action-btn,
+.mat-mdc-button-base,
+.mat-mdc-menu-item,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -181,9 +198,13 @@ input[placeholder*="search" i] {
   font-family: inherit;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+              box-shadow 0.15s ease, transform 0.1s ease, filter 0.1s ease;
   text-decoration: none;
   line-height: 1.2;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
   mat-icon,
   .btn-icon {
@@ -195,11 +216,7 @@ input[placeholder*="search" i] {
     justify-content: center;
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
+  /* Size Modifiers */
   &--sm {
     padding: 0.45rem 0.875rem;
     font-size: 0.8rem;
@@ -219,240 +236,279 @@ input[placeholder*="search" i] {
     border-radius: 12px;
   }
 
-  &--primary {
-    background: var(--moss);
-    color: var(--btn-primary-fg, #ffffff);
-    border-color: var(--moss);
-    box-shadow: 0 4px 14px var(--teal-glow);
-
-    &:hover:not(:disabled) {
-      filter: brightness(0.92);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px var(--teal-glow);
-    }
-
-    &:active:not(:disabled) {
-      transform: translateY(0);
-    }
-  }
-
-  &--outline,
-  &--ghost {
-    background: transparent;
-    color: var(--slate);
-    border-color: var(--border-strong, var(--border));
-
-    &:hover:not(:disabled) {
-      background: var(--row-hover, rgba(255, 255, 255, 0.04));
-      color: var(--ink);
-      border-color: var(--border-strong);
-    }
-  }
-
-  &--secondary {
-    background: var(--surface);
-    color: var(--ink);
-    border-color: var(--border);
-
-    &:hover:not(:disabled) {
-      background: var(--paper);
-      border-color: var(--border-strong);
-    }
-  }
-}
-
-/* Fullscreen Image Dialog */
-.fullscreen-image-backdrop {
-  background: rgba(0, 0, 0, 0.9);
-}
-
-::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 9px;
-}
-
-/* Auto-hide: Show scrollbar thumb and track only when hovering directly over it, or while scrolling */
-::-webkit-scrollbar-track:hover,
-*.is-scrolling::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
-}
-
-::-webkit-scrollbar-thumb:hover,
-::-webkit-scrollbar-thumb:active,
-*.is-scrolling::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-  }
-
-  *:hover {
-    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
-  }
-}
-
-
-
-/* ─── Global Utility Helpers ───────────────────────────────── */
-.text-truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-
-/* ─── Global Form Control Focus & Hover Styles ─────────────── */
-input:not([type="checkbox"]):not([type="radio"]):not(.mat-mdc-input-element):not(.mat-input-element),
-select,
-textarea {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-
-  &:hover {
-    border-color: var(--moss);
-    box-shadow: 0 0 0 3px var(--teal-glow);
-  }
-
-  &:focus,
-  &:focus-visible {
-    outline: none;
-    background: var(--surface);
-    border-color: var(--moss);
-    box-shadow: 0 0 0 3px var(--teal-glow);
-  }
-}
-
-/* Ensure Angular Material inputs never inherit generic input borders or glow on focus/hover */
-.mat-mdc-form-field input.mat-mdc-input-element,
-.mat-mdc-input-element {
-
-  &:hover,
-  &:focus,
-  &:focus-visible {
-    border: none !important;
+  /* Disabled State */
+  &:disabled,
+  &[disabled],
+  &.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none !important;
+    filter: none !important;
     box-shadow: none !important;
-    outline: none !important;
-    background: transparent !important;
-  }
-}
-
-/* ─── Global Search Input Cursor (Caret) ─────────────── */
-.search-form-field,
-.search-input-container,
-.search-input,
-.pos-search-input,
-.search-dialog,
-input[type="search"],
-input[placeholder*="Search" i],
-input[placeholder*="search" i] {
-  caret-color: var(--ink) !important;
-
-  input,
-  .mat-mdc-form-field-input-control {
-    caret-color: var(--ink) !important;
-  }
-}
-
-/* ─── Global Button Component Styles ────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.35rem;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  line-height: 1.2;
-
-  mat-icon,
-  .btn-icon {
-    font-size: 1.1rem;
-    width: 1.1rem;
-    height: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  /* Loading State */
+  &.is-loading,
+  &[aria-busy="true"] {
+    cursor: wait;
+    pointer-events: none;
   }
 
-  &--sm {
-    padding: 0.45rem 0.875rem;
-    font-size: 0.8rem;
-    border-radius: 8px;
-
-    mat-icon,
-    .btn-icon {
-      font-size: 0.95rem;
-      width: 0.95rem;
-      height: 0.95rem;
-    }
-  }
-
-  &--lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9375rem;
-    border-radius: 12px;
-  }
-
-  &--primary {
+  /* Primary Variant */
+  &--primary,
+  &-primary {
     background: var(--moss);
     color: var(--btn-primary-fg, #ffffff);
     border-color: var(--moss);
     box-shadow: 0 4px 14px var(--teal-glow);
-
-    &:hover:not(:disabled) {
-      filter: brightness(0.92);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px var(--teal-glow);
-    }
-
-    &:active:not(:disabled) {
-      transform: translateY(0);
-    }
   }
 
-  &--outline,
-  &--ghost {
-    background: transparent;
-    color: var(--slate);
-    border-color: var(--border-strong, var(--border));
-
-    &:hover:not(:disabled) {
-      background: var(--row-hover, rgba(255, 255, 255, 0.04));
-      color: var(--ink);
-      border-color: var(--border-strong);
-    }
-  }
-
-  &--secondary {
+  /* Secondary Variant */
+  &--secondary,
+  &-secondary {
     background: var(--surface);
     color: var(--ink);
     border-color: var(--border);
-
-    &:hover:not(:disabled) {
-      background: var(--paper);
-      border-color: var(--border-strong);
-    }
   }
+
+  /* Outline & Ghost Variants */
+  &--outline,
+  &--ghost,
+  &-outline,
+  &-ghost {
+    background: transparent;
+    color: var(--slate);
+    border-color: var(--border-strong, var(--border));
+  }
+
+  /* Danger / Destructive Variant */
+  &--danger,
+  &--destructive,
+  &-danger,
+  &-destructive {
+    background: var(--rose);
+    color: #ffffff;
+    border-color: var(--rose);
+    box-shadow: 0 4px 14px rgba(217, 56, 56, 0.25);
+  }
+
+  /* Warning Variant */
+  &--warning,
+  &-warning {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+  }
+
+  /* Info Variant */
+  &--info,
+  &-info {
+    background: var(--cobalt);
+    color: #ffffff;
+    border-color: var(--cobalt);
+    box-shadow: 0 4px 14px rgba(14, 140, 127, 0.25);
+  }
+}
+
+/* ─── Desktop Hover Effects (Mouse / Fine Pointer ONLY) ───────────── */
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover:not(:disabled):not([disabled]),
+  .btn-primary:hover:not(:disabled):not([disabled]) {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px var(--teal-glow);
+  }
+
+  .btn--secondary:hover:not(:disabled):not([disabled]),
+  .btn-secondary:hover:not(:disabled):not([disabled]) {
+    background: var(--paper);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+
+  .btn--outline:hover:not(:disabled):not([disabled]),
+  .btn--ghost:hover:not(:disabled):not([disabled]),
+  .btn-outline:hover:not(:disabled):not([disabled]),
+  .btn-ghost:hover:not(:disabled):not([disabled]) {
+    background: var(--row-hover, rgba(255, 255, 255, 0.04));
+    color: var(--ink);
+    border-color: var(--border-strong);
+  }
+
+  .btn--danger:hover:not(:disabled):not([disabled]),
+  .btn--destructive:hover:not(:disabled):not([disabled]),
+  .btn-danger:hover:not(:disabled):not([disabled]),
+  .btn-destructive:hover:not(:disabled):not([disabled]) {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(217, 56, 56, 0.35);
+  }
+
+  .btn--warning:hover:not(:disabled):not([disabled]),
+  .btn-warning:hover:not(:disabled):not([disabled]) {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+  }
+
+  .btn--info:hover:not(:disabled):not([disabled]),
+  .btn-info:hover:not(:disabled):not([disabled]) {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(14, 140, 127, 0.35);
+  }
+}
+
+/* ─── Universal Active / Tap Feedback (Instant Touch/Click Response) ─ */
+button:not(:disabled):not([disabled]):active,
+[role="button"]:not([aria-disabled="true"]):active,
+.btn:not(:disabled):not([disabled]):active,
+.action-btn:not(:disabled):not([disabled]):active {
+  transform: scale(0.98);
+  transition-duration: 0.05s;
+}
+
+.btn--primary:not(:disabled):not([disabled]):active,
+.btn-primary:not(:disabled):not([disabled]):active {
+  filter: brightness(0.86);
+  box-shadow: 0 2px 6px var(--teal-glow);
+  transform: scale(0.98);
+}
+
+.btn--secondary:not(:disabled):not([disabled]):active,
+.btn-secondary:not(:disabled):not([disabled]):active {
+  background: var(--paper);
+  border-color: var(--border-strong);
+  filter: brightness(0.95);
+  transform: scale(0.98);
+}
+
+.btn--outline:not(:disabled):not([disabled]):active,
+.btn--ghost:not(:disabled):not([disabled]):active,
+.btn-outline:not(:disabled):not([disabled]):active,
+.btn-ghost:not(:disabled):not([disabled]):active {
+  background: var(--row-hover);
+  border-color: var(--border-strong);
+  color: var(--ink);
+  transform: scale(0.98);
+}
+
+.btn--danger:not(:disabled):not([disabled]):active,
+.btn--destructive:not(:disabled):not([disabled]):active,
+.btn-danger:not(:disabled):not([disabled]):active,
+.btn-destructive:not(:disabled):not([disabled]):active {
+  filter: brightness(0.86);
+  box-shadow: 0 2px 6px rgba(217, 56, 56, 0.25);
+  transform: scale(0.98);
+}
+
+.btn--warning:not(:disabled):not([disabled]):active,
+.btn-warning:not(:disabled):not([disabled]):active {
+  filter: brightness(0.86);
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+  transform: scale(0.98);
+}
+
+.btn--info:not(:disabled):not([disabled]):active,
+.btn-info:not(:disabled):not([disabled]):active {
+  filter: brightness(0.86);
+  box-shadow: 0 2px 6px rgba(14, 140, 127, 0.25);
+  transform: scale(0.98);
+}
+
+/* ─── Touch Device Interaction & Sticky-Hover Immunity ────────────── */
+@media (hover: none), (pointer: coarse) {
+  /* Prevent sticky hover transforms or filters on mobile touch release */
+  button:not(:active):not(:focus-visible),
+  [role="button"]:not(:active):not(:focus-visible),
+  .btn:not(:active):not(:focus-visible),
+  .action-btn:not(:active):not(:focus-visible),
+  .mat-mdc-button-base:not(:active):not(:focus-visible) {
+    transform: none;
+    filter: none;
+  }
+
+  /* Reset .btn variants so release returns immediately to resting state */
+  .btn--primary:not(:active):not(:focus-visible),
+  .btn-primary:not(:active):not(:focus-visible) {
+    background-color: var(--moss);
+    border-color: var(--moss);
+    color: var(--btn-primary-fg, #ffffff);
+    box-shadow: 0 4px 14px var(--teal-glow);
+  }
+
+  .btn--secondary:not(:active):not(:focus-visible),
+  .btn-secondary:not(:active):not(:focus-visible) {
+    background-color: var(--surface);
+    border-color: var(--border);
+    color: var(--ink);
+  }
+
+  .btn--outline:not(:active):not(:focus-visible),
+  .btn--ghost:not(:active):not(:focus-visible),
+  .btn-outline:not(:active):not(:focus-visible),
+  .btn-ghost:not(:active):not(:focus-visible) {
+    background-color: transparent;
+    border-color: var(--border-strong, var(--border));
+    color: var(--slate);
+  }
+
+  .btn--danger:not(:active):not(:focus-visible),
+  .btn--destructive:not(:active):not(:focus-visible),
+  .btn-danger:not(:active):not(:focus-visible),
+  .btn-destructive:not(:active):not(:focus-visible) {
+    background-color: var(--rose);
+    border-color: var(--rose);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(217, 56, 56, 0.25);
+  }
+
+  .btn--warning:not(:active):not(:focus-visible),
+  .btn-warning:not(:active):not(:focus-visible) {
+    background-color: #f59e0b;
+    border-color: #f59e0b;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+  }
+
+  .btn--info:not(:active):not(:focus-visible),
+  .btn-info:not(:active):not(:focus-visible) {
+    background-color: var(--cobalt);
+    border-color: var(--cobalt);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(14, 140, 127, 0.25);
+  }
+
+  /* Angular Material: Suppress stuck hover state layer on touch release */
+  .mat-mdc-button-base:not(:active):not(:focus-visible) .mat-mdc-button-persistent-ripple::before,
+  .mat-mdc-icon-button:not(:active):not(:focus-visible) .mat-mdc-button-persistent-ripple::before,
+  .mat-mdc-fab:not(:active):not(:focus-visible) .mat-mdc-button-persistent-ripple::before,
+  .mat-mdc-mini-fab:not(:active):not(:focus-visible) .mat-mdc-button-persistent-ripple::before,
+  .mat-mdc-menu-item:not(:active):not(:focus-visible) .mat-mdc-menu-item-persistent-ripple::before {
+    display: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* ─── Keyboard Focus Accessibility (WCAG 2.1 AA) ───────────────────── */
+button:focus-visible,
+[role="button"]:focus-visible,
+.btn:focus-visible,
+.action-btn:focus-visible,
+.mat-mdc-button-base:focus-visible,
+.mat-mdc-menu-item:focus-visible {
+  outline: 2px solid var(--moss) !important;
+  outline-offset: 2px !important;
+}
+
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible),
+.action-btn:focus:not(:focus-visible),
+.mat-mdc-button-base:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Fullscreen Image Dialog */
