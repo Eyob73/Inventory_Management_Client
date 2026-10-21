@@ -54,7 +54,12 @@
         <tr *ngFor="let item of sale.items; let i = index">
           <td>{{ i + 1 }}</td>
           <td>
-            <div class="item-name">{{ item.productName }}</div>
+            <div class="item-name"
+                 [class.item-name--link]="!!item.productId"
+                 (click)="viewProduct(item.productId)"
+                 [title]="item.productId ? 'View product details' : ''">
+              {{ item.productName }}
+            </div>
           </td>
           <td><code class="sku-code">{{ item.sku }}</code></td>
           <td class="text-right">{{ item.unitPrice | number:'1.2-2' }} ETB</td>
@@ -76,7 +81,7 @@
         <span>{{ sale.subtotal | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="totalBottleDeposit > 0">
-        <span>Bottle Deposits</span>
+        <span>{{ t('receipt.bottleDeposits') }}</span>
         <span>+{{ totalBottleDeposit | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="sale.discountAmount > 0">

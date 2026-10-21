@@ -14,6 +14,7 @@ export interface TenantProfile {
   taxId?: string;
   lowStockThreshold?: number;
   enableBottleManagement?: boolean;
+  posPaymentVerificationEnabled?: boolean;
 }
 
 export interface UpdateTenantProfile {
@@ -25,6 +26,11 @@ export interface UpdateTenantProfile {
   taxId?: string;
   lowStockThreshold?: number;
   enableBottleManagement?: boolean;
+  posPaymentVerificationEnabled?: boolean;
+}
+
+export interface PosPaymentVerificationSetting {
+  enabled: boolean;
 }
 
 @Injectable({
@@ -32,8 +38,10 @@ export interface UpdateTenantProfile {
 })
 export class TenantApiService {
   public isBottleManagementEnabled = signal<boolean>(false);
+  public isPaymentVerificationEnabled = signal<boolean>(false);
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Tenants`;
+  private settingsUrl = `${environment.apiUrl}/settings`;
 
   getMyTenant(): Observable<TenantProfile> {
     return this.http.get<TenantProfile>(`${this.baseUrl}/mine`);
@@ -41,6 +49,14 @@ export class TenantApiService {
 
   updateMyTenant(data: UpdateTenantProfile): Observable<TenantProfile> {
     return this.http.put<TenantProfile>(`${this.baseUrl}/mine`, data);
+  }
+
+  getPosPaymentVerification(): Observable<PosPaymentVerificationSetting> {
+    return this.http.get<PosPaymentVerificationSetting>(`${this.settingsUrl}/pos-payment-verification`);
+  }
+
+  updatePosPaymentVerification(enabled: boolean): Observable<PosPaymentVerificationSetting> {
+    return this.http.put<PosPaymentVerificationSetting>(`${this.settingsUrl}/pos-payment-verification`, { enabled });
   }
 }
 

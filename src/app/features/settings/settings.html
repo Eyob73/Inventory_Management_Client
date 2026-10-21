@@ -590,6 +590,42 @@
           </div>
         </div>
         }
+
+        <!-- POS Payment Verification (Manager) -->
+        @if (activeSection() === 'posPaymentVerification') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>verified_user</mat-icon>
+            <div>
+              <h2>{{ t('settingsFull.posPaymentVerificationTitle') }}</h2>
+              <p class="card-desc">{{ t('settingsFull.posPaymentVerificationDesc') }}</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <div class="toggle-title-row">
+                  <span class="toggle-label">{{ t('settingsFull.posPaymentVerificationToggle') }}</span>
+                  <span class="status-badge" [class.status--active]="posPaymentVerificationEnabled()" [class.status--inactive]="!posPaymentVerificationEnabled()">
+                    {{ posPaymentVerificationEnabled() ? t('common.enabled') : t('common.disabled') }}
+                  </span>
+                  @if (isSavingPaymentVerification()) {
+                    <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+                  }
+                </div>
+                <span class="toggle-hint">{{ t('settingsFull.posPaymentVerificationDesc') }}</span>
+              </div>
+              <mat-slide-toggle
+                [checked]="posPaymentVerificationEnabled()"
+                [disabled]="isSavingPaymentVerification()"
+                (change)="onPaymentVerificationToggleChange($event.checked)"
+                color="primary"
+                aria-label="POS Payment Verification Toggle">
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+        }
         }
 
         <!-- =================================================================== -->
@@ -899,6 +935,42 @@
                 <span class="toggle-label">{{ t('bottles.enableBottleMgmt') }}</span>
               </div>
               <mat-slide-toggle [(ngModel)]="adminBottle.enableBottleManagement" color="primary"></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- POS Payment Verification -->
+        @if (activeSection() === 'posPaymentVerification') {
+        <div class="settings-card">
+          <div class="card-header">
+            <mat-icon>verified_user</mat-icon>
+            <div>
+              <h2>{{ t('settingsFull.posPaymentVerificationTitle') }}</h2>
+              <p class="card-desc">{{ t('settingsFull.posPaymentVerificationDesc') }}</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <div class="toggle-title-row">
+                  <span class="toggle-label">{{ t('settingsFull.posPaymentVerificationToggle') }}</span>
+                  <span class="status-badge" [class.status--active]="posPaymentVerificationEnabled()" [class.status--inactive]="!posPaymentVerificationEnabled()">
+                    {{ posPaymentVerificationEnabled() ? t('common.enabled') : t('common.disabled') }}
+                  </span>
+                  @if (isSavingPaymentVerification()) {
+                    <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+                  }
+                </div>
+                <span class="toggle-hint">{{ t('settingsFull.posPaymentVerificationDesc') }}</span>
+              </div>
+              <mat-slide-toggle
+                [checked]="posPaymentVerificationEnabled()"
+                [disabled]="isSavingPaymentVerification()"
+                (change)="onPaymentVerificationToggleChange($event.checked)"
+                color="primary"
+                aria-label="POS Payment Verification Toggle">
+              </mat-slide-toggle>
             </div>
           </div>
         </div>

@@ -108,6 +108,19 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
       'Reports': 'reports',
       'Users': 'users',
       'Settings': 'settings',
+      'Payment Verification': 'paymentVerification',
+    };
+    return map[label] || label.toLowerCase().replace(/ /g, '');
+  }
+
+  getNavGroupKey(label: string): string {
+    const map: Record<string, string> = {
+      'Main': 'main',
+      'Bottle Management': 'bottleManagement',
+      'Transactions': 'transactions',
+      'Analytics': 'analytics',
+      'Administration': 'administration',
+      'System Admin': 'systemAdmin',
     };
     return map[label] || label.toLowerCase().replace(/ /g, '');
   }

@@ -25,7 +25,7 @@
       @for (group of navGroups(); track group.label) {
       <div class="nav-group">
         @if (!isSidebarMini()) {
-        <p class="nav-group-label">{{ group.label }}</p>
+        <p class="nav-group-label">{{ 'navigation.groups.' + getNavGroupKey(group.label) | transloco }}</p>
         }
         @for (item of group.items; track item.path) {
         <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link" class="nav-item"

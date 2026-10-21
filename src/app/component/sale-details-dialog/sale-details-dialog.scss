@@ -134,6 +134,16 @@
     .item-name {
       font-weight: 600;
       color: var(--ink);
+
+      &--link {
+        cursor: pointer;
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: var(--primary, #0ea5e9);
+          text-decoration: underline;
+        }
+      }
     }
 
     .sku-code {

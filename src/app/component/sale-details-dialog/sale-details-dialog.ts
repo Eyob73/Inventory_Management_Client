@@ -8,6 +8,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Sale } from '../../models/sale.model';
 
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-sale-details-dialog',
   standalone: true,
@@ -26,6 +28,7 @@ import { Sale } from '../../models/sale.model';
 export class SaleDetailsDialogComponent {
   public data = inject<{ sale: Sale }>(MAT_DIALOG_DATA);
   private dialogRef = inject(MatDialogRef<SaleDetailsDialogComponent>);
+  private router = inject(Router);
 
   get sale(): Sale {
     return this.data.sale;
@@ -37,6 +40,12 @@ export class SaleDetailsDialogComponent {
 
   printReceipt(): void {
     window.print();
+  }
+
+  viewProduct(productId?: string): void {
+    if (!productId) return;
+    this.dialogRef.close();
+    this.router.navigate(['/products', productId]);
   }
 
   close(): void {

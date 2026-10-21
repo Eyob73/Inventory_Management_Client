@@ -1,0 +1,162 @@
+<ng-container *transloco="let t">
+<div class="details-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">info</mat-icon>
+      <h2>{{ t('paymentVerification.detailsDialog.title') }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onClose()" [attr.aria-label]="t('paymentVerification.posDialog.closeAria')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-body">
+    <!-- Status banner -->
+    <div class="status-banner" [ngClass]="getStatusClass(verification.status)">
+      <div class="status-headline">
+        <span class="status-name">{{ formatStatus(verification.status) }}</span>
+        <span class="dest-match-badge" [ngClass]="getMatchClass(verification.destinationMatchStatus)">
+          {{ t('paymentVerification.detailsDialog.destination') }} {{ formatDestinationMatch(verification.destinationMatchStatus) }}
+        </span>
+      </div>
+      @if (verification.failureMessage) {
+      <div class="failure-text">
+        <strong>{{ verification.failureCode || t('paymentVerification.resultDialog.note') }}:</strong> {{ verification.failureMessage }}
+      </div>
+      }
+    </div>
+
+    <!-- Official Web Receipt Card -->
+    @if (sourceUrl) {
+    <div class="web-receipt-card">
+      <div class="receipt-card-left">
+        <div class="receipt-badge-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="receipt-card-text">
+          <span class="card-title">{{ t('paymentVerification.detailsDialog.officialWebReceipt') }}</span>
+          <span class="card-desc">{{ t('paymentVerification.resultDialog.clickToVerify') }}</span>
+        </div>
+      </div>
+      <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="open-receipt-action-btn">
+        <span>{{ t('paymentVerification.resultDialog.openOfficialWebReceipt') }}</span>
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </div>
+    }
+
+    <div class="details-grid">
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.saleReference') }}</span>
+        <span class="val font-semibold">{{ t('paymentVerification.context.saleNumber', { saleNumber: verification.saleNumber }) }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.customer') }}</span>
+        <span class="val">{{ verification.customerName || t('paymentVerification.context.walkInCustomer') }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.providerBank') }}</span>
+        <span class="val">{{ verification.provider }} ({{ verification.bankCode | uppercase }})</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.registeredDestination') }}</span>
+        <span class="val">{{ verification.paymentDestinationName || 'None' }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.payerName') }}</span>
+        <span class="val">{{ verification.payerName || 'N/A' }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.payerAccount') }}</span>
+        <span class="val font-mono">{{ verification.payerAccount || 'N/A' }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.expectedAmount') }}</span>
+        <span class="val">{{ verification.expectedAmount | currency:verification.currency:'symbol':'1.2-2' }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.verifiedAmount') }}</span>
+        <span class="val font-bold" [class.text-moss]="verification.status === 'Verified'">
+          {{ (verification.verifiedAmount ?? 0) | currency:verification.currency:'symbol':'1.2-2' }}
+        </span>
+      </div>
+
+      <div class="item full">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.submittedReference') }}</span>
+        <span class="val font-mono">{{ verification.submittedReference }}</span>
+      </div>
+
+      @if (verification.verifiedReference && verification.verifiedReference !== verification.submittedReference) {
+      <div class="item full">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.extractedReference') }}</span>
+        <span class="val font-mono">{{ verification.verifiedReference }}</span>
+      </div>
+      }
+
+      @if (verification.providerTransactionId) {
+      <div class="item full">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.providerTxnId') }}</span>
+        <span class="val font-mono">{{ verification.providerTransactionId }}</span>
+      </div>
+      }
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.createdAt') }}</span>
+        <span class="val">{{ verification.createdAtUtc | date:'medium' }}</span>
+      </div>
+
+      <div class="item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.transactionDate') }}</span>
+        <span class="val">{{ verification.transactionDateUtc ? (verification.transactionDateUtc | date:'medium') : 'N/A'
+          }}</span>
+      </div>
+
+      <div class="item full">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.verifiedBy') }}</span>
+        <span class="val">{{ verification.verifiedByUserName || 'System' }}</span>
+      </div>
+
+      @if (sourceUrl) {
+      <div class="item full receipt-item">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.officialWebReceipt') }}</span>
+        <span class="val">
+          <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="receipt-direct-link">
+            <span>{{ sourceUrl }}</span>
+            <mat-icon>open_in_new</mat-icon>
+          </a>
+        </span>
+      </div>
+      }
+
+      @if (verification.manualReviewNotes) {
+      <div class="item full review-section">
+        <span class="lbl">{{ t('paymentVerification.detailsDialog.auditNotes') }}</span>
+        <div class="review-box">
+          <p>{{ verification.manualReviewNotes }}</p>
+          <span class="review-meta">{{ t('paymentVerification.detailsDialog.reviewedByOn', { user: verification.reviewedByUserName || 'Staff', date: (verification.reviewedAtUtc | date:'medium') }) }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button type="button" mat-stroked-button class="close-action-btn" (click)="onClose()">
+      {{ t('paymentVerification.detailsDialog.close') }}
+    </button>
+    @if (canManualReview) {
+    <button type="button" mat-flat-button class="review-action-btn" (click)="openManualReview()">
+      <mat-icon>rate_review</mat-icon>
+      <span>{{ t('paymentVerification.detailsDialog.manualReview') }}</span>
+    </button>
+    }
+  </div>
+</div>
+</ng-container>

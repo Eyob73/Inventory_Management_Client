@@ -34,6 +34,19 @@ import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import { CustomerDialogComponent } from '../customers/customer-dialog/customer-dialog';
 import { environment } from '../../../environments/environment';
+import {
+  PosPaymentVerificationDialogComponent,
+  PosPaymentVerificationDialogResult
+} from './components/pos-payment-verification-dialog/pos-payment-verification-dialog';
+
+export type PosCheckoutState =
+  | 'idle'
+  | 'verifyingPayment'
+  | 'paymentVerified'
+  | 'verificationFailed'
+  | 'verificationSkipped'
+  | 'confirmingSale'
+  | 'saleCompleted';
 
 export interface CartItem {
   product: Product;
@@ -84,6 +97,7 @@ export class PosComponent implements OnInit, OnDestroy {
   // State Signals
   products = signal<Product[]>([]);
   isBottleManagementEnabled = this.tenantService.isBottleManagementEnabled;
+  isPaymentVerificationEnabled = this.tenantService.isPaymentVerificationEnabled;
   categories = signal<Category[]>([]);
   customers = signal<Customer[]>([]);
   cart = signal<CartItem[]>([]);
@@ -109,6 +123,8 @@ export class PosComponent implements OnInit, OnDestroy {
 
   isLoadingProducts = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
+  checkoutState = signal<PosCheckoutState>('idle');
+  activeVerificationId = signal<string | null>(null);
   
   // Mobile UI toggle state
   isMobileCheckoutView = signal<boolean>(false);
@@ -181,6 +197,20 @@ export class PosComponent implements OnInit, OnDestroy {
     this.loadProducts();
     this.loadCategories();
     this.loadCustomers();
+    this.loadPaymentVerificationSetting();
+  }
+
+  loadPaymentVerificationSetting(): void {
+    this.tenantService.getPosPaymentVerification().subscribe({
+      next: (setting) => {
+        if (setting && typeof setting.enabled === 'boolean') {
+          this.tenantService.isPaymentVerificationEnabled.set(setting.enabled);
+        }
+      },
+      error: (err) => {
+        console.warn('Could not fetch POS payment verification setting, using cached state', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -307,6 +337,19 @@ export class PosComponent implements OnInit, OnDestroy {
     return `hsl(${hue}, 46%, 45%)`;
   }
 
+  isElectronicPayment(method: string): boolean {
+    if (!method) return false;
+    const m = method.trim().toLowerCase();
+    return m === 'mobile banking' || m === 'telebirr' || m === 'card' || m.includes('bank') || m.includes('transfer');
+  }
+
+  private resetVerificationState(): void {
+    this.activeVerificationId.set(null);
+    if (this.checkoutState() !== 'idle' && this.checkoutState() !== 'verifyingPayment') {
+      this.checkoutState.set('idle');
+    }
+  }
+
   addToCart(product: Product): void {
     if (product.quantityInStock <= 0) {
       this.snackBar.open(`"${product.name}" is out of stock!`, 'Close', { duration: 2500 });
@@ -332,22 +375,25 @@ export class PosComponent implements OnInit, OnDestroy {
     } else {
       this.cart.set([...currentCart, { product, quantity: 1, discountAmount: 0 , isBottleExchange: true, bottleDepositAmount: product.isReturnable ? (product.bottleDepositAmount || 0) : 0 }]);
     }
+    this.resetVerificationState();
   }
 
-    toggleBottleExchange(index: number): void {
+  toggleBottleExchange(index: number): void {
     if (!this.isBottleManagementEnabled()) return;
     const currentCart = [...this.cart()];
     if (index < 0 || index >= currentCart.length) return;
     currentCart[index].isBottleExchange = !currentCart[index].isBottleExchange;
     this.cart.set(currentCart);
+    this.resetVerificationState();
   }
 
-    setBottleExchange(index: number, value: boolean): void {
+  setBottleExchange(index: number, value: boolean): void {
     if (!this.isBottleManagementEnabled()) return;
     const currentCart = [...this.cart()];
     if (index < 0 || index >= currentCart.length) return;
     currentCart[index].isBottleExchange = value;
     this.cart.set(currentCart);
+    this.resetVerificationState();
   }
 
   updateQuantity(index: number, newQty: number): void {
@@ -371,6 +417,7 @@ export class PosComponent implements OnInit, OnDestroy {
 
     currentCart[index] = { ...item, quantity: newQty };
     this.cart.set(currentCart);
+    this.resetVerificationState();
   }
 
   removeItem(index: number): void {
@@ -380,6 +427,7 @@ export class PosComponent implements OnInit, OnDestroy {
     if (this.cart().length === 0) {
       this.isMobileCheckoutView.set(false);
     }
+    this.resetVerificationState();
   }
 
   clearCart(): void {
@@ -392,11 +440,13 @@ export class PosComponent implements OnInit, OnDestroy {
     this.saleNotes.set('');
     this.showNotes.set(false);
     this.isMobileCheckoutView.set(false);
+    this.resetVerificationState();
   }
 
   clearCustomer(): void {
     this.selectedCustomerId.set(null);
     this.manualCustomerName.set('');
+    this.resetVerificationState();
   }
 
   openAddCustomerDialog(): void {
@@ -410,6 +460,7 @@ export class PosComponent implements OnInit, OnDestroy {
         this.loadCustomers();
         this.selectedCustomerId.set(result.id);
         this.snackBar.open(`Customer "${result.name}" added and selected.`, 'Close', { duration: 3000 });
+        this.resetVerificationState();
       } else if (result) {
         this.loadCustomers();
       }
@@ -420,9 +471,15 @@ export class PosComponent implements OnInit, OnDestroy {
     this.paymentMethod.set(method);
     // Always sync amount received to grand total for non-manual payment modes
     this.amountReceived.set(parseFloat(this.grandTotal().toFixed(2)));
+    this.resetVerificationState();
   }
 
   completeSale(): void {
+    // Prevent duplicate checkout actions
+    if (this.isSubmitting() || this.checkoutState() === 'verifyingPayment' || this.checkoutState() === 'confirmingSale') {
+      return;
+    }
+
     if (this.cart().length === 0) {
       this.snackBar.open('Cannot complete sale with an empty shopping cart.', 'Close', { duration: 3000 });
       return;
@@ -461,12 +518,64 @@ export class PosComponent implements OnInit, OnDestroy {
       }))
     };
 
+    // If electronic payment method AND POS payment verification is enabled, open verification modal before confirmation modal
+    if (this.isPaymentVerificationEnabled() && this.isElectronicPayment(this.paymentMethod())) {
+      this.openPaymentVerificationModal(payload, customerName);
+    } else {
+      this.openConfirmSaleModal(payload, customerName);
+    }
+  }
+
+  private openPaymentVerificationModal(payload: CreateSaleRequest, customerName: string): void {
+    this.checkoutState.set('verifyingPayment');
+
+    const dialogRef = this.dialog.open(PosPaymentVerificationDialogComponent, {
+      width: '560px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'payment-verification-dialog-panel',
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        totalAmount: parseFloat(this.grandTotal().toFixed(2)),
+        customerName: customerName || undefined,
+        paymentMethod: this.paymentMethod(),
+        cartPayload: payload,
+        saleReference: 'POS Checkout'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result?: PosPaymentVerificationDialogResult) => {
+      if (result?.action === 'verified') {
+        this.checkoutState.set('paymentVerified');
+        this.activeVerificationId.set(result.verification.verificationId);
+        // Seamlessly open confirm sale modal after successful verification
+        this.openConfirmSaleModal(payload, customerName);
+      } else if (result?.action === 'skipped') {
+        this.checkoutState.set('verificationSkipped');
+        this.activeVerificationId.set(null);
+        this.snackBar.open(
+          'Payment verification skipped. Continue to confirm this sale?',
+          'OK',
+          { duration: 3500 }
+        );
+        // Seamlessly open confirm sale modal after skip
+        this.openConfirmSaleModal(payload, customerName);
+      } else {
+        // Cancelled: preserve cart and customer, reset to idle
+        this.checkoutState.set('idle');
+      }
+    });
+  }
+
+  private openConfirmSaleModal(payload: CreateSaleRequest, customerName: string): void {
+    this.checkoutState.set('confirmingSale');
+
     const totalFormatted = `${this.grandTotal().toFixed(2)} ETB`;
     const itemCount = this.cartItemCount();
     const itemText = this.translocoService.translate(itemCount === 1 ? 'posDialog.item' : 'posDialog.items', { count: itemCount });
     const customerInfo = customerName ? this.translocoService.translate('posDialog.forCustomer', { name: customerName }) : '';
 
-    
     let paymentMethodKey = 'pos.cash';
     if (this.paymentMethod() === 'Card') paymentMethodKey = 'pos.card';
     else if (this.paymentMethod() === 'Mobile Banking') paymentMethodKey = 'pos.mobileBanking';
@@ -481,13 +590,32 @@ export class PosComponent implements OnInit, OnDestroy {
       cancelText: this.translocoService.translate('posDialog.cancel'),
       icon: 'point_of_sale'
     }).subscribe((confirmed) => {
-      if (!confirmed) return;
+      if (!confirmed) {
+        if (this.checkoutState() === 'confirmingSale') {
+          this.checkoutState.set('idle');
+        }
+        return;
+      }
 
       this.isSubmitting.set(true);
+
+      // Attach verification result or skipped indicator to payload
+      if (this.activeVerificationId()) {
+        payload.paymentVerificationId = this.activeVerificationId();
+        payload.verificationSkipped = false;
+      } else if (this.checkoutState() === 'verificationSkipped') {
+        payload.paymentVerificationId = undefined;
+        payload.verificationSkipped = true;
+      } else {
+        payload.paymentVerificationId = undefined;
+        payload.verificationSkipped = false;
+      }
 
       this.saleService.createSale(payload).subscribe({
         next: (completedSale: Sale) => {
           this.isSubmitting.set(false);
+          this.checkoutState.set('saleCompleted');
+
           this.snackBar.open(`Sale #${completedSale.saleNumber} completed successfully!`, 'Success', {
             duration: 3500,
             panelClass: ['snackbar-success']
@@ -504,9 +632,11 @@ export class PosComponent implements OnInit, OnDestroy {
           this.clearCart();
           this.loadProducts();
           this.isMobileCheckoutView.set(false);
+          this.checkoutState.set('idle');
         },
         error: (err) => {
           this.isSubmitting.set(false);
+          this.checkoutState.set('idle');
           const msg = err?.error?.detail || err?.message || 'Failed to complete sale transaction.';
           this.snackBar.open(msg, 'Close', { duration: 4500 });
         }

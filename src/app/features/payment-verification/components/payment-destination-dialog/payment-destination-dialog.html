@@ -1,0 +1,142 @@
+<ng-container *transloco="let t">
+<div class="destination-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">{{ isEditMode ? 'edit_note' : 'add_card' }}</mat-icon>
+      <h2>{{ isEditMode ? t('paymentVerification.destinations.dialogTitleEdit') : t('paymentVerification.destinations.dialogTitleAdd') }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" [attr.aria-label]="t('paymentVerification.posDialog.closeAria')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="destinationForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <div class="dialog-body">
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Destination Label / Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('paymentVerification.destinations.nameLabel') }}</mat-label>
+      <mat-icon matPrefix>label</mat-icon>
+      <input matInput formControlName="name" [placeholder]="t('paymentVerification.destinations.namePlaceholder')" />
+      @if (destinationForm.get('name')?.hasError('required')) {
+        <mat-error>{{ t('paymentVerification.destinations.nameRequired') }}</mat-error>
+      }
+      @if (destinationForm.get('name')?.hasError('minlength')) {
+        <mat-error>{{ t('paymentVerification.destinations.nameMinLength') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Destination Type -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('paymentVerification.destinations.typeLabel') }}</mat-label>
+      <mat-icon matPrefix>category</mat-icon>
+      <mat-select formControlName="type">
+        @for (item of destinationTypes; track item.value) {
+          <mat-option [value]="item.value">
+            <div class="type-option">
+              <mat-icon class="opt-icon">{{ item.icon }}</mat-icon>
+              <span>{{ item.value === 'BankAccount' ? t('paymentVerification.destinations.bankAccount') : t('paymentVerification.destinations.telebirrPhone') }}</span>
+            </div>
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (destinationForm.get('type')?.value === 'BankAccount') {
+      <!-- Bank Selector -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ t('paymentVerification.destinations.supportedBank') }}</mat-label>
+        <mat-icon matPrefix>account_balance</mat-icon>
+        <mat-select formControlName="bankCode">
+          @if (isLoadingBanks()) {
+            <mat-option disabled>{{ t('paymentVerification.destinations.loadingBanks') }}</mat-option>
+          }
+          @for (bank of supportedBanks(); track bank.id) {
+            <mat-option [value]="bank.id">
+              {{ bank.name }} ({{ bank.id | uppercase }})
+            </mat-option>
+          }
+        </mat-select>
+        @if (destinationForm.get('bankCode')?.hasError('required')) {
+          <mat-error>{{ t('paymentVerification.destinations.bankRequired') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Account Number -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ isEditMode ? t('paymentVerification.destinations.newAccountNumberLabel') : t('paymentVerification.destinations.accountNumberLabel') }}</mat-label>
+        <mat-icon matPrefix>pin</mat-icon>
+        <input matInput formControlName="accountNumber" [placeholder]="t('paymentVerification.destinations.accountNumberPlaceholder')" />
+        <mat-hint>{{ t('paymentVerification.destinations.accountMaskHint') }}</mat-hint>
+        @if (destinationForm.get('accountNumber')?.hasError('required')) {
+          <mat-error>{{ t('paymentVerification.destinations.accountRequired') }}</mat-error>
+        }
+        @if (destinationForm.get('accountNumber')?.hasError('minlength')) {
+          <mat-error>{{ t('paymentVerification.destinations.accountMinLength') }}</mat-error>
+        }
+      </mat-form-field>
+    } @else {
+      <!-- Telebirr Phone Number -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ isEditMode ? t('paymentVerification.destinations.newPhoneLabel') : t('paymentVerification.destinations.phoneLabelField') }}</mat-label>
+        <mat-icon matPrefix>phone_android</mat-icon>
+        <input matInput formControlName="phoneNumber" [placeholder]="t('paymentVerification.destinations.phonePlaceholder')" />
+        <mat-hint>{{ t('paymentVerification.destinations.phoneFormatHint') }}</mat-hint>
+        @if (destinationForm.get('phoneNumber')?.hasError('required')) {
+          <mat-error>{{ t('paymentVerification.destinations.phoneRequired') }}</mat-error>
+        }
+        @if (destinationForm.get('phoneNumber')?.hasError('pattern')) {
+          <mat-error>{{ t('paymentVerification.destinations.phonePattern') }}</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <!-- Account Holder Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ t('paymentVerification.destinations.accountHolderLabel') }}</mat-label>
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput formControlName="accountHolderName" [placeholder]="t('paymentVerification.destinations.accountHolderPlaceholder')" />
+    </mat-form-field>
+
+    <!-- Toggles Row -->
+    <div class="toggle-row">
+      <mat-slide-toggle formControlName="isDefault" color="primary">
+        {{ t('paymentVerification.destinations.setDefaultOption') }}
+      </mat-slide-toggle>
+
+      @if (isEditMode) {
+        <mat-slide-toggle formControlName="isActive" color="primary">
+          {{ t('paymentVerification.destinations.active') }}
+        </mat-slide-toggle>
+      }
+    </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="dialog-actions">
+      <button type="button" mat-stroked-button class="cancel-btn" (click)="onCancel()" [disabled]="isSubmitting()">
+        {{ t('paymentVerification.posDialog.cancel') }}
+      </button>
+      <button type="submit" mat-flat-button class="submit-btn" [disabled]="destinationForm.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="btn-inner">
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+            <span>{{ t('paymentVerification.destinations.saving') }}</span>
+          </span>
+        } @else {
+          <span class="btn-inner">
+            <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+            <span>{{ isEditMode ? t('paymentVerification.destinations.saveChanges') : t('paymentVerification.destinations.registerDestination') }}</span>
+          </span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
+</ng-container>

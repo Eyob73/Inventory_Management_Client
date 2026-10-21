@@ -285,6 +285,42 @@
   }
 }
 
+.payment-verification-dialog-panel {
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow-lg), 0 24px 64px rgba(0, 0, 0, 0.2) !important;
+    background: transparent !important;
+    max-height: 90vh !important;
+    max-height: calc(100dvh - 3rem) !important;
+  }
+
+  .mdc-dialog__surface {
+    border-radius: 16px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: var(--surface, #ffffff) !important;
+    border: 1px solid var(--border) !important;
+    max-height: 90vh !important;
+    max-height: calc(100dvh - 3rem) !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  @media (max-width: 600px) {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin: 0 auto;
+
+    .mat-mdc-dialog-container,
+    .mdc-dialog__surface {
+      border-radius: 12px !important;
+      max-height: calc(100dvh - 1.5rem) !important;
+    }
+  }
+}
+
 /* ─── 4. Menu & Dropdown Panels ────────────────────────────────────────── */
 .profile-dropdown-menu,
 .notification-dropdown-menu {

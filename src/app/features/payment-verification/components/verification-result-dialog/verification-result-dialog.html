@@ -1,0 +1,148 @@
+<ng-container *transloco="let t">
+<div class="result-dialog">
+  <!-- Dialog Header with dynamic status badge -->
+  <div class="dialog-header">
+    <div class="status-header-block" [ngClass]="getStatusClass(result.status)">
+      <mat-icon class="status-icon">{{ getStatusIcon(result.status) }}</mat-icon>
+      <div class="status-text-block">
+        <h2>{{ getStatusTitle(result.status) }}</h2>
+        <span class="status-sub">
+          @if (result.saleNumber) {
+          <span>{{ t('paymentVerification.context.saleNumber', { saleNumber: result.saleNumber }) }} &bull; </span>
+          }
+          <span>{{ t('paymentVerification.resultDialog.ref') }}: {{ result.verifiedReference || result.submittedReference }}</span>
+        </span>
+      </div>
+    </div>
+    <button type="button" class="close-btn" (click)="onClose()" [attr.aria-label]="t('paymentVerification.posDialog.closeAria')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-body">
+    <!-- Failure / Review safe message banner if not verified -->
+    @if (!isVerified) {
+    <div class="alert-box" [ngClass]="getStatusClass(result.status)">
+      <mat-icon>info</mat-icon>
+      <div class="alert-content">
+        <strong>{{ result.failureCode || t('paymentVerification.resultDialog.notice') }}:</strong>
+        <span>{{ result.failureMessage || t('paymentVerification.resultDialog.couldNotConfirm') }}</span>
+      </div>
+    </div>
+    } @else {
+    <div class="alert-box status-verified">
+      <mat-icon>verified</mat-icon>
+      <div class="alert-content">
+        <strong>{{ t('paymentVerification.resultDialog.confirmed') }}</strong>
+        <span>{{ result.saleNumber ? t('paymentVerification.resultDialog.verifiedApplied', { saleNumber: result.saleNumber }) : t('paymentVerification.resultDialog.verifiedGeneric') }}</span>
+      </div>
+    </div>
+    }
+
+    <!-- Official Receipt Link (e.g. for Telebirr when cloud IP is blocked by Ethio Telecom) -->
+    @if (sourceUrl) {
+    <div class="telebirr-receipt-card">
+      <div class="receipt-card-left">
+        <div class="receipt-badge-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="receipt-card-text">
+          <span class="card-title">{{ t('paymentVerification.resultDialog.officialWebReceipt') }}</span>
+          <span class="card-desc">{{ t('paymentVerification.resultDialog.clickToVerify') }}</span>
+        </div>
+      </div>
+      <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" class="open-receipt-action-btn">
+        <span>{{ t('paymentVerification.resultDialog.openOfficialWebReceipt') }}</span>
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </div>
+    }
+
+    <!-- Detail Grid -->
+    <div class="detail-grid">
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.verifiedAmount') }}</span>
+        <span class="value amount-val" [class.highlight]="result.status === 'Verified'">
+          {{ (result.verifiedAmount ?? 0) | currency:result.currency:'symbol':'1.2-2' }}
+        </span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.expectedAmount') }}</span>
+        <span class="value">
+          {{ (result.expectedAmount ?? 0) | currency:result.currency:'symbol':'1.2-2' }}
+        </span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.providerBank') }}</span>
+        <span class="value">{{ result.provider }} ({{ result.bankCode | uppercase }})</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.registeredDestination') }}</span>
+        <span class="value">{{ result.paymentDestinationName || 'None' }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.payerName') }}</span>
+        <span class="value">{{ result.payerName || 'N/A' }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.payerAccount') }}</span>
+        <span class="value mono">{{ result.payerAccount || 'N/A' }}</span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.destinationMatch') }}</span>
+        <span class="badge" [ngClass]="getMatchClass(result.destinationMatchStatus)">
+          {{ formatDestinationMatch(result.destinationMatchStatus) }}
+        </span>
+      </div>
+
+      <div class="grid-item">
+        <span class="label">{{ t('paymentVerification.resultDialog.transactionDate') }}</span>
+        <span class="value">{{ result.transactionDateUtc ? (result.transactionDateUtc | date:'medium') : 'N/A' }}</span>
+      </div>
+
+      @if (result.providerTransactionId) {
+      <div class="grid-item full-width">
+        <span class="label">{{ t('paymentVerification.resultDialog.providerTxnId') }}</span>
+        <span class="value mono">{{ result.providerTransactionId }}</span>
+      </div>
+      }
+
+      <div class="grid-item full-width">
+        <span class="label">{{ t('paymentVerification.resultDialog.verifiedReference') }}</span>
+        <span class="value mono">{{ result.verifiedReference || result.submittedReference }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="dialog-actions">
+    <button type="button" mat-stroked-button class="dismiss-btn" (click)="onClose()">
+      {{ isVerified && data.showProceedAction ? t('paymentVerification.resultDialog.close') : t('paymentVerification.resultDialog.dismiss') }}
+    </button>
+    @if (sourceUrl) {
+    <a [href]="sourceUrl" target="_blank" rel="noopener noreferrer" mat-stroked-button class="receipt-action-btn">
+      <mat-icon>open_in_new</mat-icon>
+      <span>{{ t('paymentVerification.resultDialog.openOfficialWebReceipt') }}</span>
+    </a>
+    }
+    @if (canManualReview) {
+    <button type="button" mat-flat-button class="review-btn" (click)="openManualReview()">
+      <mat-icon>rate_review</mat-icon>
+      <span>{{ t('paymentVerification.resultDialog.manualReview') }}</span>
+    </button>
+    }
+    @if (data.showProceedAction && isVerified) {
+    <button type="button" mat-flat-button class="proceed-btn" (click)="onProceed()">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ t('paymentVerification.resultDialog.proceedToConfirm') }}</span>
+    </button>
+    }
+  </div>
+</div>
+</ng-container>

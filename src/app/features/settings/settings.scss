@@ -261,6 +261,17 @@
   gap: 0.2rem;
 }
 
+.toggle-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.inline-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .toggle-label {
   font-size: 0.9rem;
   font-weight: 500;

@@ -45,6 +45,7 @@ const ALL_NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'POS Terminal', path: '/pos', icon: 'storefront', description: 'Point of Sale terminal for making sales', keywords: ['sell', 'cash register', 'checkout', 'till'] },
       { label: 'Sales History', path: '/sales-history', icon: 'receipt_long', description: 'Past sales and receipts', keywords: ['receipts', 'past', 'history'] },
+      { label: 'Payment Verification', path: '/payments/verification', icon: 'verified_user', roles: ['Admin', 'Manager', 'Sales'], description: 'Verify customer payments and manage receiving destinations', keywords: ['cheki', 'payment', 'verification', 'verify', 'telebirr', 'bank', 'transfer'] },
       { label: 'Customers', path: '/customers', icon: 'people', description: 'Manage customer accounts', keywords: ['clients', 'buyers', 'accounts'] },
       { label: 'Suppliers', path: '/suppliers', icon: 'local_shipping', roles: ['Admin', 'Manager', 'Sales'], description: 'Manage vendors and suppliers', keywords: ['vendors', 'distributors'] },
       { label: 'Purchases', path: '/purchases', icon: 'local_mall', roles: ['Admin', 'Manager'], description: 'Incoming stock and purchase orders', keywords: ['buy', 'restock', 'orders', 'stock in'] },
@@ -99,6 +100,7 @@ const routeTitleMap: Record<string, string> = {
   '/inventory': 'Inventory',
   '/pos': 'POS Terminal',
   '/sales-history': 'Sales History',
+  '/payments/verification': 'Payment Verification',
   '/sales': 'POS Terminal',
   '/purchases': 'Purchases',
   '/customers': 'Customers',

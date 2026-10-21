@@ -1,0 +1,129 @@
+<ng-container *transloco="let t">
+<div class="review-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon class="header-icon">rate_review</mat-icon>
+      <h2>{{ t('paymentVerification.manualReview.title') }}</h2>
+    </div>
+    <button type="button" class="close-btn" (click)="onCancel()" [attr.aria-label]="t('paymentVerification.posDialog.closeAria')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()" class="dialog-form">
+    <div class="dialog-body">
+      @if (errorMessage()) {
+      <div class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+      }
+
+      <!-- Review context banner -->
+      <div class="context-card">
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.saleNumber') }}</span>
+          <span class="value font-semibold">#{{ saleNumber }}</span>
+        </div>
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.transactionRef') }}</span>
+          <span class="value font-mono">{{ submittedReference }}</span>
+        </div>
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.verifiedAmount') }}</span>
+          <span class="value font-bold text-moss">ETB {{ verifiedAmount | number:'1.2-2' }}</span>
+        </div>
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.currentStatus') }}</span>
+          <span class="value">{{ formatStatus(verification.status) }}</span>
+        </div>
+        @if (verification.payerName) {
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.payerName') }}</span>
+          <span class="value">{{ verification.payerName }}</span>
+        </div>
+        }
+        @if (verification.payerAccount) {
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.payerAccount') }}</span>
+          <span class="value font-mono">{{ verification.payerAccount }}</span>
+        </div>
+        }
+        @if (verification.failureMessage) {
+        <div class="context-row failure-msg">
+          <span class="label">{{ t('paymentVerification.manualReview.reasonFlag') }}</span>
+          <span class="value text-amber">{{ verification.failureMessage }}</span>
+        </div>
+        }
+        @if (verification.sourceUrl) {
+        <div class="context-row">
+          <span class="label">{{ t('paymentVerification.manualReview.officialReceipt') }}</span>
+          <span class="value">
+            <a [href]="verification.sourceUrl" target="_blank" rel="noopener noreferrer"
+              style="color: #0284c7; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+              {{ t('paymentVerification.manualReview.openReceipt') }}
+            </a>
+          </span>
+        </div>
+        }
+      </div>
+
+      <!-- Decision Radio -->
+      <div class="decision-group">
+        <label class="section-label">{{ t('paymentVerification.manualReview.auditDecision') }}</label>
+        <mat-radio-group formControlName="decision" class="radio-options">
+          <mat-radio-button value="approve" color="primary">
+            <div class="radio-content">
+              <span class="radio-title">{{ t('paymentVerification.manualReview.approveTitle') }}</span>
+              <span class="radio-desc">{{ t('paymentVerification.manualReview.approveDesc', { saleNumber: saleNumber }) }}</span>
+            </div>
+          </mat-radio-button>
+
+          <mat-radio-button value="reject" color="warn">
+            <div class="radio-content">
+              <span class="radio-title">{{ t('paymentVerification.manualReview.rejectTitle') }}</span>
+              <span class="radio-desc">{{ t('paymentVerification.manualReview.rejectDesc') }}</span>
+            </div>
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <!-- Reviewer Notes -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ t('paymentVerification.manualReview.notesLabel') }}</mat-label>
+        <textarea matInput formControlName="notes" rows="3"
+          [placeholder]="t('paymentVerification.manualReview.notesPlaceholder')"></textarea>
+        @if (reviewForm.get('notes')?.hasError('required')) {
+        <mat-error>{{ t('paymentVerification.manualReview.notesRequired') }}</mat-error>
+        }
+        @if (reviewForm.get('notes')?.hasError('minlength')) {
+        <mat-error>{{ t('paymentVerification.manualReview.notesMinLength') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Dialog Actions -->
+    <div class="dialog-actions">
+      <button type="button" mat-stroked-button class="cancel-btn" (click)="onCancel()" [disabled]="isSubmitting()">
+        {{ t('paymentVerification.manualReview.cancel') }}
+      </button>
+      <button type="submit" mat-flat-button class="submit-btn"
+        [class.approve]="reviewForm.get('decision')?.value === 'approve'"
+        [class.reject]="reviewForm.get('decision')?.value === 'reject'"
+        [disabled]="reviewForm.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+        <span class="btn-inner">
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          <span>{{ t('paymentVerification.manualReview.saving') }}</span>
+        </span>
+        } @else {
+        <span class="btn-inner">
+          <mat-icon>{{ reviewForm.get('decision')?.value === 'approve' ? 'check_circle' : 'cancel' }}</mat-icon>
+          <span>{{ t('paymentVerification.manualReview.submitDecision') }}</span>
+        </span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
+</ng-container>
