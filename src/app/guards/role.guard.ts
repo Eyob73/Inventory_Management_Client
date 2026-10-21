@@ -14,7 +14,7 @@ import { AuthStore } from '../store/auth.store';
  *   canActivate: [roleGuard(['Admin', 'Manager'])]
  */
 export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
-  return () => {
+  return (route, state) => {
     const store = inject(AuthStore);
     const router = inject(Router);
 
@@ -23,7 +23,7 @@ export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
     const evaluateRole = () => {
       const userRole = store.userRole();
       if (!userRole || userRole === 'Guest') {
-        return router.createUrlTree(['/login']);
+        return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
       }
 
       const normalizedUserRole = userRole.toLowerCase();
@@ -59,13 +59,13 @@ export const roleGuard = (allowedRoles: string | string[]): CanActivateFn => {
 /**
  * Auth guard — requires any authenticated user (used for the main shell layout).
  */
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (route, state) => {
   const store = inject(AuthStore);
   const router = inject(Router);
 
   const evaluate = () => {
     if (store.isLoggedIn()) return true;
-    return router.createUrlTree(['/login']);
+    return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
   };
 
   if (store.isLoading()) {
@@ -81,12 +81,16 @@ export const authGuard: CanActivateFn = () => {
 /**
  * No Auth guard — requires the user to NOT be logged in (used for login/register pages).
  */
-export const noAuthGuard: CanActivateFn = () => {
+export const noAuthGuard: CanActivateFn = (route) => {
   const store = inject(AuthStore);
   const router = inject(Router);
 
   const evaluate = () => {
     if (store.isLoggedIn()) {
+      const returnUrl = route.queryParams?.['returnUrl'];
+      if (returnUrl && !returnUrl.includes('/login')) {
+        return router.parseUrl(returnUrl);
+      }
       const role = store.userRole();
       if (role?.toLowerCase() === 'systemadmin') {
         return router.createUrlTree(['/system-admin/dashboard']);

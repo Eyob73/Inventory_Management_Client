@@ -1,12 +1,11 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { Observable, of, catchError, filter, switchMap, take, throwError, finalize, shareReplay } from 'rxjs';
 import { AuthService } from '../services/auth';
 import { ConnectionService } from '../services/connection.service';
 
-let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+let refreshObservable: Observable<string> | null = null;
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
@@ -25,48 +24,73 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       const detailMessage = err.error?.detail ?? err.error?.message ?? 'A system error occurred. Please try again.';
-      
+
       if (err.status === 401) {
-        // Don't intercept login or refresh requests
-        if (req.url.toLowerCase().includes('/auth/login') || req.url.toLowerCase().includes('/auth/refresh')) {
-          authService.removeToken();
-          authService.currentUser.set(null);
-          router.navigate(['/login']);
+        // Do not intercept login requests — let login component handle credential errors
+        if (req.url.toLowerCase().includes('/auth/login')) {
           return throwError(() => err);
         }
 
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshTokenSubject.next(null);
+        // If refresh itself failed with 401/403, session cannot be renewed
+        if (req.url.toLowerCase().includes('/auth/refresh')) {
+          authService.removeTokens();
+          authService.currentUser.set(null);
+          const currentUrl = router.url;
+          if (currentUrl && !currentUrl.includes('/login')) {
+            router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+          } else {
+            router.navigate(['/login']);
+          }
+          return throwError(() => err);
+        }
 
-          return authService.refresh().pipe(
+        // Concurrency-safe token renewal: all concurrent 401s share the same in-flight refresh observable
+        if (!refreshObservable) {
+          refreshObservable = authService.refresh().pipe(
             switchMap((res) => {
-              isRefreshing = false;
               const newToken = res.accessToken || res.token;
-              refreshTokenSubject.next(newToken!);
-              return next(req.clone({
-                setHeaders: { Authorization: `Bearer ${newToken}` }
-              }));
+              if (!newToken) {
+                return throwError(() => new Error('No access token received from refresh'));
+              }
+              return of(newToken);
             }),
             catchError((refreshErr) => {
-              isRefreshing = false;
-              authService.removeToken();
+              // Do not log out on temporary network failure during refresh
+              if (
+                refreshErr.status === 0 ||
+                refreshErr.status === 408 ||
+                (refreshErr.status >= 502 && refreshErr.status <= 504)
+              ) {
+                connectionService.reportHttpError(refreshErr.status, req.url, refreshErr.message);
+                return throwError(() => refreshErr);
+              }
+
+              // Genuine auth rejection (401/403/invalid refresh token): logout and redirect
+              authService.removeTokens();
               authService.currentUser.set(null);
-              router.navigate(['/login']);
+              const currentUrl = router.url;
+              if (currentUrl && !currentUrl.includes('/login')) {
+                router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+              } else {
+                router.navigate(['/login']);
+              }
               return throwError(() => refreshErr);
-            })
-          );
-        } else {
-          return refreshTokenSubject.pipe(
-            filter(token => token !== null),
-            take(1),
-            switchMap((token) => {
-              return next(req.clone({
-                setHeaders: { Authorization: `Bearer ${token}` }
-              }));
-            })
+            }),
+            finalize(() => {
+              refreshObservable = null;
+            }),
+            shareReplay({ bufferSize: 1, refCount: false })
           );
         }
+
+        return refreshObservable.pipe(
+          take(1),
+          switchMap((newToken) => {
+            return next(req.clone({
+              setHeaders: { Authorization: `Bearer ${newToken}` }
+            }));
+          })
+        );
       } else {
         let extractedMessage = detailMessage;
         if (err.status === 400) {

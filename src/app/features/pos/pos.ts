@@ -1,5 +1,4 @@
-import { TranslocoDirective } from '@jsverse/transloco';
-import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, effect } from '@angular/core';
 import { TenantApiService } from '../../services/tenant';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +29,7 @@ import { Product } from '../../models/products.model';
 import { CreateSaleRequest, Sale } from '../../models/sale.model';
 import { BarcodeScannerDialog } from '../../shared/components/barcode-scanner-dialog/barcode-scanner-dialog';
 import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.service';
 import { CustomerDialogComponent } from '../customers/customer-dialog/customer-dialog';
 import { environment } from '../../../environments/environment';
@@ -38,6 +37,7 @@ import {
   PosPaymentVerificationDialogComponent,
   PosPaymentVerificationDialogResult
 } from './components/pos-payment-verification-dialog/pos-payment-verification-dialog';
+import { setDraft, getDraft, removeDraft } from '../../utils/draft-storage';
 
 export type PosCheckoutState =
   | 'idle'
@@ -54,6 +54,20 @@ export interface CartItem {
   discountAmount: number;
   isBottleExchange: boolean;
   bottleDepositAmount: number;
+}
+
+export interface PosDraft {
+  cart: CartItem[];
+  selectedCustomerId: string | null;
+  manualCustomerName: string;
+  paymentMethod: string;
+  amountReceived: number;
+  discountAmount: number;
+  taxRatePercent: number;
+  additionalBottleDeposit: number;
+  saleNotes: string;
+  showNotes: boolean;
+  savedAt?: number;
 }
 
 @Component({
@@ -133,6 +147,51 @@ export class PosComponent implements OnInit, OnDestroy {
   currentTime = signal<Date>(new Date());
   private clockHandle = setInterval(() => this.currentTime.set(new Date()), 1000);
 
+  readonly isDraftLoaded = signal<boolean>(false);
+  private saveDraftTimeout: any = null;
+
+  constructor() {
+    effect(() => {
+      // Guard: establish reactive signal dependency so effect re-evaluates when draft is restored
+      if (!this.isDraftLoaded()) return;
+
+      const cart = this.cart();
+      const customerId = this.selectedCustomerId();
+      const manualName = this.manualCustomerName();
+      const paymentMethod = this.paymentMethod();
+      const amountReceived = this.amountReceived();
+      const discount = this.discountAmount();
+      const taxRate = this.taxRatePercent();
+      const addDeposit = this.additionalBottleDeposit();
+      const notes = this.saleNotes();
+      const showNotes = this.showNotes();
+
+      if (this.saveDraftTimeout) {
+        clearTimeout(this.saveDraftTimeout);
+      }
+
+      if (cart.length > 0 || customerId || manualName || notes) {
+        this.saveDraftTimeout = setTimeout(() => {
+          setDraft('posDraft', {
+            cart,
+            selectedCustomerId: customerId,
+            manualCustomerName: manualName,
+            paymentMethod,
+            amountReceived,
+            discountAmount: discount,
+            taxRatePercent: taxRate,
+            additionalBottleDeposit: addDeposit,
+            saleNotes: notes,
+            showNotes,
+            savedAt: Date.now()
+          });
+        }, 150);
+      } else {
+        removeDraft('posDraft');
+      }
+    });
+  }
+
   // Computed Properties
   readonly filteredProducts = computed(() => this.products());
 
@@ -198,6 +257,31 @@ export class PosComponent implements OnInit, OnDestroy {
     this.loadCategories();
     this.loadCustomers();
     this.loadPaymentVerificationSetting();
+    this.restoreDraft();
+  }
+
+  private async restoreDraft(): Promise<void> {
+    try {
+      const draft = await getDraft<PosDraft>('posDraft');
+      if (draft) {
+        if (Array.isArray(draft.cart) && draft.cart.length > 0) {
+          this.cart.set(draft.cart);
+        }
+        if (draft.selectedCustomerId !== undefined) this.selectedCustomerId.set(draft.selectedCustomerId);
+        if (draft.manualCustomerName !== undefined) this.manualCustomerName.set(draft.manualCustomerName);
+        if (draft.paymentMethod !== undefined) this.paymentMethod.set(draft.paymentMethod);
+        if (draft.amountReceived !== undefined) this.amountReceived.set(draft.amountReceived);
+        if (draft.discountAmount !== undefined) this.discountAmount.set(draft.discountAmount);
+        if (draft.taxRatePercent !== undefined) this.taxRatePercent.set(draft.taxRatePercent);
+        if (draft.additionalBottleDeposit !== undefined) this.additionalBottleDeposit.set(draft.additionalBottleDeposit);
+        if (draft.saleNotes !== undefined) this.saleNotes.set(draft.saleNotes);
+        if (draft.showNotes !== undefined) this.showNotes.set(draft.showNotes);
+      }
+    } catch (e) {
+      console.error('Failed to restore POS draft from IndexedDB', e);
+    } finally {
+      this.isDraftLoaded.set(true);
+    }
   }
 
   loadPaymentVerificationSetting(): void {
@@ -215,6 +299,10 @@ export class PosComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.clockHandle);
+    if (this.saveDraftTimeout) {
+      clearTimeout(this.saveDraftTimeout);
+      this.saveDraftTimeout = null;
+    }
   }
 
   loadProducts(): void {
@@ -431,6 +519,10 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   clearCart(): void {
+    if (this.saveDraftTimeout) {
+      clearTimeout(this.saveDraftTimeout);
+      this.saveDraftTimeout = null;
+    }
     this.cart.set([]);
     this.discountAmount.set(0);
     this.additionalBottleDeposit.set(0);
@@ -441,6 +533,7 @@ export class PosComponent implements OnInit, OnDestroy {
     this.showNotes.set(false);
     this.isMobileCheckoutView.set(false);
     this.resetVerificationState();
+    removeDraft('posDraft');
   }
 
   clearCustomer(): void {
