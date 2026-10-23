@@ -128,6 +128,16 @@ export class PosComponent implements OnInit, OnDestroy {
   manualCustomerName = signal<string>('');
 
   paymentMethod = signal<string>('Cash');
+  availableBanks = [
+    { code: 'CBE', name: 'CBE' },
+    { code: 'Awash Bank', name: 'Awash' },
+    { code: 'Bank of Abyssinia', name: 'Abyssinia' },
+    { code: 'Dashen Bank', name: 'Dashen' },
+    { code: 'Cooperative Bank of Oromia', name: 'Coop' },
+    { code: 'Hibret Bank', name: 'Hibret' },
+    { code: 'Other Bank', name: 'Other' }
+  ];
+  selectedBank = signal<string>('CBE');
   amountReceived = signal<number>(0);
   discountAmount = signal<number>(0);
   taxRatePercent = signal<number>(0);
@@ -596,6 +606,7 @@ export class PosComponent implements OnInit, OnDestroy {
       customerId: this.selectedCustomerId() || undefined,
       customerName: customerName || undefined,
       paymentMethod: this.paymentMethod(),
+      bankName: this.paymentMethod() === 'Mobile Banking' ? this.selectedBank() : (this.paymentMethod() === 'Telebirr' ? 'Telebirr' : undefined),
       amountReceived: grandTotalVal,
       discountAmount: this.discountAmount(),
       taxAmount: parseFloat(this.calculatedTax().toFixed(2)),
@@ -673,7 +684,10 @@ export class PosComponent implements OnInit, OnDestroy {
     if (this.paymentMethod() === 'Card') paymentMethodKey = 'pos.card';
     else if (this.paymentMethod() === 'Mobile Banking') paymentMethodKey = 'pos.mobileBanking';
     else if (this.paymentMethod() === 'Telebirr') paymentMethodKey = 'pos.telebirr';
-    const translatedPaymentMethod = this.translocoService.translate(paymentMethodKey);
+    let translatedPaymentMethod = this.translocoService.translate(paymentMethodKey);
+    if (this.paymentMethod() === 'Mobile Banking' && this.selectedBank()) {
+      translatedPaymentMethod += ` (${this.selectedBank()})`;
+    }
 
     this.confirmDialog.confirm({
       title: this.translocoService.translate('posDialog.title'),

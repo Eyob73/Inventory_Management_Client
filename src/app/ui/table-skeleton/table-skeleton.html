@@ -1,49 +1,118 @@
-<div class="table-skeleton" role="status" aria-busy="true" aria-label="Loading table">
-  <div class="table-skeleton__card">
-    <table class="table-skeleton__table">
-      @if (showHeader()) {
-        <thead>
-          <tr>
-            @for (col of columnDefs(); track $index) {
-              <th [style.width]="col.width || null" [class.align-right]="col.align === 'right'">
-                <span class="bone bone--header" [style.width]="col.width ? '70%' : boneWidth($index, true)"></span>
-              </th>
-            }
-          </tr>
-        </thead>
-      }
-
-      <tbody>
-        @for (row of rowIndexes(); track row) {
-          <tr>
-            @for (col of columnDefs(); track $index) {
-              <td [class.align-right]="col.align === 'right'">
-                @if (col.dual) {
-                  <div class="bone-stack">
-                    <span class="bone" [style.width]="boneWidth($index + row)"></span>
-                    <span class="bone bone--sm" [style.width]="boneWidth($index + row + 3)"></span>
-                  </div>
-                } @else {
-                  <span
-                    class="bone"
-                    [class.bone--pill]="$index === columnDefs().length - 2"
-                    [style.width]="col.width ? '65%' : boneWidth($index + row)"
-                  ></span>
+<div
+  class="table-skeleton"
+  [class.table-skeleton--mode-auto]="mode() === 'auto'"
+  [class.table-skeleton--mode-table]="mode() === 'table'"
+  [class.table-skeleton--mode-cards]="mode() === 'cards'"
+  role="status"
+  aria-busy="true"
+  aria-label="Loading table"
+>
+  <!-- ── Desktop / Tablet Table View ─────────────────────────────── -->
+  <div class="table-skeleton__desktop">
+    <div class="table-skeleton__card">
+      <div class="table-skeleton__table-wrapper">
+        <table class="table-skeleton__table">
+          @if (showHeader()) {
+            <thead>
+              <tr>
+                @for (col of columnDefs(); track $index) {
+                  <th [style.width]="col.width || null" [class.align-right]="col.align === 'right'">
+                    <span class="bone bone--header" [style.width]="col.width ? '70%' : boneWidth($index, true)"></span>
+                  </th>
                 }
-              </td>
-            }
-          </tr>
-        }
-      </tbody>
-    </table>
+              </tr>
+            </thead>
+          }
 
+          <tbody>
+            @for (row of rowIndexes(); track row) {
+              <tr>
+                @for (col of columnDefs(); track $index) {
+                  <td [class.align-right]="col.align === 'right'">
+                    @if (col.dual) {
+                      <div class="bone-stack">
+                        <span class="bone" [style.width]="boneWidth($index + row)"></span>
+                        <span class="bone bone--sm" [style.width]="boneWidth($index + row + 3)"></span>
+                      </div>
+                    } @else {
+                      <span
+                        class="bone"
+                        [class.bone--pill]="$index === columnDefs().length - 2"
+                        [style.width]="col.width ? '65%' : boneWidth($index + row)"
+                      ></span>
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (showFooter()) {
+        <div class="table-skeleton__footer">
+          <span class="bone bone--sm" style="width: 88px"></span>
+          <div class="table-skeleton__footer-actions">
+            <span class="bone bone--btn"></span>
+            <span class="bone bone--btn"></span>
+            <span class="bone bone--btn"></span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Mobile Responsive Card View ─────────────────────────────── -->
+  <div class="table-skeleton__mobile">
+    <div class="table-skeleton__mobile-list">
+      @for (row of mobileRowIndexes(); track row) {
+        <div class="table-skeleton__mobile-card">
+          <!-- Card Header: Title + Status Badge -->
+          <div class="mobile-card__header">
+            <div class="mobile-card__title-stack">
+              <span class="bone bone--title" [style.width]="boneWidth(row * 2)"></span>
+              <span class="bone bone--sub" [style.width]="boneWidth(row * 2 + 1, true)"></span>
+            </div>
+            <span class="bone bone--badge"></span>
+          </div>
+
+          <div class="mobile-card__divider"></div>
+
+          <!-- Card Body: Key-Value Field Bones -->
+          <div class="mobile-card__body">
+            <div class="mobile-card__grid">
+              <div class="mobile-card__field">
+                <span class="bone bone--label"></span>
+                <span class="bone bone--val" [style.width]="boneWidth(row + 1)"></span>
+              </div>
+              <div class="mobile-card__field">
+                <span class="bone bone--label"></span>
+                <span class="bone bone--val" [style.width]="boneWidth(row + 3)"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer: Meta Info + Actions -->
+          @if (showActions()) {
+            <div class="mobile-card__footer">
+              <span class="bone bone--sub" style="width: 32%"></span>
+              <div class="mobile-card__actions">
+                <span class="bone bone--btn-sm"></span>
+                <span class="bone bone--btn-sm"></span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Mobile Pagination Footer -->
     @if (showFooter()) {
-      <div class="table-skeleton__footer">
-        <span class="bone bone--sm" style="width: 88px"></span>
+      <div class="table-skeleton__mobile-footer">
+        <span class="bone bone--sm" style="width: 84px"></span>
         <div class="table-skeleton__footer-actions">
-          <span class="bone bone--btn"></span>
-          <span class="bone bone--btn"></span>
-          <span class="bone bone--btn"></span>
+          <span class="bone bone--btn-sm"></span>
+          <span class="bone bone--btn-sm"></span>
         </div>
       </div>
     }

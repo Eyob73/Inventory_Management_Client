@@ -36,7 +36,9 @@ export interface Sale {
   totalBottleDeposit?: number;
   additionalBottleDeposit?: number;
   totalAmount: number;
-  paymentMethod: 'Cash' | 'Card' | 'Mobile Payment' | string;
+  paymentMethod: 'Cash' | 'Card' | 'Mobile Payment' | 'Mobile Banking' | 'Telebirr' | string;
+  bankName?: string | null;
+  paymentProvider?: string | null;
   amountReceived: number;
   changeAmount: number;
   notes?: string | null;
@@ -52,6 +54,7 @@ export interface CreateSaleRequest {
   customerId?: string | null;
   customerName?: string | null;
   paymentMethod: string;
+  bankName?: string | null;
   amountReceived: number;
   discountAmount: number;
   taxAmount: number;

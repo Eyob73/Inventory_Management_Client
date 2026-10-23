@@ -636,82 +636,54 @@
         <!-- {{ t('settingsFull.companyProfile') }} -->
         @if (activeSection() === 'company') {
         <div class="settings-card">
-          <div class="card-header" style="justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <div class="card-icon-wrap"
-                style="width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(34, 197, 94, 0.1); color: var(--moss, #22c55e);">
-                <mat-icon style="font-size: 1.15rem; width: 1.15rem; height: 1.15rem;">business</mat-icon>
+          <div class="card-header">
+            <div>
+              <div class="card-icon-wrap">
+                <mat-icon>business</mat-icon>
               </div>
               <div>
-                <h2 style="margin: 0; font-size: 0.95rem; font-weight: 600;">{{ t('settingsFull.companyProfile') }}</h2>
-                <p class="card-desc" style="margin: 0; font-size: 0.775rem;">{{ t('settingsFull.companyProfileDesc') }}
-                </p>
+                <h2>{{ t('settingsFull.companyProfile') }}</h2>
+                <p class="card-desc">{{ t('settingsFull.companyProfileDesc') }}</p>
               </div>
             </div>
             @if (!isEditingCompany()) {
-            <button class="icon-action-btn" [matTooltip]="t('profile.editDetails')" (click)="isEditingCompany.set(true)"
-              style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center;">
-              <mat-icon style="font-size: 1.1rem; width: 1.1rem; height: 1.1rem;">edit_note</mat-icon>
+            <button class="icon-action-btn" [matTooltip]="t('profile.editDetails')" (click)="isEditingCompany.set(true)">
+              <mat-icon>edit_note</mat-icon>
             </button>
             }
           </div>
           <div class="card-body">
             @if (!isEditingCompany()) {
             <!-- Read-only View -->
-            <div class="detail-rows" style="display: flex; flex-direction: column; gap: 1rem;">
-              <div class="detail-item"
-                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.875rem; border-bottom: 1px solid var(--border); font-size: 0.875rem;">
-                <span class="detail-label"
-                  style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">{{
-                  t('settingsFull.companyName') }}</span>
-                <span class="detail-value" style="color: var(--text-primary); font-weight: 500; text-align: right;">{{
-                  company.name || '—' }}</span>
+            <div class="detail-rows">
+              <div class="detail-item">
+                <span class="detail-label">{{ t('settingsFull.companyName') }}</span>
+                <span class="detail-value">{{ company.name || '—' }}</span>
               </div>
-              <div class="detail-item"
-                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.875rem; border-bottom: 1px solid var(--border); font-size: 0.875rem;">
-                <span class="detail-label"
-                  style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">{{
-                  t('settingsFull.phone') }}</span>
-                <span class="detail-value" style="color: var(--text-primary); font-weight: 500; text-align: right;">{{
-                  company.phone || '—' }}</span>
+              <div class="detail-item">
+                <span class="detail-label">{{ t('settingsFull.phone') }}</span>
+                <span class="detail-value">{{ company.phone || '—' }}</span>
               </div>
-              <div class="detail-item"
-                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.875rem; border-bottom: 1px solid var(--border); font-size: 0.875rem;">
-                <span class="detail-label"
-                  style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">{{
-                  t('settingsFull.email') }}</span>
-                <span class="detail-value" style="color: var(--text-primary); font-weight: 500; text-align: right;">{{
-                  company.email || '—' }}</span>
+              <div class="detail-item">
+                <span class="detail-label">{{ t('settingsFull.email') }}</span>
+                <span class="detail-value">{{ company.email || '—' }}</span>
               </div>
-              <div class="detail-item"
-                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.875rem; border-bottom: 1px solid var(--border); font-size: 0.875rem;">
-                <span class="detail-label"
-                  style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">{{
-                  t('settingsFull.address') }}</span>
-                <span class="detail-value" style="color: var(--text-primary); font-weight: 500; text-align: right;">{{
-                  company.address || '—' }}</span>
+              <div class="detail-item">
+                <span class="detail-label">{{ t('settingsFull.address') }}</span>
+                <span class="detail-value">{{ company.address || '—' }}</span>
               </div>
-              <div class="detail-item"
-                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.875rem; border-bottom: 1px solid var(--border); font-size: 0.875rem;">
-                <span class="detail-label"
-                  style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">{{
-                  t('settingsFull.website') }}</span>
-                <span class="detail-value" style="color: var(--text-primary); font-weight: 500; text-align: right;">{{
-                  company.website || '—' }}</span>
+              <div class="detail-item">
+                <span class="detail-label">{{ t('settingsFull.website') }}</span>
+                <span class="detail-value">{{ company.website || '—' }}</span>
               </div>
-              <div class="detail-item"
-                style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
-                <span class="detail-label"
-                  style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">{{
-                  t('settingsFull.taxId') }}</span>
-                <span class="detail-value" style="color: var(--text-primary); font-weight: 500; text-align: right;">{{
-                  company.taxId || '—' }}</span>
+              <div class="detail-item">
+                <span class="detail-label">{{ t('settingsFull.taxId') }}</span>
+                <span class="detail-value">{{ company.taxId || '—' }}</span>
               </div>
             </div>
             } @else {
             <!-- Edit Form View -->
-            <form class="edit-form" (ngSubmit)="saveCompanyProfile()"
-              style="display: flex; flex-direction: column; gap: 1.125rem;">
+            <form class="edit-form" (ngSubmit)="saveCompanyProfile()">
               <mat-form-field appearance="outline" class="settings-form-field">
                 <mat-label>{{ t('settingsFull.companyName') }}</mat-label>
                 <input matInput id="companyName" type="text" [(ngModel)]="company.name" name="companyName"
@@ -752,15 +724,12 @@
                 </mat-form-field>
               </div>
 
-              <div class="form-actions"
-                style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 0.5rem;">
-                <button type="button" class="btn btn--ghost" (click)="cancelCompanyEditing()"
-                  style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border); padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+              <div class="form-actions">
+                <button type="button" class="btn btn--outline" (click)="cancelCompanyEditing()">
                   {{ t('profile.cancelBtn') }}
                 </button>
-                <button type="submit" class="btn btn--primary"
-                  style="background: var(--moss); color: var(--btn-primary-fg, #fff); border: none; padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-                  <mat-icon style="font-size: 1.1rem; width: 1.1rem; height: 1.1rem;">save</mat-icon>
+                <button type="submit" class="btn btn--primary">
+                  <mat-icon>save</mat-icon>
                   <span>{{ t('profile.saveChanges') }}</span>
                 </button>
               </div>

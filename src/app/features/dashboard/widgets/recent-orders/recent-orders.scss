@@ -1,26 +1,11 @@
 :host {
   display: block;
+  width: 100%;
 }
 
-.orders-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 12px;
-  margin-top: -28px;
-  margin-bottom: 4px;
-}
-
-.view-all-btn {
-  color: var(--teal-dark) !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-
-  mat-icon {
-    font-size: 15px;
-    width: 15px;
-    height: 15px;
-    margin-left: 2px;
-  }
+.table-wrapper {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .mono {
@@ -31,71 +16,116 @@
 .orders-table {
   width: 100%;
   background: transparent !important;
+  border-collapse: collapse;
 
   ::ng-deep .mat-mdc-header-row {
-    background: transparent;
+    background: var(--paper) !important;
+    height: 38px !important;
+
+    :host-context(.dark-theme) & {
+      background: rgba(255, 255, 255, 0.04) !important;
+    }
   }
 
   ::ng-deep th.mat-mdc-header-cell {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--slate-soft);
-    border-bottom-color: var(--border);
-    padding: 10px 12px !important;
+    letter-spacing: 0.05em;
+    color: var(--slate);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px !important;
 
     &:first-of-type {
-      padding-left: 20px !important;
+      padding-left: 14px !important;
     }
     &:last-of-type {
-      padding-right: 20px !important;
+      padding-right: 14px !important;
+    }
+
+    &.th-product {
+      width: 50%;
+    }
+
+    &.th-qty {
+      width: 15%;
+      text-align: center;
+    }
+
+    &.th-rev {
+      width: 35%;
+      text-align: right;
     }
   }
 
   ::ng-deep td.mat-mdc-cell {
     font-size: 13px;
-    color: var(--ink-soft);
-    border-bottom-color: var(--border);
+    color: var(--ink);
+    border-bottom: 1px solid var(--border);
     padding: 10px 12px !important;
 
     &:first-of-type {
-      padding-left: 20px !important;
+      padding-left: 14px !important;
     }
     &:last-of-type {
-      padding-right: 20px !important;
+      padding-right: 14px !important;
+    }
+
+    &.td-product {
+      max-width: 0;
+      overflow: hidden;
+    }
+
+    &.td-qty {
+      text-align: center;
+      color: var(--slate);
+    }
+
+    &.td-rev {
+      text-align: right;
     }
   }
 
-  ::ng-deep tr.mat-mdc-row:hover {
-    background: var(--row-hover);
+  ::ng-deep tr.mat-mdc-row {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background: var(--paper) !important;
+    }
+
+    &:last-of-type td.mat-mdc-cell {
+      border-bottom: none;
+    }
   }
 
   .strong {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--ink);
   }
 }
 
-.status-chip {
-  display: inline-flex;
+.product-cell {
+  display: flex;
   align-items: center;
-  padding: 2px 9px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
 
-  &.status-fulfilled {
-    color: var(--teal-dark);
-    background: var(--teal-soft);
+  .product-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    color: var(--slate-soft);
+    flex-shrink: 0;
   }
-  &.status-processing {
-    color: var(--amber, #b45309);
-    background: var(--amber-soft, #fffbeb);
-  }
-  &.status-backordered {
-    color: var(--rose, var(--error));
-    background: var(--rose-soft, color-mix(in srgb, var(--error) 12%, transparent));
+
+  .product-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 }
-

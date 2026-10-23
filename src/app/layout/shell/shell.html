@@ -78,34 +78,42 @@
 
         <!-- Mobile menu hamburger -->
         @if (isMobile()) {
-        <button mat-icon-button class="collapse-btn" (click)="sidenav.toggle()" [attr.aria-label]="'shell.toggleNav' | transloco">
+        <button mat-icon-button class="collapse-btn touch-target" (click)="sidenav.toggle()" [attr.aria-label]="'shell.toggleNav' | transloco">
           <mat-icon>menu</mat-icon>
         </button>
         }
+        @if (!isMobile()) {
         <span class="toolbar-title">
           <ng-container *transloco="let t">
             {{ t('navigation.' + getNavKey(pageTitle())) !== 'navigation.' + getNavKey(pageTitle()) ? t('navigation.' + getNavKey(pageTitle())) : pageTitle() }}
           </ng-container>
         </span>
+        }
       </div>
 
       <span class="toolbar-spacer"></span>
 
       <div class="toolbar-right">
-        <!-- Search pill -->
+        <!-- Search (Pill on desktop, icon button on mobile) -->
+        @if (!isMobile()) {
         <div class="toolbar-search" role="search" (click)="openSearch($event)">
           <mat-icon class="search-icon">search</mat-icon>
           <span class="search-text">{{ 'common.search' | transloco }}…</span>
           <kbd class="search-kbd">⌘K</kbd>
         </div>
+        } @else {
+        <button mat-icon-button class="toolbar-action-btn mobile-search-btn touch-target" (click)="openSearch($event)" [attr.aria-label]="'common.search' | transloco">
+          <mat-icon>search</mat-icon>
+        </button>
+        }
 
         <!-- Theme toggle -->
-        <button mat-icon-button (click)="toggleTheme()" [matTooltip]="'shell.toggleTheme' | transloco" class="toolbar-action-btn">
+        <button mat-icon-button (click)="toggleTheme()" [matTooltip]="'shell.toggleTheme' | transloco" class="toolbar-action-btn touch-target">
           <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
 
         <!-- Notifications -->
-        <button mat-icon-button [attr.aria-label]="'shell.notifications' | transloco" [matTooltip]="'shell.notifications' | transloco" class="toolbar-action-btn"
+        <button mat-icon-button [attr.aria-label]="'shell.notifications' | transloco" [matTooltip]="'shell.notifications' | transloco" class="toolbar-action-btn touch-target"
           [matMenuTriggerFor]="notificationMenu"
           #notificationTrigger="matMenuTrigger"
           [matBadge]="notificationService.unreadCount()"
@@ -115,15 +123,17 @@
         </button>
 
         <!-- Avatar / Account menu -->
-        <button type="button" [matMenuTriggerFor]="accountMenu" class="toolbar-account-btn" [attr.aria-label]="'shell.accountMenu' | transloco">
+        <button type="button" [matMenuTriggerFor]="accountMenu" class="toolbar-account-btn touch-target" [attr.aria-label]="'shell.accountMenu' | transloco">
           <div class="avatar-wrapper">
             <span class="avatar-initials">{{ userInitials() }}</span>
           </div>
+          @if (!isMobile()) {
           <div class="toolbar-user-meta">
             <span class="toolbar-user-name">{{ userName() }}</span>
             <span class="toolbar-user-role">{{ 'shell.roles.' + (userRole()?.toLowerCase() || 'default') | transloco }}</span>
           </div>
-          <mat-icon class="chevron-icon">expand_more</mat-icon>
+          }
+          <mat-icon class="chevron-icon">keyboard_arrow_down</mat-icon>
         </button>
       </div>
 
@@ -236,6 +246,17 @@
     <div class="page-content" [@routeFadeAnimation]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet" />
     </div>
+
+    @if (isMobile()) {
+    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+      @for (item of mobileNavItems(); track item.path) {
+      <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: item.path === '/dashboard' || item.path === '/system-admin/dashboard'}" class="nav-tab touch-target">
+        <mat-icon class="nav-tab-icon">{{ item.icon }}</mat-icon>
+        <span class="nav-tab-label">{{ item.labelKey | transloco }}</span>
+      </a>
+      }
+    </nav>
+    }
   </mat-sidenav-content>
 
   <!-- Global Logout Spinner Overlay -->

@@ -1,3 +1,17 @@
-<div class="chart-wrap" style="position: relative; height: 250px; width: 100%; padding: 10px;">
-  <canvas #chartCanvas></canvas>
+<div class="category-bars-container">
+  @for (cat of categories(); track cat.name; let i = $index) {
+  <div class="category-bar-item">
+    <div class="category-bar-meta">
+      <span class="category-name">{{ cat.name }}</span>
+      <span class="category-amount">{{ cat.formattedAmount }}</span>
+    </div>
+    <div class="category-track">
+      <div class="category-fill" [class.fill-secondary]="i % 2 === 1" [style.width.%]="cat.percent"></div>
+    </div>
+  </div>
+  } @empty {
+  <div class="empty-category-note">
+    <span>No category sales data yet</span>
+  </div>
+  }
 </div>

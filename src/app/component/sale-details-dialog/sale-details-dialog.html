@@ -34,7 +34,10 @@
     </div>
     <div class="meta-item">
       <span class="label">{{ t('receipt.paymentMethod') }}</span>
-      <span class="value payment-chip">{{ sale.paymentMethod === 'Cash' ? t('salesHistory.cash') : (sale.paymentMethod === 'Card' ? t('salesHistory.card') : (sale.paymentMethod === 'Mobile Payment' || sale.paymentMethod === 'Mobile Banking' || sale.paymentMethod === 'Telebirr' ? t('salesHistory.mobilePayment') : sale.paymentMethod)) }}</span>
+      <span class="value payment-chip" [ngClass]="getPaymentMethodBadgeClass()">
+        <mat-icon class="payment-chip-icon">{{ getPaymentMethodIcon() }}</mat-icon>
+        <span>{{ formatPaymentMethod() }}</span>
+      </span>
     </div>
   </div>
 
@@ -97,11 +100,11 @@
         <span>{{ t('receipt.grandTotal') }}</span>
         <span class="total-amount">{{ sale.totalAmount | number:'1.2-2' }} ETB</span>
       </div>
-      <div class="summary-row" *ngIf="sale.paymentMethod === 'Cash'">
+      <div class="summary-row" *ngIf="isCashPayment()">
         <span>{{ t('receipt.amountReceived') }}</span>
         <span>{{ sale.amountReceived | number:'1.2-2' }} ETB</span>
       </div>
-      <div class="summary-row" *ngIf="sale.paymentMethod === 'Cash'">
+      <div class="summary-row" *ngIf="isCashPayment()">
         <span>{{ t('receipt.changeDue') }}</span>
         <span class="text-change">{{ sale.changeAmount | number:'1.2-2' }} ETB</span>
       </div>

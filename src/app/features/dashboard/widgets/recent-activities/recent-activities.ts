@@ -9,6 +9,7 @@ export interface FormattedActivity {
   user: string;
   action: string;
   target: string;
+  referenceNumber?: string;
   timestamp: string;
   icon: string;
   type: string;
@@ -39,12 +40,10 @@ export class RecentActivities {
         icon = 'local_shipping';
         type = 'order';
         actionKey = 'saleProcessed';
-        if (row.referenceNumber) target += ` [${row.referenceNumber}]`;
       } else if (row.transactionType.toLowerCase().includes('purchase')) {
         icon = 'post_add';
         type = 'supplier';
         actionKey = 'purchaseReceived';
-        if (row.referenceNumber) target += ` [${row.referenceNumber}]`;
       } else if (row.transactionType.toLowerCase().includes('adjustment')) {
         icon = 'edit_note';
         type = 'stock';
@@ -56,6 +55,7 @@ export class RecentActivities {
         user: row.performedBy || '',
         action: actionKey,
         target,
+        referenceNumber: row.referenceNumber || '',
         timestamp: row.date,
         icon,
         type

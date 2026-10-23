@@ -32,6 +32,20 @@ export class TableSkeleton {
   /** Show a footer / pagination bone */
   showFooter = input(true);
 
+  /**
+   * Display mode:
+   * 'auto' - Table on desktop/tablet, responsive cards on mobile (<= 640px)
+   * 'table' - Always table (with horizontal scroll on smaller viewports)
+   * 'cards' - Always responsive cards
+   */
+  mode = input<'auto' | 'table' | 'cards'>('auto');
+
+  /** Show action button bones in mobile view */
+  showActions = input(true);
+
+  /** Number of cards in mobile view (defaults to min(rows, 5)) */
+  mobileRows = input<number | null>(null);
+
   readonly columnDefs = computed<TableSkeletonColumn[]>(() => {
     const cols = this.columns();
     if (typeof cols === 'number') {
@@ -43,6 +57,11 @@ export class TableSkeleton {
   readonly rowIndexes = computed(() =>
     Array.from({ length: Math.max(1, this.rows()) }, (_, i) => i)
   );
+
+  readonly mobileRowIndexes = computed(() => {
+    const count = this.mobileRows() ?? Math.min(Math.max(1, this.rows()), 5);
+    return Array.from({ length: count }, (_, i) => i);
+  });
 
   /** Varied widths so rows don’t look identical */
   boneWidth(seed: number, compact = false): string {

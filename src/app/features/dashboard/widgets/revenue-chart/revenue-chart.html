@@ -1,5 +1,12 @@
-<span class="panel-note">Mon – Sun</span>
+<div class="revenue-chart-body">
+  <div class="chart-meta-row">
+    <span class="panel-chip">MON – SUN</span>
+    @if (peakFormatted()) {
+      <span class="peak-note">Peak: {{ peakFormatted() }}</span>
+    }
+  </div>
 
-<div class="chart-wrap" style="position: relative; height: 190px; width: 100%;">
-  <canvas #chartCanvas></canvas>
+  <div class="chart-card-box">
+    <canvas #chartCanvas></canvas>
+  </div>
 </div>

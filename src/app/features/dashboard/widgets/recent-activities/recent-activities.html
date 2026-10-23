@@ -2,18 +2,25 @@
 <div class="activity-timeline">
   @for (act of activities(); track act.id) {
     <div class="activity-item">
-      <div class="activity-icon" [ngClass]="'type-' + act.type">
+      <div class="activity-icon-box" [ngClass]="'type-' + act.type">
         <mat-icon>{{ act.icon }}</mat-icon>
       </div>
       <div class="activity-content">
-        <div class="activity-header">
+        <div class="activity-header-line">
           <span class="activity-user">{{ act.user || t('dashboard.recentActivities.system') }}</span>
           <span class="activity-time">{{ act.timestamp | date:'MMM d, h:mm a' }}</span>
         </div>
-        <div class="activity-desc">
+        <div class="activity-desc-line">
           {{ t('dashboard.recentActivities.' + act.action) }} &mdash; <strong class="activity-target">{{ act.target }}</strong>
         </div>
+        @if (act.referenceNumber) {
+        <span class="activity-badge">{{ act.referenceNumber }}</span>
+        }
       </div>
+    </div>
+  } @empty {
+    <div class="empty-activities">
+      <span>No recent activities recorded</span>
     </div>
   }
 </div>

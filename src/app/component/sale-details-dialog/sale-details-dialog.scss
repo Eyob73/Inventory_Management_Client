@@ -96,6 +96,28 @@
         font-family: var(--font-family-mono);
         font-size: 1rem;
       }
+
+      &.payment-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        width: fit-content;
+        border: 1px solid var(--border);
+        background: var(--paper);
+        color: var(--ink);
+
+        .payment-chip-icon {
+          font-size: 15px;
+          width: 15px;
+          height: 15px;
+          line-height: 15px;
+          color: var(--moss);
+        }
+      }
     }
   }
 }

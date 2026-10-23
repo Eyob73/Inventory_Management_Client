@@ -1,8 +1,78 @@
 :host {
   display: block;
-  padding-bottom: 6px;
+  width: 100%;
 }
 
-.chart-wrap {
+.category-bars-container {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+
+  @media (max-width: 640px) {
+    padding: 10px 14px 14px;
+    gap: 12px;
+  }
+}
+
+.category-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.category-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.category-name {
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.category-amount {
+  font-family: var(--font-family-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--moss);
+  white-space: nowrap;
+}
+
+.category-track {
   width: 100%;
+  height: 10px;
+  background: var(--paper);
+  border-radius: 9999px;
+  overflow: hidden;
+
+  :host-context(.dark-theme) & {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.category-fill {
+  height: 100%;
+  background: var(--moss);
+  border-radius: 9999px;
+  transition: width 0.3s var(--ease);
+
+  &.fill-secondary {
+    background: #44673a;
+  }
+}
+
+.empty-category-note {
+  padding: 24px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--slate);
 }

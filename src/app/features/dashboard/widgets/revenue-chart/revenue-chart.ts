@@ -29,6 +29,14 @@ export class RevenueChart implements OnDestroy {
     return data.salesOverTime;
   });
 
+  readonly peakFormatted = computed(() => {
+    const data = this.chartData();
+    if (!data.length) return null;
+    const max = Math.max(...data.map(d => d.value));
+    if (max <= 0) return null;
+    return new Intl.NumberFormat('en-ET', { style: 'currency', currency: 'ETB', maximumFractionDigits: 0 }).format(max);
+  });
+
   private chartInstance: Chart | null = null;
   private canvasEl?: ElementRef<HTMLCanvasElement>;
 
@@ -50,11 +58,12 @@ export class RevenueChart implements OnDestroy {
     const ctx = this.canvasEl.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    const resolvedColor = getCssVariable('var(--teal)');
+    const resolvedColor = getCssVariable('var(--moss)') || '#41674b';
 
     if (this.chartInstance) {
       this.chartInstance.data.labels = data.map(d => new Date(d.label).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }));
       this.chartInstance.data.datasets[0].data = data.map(d => d.value);
+      this.chartInstance.data.datasets[0].borderColor = resolvedColor;
       this.chartInstance.update();
     } else {
       this.chartInstance = new Chart(ctx, {
@@ -65,11 +74,15 @@ export class RevenueChart implements OnDestroy {
             label: 'Revenue',
             data: data.map(d => d.value),
             borderColor: resolvedColor,
-            backgroundColor: resolvedColor + '40',
+            backgroundColor: 'rgba(65, 103, 75, 0.18)',
             fill: true,
-            tension: 0.3,
-            pointRadius: 4,
+            tension: 0.35,
+            borderWidth: 2.5,
+            pointRadius: 3.5,
             pointHoverRadius: 6,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: resolvedColor,
+            pointBorderWidth: 2,
           }]
         },
         options: {
