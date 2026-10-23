@@ -968,6 +968,7 @@
     "mobileBanking": "Mobile Banking",
     "telebirr": "Telebirr",
     "card": "Card",
+    "selectBank": "Select Bank",
     "hideNote": "Hide note",
     "addNote": "Add order note",
     "notePlaceholder": "Gift wrap, special instructions…",
@@ -997,6 +998,8 @@
     "cash": "Cash",
     "card": "Card",
     "mobilePayment": "Mobile Payment",
+    "telebirr": "Telebirr",
+    "mobileBanking": "Mobile Banking",
     "status": "Status",
     "allStatuses": "All Statuses",
     "completed": "Completed",
@@ -1221,7 +1224,7 @@
     }
   },
   "settingsFull": {
-    "resetDefaults": "Reset Role Defaults",
+    "resetDefaults": "Reset",
     "saveSettings": "Save Settings",
     "saveRoleSettings": "Save {{ role }} Settings",
     "savedSuccess": "Settings saved successfully!",

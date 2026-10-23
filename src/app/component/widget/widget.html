@@ -147,7 +147,7 @@
   <div class="widget-body">
     <!-- Loading State -->
     @if (widget().loading) {
-      <app-card-skeleton [type]="(widget().id.includes('kpi') || widget().id.includes('low-stock')) ? 'kpi-body' : 'chart-body'"></app-card-skeleton>
+      <app-card-skeleton [type]="(widget().category === 'kpi' || widget().id.includes('kpi')) ? 'kpi-body' : 'chart-body'"></app-card-skeleton>
     } @else if (widget().error) {
       <!-- Error State Banner -->
       <div class="widget-error-state">

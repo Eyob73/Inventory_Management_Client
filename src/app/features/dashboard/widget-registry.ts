@@ -86,7 +86,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 4,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
   {
@@ -96,12 +96,12 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     description: 'Total sales revenue broken down by product category.',
     category: 'charts',
     content: StockHealth,
-    defaultColumns: 1,
+    defaultColumns: 2,
     defaultRows: 2,
     minColumns: 1,
-    maxColumns: 2,
+    maxColumns: 4,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
 
@@ -118,7 +118,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 4,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
   {
@@ -133,7 +133,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 2,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
   {
@@ -148,7 +148,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 2,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
 ];

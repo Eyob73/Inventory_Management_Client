@@ -31,6 +31,11 @@ import { DataViewComponent, DataViewCardField, DataViewAction } from '../../shar
 import { SaleService } from '../../services/sale.service';
 import { AuthService } from '../../services/auth';
 import { Sale, SaleFilter } from '../../models/sale.model';
+import {
+  formatPaymentMethod,
+  getPaymentMethodBadgeClass,
+  getPaymentMethodIcon
+} from '../../utils/payment-method.util';
 
 @Component({
   selector: 'app-sales-history',
@@ -107,7 +112,7 @@ export class SalesHistoryComponent implements OnInit {
     { key: 'customerName', label: 'Customer', type: 'text', valueFn: (s) => s.customerName || 'Walk-in Customer' },
     { key: 'cashierName', label: 'Cashier', type: 'text' },
     { key: 'saleDate', label: 'Date', type: 'date' },
-    { key: 'paymentMethod', label: 'Payment', type: 'text' },
+    { key: 'paymentMethod', label: 'Payment', type: 'text', valueFn: (s) => this.formatPaymentMethod(s) },
     { key: 'totalAmount', label: 'Amount', type: 'currency' },
     { key: 'status', label: 'Status', type: 'badge', badgeClassFn: (s) => s.status === 'Completed' ? 'status--active' : (s.status === 'Cancelled' ? 'status--inactive' : 'status--draft'), valueFn: (s) => s.status }
   ]);
@@ -146,6 +151,18 @@ export class SalesHistoryComponent implements OnInit {
 
   get canCancelSale(): boolean {
     return this.authService.hasRole('Admin') || this.authService.hasRole('Manager');
+  }
+
+  formatPaymentMethod(sale: Sale): string {
+    return formatPaymentMethod(sale, (k) => this.translocoService.translate(k));
+  }
+
+  getPaymentMethodBadgeClass(sale: Sale): string {
+    return getPaymentMethodBadgeClass(sale);
+  }
+
+  getPaymentMethodIcon(sale: Sale): string {
+    return getPaymentMethodIcon(sale);
   }
 
   private route = inject(ActivatedRoute);

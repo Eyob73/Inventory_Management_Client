@@ -170,6 +170,13 @@
   &.three-cols {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
+
+  app-card-skeleton {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 // ── Dashboard-Styled Stat Card ───────────────────────────────────
@@ -327,14 +334,25 @@
 // ── Charts Layout ────────────────────────────────────────────────
 .charts-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 
-  @media (max-width: 580px) {
+  @media (max-width: 850px) {
     grid-template-columns: minmax(0, 1fr);
-    max-width: 440px;
-    margin: 1.5rem auto 0;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .widget-card,
+  app-card-skeleton {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
   }
 }
 
@@ -342,11 +360,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-
-  @media (max-width: 580px) {
-    max-width: 440px;
-    margin: 0 auto;
-  }
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .widget-card {
@@ -355,6 +370,8 @@
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
+  min-width: 0;
+  box-sizing: border-box;
 
   .widget-title {
     margin: 0 0 1rem 0;
@@ -369,6 +386,13 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+
+  > app-card-skeleton {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 // ── Table Header Title  ──────────────────────────────────────────

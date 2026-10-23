@@ -952,6 +952,65 @@
   }
 }
 
+/* Bank Selector for Mobile Banking */
+.pos-bank-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 0.65rem;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--pos-radius-sm);
+
+  .bank-selector-header {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    mat-icon {
+      font-size: 0.95rem;
+      width: 0.95rem;
+      height: 0.95rem;
+      color: var(--moss);
+    }
+  }
+
+  .bank-chips-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+
+    .bank-chip {
+      padding: 0.25rem 0.55rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--slate);
+      cursor: pointer;
+      transition: all var(--pos-transition);
+
+      &:hover {
+        border-color: var(--moss);
+        color: var(--ink);
+      }
+
+      &.bank-chip--active {
+        background: var(--moss-soft);
+        border-color: var(--moss);
+        color: var(--moss);
+        font-weight: 700;
+      }
+    }
+  }
+}
+
 /* Cash Payment Panel */
 .cash-panel {
   background: var(--paper);
@@ -1143,12 +1202,12 @@
   .mobile-next-checkout {
     display: block;
     position: fixed;
-    bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 1rem);
     left: 1rem;
     right: 1rem;
     margin: 0 auto;
     max-width: 480px;
-    z-index: 100;
+    z-index: 999;
     padding: 0;
     background: transparent;
     pointer-events: none;
@@ -1245,7 +1304,7 @@
   }
 
   .pos-paginator {
-    padding-bottom: 4.5rem;
+    padding-bottom: calc(4.5rem + 60px + env(safe-area-inset-bottom, 0px));
   }
 
   .order-header-left {

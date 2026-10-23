@@ -4,8 +4,7 @@
 
   <div class="kpi-delta-row">
     <span class="kpi-delta" [class.negative]="!kpi().positive">
-      <mat-icon>{{ kpi().positive ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-      
+      <mat-icon>{{ kpiType() === 'low-stock' && kpi().positive ? 'check_circle' : (kpi().positive ? 'arrow_upward' : 'arrow_downward') }}</mat-icon>
       
       @if (kpi().deltaKey) {
         {{ t(kpi().deltaKey!.key, { count: kpi().deltaKey!.count }) }}

@@ -52,22 +52,19 @@
         <div class="welcome-actions">
           @if (isSales()) {
           <button class="welcome-btn welcome-btn-primary" routerLink="/sales">
-            <mat-icon
-              style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add_shopping_cart</mat-icon>
-            {{ t('dashboard.actions.newSale') }}
+            <mat-icon class="welcome-btn-icon">add_shopping_cart</mat-icon>
+            <span>{{ t('dashboard.actions.newSale') }}</span>
           </button>
           } @else if (!isSystemAdmin()) {
           <button class="welcome-btn welcome-btn-primary" routerLink="/products">
-            <mat-icon
-              style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">add</mat-icon>
-            {{ t('dashboard.actions.addProduct') }}
+            <mat-icon class="welcome-btn-icon">add</mat-icon>
+            <span>{{ t('dashboard.actions.addProduct') }}</span>
           </button>
           }
           @if (!isSystemAdmin()) {
           <button class="welcome-btn welcome-btn-secondary" routerLink="/reports">
-            <mat-icon
-              style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;">download</mat-icon>
-            {{ t('dashboard.actions.exportReport') }}
+            <mat-icon class="welcome-btn-icon">file_download</mat-icon>
+            <span>{{ t('dashboard.actions.exportReport') }}</span>
           </button>
           }
         </div>
@@ -88,8 +85,20 @@
     <!-- Dashboard CSS Grid Layout with cdkDropListGroup -->
     <div class="dashboard-grid" cdkDropListGroup>
       @for (w of activeWidgets(); track w.id) {
-      <div class="widget-slot col-span-{{w.columns}} row-span-{{w.rows}}" cdkDropList [cdkDropListData]="w"
-        (cdkDropListDropped)="onWidgetDrop($event)">
+      <div
+        class="widget-slot"
+        [class.col-span-1]="w.columns === 1"
+        [class.col-span-2]="w.columns === 2"
+        [class.col-span-3]="w.columns === 3"
+        [class.col-span-4]="w.columns === 4"
+        [class.row-span-1]="w.rows === 1"
+        [class.row-span-2]="w.rows === 2"
+        [class.row-span-3]="w.rows === 3"
+        [class.row-span-4]="w.rows === 4"
+        cdkDropList
+        [cdkDropListData]="w"
+        (cdkDropListDropped)="onWidgetDrop($event)"
+      >
         <app-widget [widget]="w" cdkDrag [cdkDragData]="w"
           [attr.aria-label]="t('dashboardWidgets.' + w.id + '.label')" />
       </div>

@@ -2,18 +2,23 @@
 <div class="table-wrapper">
   <table mat-table [dataSource]="topProducts()" class="orders-table">
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>{{ t('dashboardWidgets.top-products.colProduct') }}</th>
-      <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+      <th mat-header-cell *matHeaderCellDef class="th-product">{{ t('dashboardWidgets.top-products.colProduct') }}</th>
+      <td mat-cell *matCellDef="let p" class="td-product">
+        <div class="product-cell">
+          <mat-icon class="product-icon">inventory_2</mat-icon>
+          <span class="product-name" [title]="p.name">{{ p.name }}</span>
+        </div>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="quantity">
-      <th mat-header-cell *matHeaderCellDef>{{ t('dashboardWidgets.top-products.colQty') }}</th>
-      <td mat-cell *matCellDef="let p" class="mono">{{ p.quantity }}</td>
+      <th mat-header-cell *matHeaderCellDef class="th-qty">{{ t('dashboardWidgets.top-products.colQty') }}</th>
+      <td mat-cell *matCellDef="let p" class="mono td-qty">{{ p.quantity }}</td>
     </ng-container>
 
     <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef>{{ t('dashboardWidgets.top-products.colRev') }}</th>
-      <td mat-cell *matCellDef="let p" class="mono strong">{{ p.amount | currency: 'ETB' }}</td>
+      <th mat-header-cell *matHeaderCellDef class="th-rev">{{ t('dashboardWidgets.top-products.colRev') }}</th>
+      <td mat-cell *matCellDef="let p" class="mono strong td-rev">{{ p.amount | currency: 'ETB' }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

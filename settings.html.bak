@@ -719,7 +719,7 @@
       <div class="save-area">
         <button type="button" class="btn btn--outline" (click)="resetDefaults()">
           <mat-icon>restart_alt</mat-icon>
-          Reset Role Defaults
+          Reset
         </button>
 
         <button type="button" class="btn btn--primary" (click)="saveSettings()">

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Sale } from '../../models/sale.model';
+import {
+  formatPaymentMethod,
+  getPaymentMethodBadgeClass,
+  getPaymentMethodIcon
+} from '../../utils/payment-method.util';
 
 import { Router } from '@angular/router';
 
@@ -29,6 +34,7 @@ export class SaleDetailsDialogComponent {
   public data = inject<{ sale: Sale }>(MAT_DIALOG_DATA);
   private dialogRef = inject(MatDialogRef<SaleDetailsDialogComponent>);
   private router = inject(Router);
+  private translocoService = inject(TranslocoService);
 
   get sale(): Sale {
     return this.data.sale;
@@ -36,6 +42,22 @@ export class SaleDetailsDialogComponent {
 
   get totalBottleDeposit(): number {
     return this.sale.items?.reduce((sum, item) => sum + (item.isBottleExchange === false ? (item.quantity * (item.bottleDepositAmount || 0)) : 0), 0) || 0;
+  }
+
+  isCashPayment(): boolean {
+    return (this.sale.paymentMethod || '').trim().toLowerCase() === 'cash';
+  }
+
+  formatPaymentMethod(): string {
+    return formatPaymentMethod(this.sale, (k) => this.translocoService.translate(k));
+  }
+
+  getPaymentMethodBadgeClass(): string {
+    return getPaymentMethodBadgeClass(this.sale);
+  }
+
+  getPaymentMethodIcon(): string {
+    return getPaymentMethodIcon(this.sale);
   }
 
   printReceipt(): void {

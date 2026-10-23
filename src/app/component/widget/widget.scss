@@ -69,11 +69,15 @@
 .widget-header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 8px;
+  padding: 8px 14px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   min-height: 38px;
+
+  @media (max-width: 640px) {
+    padding: 8px 12px;
+  }
 }
 
 .drag-handle,
@@ -88,6 +92,8 @@
   color: var(--border-strong);
   transition: color 0.15s;
   flex-shrink: 0;
+  width: 24px;
+  height: 24px;
 
   mat-icon {
     font-size: 16px;
@@ -110,7 +116,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 105px;
+  min-height: 150px;
   border: 2px dashed var(--teal);
   background: color-mix(in srgb, var(--teal-soft) 40%, transparent);
   border-radius: 14px;
@@ -123,23 +129,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 6px;
-  background: var(--teal-soft);
-  color: var(--teal-dark);
+  background: var(--moss-soft);
+  color: var(--moss);
   flex-shrink: 0;
 
   mat-icon {
-    font-size: 13px;
-    width: 13px;
-    height: 13px;
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
   }
 }
 
 .widget-label {
   margin: 0;
-  font-size: 12.5px;
+  font-family: var(--font-family-heading);
+  font-size: 14px;
   font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.01em;
@@ -160,10 +167,22 @@
 
 .widget-action-btn {
   color: var(--slate-soft) !important;
-  width: 30px !important;
-  height: 30px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
   flex-shrink: 0;
   transition: color 0.15s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  @media (max-width: 640px) {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
 
   mat-icon {
     font-size: 16px;
@@ -207,6 +226,15 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
+
+  > app-card-skeleton {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+  }
 }
 
 /* ── Loading Overlay ─────────────────────────────────────── */

@@ -343,6 +343,21 @@
           </button>
         </div>
 
+        <!-- Bank selector for Mobile Banking -->
+        <div class="pos-bank-selector" *ngIf="paymentMethod() === 'Mobile Banking'">
+          <div class="bank-selector-header">
+            <mat-icon>account_balance</mat-icon>
+            <span>{{ t('pos.selectBank') }}</span>
+          </div>
+          <div class="bank-chips-grid">
+            <button type="button" class="bank-chip" *ngFor="let bank of availableBanks"
+              [class.bank-chip--active]="selectedBank() === bank.code"
+              (click)="selectedBank.set(bank.code)">
+              {{ bank.name }}
+            </button>
+          </div>
+        </div>
+
 
         <!-- Notes toggle -->
         <button type="button" class="notes-btn" (click)="showNotes.set(!showNotes())">
