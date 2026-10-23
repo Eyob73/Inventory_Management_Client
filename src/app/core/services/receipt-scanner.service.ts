@@ -14,7 +14,6 @@ export const ALLOWED_BANK_DOMAINS = [
   'ebirr.com',
   'zamzambank.com.et',
   'zemenbank.com',
-  'cheki.et'
 ];
 
 export const MAX_RECEIPT_FILE_SIZE = 5 * 1024 * 1024; // 5 MB

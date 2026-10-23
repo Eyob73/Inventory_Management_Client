@@ -1,0 +1,334 @@
+<ng-container *transloco="let t; read: 'bottles'">
+<div class="bottle-details-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <div class="header-main">
+      <div class="header-icon-wrap">
+        <mat-icon class="header-icon">takeout_dining</mat-icon>
+      </div>
+      <div class="header-text">
+        <div class="title-row">
+          <h2>{{ balance.customerName }}</h2>
+          <span class="status-badge" [ngClass]="balance.balance > 0 ? 'status--active' : 'status--inactive'">
+            {{ balance.balance > 0 ? (t('hasBalanceStatus') || 'Has Unreturned Bottles') : (t('settledStatus') || 'All Bottles Returned') }}
+          </span>
+        </div>
+        <p class="subtitle">{{ balance.bottleTypeName }} &bull; {{ t('customerBottleDetailsSubtitle') || 'Detailed bottle balance, deposit liability, and history' }}</p>
+      </div>
+    </div>
+    <button type="button" class="close-btn" (click)="onClose()" [attr.aria-label]="t('close')">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <!-- Quick KPI Stat Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-icon-wrap">
+          <mat-icon>sports_bar</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">{{ t('unreturnedBottlesCount') || 'Unreturned Bottles' }}</span>
+          <span class="kpi-value font-mono">{{ balance.balance }}</span>
+          <span class="kpi-hint">{{ balance.bottleTypeName }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-icon-wrap">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">{{ t('totalDepositHeld') || 'Deposit Liability' }}</span>
+          <span class="kpi-value font-mono">{{ balance.totalDeposit | number:'1.2-2' }} <small>ETB</small></span>
+          <span class="kpi-hint">{{ t('outstandingDeposits') || 'Refundable to customer' }}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-icon-wrap">
+          <mat-icon>price_change</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">{{ t('effectiveAvgDeposit') || 'Avg. Deposit / Bottle' }}</span>
+          <span class="kpi-value font-mono">{{ avgDepositPerBottle() | number:'1.2-2' }} <small>ETB</small></span>
+          <span class="kpi-hint">
+            @if (bottleType()?.depositAmount) {
+              Base: {{ bottleType()!.depositAmount | number:'1.2-2' }} ETB
+            } @else {
+              Based on active balance
+            }
+          </span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-card--neutral">
+        <div class="kpi-icon-wrap">
+          <mat-icon>update</mat-icon>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">{{ t('lastActivity') || 'Last Updated' }}</span>
+          <span class="kpi-value kpi-value--date">{{ balance.lastUpdatedAt | date:'MMM d, y' }}</span>
+          <span class="kpi-hint font-mono">{{ balance.lastUpdatedAt | date:'h:mm a' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Grid: Customer Info & Bottle Type Info -->
+    <div class="info-grid">
+      <!-- Customer Information Card -->
+      <div class="info-card">
+        <div class="info-card-header">
+          <mat-icon class="section-icon">person</mat-icon>
+          <h3>{{ t('customerInfo') || 'Customer Information' }}</h3>
+        </div>
+        <div class="info-card-body">
+          @if (isLoadingCustomer()) {
+            <div class="inline-loader">
+              <mat-spinner diameter="24"></mat-spinner>
+              <span>Loading customer details...</span>
+            </div>
+          } @else {
+            <div class="detail-row">
+              <span class="detail-label">Name:</span>
+              <span class="detail-val font-medium">{{ balance.customerName }}</span>
+            </div>
+            @if (customer(); as cust) {
+              @if (cust.phoneNumber) {
+                <div class="detail-row">
+                  <span class="detail-label">Phone:</span>
+                  <span class="detail-val">
+                    <mat-icon class="row-icon">phone</mat-icon>
+                    {{ cust.phoneNumber }}
+                  </span>
+                </div>
+              }
+              @if (cust.email) {
+                <div class="detail-row">
+                  <span class="detail-label">Email:</span>
+                  <span class="detail-val">
+                    <mat-icon class="row-icon">email</mat-icon>
+                    {{ cust.email }}
+                  </span>
+                </div>
+              }
+              @if (cust.address) {
+                <div class="detail-row">
+                  <span class="detail-label">Address:</span>
+                  <span class="detail-val">
+                    <mat-icon class="row-icon">location_on</mat-icon>
+                    {{ cust.address }}
+                  </span>
+                </div>
+              }
+              <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="status-badge" [class.status--active]="cust.isActive !== false" [class.status--inactive]="cust.isActive === false">
+                  {{ cust.isActive !== false ? 'Active Customer' : 'Inactive Customer' }}
+                </span>
+              </div>
+            } @else {
+              <div class="detail-row">
+                <span class="detail-label">Account:</span>
+                <span class="detail-val text-muted">{{ balance.customerId ? 'Registered Customer' : 'Walk-in / POS Customer' }}</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Bottle Type Specifications Card -->
+      <div class="info-card">
+        <div class="info-card-header">
+          <mat-icon class="section-icon">inventory_2</mat-icon>
+          <h3>{{ t('bottleInfo') || 'Bottle Specifications' }}</h3>
+        </div>
+        <div class="info-card-body">
+          <div class="detail-row">
+            <span class="detail-label">Type Name:</span>
+            <span class="detail-val font-medium">{{ balance.bottleTypeName }}</span>
+          </div>
+          @if (bottleType(); as bt) {
+            @if (bt.capacity) {
+              <div class="detail-row">
+                <span class="detail-label">Capacity:</span>
+                <span class="detail-val">{{ bt.capacity }}</span>
+              </div>
+            }
+            @if (bt.material) {
+              <div class="detail-row">
+                <span class="detail-label">Material:</span>
+                <span class="detail-val">{{ bt.material }}</span>
+              </div>
+            }
+            <div class="detail-row">
+              <span class="detail-label">Standard Deposit:</span>
+              <span class="detail-val font-mono">{{ bt.depositAmount | number:'1.2-2' }} ETB / bottle</span>
+            </div>
+            @if (bt.description) {
+              <div class="detail-row">
+                <span class="detail-label">Description:</span>
+                <span class="detail-val text-muted">{{ bt.description }}</span>
+              </div>
+            }
+          } @else {
+            <div class="detail-row">
+              <span class="detail-label">Unit Deposit:</span>
+              <span class="detail-val font-mono">{{ avgDepositPerBottle() | number:'1.2-2' }} ETB</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Bottle Transactions Section -->
+    <div class="history-section">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <mat-icon class="section-icon">history</mat-icon>
+          <h3>{{ t('recentTransactions') || 'Recent Bottle Activity' }}</h3>
+          @if (recentTransactions().length > 0) {
+            <span class="tx-count-badge">{{ recentTransactions().length }}</span>
+          }
+        </div>
+
+        @if (recentTransactions().length > 0) {
+          <div class="history-view-toggle">
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="historyViewMode() === 'table'"
+              (click)="setHistoryViewMode('table')"
+              [matTooltip]="t('tableView') || 'Table View'"
+              aria-label="Table View"
+            >
+              <mat-icon>table_chart</mat-icon>
+            </button>
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="historyViewMode() === 'cards'"
+              (click)="setHistoryViewMode('cards')"
+              [matTooltip]="t('cardsView') || 'Cards View'"
+              aria-label="Cards View"
+            >
+              <mat-icon>view_agenda</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+
+      @if (isLoadingTransactions()) {
+        <div class="table-loading">
+          <mat-spinner diameter="32"></mat-spinner>
+          <span>Loading activity history...</span>
+        </div>
+      } @else if (recentTransactions().length === 0) {
+        <div class="table-empty-box">
+          <mat-icon>receipt_long</mat-icon>
+          <p>{{ t('noRecentTransactions') || 'No recent bottle transactions recorded for this customer.' }}</p>
+        </div>
+      } @else {
+        @if (historyViewMode() === 'table') {
+          <!-- Table View with full horizontal scroll and sticky header -->
+          <div class="tx-table-wrapper">
+            <table mat-table [dataSource]="recentTransactions()" class="tx-table">
+              <!-- Date Column -->
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>{{ t('date') || 'Date' }}</th>
+                <td mat-cell *matCellDef="let tx" class="font-mono text-secondary">
+                  {{ tx.createdAt | date:'MMM d, y, h:mm a' }}
+                </td>
+              </ng-container>
+
+              <!-- Type Column -->
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>{{ t('type') || 'Type' }}</th>
+                <td mat-cell *matCellDef="let tx">
+                  <span class="tx-badge" [ngClass]="getTransactionBadgeClass(tx.transactionType)">
+                    {{ tx.transactionType }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Quantity Column -->
+              <ng-container matColumnDef="quantity">
+                <th mat-header-cell *matHeaderCellDef class="text-right">{{ t('quantity') || 'Qty' }}</th>
+                <td mat-cell *matCellDef="let tx" class="text-right font-mono font-semibold">
+                  {{ tx.quantity }}
+                </td>
+              </ng-container>
+
+              <!-- Deposit Amount Column -->
+              <ng-container matColumnDef="depositAmount">
+                <th mat-header-cell *matHeaderCellDef class="text-right">{{ t('deposit') || 'Deposit' }}</th>
+                <td mat-cell *matCellDef="let tx" class="text-right font-mono" [class.text-success]="tx.depositAmount < 0">
+                  {{ tx.depositAmount | number:'1.2-2' }} ETB
+                </td>
+              </ng-container>
+
+              <!-- Created By Column -->
+              <ng-container matColumnDef="createdBy">
+                <th mat-header-cell *matHeaderCellDef>{{ t('user') || 'Cashier / User' }}</th>
+                <td mat-cell *matCellDef="let tx" class="text-muted">
+                  {{ tx.createdBy || 'System' }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: transactionColumns;"></tr>
+            </table>
+          </div>
+        } @else {
+          <!-- Responsive Cards View -->
+          <div class="mobile-tx-list">
+            @for (tx of recentTransactions(); track tx.id) {
+              <div class="mobile-tx-card" [ngClass]="getCardAccentClass(tx.transactionType)">
+                <div class="mobile-tx-top">
+                  <span class="tx-badge" [ngClass]="getTransactionBadgeClass(tx.transactionType)">
+                    {{ tx.transactionType }}
+                  </span>
+                  <span class="mobile-tx-date font-mono">{{ tx.createdAt | date:'MMM d, y, h:mm a' }}</span>
+                </div>
+                <div class="mobile-tx-grid">
+                  <div class="mobile-tx-stat">
+                    <span class="stat-lbl">{{ t('quantity') || 'Qty' }}</span>
+                    <span class="stat-val font-mono">{{ tx.quantity }}</span>
+                  </div>
+                  <div class="mobile-tx-stat text-right">
+                    <span class="stat-lbl">{{ t('deposit') || 'Deposit' }}</span>
+                    <span class="stat-val font-mono" [class.text-success]="tx.depositAmount < 0">
+                      {{ tx.depositAmount | number:'1.2-2' }} ETB
+                    </span>
+                  </div>
+                </div>
+                @if (tx.createdBy) {
+                  <div class="mobile-tx-bottom">
+                    <mat-icon class="footer-icon">person</mat-icon>
+                    <span class="cashier-name">{{ tx.createdBy }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div class="dialog-actions">
+    <button type="button" class="btn btn--outline" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+      <span>{{ t('close') }}</span>
+    </button>
+    @if (balance.balance > 0) {
+      <button type="button" class="btn btn--primary" (click)="onReturn()">
+        <mat-icon>keyboard_return</mat-icon>
+        <span>{{ t('processReturn') }}</span>
+      </button>
+    }
+  </div>
+</div>
+</ng-container>

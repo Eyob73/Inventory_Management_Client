@@ -41,7 +41,13 @@ export class SaleDetailsDialogComponent {
   }
 
   get totalBottleDeposit(): number {
-    return this.sale.items?.reduce((sum, item) => sum + (item.isBottleExchange === false ? (item.quantity * (item.bottleDepositAmount || 0)) : 0), 0) || 0;
+    return this.sale.items?.reduce((sum, item) => sum + (item.isBottleExchange === false ? (item.quantity * (item.bottleDepositAmount || 0)) : 0), 0) || (this.sale.totalBottleDeposit || 0);
+  }
+
+  get grandTotal(): number {
+    return Math.max(0, (this.sale.subtotal || 0) - (this.sale.discountAmount || 0) + (this.sale.taxAmount || 0))
+      + this.totalBottleDeposit
+      + (this.sale.additionalBottleDeposit || 0);
   }
 
   isCashPayment(): boolean {

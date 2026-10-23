@@ -146,17 +146,24 @@
 }
 
 .mat-column-actions {
-  width: 120px;
-  max-width: 140px;
+  width: 140px;
+  min-width: 130px;
 }
 
 .actions-cell {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
-// .action-btn styles (.action-btn--view, --edit, --delete) are standardized globally in styles/_material.scss
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--paper) !important;
+  }
+}
 
 
 .table-empty {

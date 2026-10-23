@@ -42,6 +42,36 @@ import { ConfirmDialogService } from '../../ui/confirm-dialog/confirm-dialog.ser
 import { ConfirmDialogComponent } from '../../ui/confirm-dialog/confirm-dialog';
 import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
+/**
+ * Configuration options for mobile sidebar swipe gestures.
+ */
+export interface SwipeGestureConfig {
+  /** Maximum distance in px from the left viewport edge to initiate sidebar opening (40–50 px) */
+  edgeSwipeMaxX: number;
+  /** Minimum horizontal distance in px required for a standard deliberate swipe */
+  minSwipeDistance: number;
+  /** Minimum horizontal distance in px required for a quick flick */
+  flickMinDistance: number;
+  /** Maximum duration in ms for a quick flick */
+  flickMaxTime: number;
+  /** Maximum duration in ms for a deliberate swipe */
+  swipeMaxTime: number;
+  /** Minimum ratio of horizontal to vertical movement (absX / absY) to reject diagonal/vertical gestures */
+  directionalRatio: number;
+  /** Early vertical movement threshold in px to identify vertical scroll and abort sidebar gesture */
+  verticalLockThreshold: number;
+}
+
+export const DEFAULT_SWIPE_CONFIG: SwipeGestureConfig = {
+  edgeSwipeMaxX: 45, // Within 40-50 px range
+  minSwipeDistance: 50,
+  flickMinDistance: 35,
+  flickMaxTime: 350,
+  swipeMaxTime: 650,
+  directionalRatio: 1.6, // Strictly dominant horizontal movement over vertical/diagonal
+  verticalLockThreshold: 10,
+};
+
 @Component({
   selector: 'app-shell',
   standalone: true,
@@ -296,10 +326,68 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ========== Swipe Gesture Listeners (Mobile Sidebar) ==========
+  swipeConfig: SwipeGestureConfig = { ...DEFAULT_SWIPE_CONFIG };
   private touchStartX = 0;
   private touchStartY = 0;
   private touchStartTime = 0;
+  private touchMaxVerticalDelta = 0;
   private touchIgnored = false;
+
+  /**
+   * Selectors identifying tables, data grids, carousels, horizontal navs,
+   * form controls, and horizontal scroll wrappers across the application.
+   */
+  private static readonly HORIZONTAL_CONTAINER_SELECTORS = [
+    // Tables & Table wrappers
+    'table',
+    'mat-table',
+    '[mat-table]',
+    '.mat-mdc-table',
+    '.app-table',
+    '.table-wrapper',
+    '.tx-table-wrapper',
+    '.items-table-wrapper',
+    '.table-responsive',
+    '.table-container',
+    '.table-card',
+    '[class*="table-wrapper"]',
+    // Table rows, headers, cells
+    'th',
+    'td',
+    'tr',
+    '.mat-mdc-row',
+    '.mat-mdc-header-row',
+    '.mat-mdc-cell',
+    '.mat-mdc-header-cell',
+    // Grids & Data Grids
+    '.data-grid',
+    '[role="grid"]',
+    '[role="table"]',
+    '[role="gridcell"]',
+    '[role="columnheader"]',
+    '[role="row"]',
+    // Carousels & horizontal card lists
+    '.card-carousel',
+    '.carousel',
+    '[data-carousel]',
+    '[role="region"][aria-label*="carousel" i]',
+    // Horizontal navigation, tabs, virtual scroll
+    '.mobile-pill-nav',
+    '.mobile-bottom-nav',
+    '.mat-mdc-tab-header',
+    '.mat-mdc-tab-body-content',
+    '.mat-tab-header',
+    '.cdk-virtual-scroll-viewport',
+    // Form inputs and sliders (standard drag/interaction)
+    'input',
+    'textarea',
+    'select',
+    'mat-slider',
+    '[role="slider"]',
+    '.mat-mdc-slide-toggle',
+    'canvas',
+    '.chartjs-render-monitor',
+  ].join(', ');
 
   @HostListener('window:touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
@@ -313,17 +401,61 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    const touch = event.touches[0];
     const target = event.target as HTMLElement | null;
-    if (this.isHorizontalScrollOrControl(target)) {
-      this.touchIgnored = true;
+
+    // When sidebar is closed: gesture MUST start within 40-50 px of left viewport edge
+    // AND must NOT originate inside any horizontally scrollable component or control
+    if (!this.sidenav?.opened) {
+      if (touch.clientX > this.swipeConfig.edgeSwipeMaxX) {
+        this.touchIgnored = true;
+        return;
+      }
+
+      if (this.isHorizontallyScrollableComponent(target)) {
+        this.touchIgnored = true;
+        return;
+      }
+    }
+
+    this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
+    this.touchStartTime = Date.now();
+    this.touchMaxVerticalDelta = 0;
+    this.touchIgnored = false;
+  }
+
+  @HostListener('window:touchmove', ['$event'])
+  onTouchMove(event: TouchEvent): void {
+    if (this.touchIgnored || !this.isMobile() || !event.touches.length) {
       return;
     }
 
     const touch = event.touches[0];
-    this.touchStartX = touch.clientX;
-    this.touchStartY = touch.clientY;
-    this.touchStartTime = Date.now();
-    this.touchIgnored = false;
+    const currentDeltaX = touch.clientX - this.touchStartX;
+    const currentDeltaY = touch.clientY - this.touchStartY;
+    const absDeltaX = Math.abs(currentDeltaX);
+    const absDeltaY = Math.abs(currentDeltaY);
+
+    if (absDeltaY > this.touchMaxVerticalDelta) {
+      this.touchMaxVerticalDelta = absDeltaY;
+    }
+
+    // Early detection: If vertical movement exceeds threshold and is greater than horizontal,
+    // this is a vertical page scroll - abort sidebar gesture immediately without interfering with scroll
+    if (
+      absDeltaY >= this.swipeConfig.verticalLockThreshold &&
+      absDeltaY > absDeltaX
+    ) {
+      this.touchIgnored = true;
+      return;
+    }
+
+    // If attempting to open (sidebar closed) but dragging leftwards, abort early
+    if (!this.sidenav?.opened && currentDeltaX < -15) {
+      this.touchIgnored = true;
+      return;
+    }
   }
 
   @HostListener('window:touchend', ['$event'])
@@ -337,24 +469,8 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     const deltaY = touch.clientY - this.touchStartY;
     const elapsed = Date.now() - this.touchStartTime;
 
-    const absX = Math.abs(deltaX);
-    const absY = Math.abs(deltaY);
-
-    // Validate horizontal swipe:
-    // 1. Quick flick (<350ms, >=40px) or deliberate swipe (<700ms, >=55px)
-    // 2. Horizontal movement must be dominant over vertical movement (absX > absY * 1.4)
-    const isValidSwipe = (elapsed < 350 && absX >= 40) || (elapsed < 700 && absX >= 55);
-
-    if (isValidSwipe && absX > absY * 1.4) {
-      // Swipe from left to right -> open sidebar
-      if (deltaX > 0 && !this.sidenav?.opened) {
-        this.sidenav?.open();
-      }
-      // Swipe from right to left -> close sidebar if open
-      else if (deltaX < 0 && this.sidenav?.opened) {
-        this.sidenav?.close();
-      }
-    }
+    this.processSwipeEnd(deltaX, deltaY, elapsed);
+    this.touchIgnored = true;
   }
 
   @HostListener('window:touchcancel')
@@ -368,15 +484,50 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     if (this.dialog.openDialogs.length > 0) return;
 
     const target = event.target as HTMLElement | null;
-    if (this.isHorizontalScrollOrControl(target)) return;
 
-    // For mouse testing on narrow desktop viewports: allow drag from left edge (<= 50px) or when sidebar is open
-    if (!this.sidenav?.opened && event.clientX > 50) return;
+    if (!this.sidenav?.opened) {
+      if (event.clientX > this.swipeConfig.edgeSwipeMaxX) {
+        this.touchIgnored = true;
+        return;
+      }
+      if (this.isHorizontallyScrollableComponent(target)) {
+        this.touchIgnored = true;
+        return;
+      }
+    }
 
     this.touchStartX = event.clientX;
     this.touchStartY = event.clientY;
     this.touchStartTime = Date.now();
+    this.touchMaxVerticalDelta = 0;
     this.touchIgnored = false;
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
+    if (this.touchIgnored || !this.isMobile()) return;
+
+    const currentDeltaX = event.clientX - this.touchStartX;
+    const currentDeltaY = event.clientY - this.touchStartY;
+    const absDeltaX = Math.abs(currentDeltaX);
+    const absDeltaY = Math.abs(currentDeltaY);
+
+    if (absDeltaY > this.touchMaxVerticalDelta) {
+      this.touchMaxVerticalDelta = absDeltaY;
+    }
+
+    if (
+      absDeltaY >= this.swipeConfig.verticalLockThreshold &&
+      absDeltaY > absDeltaX
+    ) {
+      this.touchIgnored = true;
+      return;
+    }
+
+    if (!this.sidenav?.opened && currentDeltaX < -15) {
+      this.touchIgnored = true;
+      return;
+    }
   }
 
   @HostListener('window:mouseup', ['$event'])
@@ -386,50 +537,85 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     const deltaX = event.clientX - this.touchStartX;
     const deltaY = event.clientY - this.touchStartY;
     const elapsed = Date.now() - this.touchStartTime;
-    const absX = Math.abs(deltaX);
-    const absY = Math.abs(deltaY);
 
-    const isValidSwipe = (elapsed < 400 && absX >= 40) || (elapsed < 800 && absX >= 55);
-    if (isValidSwipe && absX > absY * 1.4) {
-      if (deltaX > 0 && !this.sidenav?.opened) {
-        this.sidenav?.open();
-      } else if (deltaX < 0 && this.sidenav?.opened) {
-        this.sidenav?.close();
-      }
-    }
+    this.processSwipeEnd(deltaX, deltaY, elapsed);
     this.touchIgnored = true;
   }
 
-  private isHorizontalScrollOrControl(target: EventTarget | null): boolean {
+  private processSwipeEnd(deltaX: number, deltaY: number, elapsed: number): void {
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    // 1. Distinguish direction: Horizontal movement must clearly dominate vertical movement
+    // and must exceed the maximum vertical excursion during the gesture
+    const isDominantlyHorizontal =
+      absX >= absY * this.swipeConfig.directionalRatio &&
+      absX >= this.touchMaxVerticalDelta * this.swipeConfig.directionalRatio;
+
+    if (!isDominantlyHorizontal) {
+      return;
+    }
+
+    // 2. Reject accidental touches, short movements, or overly prolonged drags
+    const isFlick = elapsed <= this.swipeConfig.flickMaxTime && absX >= this.swipeConfig.flickMinDistance;
+    const isDeliberateSwipe = elapsed <= this.swipeConfig.swipeMaxTime && absX >= this.swipeConfig.minSwipeDistance;
+
+    if (!isFlick && !isDeliberateSwipe) {
+      return;
+    }
+
+    // 3. Swipe right (intentional rightward swipe) -> open sidebar
+    if (deltaX > 0 && !this.sidenav?.opened) {
+      this.sidenav?.open();
+    }
+    // 4. Swipe left -> close sidebar if open
+    else if (deltaX < 0 && this.sidenav?.opened) {
+      this.sidenav?.close();
+    }
+  }
+
+  /**
+   * Detects whether an event target originated inside an element that supports
+   * horizontal scrolling (tables, data grids, carousels, nested scroll containers)
+   * or standard interactive controls.
+   */
+  isHorizontallyScrollableComponent(target: EventTarget | null): boolean {
     if (!(target instanceof HTMLElement)) return false;
 
-    // Form inputs and sliders where dragging/sliding is part of standard input interaction
-    if (
-      target.closest(
-        'input, textarea, select, mat-slider, [role="slider"], .mat-mdc-slide-toggle, canvas, .chartjs-render-monitor'
-      )
-    ) {
+    // 1. Fast check: target or any ancestor matches known horizontal scroll / control selectors
+    if (target.closest(Shell.HORIZONTAL_CONTAINER_SELECTORS)) {
       return true;
     }
 
-    // Explicit horizontal scroll containers in the app
-    if (target.closest('.mobile-pill-nav, .mobile-bottom-nav, .table-responsive')) {
-      return true;
-    }
-
-    // Check if target or any immediate parent has horizontal scrolling
+    // 2. Comprehensive ancestor tree walk to detect nested or dynamic horizontal scroll containers
     let el: HTMLElement | null = target;
-    let depth = 0;
-    while (el && el !== document.body && depth < 4) {
-      const overflowX = window.getComputedStyle(el).overflowX;
-      if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 20) {
+    while (el && el !== document.body && el !== document.documentElement) {
+      if (el.classList.contains('shell-container') || el.classList.contains('shell-content')) {
+        break;
+      }
+
+      const style = window.getComputedStyle(el);
+      const overflowX = style.overflowX;
+
+      // Element explicitly configured with horizontal scrolling
+      if (overflowX === 'auto' || overflowX === 'scroll') {
         return true;
       }
+
+      // Element content overflows horizontally and is not clipped with overflow-x: hidden
+      if (el.scrollWidth > el.clientWidth + 1 && overflowX !== 'hidden' && overflowX !== 'visible') {
+        return true;
+      }
+
       el = el.parentElement;
-      depth++;
     }
 
     return false;
+  }
+
+  /** Backwards compatibility alias for isHorizontallyScrollableComponent */
+  private isHorizontalScrollOrControl(target: EventTarget | null): boolean {
+    return this.isHorizontallyScrollableComponent(target);
   }
 
   // ========== Actions ==========
