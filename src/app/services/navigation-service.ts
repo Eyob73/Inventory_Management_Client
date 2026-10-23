@@ -45,7 +45,7 @@ const ALL_NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'POS Terminal', path: '/pos', icon: 'storefront', description: 'Point of Sale terminal for making sales', keywords: ['sell', 'cash register', 'checkout', 'till'] },
       { label: 'Sales History', path: '/sales-history', icon: 'receipt_long', description: 'Past sales and receipts', keywords: ['receipts', 'past', 'history'] },
-      { label: 'Payment Verification', path: '/payments/verification', icon: 'verified_user', roles: ['Admin', 'Manager', 'Sales'], description: 'Verify customer payments and manage receiving destinations', keywords: ['cheki', 'payment', 'verification', 'verify', 'telebirr', 'bank', 'transfer'] },
+      { label: 'Payment Verification', path: '/payments/verification', icon: 'verified_user', roles: ['Admin', 'Manager', 'Sales'], description: 'Verify customer payments and manage receiving destinations', keywords: ['', 'payment', 'verification', 'verify', 'telebirr', 'bank', 'transfer'] },
       { label: 'Customers', path: '/customers', icon: 'people', description: 'Manage customer accounts', keywords: ['clients', 'buyers', 'accounts'] },
       { label: 'Suppliers', path: '/suppliers', icon: 'local_shipping', roles: ['Admin', 'Manager', 'Sales'], description: 'Manage vendors and suppliers', keywords: ['vendors', 'distributors'] },
       { label: 'Purchases', path: '/purchases', icon: 'local_mall', roles: ['Admin', 'Manager'], description: 'Incoming stock and purchase orders', keywords: ['buy', 'restock', 'orders', 'stock in'] },
@@ -87,7 +87,7 @@ const EXTRA_SEARCH_ITEMS: NavItem[] = [
 
 const routeTitleMap: Record<string, string> = {
   '/dashboard': 'Dashboard',
-    '/bottles/dashboard': 'Bottle Dashboard',
+  '/bottles/dashboard': 'Bottle Dashboard',
   '/bottles/types': 'Bottle Types',
   '/bottles/inventory': 'Bottle Inventory',
   '/bottles/customers': 'Customer Bottles',
@@ -136,7 +136,7 @@ export class NavigationService {
           return false;
         }
         if (!group.roles) {
-           return normalizedRole !== 'systemadmin';
+          return normalizedRole !== 'systemadmin';
         }
         return group.roles.some((r) => r.toLowerCase() === normalizedRole);
       })
@@ -158,7 +158,7 @@ export class NavigationService {
   getSearchableItems(role?: string): NavItem[] {
     const navGroups = this.getNavGroups(role);
     const navItems = navGroups.flatMap(g => g.items);
-    
+
     const normalizedRole = role?.toLowerCase() ?? '';
     const extraItems = EXTRA_SEARCH_ITEMS.filter((item) => {
       if (!item.roles) {

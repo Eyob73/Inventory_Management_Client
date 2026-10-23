@@ -87,6 +87,10 @@
         <span>{{ t('receipt.bottleDeposits') }}</span>
         <span>+{{ totalBottleDeposit | number:'1.2-2' }} ETB</span>
       </div>
+      <div class="summary-row" *ngIf="(sale.additionalBottleDeposit || 0) > 0">
+        <span>{{ t('receipt.additionalDeposit') }}</span>
+        <span>+{{ sale.additionalBottleDeposit | number:'1.2-2' }} ETB</span>
+      </div>
       <div class="summary-row" *ngIf="sale.discountAmount > 0">
         <span>{{ t('receipt.discount') }}</span>
         <span class="text-discount">-{{ sale.discountAmount | number:'1.2-2' }} ETB</span>
@@ -98,7 +102,7 @@
       <mat-divider></mat-divider>
       <div class="summary-row grand-total">
         <span>{{ t('receipt.grandTotal') }}</span>
-        <span class="total-amount">{{ sale.totalAmount | number:'1.2-2' }} ETB</span>
+        <span class="total-amount">{{ grandTotal | number:'1.2-2' }} ETB</span>
       </div>
       <div class="summary-row" *ngIf="isCashPayment()">
         <span>{{ t('receipt.amountReceived') }}</span>

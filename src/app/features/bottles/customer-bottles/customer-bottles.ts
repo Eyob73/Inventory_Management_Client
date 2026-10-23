@@ -12,11 +12,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReturnBottleDialogComponent } from './return-bottle-dialog/return-bottle-dialog';
+import { CustomerBottleDetailsDialogComponent } from './customer-bottle-details-dialog/customer-bottle-details-dialog';
 import { CustomerBottleBalance } from '../../../core/services/customer-bottles';
 import { CustomerBottlesStore } from '../../../store/customer-bottles.store';
 import { BottleTypesStore } from '../../../store/bottle-types.store';
 import { TableSkeleton } from '../../../ui/table-skeleton/table-skeleton';
 import { DataViewComponent, DataViewCardField, DataViewAction } from '../../../shared/components/data-view/data-view.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-customer-bottles',
@@ -28,6 +30,7 @@ import { DataViewComponent, DataViewCardField, DataViewAction } from '../../../s
     MatDialogModule, 
     MatButtonModule, 
     MatIconModule, 
+    MatTooltipModule,
     MatPaginatorModule, 
     TableSkeleton, 
     FormsModule, 
@@ -57,11 +60,13 @@ export class CustomerBottlesComponent implements OnInit, OnDestroy {
   ]);
 
   cardActions = computed<DataViewAction[]>(() => [
+    { id: 'view', icon: 'visibility', label: 'View Details' },
     { id: 'return', icon: 'keyboard_return', label: 'Return', hideFn: (t: any) => t.balance === 0 }
   ]);
 
   onCardAction(event: { actionId: string, item: any }) {
-    if (event.actionId === 'return') this.openReturnDialog(event.item);
+    if (event.actionId === 'view') this.openViewDialog(event.item);
+    else if (event.actionId === 'return') this.openReturnDialog(event.item);
   }
 
   constructor(private dialog: MatDialog) {
@@ -87,6 +92,22 @@ export class CustomerBottlesComponent implements OnInit, OnDestroy {
 
   onHasBalanceChange(hasBalance: boolean | undefined): void {
     this.store.loadBalances({ hasBalance, pageIndex: 1 });
+  }
+
+  openViewDialog(element: CustomerBottleBalance): void {
+    const dialogRef = this.dialog.open(CustomerBottleDetailsDialogComponent, {
+      width: '760px',
+      maxWidth: '96vw',
+      maxHeight: '92vh',
+      panelClass: 'customer-bottle-details-dialog-panel',
+      data: { balance: element }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.action === 'return' && result.balance) {
+        this.openReturnDialog(result.balance);
+      }
+    });
   }
 
   openReturnDialog(element: CustomerBottleBalance): void {

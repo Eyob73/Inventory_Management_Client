@@ -88,9 +88,23 @@
 
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef> {{ t('actions') }} </th>
-                <td mat-cell *matCellDef="let element">
+                <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
                   <div class="actions-cell">
-                    <button class="btn btn--outline btn--sm" (click)="openReturnDialog(element)" [disabled]="element.balance === 0">
+                    <button
+                      type="button"
+                      class="action-btn action-btn--view"
+                      (click)="openViewDialog(element)"
+                      [matTooltip]="t('viewDetails') || 'View Details'"
+                      [attr.aria-label]="t('viewDetails') || 'View Details'"
+                    >
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn--outline btn--sm"
+                      (click)="openReturnDialog(element)"
+                      [disabled]="element.balance === 0"
+                    >
                       {{ t('return') }}
                     </button>
                   </div>
@@ -98,7 +112,12 @@
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions'];"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: ['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions'];"
+                class="clickable-row"
+                (click)="openViewDialog(row)"
+              ></tr>
             </table>
           </div>
         </div>
