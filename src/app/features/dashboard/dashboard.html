@@ -85,8 +85,20 @@
     <!-- Dashboard CSS Grid Layout with cdkDropListGroup -->
     <div class="dashboard-grid" cdkDropListGroup>
       @for (w of activeWidgets(); track w.id) {
-      <div class="widget-slot col-span-{{w.columns}} row-span-{{w.rows}}" cdkDropList [cdkDropListData]="w"
-        (cdkDropListDropped)="onWidgetDrop($event)">
+      <div
+        class="widget-slot"
+        [class.col-span-1]="w.columns === 1"
+        [class.col-span-2]="w.columns === 2"
+        [class.col-span-3]="w.columns === 3"
+        [class.col-span-4]="w.columns === 4"
+        [class.row-span-1]="w.rows === 1"
+        [class.row-span-2]="w.rows === 2"
+        [class.row-span-3]="w.rows === 3"
+        [class.row-span-4]="w.rows === 4"
+        cdkDropList
+        [cdkDropListData]="w"
+        (cdkDropListDropped)="onWidgetDrop($event)"
+      >
         <app-widget [widget]="w" cdkDrag [cdkDragData]="w"
           [attr.aria-label]="t('dashboardWidgets.' + w.id + '.label')" />
       </div>

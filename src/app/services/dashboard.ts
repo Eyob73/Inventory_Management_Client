@@ -6,7 +6,7 @@ import { AuthStore } from '../store/auth.store';
 import { DashboardStore } from '../store/dashboard.store';
 import { SystemDashboardStore } from '../store/system-dashboard.store';
 
-const STORAGE_KEY = 'dashboard_widget_config_v8';
+const STORAGE_KEY = 'dashboard_widget_config_v10';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {

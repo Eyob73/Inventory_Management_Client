@@ -39,16 +39,34 @@ export class RevenueChart implements OnDestroy {
 
   private chartInstance: Chart | null = null;
   private canvasEl?: ElementRef<HTMLCanvasElement>;
+  private resizeObserver?: ResizeObserver;
 
   @ViewChild('chartCanvas') set canvas(el: ElementRef<HTMLCanvasElement> | undefined) {
     this.canvasEl = el;
     this.updateChart();
+    this.setupResizeObserver();
   }
 
   constructor() {
     effect(() => {
       this.updateChart();
     });
+  }
+
+  private setupResizeObserver() {
+    const parent = this.canvasEl?.nativeElement.parentElement;
+    if (!parent) return;
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+    this.resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(() => {
+        if (this.chartInstance) {
+          this.chartInstance.resize();
+        }
+      });
+    });
+    this.resizeObserver.observe(parent);
   }
 
   private updateChart() {
@@ -58,6 +76,8 @@ export class RevenueChart implements OnDestroy {
     const ctx = this.canvasEl.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    this.setupResizeObserver();
+
     const resolvedColor = getCssVariable('var(--moss)') || '#41674b';
 
     if (this.chartInstance) {
@@ -65,6 +85,7 @@ export class RevenueChart implements OnDestroy {
       this.chartInstance.data.datasets[0].data = data.map(d => d.value);
       this.chartInstance.data.datasets[0].borderColor = resolvedColor;
       this.chartInstance.update();
+      this.chartInstance.resize();
     } else {
       this.chartInstance = new Chart(ctx, {
         type: 'line',
@@ -111,14 +132,23 @@ export class RevenueChart implements OnDestroy {
           },
           scales: {
             x: {
-              grid: { display: false }
+              grid: { display: false },
+              ticks: {
+                color: getCssVariable('var(--slate)') || '#64748b',
+                font: { size: 10 }
+              }
             },
             y: {
               beginAtZero: true,
               border: { dash: [4, 4] },
               grid: {
-                color: '#e2e8f0',
+                color: getCssVariable('var(--border)') || '#e2e8f0',
                 tickLength: 0
+              },
+              ticks: {
+                color: getCssVariable('var(--slate)') || '#64748b',
+                font: { size: 10 },
+                maxTicksLimit: 5
               }
             }
           }
@@ -128,6 +158,10 @@ export class RevenueChart implements OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = undefined;
+    }
     if (this.chartInstance) {
       this.chartInstance.destroy();
       this.chartInstance = null;

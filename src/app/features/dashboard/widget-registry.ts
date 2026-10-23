@@ -86,7 +86,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 4,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
   {
@@ -101,7 +101,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 4,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
 
@@ -118,7 +118,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 4,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
   {
@@ -133,7 +133,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 2,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
   {
@@ -148,7 +148,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     minColumns: 1,
     maxColumns: 2,
     minRows: 1,
-    maxRows: 3,
+    maxRows: 4,
     defaultVisible: true,
   },
 ];

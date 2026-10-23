@@ -1,6 +1,10 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .revenue-chart-body {
@@ -9,6 +13,9 @@
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
   box-sizing: border-box;
 
   @media (max-width: 640px) {
@@ -21,6 +28,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
+  flex-shrink: 0;
 }
 
 .panel-chip {
@@ -43,16 +51,17 @@
 
 .chart-card-box {
   position: relative;
-  height: 180px;
+  flex: 1;
   width: 100%;
-  background: var(--paper);
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  padding: 8px 10px;
+  height: 100%;
+  min-height: 0;
   box-sizing: border-box;
   overflow: hidden;
 
-  @media (max-width: 640px) {
-    height: 165px;
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
   }
 }
