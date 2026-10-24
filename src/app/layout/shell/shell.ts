@@ -46,7 +46,7 @@ import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/tr
  * Configuration options for mobile sidebar swipe gestures.
  */
 export interface SwipeGestureConfig {
-  /** Maximum ratio of viewport width from the left edge to initiate sidebar opening (0.5 = half screen) */
+  /** Maximum ratio of viewport width from the left edge to initiate sidebar opening (1.0 = entire screen width) */
   maxStartViewportRatio: number;
   /** Maximum distance in px from the left viewport edge to initiate sidebar opening (fallback if window width unavailable) */
   edgeSwipeMaxX: number;
@@ -65,8 +65,8 @@ export interface SwipeGestureConfig {
 }
 
 export const DEFAULT_SWIPE_CONFIG: SwipeGestureConfig = {
-  maxStartViewportRatio: 0.5, // Half screen viewport (up to 50% of viewport width)
-  edgeSwipeMaxX: 200, // Fallback max px for a standard ~400px mobile viewport
+  maxStartViewportRatio: 1.0, // Swiping right anywhere on the page outside scrollable tables opens the sidebar
+  edgeSwipeMaxX: 9999,
   minSwipeDistance: 50,
   flickMinDistance: 35,
   flickMaxTime: 350,
@@ -354,14 +354,21 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     '.table-container',
     '.table-card',
     '[class*="table-wrapper"]',
-    // Table rows, headers, cells
+    '[class*="table-container"]',
+    '[class*="table-responsive"]',
+    // Table rows, headers, cells, footers
+    'thead',
+    'tbody',
+    'tfoot',
     'th',
     'td',
     'tr',
     '.mat-mdc-row',
     '.mat-mdc-header-row',
+    '.mat-mdc-footer-row',
     '.mat-mdc-cell',
     '.mat-mdc-header-cell',
+    '.mat-mdc-footer-cell',
     // Grids & Data Grids
     '.data-grid',
     '[role="grid"]',
@@ -388,16 +395,14 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     'mat-slider',
     '[role="slider"]',
     '.mat-mdc-slide-toggle',
-    'canvas',
-    '.chartjs-render-monitor',
   ].join(', ');
 
   /**
-   * Calculates the maximum clientX allowed to start a sidebar open gesture (half screen viewport).
+   * Calculates the maximum clientX allowed to start a sidebar open gesture (default 1.0 = entire screen width).
    */
   getMaxStartClientX(): number {
     const viewportWidth = typeof window !== 'undefined' && window.innerWidth ? window.innerWidth : 400;
-    const ratio = this.swipeConfig.maxStartViewportRatio ?? 0.5;
+    const ratio = this.swipeConfig.maxStartViewportRatio ?? 1.0;
     return viewportWidth * ratio;
   }
 
@@ -416,10 +421,9 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     const touch = event.touches[0];
     const target = event.target as HTMLElement | null;
 
-    // When sidebar is closed: gesture MUST start within half screen viewport (<= 50% width)
-    // AND must NOT originate inside any horizontally scrollable component or control
+    // When sidebar is closed: gesture is disabled ONLY within tables or containers that have horizontal scrolling
     if (!this.sidenav?.opened) {
-      if (touch.clientX > this.getMaxStartClientX()) {
+      if (this.swipeConfig.maxStartViewportRatio < 1.0 && touch.clientX > this.getMaxStartClientX()) {
         this.touchIgnored = true;
         return;
       }
@@ -498,7 +502,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement | null;
 
     if (!this.sidenav?.opened) {
-      if (event.clientX > this.getMaxStartClientX()) {
+      if (this.swipeConfig.maxStartViewportRatio < 1.0 && event.clientX > this.getMaxStartClientX()) {
         this.touchIgnored = true;
         return;
       }
@@ -590,26 +594,74 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
    * Detects whether an event target originated inside an element that supports
    * horizontal scrolling (tables, data grids, carousels, nested scroll containers)
    * or standard interactive controls.
+   *
+   * Note: Dashboard cards, widgets, and charts do not scroll horizontally and
+   * allow the sidebar swipe gesture to work.
    */
   isHorizontallyScrollableComponent(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) return false;
+    if (!(target instanceof Element)) return false;
 
-    // 1. Fast check: target or any ancestor matches known horizontal scroll / control selectors
+    // 0. Dedicated drag handles for rearranging widgets: ignore sidebar gesture so widget can be dragged
+    if (target.closest('.widget-drag-handle, [cdkDragHandle]')) {
+      return true;
+    }
+
+    // 1. Dashboard cards & widgets: Allow swipe gesture to open sidebar across dashboard cards
+    // unless an inner element specifically has active horizontal scrolling (scrollWidth > clientWidth)
+    const dashboardCard = target.closest(
+      'app-widget, .widget-slot, .dashboard-grid, .dashboard-card, .dash-card, [class*="widget-slot"], .quick-action-card, .stat-card'
+    );
+    if (dashboardCard) {
+      let el: Element | null = target;
+      while (el && el !== dashboardCard.parentElement && el !== document.body) {
+        if (el instanceof HTMLElement) {
+          const inlineOverflowX = el.style?.overflowX || el.style?.overflow;
+          if (
+            (inlineOverflowX === 'auto' || inlineOverflowX === 'scroll') &&
+            el.scrollWidth > el.clientWidth + 1
+          ) {
+            return true;
+          }
+        }
+        const style = window.getComputedStyle(el);
+        const overflowX = style?.overflowX;
+        if (
+          (overflowX === 'auto' || overflowX === 'scroll') &&
+          el.scrollWidth > el.clientWidth + 1
+        ) {
+          return true;
+        }
+        el = el.parentElement;
+      }
+      return false;
+    }
+
+    // 2. Fast check: target or any ancestor matches known horizontal scroll / control selectors
     if (target.closest(Shell.HORIZONTAL_CONTAINER_SELECTORS)) {
       return true;
     }
 
-    // 2. Comprehensive ancestor tree walk to detect nested or dynamic horizontal scroll containers
-    let el: HTMLElement | null = target;
+    // 3. Comprehensive ancestor tree walk to detect nested or dynamic horizontal scroll containers
+    let el: Element | null = target;
     while (el && el !== document.body && el !== document.documentElement) {
       if (el.classList.contains('shell-container') || el.classList.contains('shell-content')) {
         break;
       }
 
-      const style = window.getComputedStyle(el);
-      const overflowX = style.overflowX;
+      // Check inline style first (fast and robust)
+      if (el instanceof HTMLElement) {
+        const inlineStyle = el.style;
+        const inlineOverflowX = inlineStyle?.overflowX || inlineStyle?.overflow;
+        if (inlineOverflowX === 'auto' || inlineOverflowX === 'scroll') {
+          return true;
+        }
+      }
 
-      // Element explicitly configured with horizontal scrolling
+      // Check computed style
+      const style = window.getComputedStyle(el);
+      const overflowX = style?.overflowX;
+
+      // Element explicitly configured with horizontal scrolling (e.g. overflow-x: auto | scroll)
       if (overflowX === 'auto' || overflowX === 'scroll') {
         return true;
       }

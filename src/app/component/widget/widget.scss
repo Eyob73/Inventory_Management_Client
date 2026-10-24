@@ -225,7 +225,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   > app-card-skeleton {
     display: flex;
