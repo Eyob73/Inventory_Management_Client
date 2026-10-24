@@ -46,7 +46,9 @@ import { TranslocoDirective, TranslocoPipe, TranslocoService } from '@jsverse/tr
  * Configuration options for mobile sidebar swipe gestures.
  */
 export interface SwipeGestureConfig {
-  /** Maximum distance in px from the left viewport edge to initiate sidebar opening (40–50 px) */
+  /** Maximum ratio of viewport width from the left edge to initiate sidebar opening (0.5 = half screen) */
+  maxStartViewportRatio: number;
+  /** Maximum distance in px from the left viewport edge to initiate sidebar opening (fallback if window width unavailable) */
   edgeSwipeMaxX: number;
   /** Minimum horizontal distance in px required for a standard deliberate swipe */
   minSwipeDistance: number;
@@ -63,7 +65,8 @@ export interface SwipeGestureConfig {
 }
 
 export const DEFAULT_SWIPE_CONFIG: SwipeGestureConfig = {
-  edgeSwipeMaxX: 45, // Within 40-50 px range
+  maxStartViewportRatio: 0.5, // Half screen viewport (up to 50% of viewport width)
+  edgeSwipeMaxX: 200, // Fallback max px for a standard ~400px mobile viewport
   minSwipeDistance: 50,
   flickMinDistance: 35,
   flickMaxTime: 350,
@@ -389,6 +392,15 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     '.chartjs-render-monitor',
   ].join(', ');
 
+  /**
+   * Calculates the maximum clientX allowed to start a sidebar open gesture (half screen viewport).
+   */
+  getMaxStartClientX(): number {
+    const viewportWidth = typeof window !== 'undefined' && window.innerWidth ? window.innerWidth : 400;
+    const ratio = this.swipeConfig.maxStartViewportRatio ?? 0.5;
+    return viewportWidth * ratio;
+  }
+
   @HostListener('window:touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
     if (!this.isMobile() || event.touches.length !== 1) {
@@ -404,10 +416,10 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     const touch = event.touches[0];
     const target = event.target as HTMLElement | null;
 
-    // When sidebar is closed: gesture MUST start within 40-50 px of left viewport edge
+    // When sidebar is closed: gesture MUST start within half screen viewport (<= 50% width)
     // AND must NOT originate inside any horizontally scrollable component or control
     if (!this.sidenav?.opened) {
-      if (touch.clientX > this.swipeConfig.edgeSwipeMaxX) {
+      if (touch.clientX > this.getMaxStartClientX()) {
         this.touchIgnored = true;
         return;
       }
@@ -486,7 +498,7 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     const target = event.target as HTMLElement | null;
 
     if (!this.sidenav?.opened) {
-      if (event.clientX > this.swipeConfig.edgeSwipeMaxX) {
+      if (event.clientX > this.getMaxStartClientX()) {
         this.touchIgnored = true;
         return;
       }
