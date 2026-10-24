@@ -291,6 +291,20 @@
     font-size: 0.8rem;
     color: var(--ink);
   }
+
+  .sale-row.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--paper) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--moss);
+      outline-offset: -2px;
+    }
+  }
 }
 
 .expanded-items-box {

@@ -122,5 +122,28 @@
   font-size: 0.95rem;
 }
 
+.sales-row.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background-color: var(--paper) !important;
+  }
+
+  &:active {
+    background-color: var(--surface) !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--moss);
+    outline-offset: -2px;
+  }
+
+  &:hover .sale-number-code {
+    border-color: var(--moss);
+    box-shadow: 0 0 0 1px var(--moss);
+  }
+}
+
 
 
