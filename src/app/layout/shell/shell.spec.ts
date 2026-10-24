@@ -85,6 +85,8 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       toggle: vi.fn().mockImplementation(() => { mockSidenav.opened = !mockSidenav.opened; }),
     };
 
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 400 });
+
     component.isMobile.set(true);
     fixture.detectChanges();
 
@@ -187,29 +189,29 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
     });
   });
 
-  describe('Sidebar opening gesture edge restrictions', () => {
-    it('should open sidebar when right-swipe starts within edge threshold (<= 45px)', () => {
+  describe('Sidebar opening gesture half-screen viewport restrictions', () => {
+    it('should open sidebar when right-swipe starts within the left half of the viewport (<= 50% width)', () => {
       const normalEl = document.createElement('div');
       document.body.appendChild(normalEl);
 
       mockSidenav.opened = false;
 
-      // Start touch at clientX = 35 (within new 40-50px edge threshold)
+      // Start touch at clientX = 120 (within left half of 400px screen, <= 200px)
       const touchStart = new TouchEvent('touchstart', {
-        touches: [{ clientX: 35, clientY: 200 } as Touch],
+        touches: [{ clientX: 120, clientY: 200 } as Touch],
       });
       Object.defineProperty(touchStart, 'target', { value: normalEl });
       component.onTouchStart(touchStart);
 
       // Move right horizontally
       const touchMove = new TouchEvent('touchmove', {
-        touches: [{ clientX: 105, clientY: 204 } as Touch],
+        touches: [{ clientX: 190, clientY: 204 } as Touch],
       });
       component.onTouchMove(touchMove);
 
       // End touch (deltaX = +70px, deltaY = 4px, elapsed = 200ms)
       const touchEnd = new TouchEvent('touchend', {
-        changedTouches: [{ clientX: 105, clientY: 204 } as Touch],
+        changedTouches: [{ clientX: 190, clientY: 204 } as Touch],
       });
       component.onTouchEnd(touchEnd);
 
@@ -218,26 +220,26 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       document.body.removeChild(normalEl);
     });
 
-    it('should NOT open sidebar when touch starts outside edge threshold (> 45px)', () => {
+    it('should NOT open sidebar when touch starts in the right half of the viewport (> 50% width)', () => {
       const normalEl = document.createElement('div');
       document.body.appendChild(normalEl);
 
       mockSidenav.opened = false;
 
-      // Touch starts at clientX = 65px (beyond 40-50px limit)
+      // Touch starts at clientX = 250px (beyond 50% of 400px viewport)
       const touchStart = new TouchEvent('touchstart', {
-        touches: [{ clientX: 65, clientY: 200 } as Touch],
+        touches: [{ clientX: 250, clientY: 200 } as Touch],
       });
       Object.defineProperty(touchStart, 'target', { value: normalEl });
       component.onTouchStart(touchStart);
 
       const touchMove = new TouchEvent('touchmove', {
-        touches: [{ clientX: 135, clientY: 202 } as Touch],
+        touches: [{ clientX: 320, clientY: 202 } as Touch],
       });
       component.onTouchMove(touchMove);
 
       const touchEnd = new TouchEvent('touchend', {
-        changedTouches: [{ clientX: 135, clientY: 202 } as Touch],
+        changedTouches: [{ clientX: 320, clientY: 202 } as Touch],
       });
       component.onTouchEnd(touchEnd);
 
@@ -246,7 +248,7 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       document.body.removeChild(normalEl);
     });
 
-    it('should NOT open sidebar when touch starts inside a wide table or table-wrapper, even at clientX <= 25px', () => {
+    it('should NOT open sidebar when touch starts inside a wide table or table-wrapper, even within left half of viewport', () => {
       const tableWrapper = document.createElement('div');
       tableWrapper.className = 'table-wrapper';
       const table = document.createElement('table');
@@ -257,20 +259,20 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
 
       mockSidenav.opened = false;
 
-      // Touch starts at clientX = 10px (near edge, but inside table)
+      // Touch starts at clientX = 80px (inside left half, but inside table)
       const touchStart = new TouchEvent('touchstart', {
-        touches: [{ clientX: 10, clientY: 200 } as Touch],
+        touches: [{ clientX: 80, clientY: 200 } as Touch],
       });
       Object.defineProperty(touchStart, 'target', { value: td });
       component.onTouchStart(touchStart);
 
       const touchMove = new TouchEvent('touchmove', {
-        touches: [{ clientX: 80, clientY: 202 } as Touch],
+        touches: [{ clientX: 150, clientY: 202 } as Touch],
       });
       component.onTouchMove(touchMove);
 
       const touchEnd = new TouchEvent('touchend', {
-        changedTouches: [{ clientX: 80, clientY: 202 } as Touch],
+        changedTouches: [{ clientX: 150, clientY: 202 } as Touch],
       });
       component.onTouchEnd(touchEnd);
 
@@ -280,7 +282,7 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       document.body.removeChild(tableWrapper);
     });
 
-    it('should NOT open sidebar when touch starts inside a nested horizontal scroll container near the edge', () => {
+    it('should NOT open sidebar when touch starts inside a nested horizontal scroll container in left half of viewport', () => {
       const outer = document.createElement('div');
       const inner = document.createElement('div');
       inner.style.overflowX = 'auto';
@@ -291,19 +293,20 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
 
       mockSidenav.opened = false;
 
+      // Touch starts at clientX = 60px inside nested scroll container
       const touchStart = new TouchEvent('touchstart', {
-        touches: [{ clientX: 12, clientY: 200 } as Touch],
+        touches: [{ clientX: 60, clientY: 200 } as Touch],
       });
       Object.defineProperty(touchStart, 'target', { value: cell });
       component.onTouchStart(touchStart);
 
       const touchMove = new TouchEvent('touchmove', {
-        touches: [{ clientX: 90, clientY: 201 } as Touch],
+        touches: [{ clientX: 130, clientY: 201 } as Touch],
       });
       component.onTouchMove(touchMove);
 
       const touchEnd = new TouchEvent('touchend', {
-        changedTouches: [{ clientX: 90, clientY: 201 } as Touch],
+        changedTouches: [{ clientX: 130, clientY: 201 } as Touch],
       });
       component.onTouchEnd(touchEnd);
 
@@ -450,21 +453,21 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
   });
 
   describe('Mouse testing on mobile viewport emulation', () => {
-    it('should open sidebar on mouse drag from left edge (clientX <= 45px)', () => {
+    it('should open sidebar on mouse drag from left half of viewport (clientX <= 50% width)', () => {
       component.isMobile.set(true);
       mockSidenav.opened = false;
 
       const normalEl = document.createElement('div');
       document.body.appendChild(normalEl);
 
-      const mouseDown = new MouseEvent('mousedown', { clientX: 30, clientY: 200, button: 0 });
+      const mouseDown = new MouseEvent('mousedown', { clientX: 100, clientY: 200, button: 0 });
       Object.defineProperty(mouseDown, 'target', { value: normalEl });
       component.onMouseDown(mouseDown);
 
-      const mouseMove = new MouseEvent('mousemove', { clientX: 95, clientY: 203 });
+      const mouseMove = new MouseEvent('mousemove', { clientX: 170, clientY: 203 });
       component.onMouseMove(mouseMove);
 
-      const mouseUp = new MouseEvent('mouseup', { clientX: 95, clientY: 203 });
+      const mouseUp = new MouseEvent('mouseup', { clientX: 170, clientY: 203 });
       component.onMouseUp(mouseUp);
 
       expect(mockSidenav.open).toHaveBeenCalled();
@@ -472,7 +475,7 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       document.body.removeChild(normalEl);
     });
 
-    it('should NOT open sidebar on mouse drag inside table, even from edge', () => {
+    it('should NOT open sidebar on mouse drag inside table, even from left half of viewport', () => {
       component.isMobile.set(true);
       mockSidenav.opened = false;
 
@@ -482,11 +485,11 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       tableWrapper.appendChild(cell);
       document.body.appendChild(tableWrapper);
 
-      const mouseDown = new MouseEvent('mousedown', { clientX: 10, clientY: 200, button: 0 });
+      const mouseDown = new MouseEvent('mousedown', { clientX: 50, clientY: 200, button: 0 });
       Object.defineProperty(mouseDown, 'target', { value: cell });
       component.onMouseDown(mouseDown);
 
-      const mouseUp = new MouseEvent('mouseup', { clientX: 80, clientY: 203 });
+      const mouseUp = new MouseEvent('mouseup', { clientX: 120, clientY: 203 });
       component.onMouseUp(mouseUp);
 
       expect(mockSidenav.open).not.toHaveBeenCalled();
@@ -494,18 +497,18 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       document.body.removeChild(tableWrapper);
     });
 
-    it('should NOT open sidebar on mouse drag starting at clientX > 45px', () => {
+    it('should NOT open sidebar on mouse drag starting in right half of viewport (> 50% width)', () => {
       component.isMobile.set(true);
       mockSidenav.opened = false;
 
       const normalEl = document.createElement('div');
       document.body.appendChild(normalEl);
 
-      const mouseDown = new MouseEvent('mousedown', { clientX: 65, clientY: 200, button: 0 });
+      const mouseDown = new MouseEvent('mousedown', { clientX: 260, clientY: 200, button: 0 });
       Object.defineProperty(mouseDown, 'target', { value: normalEl });
       component.onMouseDown(mouseDown);
 
-      const mouseUp = new MouseEvent('mouseup', { clientX: 140, clientY: 203 });
+      const mouseUp = new MouseEvent('mouseup', { clientX: 340, clientY: 203 });
       component.onMouseUp(mouseUp);
 
       expect(mockSidenav.open).not.toHaveBeenCalled();
