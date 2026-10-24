@@ -1,5 +1,6 @@
-import { TranslocoModule } from '@jsverse/transloco';
-import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed } from '@angular/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { Component, OnInit, OnDestroy, inject, ViewChild, effect, computed, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,6 +46,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class CustomerBottlesComponent implements OnInit, OnDestroy {
   store = inject(CustomerBottlesStore);
   bottleTypesStore = inject(BottleTypesStore);
+  transloco = inject(TranslocoService, { optional: true });
+  private currentLang = this.transloco
+    ? toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() })
+    : signal('en');
+
   displayedColumns: string[] = ['customerName', 'bottleTypeName', 'balance', 'totalDeposit', 'actions'];
 
   dataSource = new MatTableDataSource<CustomerBottleBalance>([]);
@@ -52,17 +58,23 @@ export class CustomerBottlesComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   private searchSubject = new Subject<string>();
 
-  cardFields = computed<DataViewCardField[]>(() => [
-    { key: 'customerName', label: 'Customer', type: 'text' },
-    { key: 'bottleTypeName', label: 'Bottle Type', type: 'text' },
-    { key: 'balance', label: 'Unreturned Bottles', type: 'badge', badgeClassFn: (t) => t.balance > 0 ? 'status--active' : 'status--inactive', valueFn: (t) => String(t.balance) },
-    { key: 'totalDeposit', label: 'Total Deposit', type: 'currency' }
-  ]);
+  cardFields = computed<DataViewCardField[]>(() => {
+    this.currentLang();
+    return [
+      { key: 'customerName', label: this.transloco?.translate('bottles.customer') || 'Customer', type: 'text' },
+      { key: 'bottleTypeName', label: this.transloco?.translate('bottles.bottleType') || 'Bottle Type', type: 'text' },
+      { key: 'balance', label: this.transloco?.translate('bottles.unreturnedBottles') || 'Unreturned Bottles', type: 'badge', badgeClassFn: (t) => t.balance > 0 ? 'status--active' : 'status--inactive', valueFn: (t) => String(t.balance) },
+      { key: 'totalDeposit', label: this.transloco?.translate('bottles.totalDeposit') || 'Total Deposit', type: 'currency' }
+    ];
+  });
 
-  cardActions = computed<DataViewAction[]>(() => [
-    { id: 'view', icon: 'visibility', label: 'View Details' },
-    { id: 'return', icon: 'keyboard_return', label: 'Return', hideFn: (t: any) => t.balance === 0 }
-  ]);
+  cardActions = computed<DataViewAction[]>(() => {
+    this.currentLang();
+    return [
+      { id: 'view', icon: 'visibility', label: this.transloco?.translate('bottles.viewDetails') || 'View Details' },
+      { id: 'return', icon: 'keyboard_return', label: this.transloco?.translate('bottles.return') || 'Return', visibleFn: (t: any) => t.balance > 0, hideFn: (t: any) => t.balance === 0 } as any
+    ];
+  });
 
   onCardAction(event: { actionId: string, item: any }) {
     if (event.actionId === 'view') this.openViewDialog(event.item);

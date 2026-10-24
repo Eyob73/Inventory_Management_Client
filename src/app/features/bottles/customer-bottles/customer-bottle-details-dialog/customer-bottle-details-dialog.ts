@@ -41,7 +41,7 @@ export class CustomerBottleDetailsDialogComponent implements OnInit {
   private customerService = inject(CustomerService);
   private bottleTypesService = inject(BottleTypesService);
   private transactionsService = inject(BottleTransactionsService);
-  private translocoService = inject(TranslocoService);
+  private translocoService = inject(TranslocoService, { optional: true });
 
   balance: CustomerBottleBalance;
   customer = signal<CustomerDetail | null>(null);
@@ -133,6 +133,29 @@ export class CustomerBottleDetailsDialogComponent implements OnInit {
         this.isLoadingTransactions.set(false);
       }
     });
+  }
+
+  getTransactionTypeKey(type: string | number): string {
+    const t = String(type).trim().toLowerCase();
+    switch (t) {
+      case '0':
+      case 'received': return 'received';
+      case '1':
+      case 'issued': return 'issued';
+      case '2':
+      case 'returned': return 'returned';
+      case '3':
+      case 'exchanged': return 'exchanged';
+      case '4':
+      case 'damaged': return 'damaged';
+      case '5':
+      case 'lost': return 'lost';
+      case '6':
+      case 'adjustment': return 'adjustment';
+      case '7':
+      case 'transfer': return 'transfer';
+      default: return t;
+    }
   }
 
   getTransactionBadgeClass(type: string | number): string {
