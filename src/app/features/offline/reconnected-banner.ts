@@ -16,7 +16,7 @@ import { ConnectionService } from '../../services/connection.service';
         </div>
         <div class="banner-content">
           <span class="banner-title">Back Online</span>
-          <span class="banner-subtitle">Connection restored. Application is in sync.</span>
+          <span class="banner-subtitle">Connection restored.</span>
         </div>
         <button type="button" class="dismiss-btn" (click)="dismiss()" aria-label="Dismiss">
           <mat-icon>close</mat-icon>
