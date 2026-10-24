@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideTransloco } from '@jsverse/transloco';
 import { CustomerBottleDetailsDialogComponent } from './customer-bottle-details-dialog';
 
 describe('CustomerBottleDetailsDialogComponent', () => {
@@ -14,6 +15,12 @@ describe('CustomerBottleDetailsDialogComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideTransloco({
+          config: {
+            availableLangs: ['en', 'am', 'om'],
+            defaultLang: 'en',
+          }
+        }),
         { provide: MatDialogRef, useValue: { close: () => {} } },
         {
           provide: MAT_DIALOG_DATA,

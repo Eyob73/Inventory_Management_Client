@@ -16,7 +16,7 @@
         <p class="subtitle">{{ balance.bottleTypeName }} &bull; {{ t('customerBottleDetailsSubtitle') || 'Detailed bottle balance, deposit liability, and history' }}</p>
       </div>
     </div>
-    <button type="button" class="close-btn" (click)="onClose()" [attr.aria-label]="t('close')">
+    <button type="button" class="close-btn" (click)="onClose()" [attr.aria-label]="t('close') || 'Close'">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -42,7 +42,7 @@
         <div class="kpi-body">
           <span class="kpi-label">{{ t('totalDepositHeld') || 'Deposit Liability' }}</span>
           <span class="kpi-value font-mono">{{ balance.totalDeposit | number:'1.2-2' }} <small>ETB</small></span>
-          <span class="kpi-hint">{{ t('outstandingDeposits') || 'Refundable to customer' }}</span>
+          <span class="kpi-hint">{{ t('refundableToCustomer') || 'Refundable to customer' }}</span>
         </div>
       </div>
 
@@ -55,9 +55,9 @@
           <span class="kpi-value font-mono">{{ avgDepositPerBottle() | number:'1.2-2' }} <small>ETB</small></span>
           <span class="kpi-hint">
             @if (bottleType()?.depositAmount) {
-              Base: {{ bottleType()!.depositAmount | number:'1.2-2' }} ETB
+              {{ t('baseDeposit') || 'Base' }}: {{ bottleType()!.depositAmount | number:'1.2-2' }} ETB
             } @else {
-              Based on active balance
+              {{ t('basedOnActiveBalance') || 'Based on active balance' }}
             }
           </span>
         </div>
@@ -87,17 +87,17 @@
           @if (isLoadingCustomer()) {
             <div class="inline-loader">
               <mat-spinner diameter="24"></mat-spinner>
-              <span>Loading customer details...</span>
+              <span>{{ t('loadingCustomerDetails') || 'Loading customer details...' }}</span>
             </div>
           } @else {
             <div class="detail-row">
-              <span class="detail-label">Name:</span>
+              <span class="detail-label">{{ t('name') || 'Name' }}:</span>
               <span class="detail-val font-medium">{{ balance.customerName }}</span>
             </div>
             @if (customer(); as cust) {
               @if (cust.phoneNumber) {
                 <div class="detail-row">
-                  <span class="detail-label">Phone:</span>
+                  <span class="detail-label">{{ t('phone') || 'Phone' }}:</span>
                   <span class="detail-val">
                     <mat-icon class="row-icon">phone</mat-icon>
                     {{ cust.phoneNumber }}
@@ -106,7 +106,7 @@
               }
               @if (cust.email) {
                 <div class="detail-row">
-                  <span class="detail-label">Email:</span>
+                  <span class="detail-label">{{ t('email') || 'Email' }}:</span>
                   <span class="detail-val">
                     <mat-icon class="row-icon">email</mat-icon>
                     {{ cust.email }}
@@ -115,7 +115,7 @@
               }
               @if (cust.address) {
                 <div class="detail-row">
-                  <span class="detail-label">Address:</span>
+                  <span class="detail-label">{{ t('address') || 'Address' }}:</span>
                   <span class="detail-val">
                     <mat-icon class="row-icon">location_on</mat-icon>
                     {{ cust.address }}
@@ -123,15 +123,15 @@
                 </div>
               }
               <div class="detail-row">
-                <span class="detail-label">Status:</span>
+                <span class="detail-label">{{ t('status') || 'Status' }}:</span>
                 <span class="status-badge" [class.status--active]="cust.isActive !== false" [class.status--inactive]="cust.isActive === false">
-                  {{ cust.isActive !== false ? 'Active Customer' : 'Inactive Customer' }}
+                  {{ cust.isActive !== false ? (t('activeCustomer') || 'Active Customer') : (t('inactiveCustomer') || 'Inactive Customer') }}
                 </span>
               </div>
             } @else {
               <div class="detail-row">
-                <span class="detail-label">Account:</span>
-                <span class="detail-val text-muted">{{ balance.customerId ? 'Registered Customer' : 'Walk-in / POS Customer' }}</span>
+                <span class="detail-label">{{ t('account') || 'Account' }}:</span>
+                <span class="detail-val text-muted">{{ balance.customerId ? (t('registeredCustomer') || 'Registered Customer') : (t('walkInCustomer') || 'Walk-in / POS Customer') }}</span>
               </div>
             }
           }
@@ -146,35 +146,35 @@
         </div>
         <div class="info-card-body">
           <div class="detail-row">
-            <span class="detail-label">Type Name:</span>
+            <span class="detail-label">{{ t('typeName') || 'Type Name' }}:</span>
             <span class="detail-val font-medium">{{ balance.bottleTypeName }}</span>
           </div>
           @if (bottleType(); as bt) {
             @if (bt.capacity) {
               <div class="detail-row">
-                <span class="detail-label">Capacity:</span>
+                <span class="detail-label">{{ t('capacity') || 'Capacity' }}:</span>
                 <span class="detail-val">{{ bt.capacity }}</span>
               </div>
             }
             @if (bt.material) {
               <div class="detail-row">
-                <span class="detail-label">Material:</span>
+                <span class="detail-label">{{ t('material') || 'Material' }}:</span>
                 <span class="detail-val">{{ bt.material }}</span>
               </div>
             }
             <div class="detail-row">
-              <span class="detail-label">Standard Deposit:</span>
-              <span class="detail-val font-mono">{{ bt.depositAmount | number:'1.2-2' }} ETB / bottle</span>
+              <span class="detail-label">{{ t('standardDeposit') || 'Standard Deposit' }}:</span>
+              <span class="detail-val font-mono">{{ bt.depositAmount | number:'1.2-2' }} ETB / {{ t('perBottle') || 'bottle' }}</span>
             </div>
             @if (bt.description) {
               <div class="detail-row">
-                <span class="detail-label">Description:</span>
+                <span class="detail-label">{{ t('description') || 'Description' }}:</span>
                 <span class="detail-val text-muted">{{ bt.description }}</span>
               </div>
             }
           } @else {
             <div class="detail-row">
-              <span class="detail-label">Unit Deposit:</span>
+              <span class="detail-label">{{ t('unitDeposit') || 'Unit Deposit' }}:</span>
               <span class="detail-val font-mono">{{ avgDepositPerBottle() | number:'1.2-2' }} ETB</span>
             </div>
           }
@@ -201,7 +201,7 @@
               [class.active]="historyViewMode() === 'table'"
               (click)="setHistoryViewMode('table')"
               [matTooltip]="t('tableView') || 'Table View'"
-              aria-label="Table View"
+              [attr.aria-label]="t('tableView') || 'Table View'"
             >
               <mat-icon>table_chart</mat-icon>
             </button>
@@ -211,7 +211,7 @@
               [class.active]="historyViewMode() === 'cards'"
               (click)="setHistoryViewMode('cards')"
               [matTooltip]="t('cardsView') || 'Cards View'"
-              aria-label="Cards View"
+              [attr.aria-label]="t('cardsView') || 'Cards View'"
             >
               <mat-icon>view_agenda</mat-icon>
             </button>
@@ -222,7 +222,7 @@
       @if (isLoadingTransactions()) {
         <div class="table-loading">
           <mat-spinner diameter="32"></mat-spinner>
-          <span>Loading activity history...</span>
+          <span>{{ t('loadingActivityHistory') || 'Loading activity history...' }}</span>
         </div>
       } @else if (recentTransactions().length === 0) {
         <div class="table-empty-box">
@@ -247,14 +247,14 @@
                 <th mat-header-cell *matHeaderCellDef>{{ t('type') || 'Type' }}</th>
                 <td mat-cell *matCellDef="let tx">
                   <span class="tx-badge" [ngClass]="getTransactionBadgeClass(tx.transactionType)">
-                    {{ tx.transactionType }}
+                    {{ t('transactionTypes.' + getTransactionTypeKey(tx.transactionType)) || tx.transactionType }}
                   </span>
                 </td>
               </ng-container>
 
               <!-- Quantity Column -->
               <ng-container matColumnDef="quantity">
-                <th mat-header-cell *matHeaderCellDef class="text-right">{{ t('quantity') || 'Qty' }}</th>
+                <th mat-header-cell *matHeaderCellDef class="text-right">{{ t('qty') || t('quantity') || 'Qty' }}</th>
                 <td mat-cell *matCellDef="let tx" class="text-right font-mono font-semibold">
                   {{ tx.quantity }}
                 </td>
@@ -270,9 +270,9 @@
 
               <!-- Created By Column -->
               <ng-container matColumnDef="createdBy">
-                <th mat-header-cell *matHeaderCellDef>{{ t('user') || 'Cashier / User' }}</th>
+                <th mat-header-cell *matHeaderCellDef>{{ t('cashierUser') || t('user') || 'Cashier / User' }}</th>
                 <td mat-cell *matCellDef="let tx" class="text-muted">
-                  {{ tx.createdBy || 'System' }}
+                  {{ tx.createdBy || t('system') || 'System' }}
                 </td>
               </ng-container>
 
@@ -287,13 +287,13 @@
               <div class="mobile-tx-card" [ngClass]="getCardAccentClass(tx.transactionType)">
                 <div class="mobile-tx-top">
                   <span class="tx-badge" [ngClass]="getTransactionBadgeClass(tx.transactionType)">
-                    {{ tx.transactionType }}
+                    {{ t('transactionTypes.' + getTransactionTypeKey(tx.transactionType)) || tx.transactionType }}
                   </span>
                   <span class="mobile-tx-date font-mono">{{ tx.createdAt | date:'MMM d, y, h:mm a' }}</span>
                 </div>
                 <div class="mobile-tx-grid">
                   <div class="mobile-tx-stat">
-                    <span class="stat-lbl">{{ t('quantity') || 'Qty' }}</span>
+                    <span class="stat-lbl">{{ t('qty') || t('quantity') || 'Qty' }}</span>
                     <span class="stat-val font-mono">{{ tx.quantity }}</span>
                   </div>
                   <div class="mobile-tx-stat text-right">
@@ -321,12 +321,12 @@
   <div class="dialog-actions">
     <button type="button" class="btn btn--outline" (click)="onClose()">
       <mat-icon>close</mat-icon>
-      <span>{{ t('close') }}</span>
+      <span>{{ t('close') || 'Close' }}</span>
     </button>
     @if (balance.balance > 0) {
       <button type="button" class="btn btn--primary" (click)="onReturn()">
         <mat-icon>keyboard_return</mat-icon>
-        <span>{{ t('processReturn') }}</span>
+        <span>{{ t('processReturn') || 'Process Bottle Return' }}</span>
       </button>
     }
   </div>

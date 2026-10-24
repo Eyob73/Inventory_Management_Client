@@ -19,7 +19,7 @@
         />
         <mat-icon matPrefix>search</mat-icon>
         @if (searchTerm) {
-          <button matSuffix mat-icon-button (click)="searchTerm = ''; onSearch({target: {value: ''}})">
+          <button matSuffix mat-icon-button (click)="searchTerm = ''; onSearch({target: {value: ''}})" [attr.aria-label]="t('cancel') || 'Clear'">
             <mat-icon>close</mat-icon>
           </button>
         }
@@ -127,7 +127,7 @@
         <div class="empty-state">
           <mat-icon class="empty-icon">people</mat-icon>
           <p class="empty-title">{{ t('noCustomerBottles') }}</p>
-          <p class="empty-subtitle">{{ t('noCustomerBottlesSubtitle') }}</p>
+          <p class="empty-subtitle">{{ t('noCustomerBottlesSubtitle') || 'No customer bottle balances recorded yet' }}</p>
         </div>
       </ng-container>
 
@@ -139,7 +139,7 @@
           (page)="onPageChange($event)"
           [pageSizeOptions]="pageSizeOptions"
           [showFirstLastButtons]="true"
-          aria-label="Select page">
+          [attr.aria-label]="t('selectPage') || 'Select page'">
         </mat-paginator>
       </ng-container>
     </app-data-view>
