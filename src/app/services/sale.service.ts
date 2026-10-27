@@ -23,6 +23,9 @@ export class SaleService {
     if (filter.searchTerm) {
       params = params.set('searchTerm', filter.searchTerm);
     }
+    if (filter.dateRange) {
+      params = params.set('dateRange', filter.dateRange);
+    }
     if (filter.startDate) {
       params = params.set('startDate', filter.startDate);
     }

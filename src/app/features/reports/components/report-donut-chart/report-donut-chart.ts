@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, computed, effect, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { NamedAmount } from '../../../../models/reports.model';
 import Chart from 'chart.js/auto';
 
@@ -18,7 +19,7 @@ const PALETTE = [
   selector: 'app-report-donut-chart',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoDirective],
   templateUrl: './report-donut-chart.html',
   styleUrl: './report-donut-chart.scss',
 })

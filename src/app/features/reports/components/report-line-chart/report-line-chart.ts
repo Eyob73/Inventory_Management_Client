@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, computed, effect, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoDirective } from '@jsverse/transloco';
 import { ChartPoint } from '../../../../models/reports.model';
 import Chart from 'chart.js/auto';
 
@@ -17,7 +18,7 @@ function getCssVariable(name: string): string {
   selector: 'app-report-line-chart',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoDirective],
   templateUrl: './report-line-chart.html',
   styleUrl: './report-line-chart.scss',
 })

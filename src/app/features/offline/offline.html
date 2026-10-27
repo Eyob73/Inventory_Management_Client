@@ -105,13 +105,15 @@
         [disabled]="isChecking()"
         (click)="onRetry()">
         @if (isChecking()) {
-          <mat-spinner diameter="18" class="button-spinner"></mat-spinner>
-          <span>Checking connection…</span>
+          <span class="button-content">
+            <mat-spinner diameter="18" class="button-spinner"></mat-spinner>
+            <span class="button-text">Checking connection…</span>
+          </span>
         } @else {
-          <ng-container>
+          <span class="button-content">
             <mat-icon class="button-icon">refresh</mat-icon>
             <span class="button-text">Retry Connection</span>
-          </ng-container>
+          </span>
         }
       </button>
 

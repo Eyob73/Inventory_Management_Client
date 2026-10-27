@@ -21,6 +21,62 @@
   }
 
   <div class="filters-card">
+    <!-- Quick Date Range Preset Pills -->
+    <div class="quick-filters-row">
+      <span class="quick-filter-label">
+        <mat-icon>calendar_today</mat-icon>
+        {{ t('inventory.dateRange') }}:
+      </span>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === '' && !startDate() && !endDate()"
+        (click)="onDateRangeChange('')"
+      >
+        {{ t('inventory.allTime') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'today'"
+        (click)="onDateRangeChange('today')"
+      >
+        {{ t('inventory.today') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'yesterday'"
+        (click)="onDateRangeChange('yesterday')"
+      >
+        {{ t('inventory.yesterday') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'this_week'"
+        (click)="onDateRangeChange('this_week')"
+      >
+        {{ t('inventory.thisWeek') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'this_month'"
+        (click)="onDateRangeChange('this_month')"
+      >
+        {{ t('inventory.thisMonth') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'this_year'"
+        (click)="onDateRangeChange('this_year')"
+      >
+        {{ t('inventory.thisYear') }}
+      </button>
+    </div>
+
     <div class="filter-row">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>{{ t('inventory.search') }}</mat-label>
@@ -37,6 +93,35 @@
           </button>
         }
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-range-field">
+        <mat-label>{{ t('inventory.dateRange') }}</mat-label>
+        <mat-select [ngModel]="selectedDateRange()" (ngModelChange)="onDateRangeChange($event)">
+          <mat-option value="">{{ t('inventory.allTime') }}</mat-option>
+          <mat-option value="today">{{ t('inventory.today') }}</mat-option>
+          <mat-option value="yesterday">{{ t('inventory.yesterday') }}</mat-option>
+          <mat-option value="this_week">{{ t('inventory.thisWeek') }}</mat-option>
+          <mat-option value="this_month">{{ t('inventory.thisMonth') }}</mat-option>
+          <mat-option value="this_year">{{ t('inventory.thisYear') }}</mat-option>
+          <mat-option value="custom">{{ t('inventory.customRange') }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>date_range</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('inventory.startDate') }}</mat-label>
+        <input matInput [matDatepicker]="startPicker" [ngModel]="startDate()" (ngModelChange)="onStartDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ t('inventory.endDate') }}</mat-label>
+        <input matInput [matDatepicker]="endPicker" [ngModel]="endDate()" (ngModelChange)="onEndDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>{{ t('inventory.product') }}</mat-label>
         <mat-select [(ngModel)]="productId" (selectionChange)="applyFilters()">
@@ -60,6 +145,7 @@
           }
         </mat-select>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>{{ t('inventory.type') }}</mat-label>
         <mat-select [(ngModel)]="type" (selectionChange)="applyFilters()">
@@ -69,7 +155,10 @@
           }
         </mat-select>
       </mat-form-field>
-      <button type="button" class="btn btn--secondary" (click)="applyFilters()">{{ t('inventory.filter') }}</button>
+
+      <button type="button" class="btn btn--outline" (click)="resetFilters()">
+        <mat-icon>refresh</mat-icon> {{ t('inventory.resetFilters') }}
+      </button>
     </div>
   </div>
 

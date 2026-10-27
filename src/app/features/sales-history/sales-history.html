@@ -11,6 +11,62 @@
 
   <!-- Filters Card -->
   <div class="filters-card">
+    <!-- Quick Date Range Preset Pills -->
+    <div class="quick-filters-row">
+      <span class="quick-filter-label">
+        <mat-icon>calendar_today</mat-icon>
+        {{ t('salesHistory.dateRange') }}:
+      </span>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === '' && !startDate() && !endDate()"
+        (click)="onDateRangeChange('')"
+      >
+        {{ t('salesHistory.allTime') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'today'"
+        (click)="onDateRangeChange('today')"
+      >
+        {{ t('salesHistory.today') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'yesterday'"
+        (click)="onDateRangeChange('yesterday')"
+      >
+        {{ t('salesHistory.yesterday') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'this_week'"
+        (click)="onDateRangeChange('this_week')"
+      >
+        {{ t('salesHistory.thisWeek') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'this_month'"
+        (click)="onDateRangeChange('this_month')"
+      >
+        {{ t('salesHistory.thisMonth') }}
+      </button>
+      <button
+        type="button"
+        class="quick-filter-btn"
+        [class.active]="selectedDateRange() === 'this_year'"
+        (click)="onDateRangeChange('this_year')"
+      >
+        {{ t('salesHistory.thisYear') }}
+      </button>
+    </div>
+
     <div class="filter-row">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>{{ t('salesHistory.search') }}</mat-label>
@@ -22,6 +78,20 @@
           <mat-icon>close</mat-icon>
         </button>
         }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-range-field">
+        <mat-label>{{ t('salesHistory.dateRange') }}</mat-label>
+        <mat-select [ngModel]="selectedDateRange()" (ngModelChange)="onDateRangeChange($event)">
+          <mat-option value="">{{ t('salesHistory.allTime') }}</mat-option>
+          <mat-option value="today">{{ t('salesHistory.today') }}</mat-option>
+          <mat-option value="yesterday">{{ t('salesHistory.yesterday') }}</mat-option>
+          <mat-option value="this_week">{{ t('salesHistory.thisWeek') }}</mat-option>
+          <mat-option value="this_month">{{ t('salesHistory.thisMonth') }}</mat-option>
+          <mat-option value="this_year">{{ t('salesHistory.thisYear') }}</mat-option>
+          <mat-option value="custom">{{ t('salesHistory.customRange') }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>date_range</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
