@@ -67,6 +67,7 @@ export interface CreateSaleRequest {
 
 export interface SaleFilter {
   searchTerm?: string;
+  dateRange?: string;
   startDate?: string;
   endDate?: string;
   paymentMethod?: string;

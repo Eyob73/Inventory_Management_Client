@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, computed, effect, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoDirective } from '@jsverse/transloco';
 import Chart from 'chart.js/auto';
 
 export interface BarDataItem {
@@ -22,7 +23,7 @@ function getCssVariable(name: string): string {
   selector: 'app-report-bar-chart',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoDirective],
   templateUrl: './report-bar-chart.html',
   styleUrl: './report-bar-chart.scss',
 })

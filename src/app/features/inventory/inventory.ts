@@ -10,6 +10,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { InventoryApiService } from '../../services/inventory';
@@ -34,6 +36,8 @@ import { DataViewComponent, DataViewCardField } from '../../shared/components/da
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatSnackBarModule,
     TableSkeleton, 
     TranslocoDirective,
@@ -64,6 +68,9 @@ export class Inventory implements OnInit {
   search = '';
   type = '';
   productId = '';
+  selectedDateRange = signal<string>('');
+  startDate = signal<string>('');
+  endDate = signal<string>('');
   pageIndex = 1;
   pageSize = 20;
   totalCount = 0;
@@ -109,6 +116,9 @@ export class Inventory implements OnInit {
         searchTerm: this.search || undefined,
         type: this.type || undefined,
         productId: this.productId || undefined,
+        dateRange: this.selectedDateRange() || undefined,
+        startDate: this.startDate() || undefined,
+        endDate: this.endDate() || undefined,
       })
       .subscribe({
         next: (res) => {
@@ -126,6 +136,127 @@ export class Inventory implements OnInit {
   }
 
   applyFilters(): void {
+    this.pageIndex = 1;
+    this.load();
+  }
+
+  onDateRangeChange(preset: string): void {
+    this.selectedDateRange.set(preset);
+    if (preset === 'custom') {
+      this.pageIndex = 1;
+      this.load();
+      return;
+    }
+
+    if (!preset) {
+      this.startDate.set('');
+      this.endDate.set('');
+    } else {
+      this.setPresetDates(preset);
+    }
+
+    this.pageIndex = 1;
+    this.load();
+  }
+
+  setPresetDates(preset: string): void {
+    const now = new Date();
+    let start: Date;
+    let end: Date;
+
+    switch (preset) {
+      case 'today':
+        start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        break;
+
+      case 'yesterday': {
+        const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        start = y;
+        end = y;
+        break;
+      }
+
+      case 'this_week': {
+        const day = now.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+        end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+        break;
+      }
+
+      case 'this_month':
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        break;
+
+      case 'this_year':
+        start = new Date(now.getFullYear(), 0, 1);
+        end = new Date(now.getFullYear(), 11, 31);
+        break;
+
+      default:
+        this.startDate.set('');
+        this.endDate.set('');
+        return;
+    }
+
+    this.startDate.set(this.formatDate(start));
+    this.endDate.set(this.formatDate(end));
+  }
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onStartDateChange(date: Date | string | null): void {
+    if (date) {
+      if (date instanceof Date) {
+        this.startDate.set(this.formatDate(date));
+      } else if (typeof date === 'string') {
+        this.startDate.set(date);
+      }
+      this.selectedDateRange.set('custom');
+    } else {
+      this.startDate.set('');
+      if (!this.endDate()) {
+        this.selectedDateRange.set('');
+      } else {
+        this.selectedDateRange.set('custom');
+      }
+    }
+    this.applyFilters();
+  }
+
+  onEndDateChange(date: Date | string | null): void {
+    if (date) {
+      if (date instanceof Date) {
+        this.endDate.set(this.formatDate(date));
+      } else if (typeof date === 'string') {
+        this.endDate.set(date);
+      }
+      this.selectedDateRange.set('custom');
+    } else {
+      this.endDate.set('');
+      if (!this.startDate()) {
+        this.selectedDateRange.set('');
+      } else {
+        this.selectedDateRange.set('custom');
+      }
+    }
+    this.applyFilters();
+  }
+
+  resetFilters(): void {
+    this.search = '';
+    this.productId = '';
+    this.type = '';
+    this.selectedDateRange.set('');
+    this.startDate.set('');
+    this.endDate.set('');
     this.pageIndex = 1;
     this.load();
   }

@@ -1,8 +1,8 @@
-<div class="bar-chart-container" [class.is-horizontal]="horizontal()">
+<div class="bar-chart-container" [class.is-horizontal]="horizontal()" *transloco="let t">
   @if (!hasData()) {
     <div class="empty-chart">
       <span class="material-icons">bar_chart</span>
-      <p>No data available</p>
+      <p>{{ t('reports.noDataAvailable') }}</p>
     </div>
   } @else {
     <div style="position: relative; height: 250px; width: 100%;">

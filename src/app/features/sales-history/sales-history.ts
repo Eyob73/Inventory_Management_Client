@@ -86,6 +86,7 @@ export class SalesHistoryComponent implements OnInit {
 
   // Filters
   searchTerm = signal<string>('');
+  selectedDateRange = signal<string>('');
   startDate = signal<string>('');
   endDate = signal<string>('');
   selectedPaymentMethod = signal<string>('');
@@ -206,6 +207,7 @@ export class SalesHistoryComponent implements OnInit {
 
     const filter: SaleFilter = {
       searchTerm: this.searchTerm().trim() || undefined,
+      dateRange: this.selectedDateRange() || undefined,
       startDate: this.startDate() || undefined,
       endDate: this.endDate() || undefined,
       paymentMethod: this.selectedPaymentMethod() || undefined,
@@ -234,28 +236,119 @@ export class SalesHistoryComponent implements OnInit {
     this.loadSales();
   }
 
-  onStartDateChange(date: Date | null): void {
+  onDateRangeChange(preset: string): void {
+    this.selectedDateRange.set(preset);
+    if (preset === 'custom') {
+      this.pageIndex.set(1);
+      this.loadSales();
+      return;
+    }
+
+    if (!preset) {
+      this.startDate.set('');
+      this.endDate.set('');
+    } else {
+      this.setPresetDates(preset);
+    }
+
+    this.pageIndex.set(1);
+    this.loadSales();
+  }
+
+  setPresetDates(preset: string): void {
+    const now = new Date();
+    let start: Date;
+    let end: Date;
+
+    switch (preset) {
+      case 'today':
+        start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        break;
+
+      case 'yesterday': {
+        const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        start = y;
+        end = y;
+        break;
+      }
+
+      case 'this_week': {
+        const day = now.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+        end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+        break;
+      }
+
+      case 'this_month':
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        break;
+
+      case 'this_year':
+        start = new Date(now.getFullYear(), 0, 1);
+        end = new Date(now.getFullYear(), 11, 31);
+        break;
+
+      default:
+        this.startDate.set('');
+        this.endDate.set('');
+        return;
+    }
+
+    this.startDate.set(this.formatDate(start));
+    this.endDate.set(this.formatDate(end));
+  }
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onStartDateChange(date: Date | string | null): void {
     if (date) {
-      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-      this.startDate.set(d.toISOString().split('T')[0]);
+      if (date instanceof Date) {
+        this.startDate.set(this.formatDate(date));
+      } else if (typeof date === 'string') {
+        this.startDate.set(date);
+      }
+      this.selectedDateRange.set('custom');
     } else {
       this.startDate.set('');
+      if (!this.endDate()) {
+        this.selectedDateRange.set('');
+      } else {
+        this.selectedDateRange.set('custom');
+      }
     }
     this.onSearch();
   }
 
-  onEndDateChange(date: Date | null): void {
+  onEndDateChange(date: Date | string | null): void {
     if (date) {
-      const d = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-      this.endDate.set(d.toISOString().split('T')[0]);
+      if (date instanceof Date) {
+        this.endDate.set(this.formatDate(date));
+      } else if (typeof date === 'string') {
+        this.endDate.set(date);
+      }
+      this.selectedDateRange.set('custom');
     } else {
       this.endDate.set('');
+      if (!this.startDate()) {
+        this.selectedDateRange.set('');
+      } else {
+        this.selectedDateRange.set('custom');
+      }
     }
     this.onSearch();
   }
 
   resetFilters(): void {
     this.searchTerm.set('');
+    this.selectedDateRange.set('');
     this.startDate.set('');
     this.endDate.set('');
     this.selectedPaymentMethod.set('');

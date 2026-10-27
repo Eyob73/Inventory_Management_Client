@@ -1,29 +1,30 @@
+<ng-container *transloco="let t">
 <div class="reports-page">
   <!-- Page Header -->
   <header class="header-section">
     <div>
-      <h1 class="page-title">Reports & Analytics</h1>
-      <p class="page-subtitle">Comprehensive performance metrics, stock intelligence & financial reporting</p>
+      <h1 class="page-title">{{ t('reports.title') }}</h1>
+      <p class="page-subtitle">{{ t('reports.subtitle') }}</p>
     </div>
     <div class="header-actions no-print">
-      <button type="button" class="btn btn--outline" (click)="exportReport('pdf')" matTooltip="Export report to PDF format" [disabled]="exportingPdf() || exportingExcel()">
+      <button type="button" class="btn btn--outline" (click)="exportReport('pdf')" [matTooltip]="t('reports.exportPdfTooltip')" [disabled]="exportingPdf() || exportingExcel()">
         @if (exportingPdf()) {
           <mat-spinner diameter="18"></mat-spinner>
         } @else {
           <mat-icon>picture_as_pdf</mat-icon>
         }
-        Export PDF
+        {{ t('reports.exportPdf') }}
       </button>
-      <button type="button" class="btn btn--outline" (click)="exportReport('xlsx')" matTooltip="Export report to Excel format" [disabled]="exportingExcel() || exportingPdf()">
+      <button type="button" class="btn btn--outline" (click)="exportReport('xlsx')" [matTooltip]="t('reports.exportExcelTooltip')" [disabled]="exportingExcel() || exportingPdf()">
         @if (exportingExcel()) {
           <mat-spinner diameter="18"></mat-spinner>
         } @else {
           <mat-icon>description</mat-icon>
         }
-        Export Excel
+        {{ t('reports.exportExcel') }}
       </button>
-      <button type="button" class="btn btn--primary" (click)="printReport()" matTooltip="Print current report view">
-        <mat-icon>print</mat-icon> Print Report
+      <button type="button" class="btn btn--primary" (click)="printReport()" [matTooltip]="t('reports.printReportTooltip')">
+        <mat-icon>print</mat-icon> {{ t('reports.printReport') }}
       </button>
     </div>
   </header>
@@ -33,23 +34,23 @@
     <div class="filter-row">
       <!-- Date Range Preset -->
       <mat-form-field appearance="outline">
-        <mat-label>Date Range</mat-label>
+        <mat-label>{{ t('reports.dateRange') }}</mat-label>
         <mat-select
           [ngModel]="dateRangePreset()"
           (ngModelChange)="onPresetChange($event)"
         >
-          <mat-option value="today">Today</mat-option>
-          <mat-option value="yesterday">Yesterday</mat-option>
-          <mat-option value="this_week">This Week</mat-option>
-          <mat-option value="this_month">This Month</mat-option>
-          <mat-option value="this_year">This Year</mat-option>
-          <mat-option value="custom">Custom Range</mat-option>
+          <mat-option value="today">{{ t('reports.today') }}</mat-option>
+          <mat-option value="yesterday">{{ t('reports.yesterday') }}</mat-option>
+          <mat-option value="this_week">{{ t('reports.thisWeek') }}</mat-option>
+          <mat-option value="this_month">{{ t('reports.thisMonth') }}</mat-option>
+          <mat-option value="this_year">{{ t('reports.thisYear') }}</mat-option>
+          <mat-option value="custom">{{ t('reports.customRange') }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <!-- Start Date -->
       <mat-form-field appearance="outline">
-        <mat-label>Start Date</mat-label>
+        <mat-label>{{ t('reports.startDate') }}</mat-label>
         <input
           matInput
           [matDatepicker]="startPicker"
@@ -62,7 +63,7 @@
 
       <!-- End Date -->
       <mat-form-field appearance="outline">
-        <mat-label>End Date</mat-label>
+        <mat-label>{{ t('reports.endDate') }}</mat-label>
         <input
           matInput
           [matDatepicker]="endPicker"
@@ -76,12 +77,12 @@
       <!-- Category Filter -->
       @if (activeTab() === 'sales' || activeTab() === 'purchases' || activeTab() === 'inventory' || activeTab() === 'low-stock' || activeTab() === 'products') {
         <mat-form-field appearance="outline">
-          <mat-label>Category</mat-label>
+          <mat-label>{{ t('reports.category') }}</mat-label>
           <mat-select
             [ngModel]="categoryId()"
             (ngModelChange)="categoryId.set($event)"
           >
-            <mat-option value="">All Categories</mat-option>
+            <mat-option value="">{{ t('reports.allCategories') }}</mat-option>
             @for (cat of categories(); track cat.id) {
               <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
             }
@@ -92,12 +93,12 @@
       <!-- Product Filter -->
       @if (activeTab() === 'sales' || activeTab() === 'purchases' || activeTab() === 'stock-transactions') {
         <mat-form-field appearance="outline">
-          <mat-label>Product</mat-label>
+          <mat-label>{{ t('reports.product') }}</mat-label>
           <mat-select
             [ngModel]="productId()"
             (ngModelChange)="productId.set($event)"
           >
-            <mat-option value="">All Products</mat-option>
+            <mat-option value="">{{ t('reports.allProducts') }}</mat-option>
             @for (prod of products(); track prod.id) {
               <mat-option [value]="prod.id">{{ prod.name }}</mat-option>
             }
@@ -108,12 +109,12 @@
       <!-- Supplier Filter -->
       @if (activeTab() === 'purchases' || activeTab() === 'suppliers') {
         <mat-form-field appearance="outline">
-          <mat-label>Supplier</mat-label>
+          <mat-label>{{ t('reports.supplier') }}</mat-label>
           <mat-select
             [ngModel]="supplierId()"
             (ngModelChange)="supplierId.set($event)"
           >
-            <mat-option value="">All Suppliers</mat-option>
+            <mat-option value="">{{ t('reports.allSuppliers') }}</mat-option>
             @for (sup of suppliers(); track sup.id) {
               <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
             }
@@ -124,12 +125,12 @@
       <!-- Customer Filter -->
       @if (activeTab() === 'sales' || activeTab() === 'customers') {
         <mat-form-field appearance="outline">
-          <mat-label>Customer</mat-label>
+          <mat-label>{{ t('reports.customer') }}</mat-label>
           <mat-select
             [ngModel]="customerId()"
             (ngModelChange)="customerId.set($event)"
           >
-            <mat-option value="">All Customers</mat-option>
+            <mat-option value="">{{ t('reports.allCustomers') }}</mat-option>
             @for (cust of customers(); track cust.id) {
               <mat-option [value]="cust.id">{{ cust.name }}</mat-option>
             }
@@ -140,26 +141,26 @@
       <!-- Stock Transaction Types & User -->
       @if (activeTab() === 'stock-transactions') {
         <mat-form-field appearance="outline">
-          <mat-label>Transaction Type</mat-label>
+          <mat-label>{{ t('reports.transactionType') }}</mat-label>
           <mat-select
             [ngModel]="transactionType()"
             (ngModelChange)="transactionType.set($event)"
           >
-            <mat-option value="">All Types</mat-option>
-            <mat-option value="Purchase">Purchase</mat-option>
-            <mat-option value="Sale">Sale</mat-option>
-            <mat-option value="Adjustment">Adjustment</mat-option>
-            <mat-option value="Return">Return</mat-option>
+            <mat-option value="">{{ t('reports.allTypes') }}</mat-option>
+            <mat-option value="Purchase">{{ t('reports.purchase') }}</mat-option>
+            <mat-option value="Sale">{{ t('reports.sale') }}</mat-option>
+            <mat-option value="Adjustment">{{ t('reports.adjustment') }}</mat-option>
+            <mat-option value="Return">{{ t('reports.return') }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Performed By</mat-label>
+          <mat-label>{{ t('reports.performedBy') }}</mat-label>
           <mat-select
             [ngModel]="userId()"
             (ngModelChange)="userId.set($event)"
           >
-            <mat-option value="">All Users</mat-option>
+            <mat-option value="">{{ t('reports.allUsers') }}</mat-option>
             @for (usr of users(); track usr.id) {
               <mat-option [value]="usr.id">{{ usr.name }}</mat-option>
             }
@@ -170,10 +171,10 @@
       <!-- Search Term -->
       @if (activeTab() !== 'dashboard' && activeTab() !== 'profit') {
         <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Search Data</mat-label>
+          <mat-label>{{ t('reports.searchData') }}</mat-label>
           <input
             matInput
-            placeholder="Search keyword..."
+            [placeholder]="t('reports.searchKeyword')"
             [ngModel]="search()"
             (ngModelChange)="onSearchChange($event)"
           />
@@ -184,10 +185,10 @@
       <!-- Filter Buttons -->
       <div class="filter-actions-group">
         <button type="button" class="btn btn--primary" (click)="applyFilters()">
-          <mat-icon>filter_alt</mat-icon> Apply
+          <mat-icon>filter_alt</mat-icon> {{ t('reports.apply') }}
         </button>
         <button type="button" class="btn btn--secondary" (click)="resetFilters()">
-          <mat-icon>refresh</mat-icon> Reset
+          <mat-icon>refresh</mat-icon> {{ t('reports.reset') }}
         </button>
       </div>
     </div>
@@ -203,34 +204,34 @@
   <!-- Report Navigation Tabs -->
   <nav class="report-tabs-nav no-print">
     <button [class.active]="activeTab() === 'dashboard'" (click)="setTab('dashboard')">
-      <mat-icon>dashboard</mat-icon> Overview
+      <mat-icon>dashboard</mat-icon> {{ t('reports.overview') }}
     </button>
     <button [class.active]="activeTab() === 'sales'" (click)="setTab('sales')">
-      <mat-icon>point_of_sale</mat-icon> Sales
+      <mat-icon>point_of_sale</mat-icon> {{ t('reports.sales') }}
     </button>
     <button [class.active]="activeTab() === 'purchases'" (click)="setTab('purchases')">
-      <mat-icon>local_mall</mat-icon> Purchases
+      <mat-icon>local_mall</mat-icon> {{ t('reports.purchases') }}
     </button>
     <button [class.active]="activeTab() === 'inventory'" (click)="setTab('inventory')">
-      <mat-icon>inventory_2</mat-icon> Inventory
+      <mat-icon>inventory_2</mat-icon> {{ t('reports.inventory') }}
     </button>
     <button [class.active]="activeTab() === 'low-stock'" (click)="setTab('low-stock')">
-      <mat-icon>warning</mat-icon> Low Stock
+      <mat-icon>warning</mat-icon> {{ t('reports.lowStock') }}
     </button>
     <button [class.active]="activeTab() === 'products'" (click)="setTab('products')">
-      <mat-icon>insights</mat-icon> Product Perf.
+      <mat-icon>insights</mat-icon> {{ t('reports.productPerf') }}
     </button>
     <button [class.active]="activeTab() === 'customers'" (click)="setTab('customers')">
-      <mat-icon>people</mat-icon> Customers
+      <mat-icon>people</mat-icon> {{ t('reports.customers') }}
     </button>
     <button [class.active]="activeTab() === 'suppliers'" (click)="setTab('suppliers')">
-      <mat-icon>local_shipping</mat-icon> Suppliers
+      <mat-icon>local_shipping</mat-icon> {{ t('reports.suppliers') }}
     </button>
     <button [class.active]="activeTab() === 'profit'" (click)="setTab('profit')">
-      <mat-icon>account_balance_wallet</mat-icon> Profit Analysis
+      <mat-icon>account_balance_wallet</mat-icon> {{ t('reports.profitAnalysis') }}
     </button>
     <button [class.active]="activeTab() === 'stock-transactions'" (click)="setTab('stock-transactions')">
-      <mat-icon>tune</mat-icon> Stock Movements
+      <mat-icon>tune</mat-icon> {{ t('reports.stockMovementsTab') }}
     </button>
   </nav>
 
@@ -309,7 +310,7 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>trending_up</mat-icon>
                 </span>
-                <span class="stat-title">Total Sales</span>
+                <span class="stat-title">{{ t('reports.dashboard.totalSales') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.totalSales.value | number: '1.2-2' }} ETB</div>
@@ -318,7 +319,7 @@
                     <mat-icon>{{ (dashboardData()!.totalSales.changePercent ?? 0) >= 0 ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                     {{ dashboardData()!.totalSales.changePercent | number: '1.1-1' }}%
                   </span>
-                  <span class="stat-sub">vs prev period</span>
+                  <span class="stat-sub">{{ t('reports.dashboard.vsPrevPeriod') }}</span>
                 </div>
               </div>
             </div>
@@ -329,7 +330,7 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>shopping_cart</mat-icon>
                 </span>
-                <span class="stat-title">Total Purchases</span>
+                <span class="stat-title">{{ t('reports.dashboard.totalPurchases') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.totalPurchases.value | number: '1.2-2' }} ETB</div>
@@ -338,7 +339,7 @@
                     <mat-icon>{{ (dashboardData()!.totalPurchases.changePercent ?? 0) <= 0 ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
                     {{ dashboardData()!.totalPurchases.changePercent | number: '1.1-1' }}%
                   </span>
-                  <span class="stat-sub">vs prev period</span>
+                  <span class="stat-sub">{{ t('reports.dashboard.vsPrevPeriod') }}</span>
                 </div>
               </div>
             </div>
@@ -349,7 +350,7 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>account_balance_wallet</mat-icon>
                 </span>
-                <span class="stat-title">Total Profit</span>
+                <span class="stat-title">{{ t('reports.dashboard.totalProfit') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.totalProfit.value | number: '1.2-2' }} ETB</div>
@@ -358,7 +359,7 @@
                     <mat-icon>{{ (dashboardData()!.totalProfit.changePercent ?? 0) >= 0 ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                     {{ dashboardData()!.totalProfit.changePercent | number: '1.1-1' }}%
                   </span>
-                  <span class="stat-sub">vs prev period</span>
+                  <span class="stat-sub">{{ t('reports.dashboard.vsPrevPeriod') }}</span>
                 </div>
               </div>
             </div>
@@ -369,11 +370,11 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>sell</mat-icon>
                 </span>
-                <span class="stat-title">Products Sold</span>
+                <span class="stat-title">{{ t('reports.dashboard.productsSold') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.totalProductsSold.value | number }}</div>
-                <span class="stat-sub">Total units moved</span>
+                <span class="stat-sub">{{ t('reports.dashboard.totalUnitsMoved') }}</span>
               </div>
             </div>
 
@@ -383,11 +384,11 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>people</mat-icon>
                 </span>
-                <span class="stat-title">Total Customers</span>
+                <span class="stat-title">{{ t('reports.dashboard.totalCustomers') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.totalCustomers.value | number }}</div>
-                <span class="stat-sub">Registered customers</span>
+                <span class="stat-sub">{{ t('reports.dashboard.registeredCustomers') }}</span>
               </div>
             </div>
 
@@ -397,11 +398,11 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>local_shipping</mat-icon>
                 </span>
-                <span class="stat-title">Total Suppliers</span>
+                <span class="stat-title">{{ t('reports.dashboard.totalSuppliers') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.totalSuppliers.value | number }}</div>
-                <span class="stat-sub">Active vendors</span>
+                <span class="stat-sub">{{ t('reports.dashboard.activeVendors') }}</span>
               </div>
             </div>
 
@@ -411,11 +412,11 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>warning</mat-icon>
                 </span>
-                <span class="stat-title">Low Stock</span>
+                <span class="stat-title">{{ t('reports.dashboard.lowStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.lowStockProducts | number }}</div>
-                <span class="stat-sub warning-text">Requires replenishment</span>
+                <span class="stat-sub warning-text">{{ t('reports.dashboard.requiresReplenishment') }}</span>
               </div>
             </div>
 
@@ -425,11 +426,11 @@
                 <span class="stat-icon-wrap">
                   <mat-icon>remove_shopping_cart</mat-icon>
                 </span>
-                <span class="stat-title">Out of Stock</span>
+                <span class="stat-title">{{ t('reports.dashboard.outOfStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ dashboardData()!.outOfStockProducts | number }}</div>
-                <span class="stat-sub danger-text">Critical shortage</span>
+                <span class="stat-sub danger-text">{{ t('reports.dashboard.criticalShortage') }}</span>
               </div>
             </div>
           </div>
@@ -437,14 +438,14 @@
           <!-- Charts Row -->
           <div class="charts-row">
             <div class="widget-card">
-              <h3 class="widget-title">Sales Trend</h3>
+              <h3 class="widget-title">{{ t('reports.dashboard.salesTrend') }}</h3>
               <app-report-line-chart
                 [data]="dashboardData()!.salesOverTime"
                 [color]="'var(--teal)'"
               ></app-report-line-chart>
             </div>
             <div class="widget-card">
-              <h3 class="widget-title">Sales by Category</h3>
+              <h3 class="widget-title">{{ t('reports.dashboard.salesByCategory') }}</h3>
               <app-report-donut-chart
                 [data]="dashboardData()!.salesByCategory"
               ></app-report-donut-chart>
@@ -460,7 +461,7 @@
             <div class="stat-card teal">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>payments</mat-icon></span>
-                <span class="stat-title">Total Sales Amount</span>
+                <span class="stat-title">{{ t('reports.salesReport.totalSalesAmount') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ salesData()!.summary.totalSalesAmount | number: '1.2-2' }} ETB</div>
@@ -469,7 +470,7 @@
             <div class="stat-card blue">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>receipt</mat-icon></span>
-                <span class="stat-title">Number of Sales</span>
+                <span class="stat-title">{{ t('reports.salesReport.numberOfSales') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ salesData()!.summary.numberOfSales | number }}</div>
@@ -478,7 +479,7 @@
             <div class="stat-card purple">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>inventory</mat-icon></span>
-                <span class="stat-title">Total Products Sold</span>
+                <span class="stat-title">{{ t('reports.salesReport.totalProductsSold') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ salesData()!.summary.totalProductsSold | number }}</div>
@@ -487,7 +488,7 @@
             <div class="stat-card green">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>calculate</mat-icon></span>
-                <span class="stat-title">Avg Sale Value</span>
+                <span class="stat-title">{{ t('reports.salesReport.avgSaleValue') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ salesData()!.summary.averageSaleValue | number: '1.2-2' }} ETB</div>
@@ -497,11 +498,11 @@
 
           <div class="charts-row">
             <div class="widget-card">
-              <h3 class="widget-title">Sales Analytics</h3>
+              <h3 class="widget-title">{{ t('reports.salesReport.salesAnalytics') }}</h3>
               <app-report-line-chart [data]="salesData()!.salesByDay"></app-report-line-chart>
             </div>
             <div class="widget-card">
-              <h3 class="widget-title">Top Selling Products</h3>
+              <h3 class="widget-title">{{ t('reports.salesReport.topSellingProducts') }}</h3>
               <app-report-bar-chart
                 [data]="topProductsBarData()"
                 [horizontal]="true"
@@ -514,20 +515,20 @@
           <!-- Sales Table -->
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Sales Transactions</h3>
-              <span class="text-secondary">Showing {{ salesData()!.table.items.length }} of {{ salesData()!.table.totalCount }} invoices</span>
+              <h3>{{ t('reports.salesReport.salesTransactions') }}</h3>
+              <span class="text-secondary">{{ t('reports.salesReport.showingInvoices', { length: salesData()!.table.items.length, total: salesData()!.table.totalCount }) }}</span>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Invoice Number</th>
-                    <th>Customer</th>
-                    <th>Date</th>
-                    <th class="text-center">Items</th>
-                    <th class="text-right">Total Amount</th>
-                    <th>Payment Method</th>
-                    <th>Status</th>
+                    <th>{{ t('reports.salesReport.invoiceNumber') }}</th>
+                    <th>{{ t('reports.salesReport.customer') }}</th>
+                    <th>{{ t('reports.salesReport.date') }}</th>
+                    <th class="text-center">{{ t('reports.salesReport.items') }}</th>
+                    <th class="text-right">{{ t('reports.salesReport.totalAmount') }}</th>
+                    <th>{{ t('reports.salesReport.paymentMethod') }}</th>
+                    <th>{{ t('reports.salesReport.status') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -539,7 +540,7 @@
                       <td class="text-center font-bold">{{ row.numberOfItems }}</td>
                       <td class="text-right font-bold amount-cell">{{ row.totalAmount | number: '1.2-2' }} ETB</td>
                       <td>
-                        <span class="payment-badge">{{ row.paymentMethod }}</span>
+                        <span class="payment-badge">{{ getPaymentMethodLabel(row.paymentMethod) }}</span>
                       </td>
                       <td>
                         <span class="status-badge status--active">{{ row.status }}</span>
@@ -547,7 +548,7 @@
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="7" class="table-empty text-center">No sales records found.</td>
+                      <td colspan="7" class="table-empty text-center">{{ t('reports.salesReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -575,7 +576,7 @@
             <div class="stat-card blue">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>shopping_bag</mat-icon></span>
-                <span class="stat-title">Total Purchase Amount</span>
+                <span class="stat-title">{{ t('reports.purchasesReport.totalPurchaseAmount') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ purchasesData()!.summary.totalPurchaseAmount | number: '1.2-2' }} ETB</div>
@@ -584,7 +585,7 @@
             <div class="stat-card purple">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>inventory_2</mat-icon></span>
-                <span class="stat-title">Number of Purchases</span>
+                <span class="stat-title">{{ t('reports.purchasesReport.numberOfPurchases') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ purchasesData()!.summary.numberOfPurchases | number }}</div>
@@ -593,7 +594,7 @@
             <div class="stat-card cyan">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>widgets</mat-icon></span>
-                <span class="stat-title">Products Purchased</span>
+                <span class="stat-title">{{ t('reports.purchasesReport.productsPurchased') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ purchasesData()!.summary.totalProductsPurchased | number }}</div>
@@ -602,7 +603,7 @@
             <div class="stat-card green">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>bar_chart</mat-icon></span>
-                <span class="stat-title">Avg Purchase Value</span>
+                <span class="stat-title">{{ t('reports.purchasesReport.avgPurchaseValue') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ purchasesData()!.summary.averagePurchaseValue | number: '1.2-2' }} ETB</div>
@@ -612,14 +613,14 @@
 
           <div class="charts-row">
             <div class="widget-card">
-              <h3 class="widget-title">Purchases Over Time</h3>
+              <h3 class="widget-title">{{ t('reports.purchasesReport.purchasesOverTime') }}</h3>
               <app-report-line-chart
                 [data]="purchasesData()!.purchasesOverTime"
                 [color]="'var(--primary)'"
               ></app-report-line-chart>
             </div>
             <div class="widget-card">
-              <h3 class="widget-title">Purchases by Supplier</h3>
+              <h3 class="widget-title">{{ t('reports.purchasesReport.purchasesBySupplier') }}</h3>
               <app-report-bar-chart
                 [data]="salesBySupplierBarData()"
                 [horizontal]="true"
@@ -631,19 +632,19 @@
           <!-- Purchase Table -->
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Purchase Orders</h3>
-              <span class="text-secondary">Showing {{ purchasesData()!.table.items.length }} of {{ purchasesData()!.table.totalCount }} orders</span>
+              <h3>{{ t('reports.purchasesReport.purchaseOrders') }}</h3>
+              <span class="text-secondary">{{ t('reports.purchasesReport.showingOrders', { length: purchasesData()!.table.items.length, total: purchasesData()!.table.totalCount }) }}</span>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Purchase #</th>
-                    <th>Supplier</th>
-                    <th>Date</th>
-                    <th class="text-center">Items</th>
-                    <th class="text-right">Total Amount</th>
-                    <th>Status</th>
+                    <th>{{ t('reports.purchasesReport.purchaseNumber') }}</th>
+                    <th>{{ t('reports.purchasesReport.supplier') }}</th>
+                    <th>{{ t('reports.purchasesReport.date') }}</th>
+                    <th class="text-center">{{ t('reports.purchasesReport.items') }}</th>
+                    <th class="text-right">{{ t('reports.purchasesReport.totalAmount') }}</th>
+                    <th>{{ t('reports.purchasesReport.status') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -660,7 +661,7 @@
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="6" class="table-empty text-center">No purchase records found.</td>
+                      <td colspan="6" class="table-empty text-center">{{ t('reports.purchasesReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -688,7 +689,7 @@
             <div class="stat-card teal">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>inventory_2</mat-icon></span>
-                <span class="stat-title">Total Products</span>
+                <span class="stat-title">{{ t('reports.inventoryReport.totalProducts') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ inventoryData()!.summary.totalProducts | number }}</div>
@@ -697,7 +698,7 @@
             <div class="stat-card blue">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>layers</mat-icon></span>
-                <span class="stat-title">Stock Quantity</span>
+                <span class="stat-title">{{ t('reports.inventoryReport.stockQuantity') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ inventoryData()!.summary.totalStockQuantity | number }}</div>
@@ -706,7 +707,7 @@
             <div class="stat-card green">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>monetization_on</mat-icon></span>
-                <span class="stat-title">Inventory Value</span>
+                <span class="stat-title">{{ t('reports.inventoryReport.inventoryValue') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ inventoryData()!.summary.inventoryValue | number: '1.2-2' }} ETB</div>
@@ -715,7 +716,7 @@
             <div class="stat-card warning">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>warning</mat-icon></span>
-                <span class="stat-title">Low Stock</span>
+                <span class="stat-title">{{ t('reports.inventoryReport.lowStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ inventoryData()!.summary.lowStockProducts | number }}</div>
@@ -724,7 +725,7 @@
             <div class="stat-card danger">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>remove_shopping_cart</mat-icon></span>
-                <span class="stat-title">Out of Stock</span>
+                <span class="stat-title">{{ t('reports.inventoryReport.outOfStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ inventoryData()!.summary.outOfStockProducts | number }}</div>
@@ -734,21 +735,21 @@
 
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Inventory Valuation & Status</h3>
+              <h3>{{ t('reports.inventoryReport.valuationStatus') }}</h3>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>SKU</th>
-                    <th>Category</th>
-                    <th class="text-center">Stock</th>
-                    <th class="text-center">Min Stock</th>
-                    <th class="text-right">Selling Price</th>
-                    <th class="text-right">Unit Cost</th>
-                    <th class="text-right">Inventory Value</th>
-                    <th>Status</th>
+                    <th>{{ t('reports.inventoryReport.product') }}</th>
+                    <th>{{ t('reports.inventoryReport.sku') }}</th>
+                    <th>{{ t('reports.inventoryReport.category') }}</th>
+                    <th class="text-center">{{ t('reports.inventoryReport.stock') }}</th>
+                    <th class="text-center">{{ t('reports.inventoryReport.minStock') }}</th>
+                    <th class="text-right">{{ t('reports.inventoryReport.sellingPrice') }}</th>
+                    <th class="text-right">{{ t('reports.inventoryReport.unitCost') }}</th>
+                    <th class="text-right">{{ t('reports.inventoryReport.inventoryValue') }}</th>
+                    <th>{{ t('reports.inventoryReport.status') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -769,13 +770,13 @@
                           [class.status--low]="row.stockStatus === 'Low Stock' || row.stockStatus === 'Critical Stock'"
                           [class.status--inactive]="row.stockStatus === 'Out of Stock'"
                         >
-                          {{ row.stockStatus }}
+                          {{ getStockStatusLabel(row.stockStatus) }}
                         </span>
                       </td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="9" class="table-empty text-center">No inventory data available.</td>
+                      <td colspan="9" class="table-empty text-center">{{ t('reports.inventoryReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -803,7 +804,7 @@
             <div class="stat-card danger">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>error</mat-icon></span>
-                <span class="stat-title">Out of Stock</span>
+                <span class="stat-title">{{ t('reports.lowStockReport.outOfStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ lowStockData()!.outOfStock | number }}</div>
@@ -812,7 +813,7 @@
             <div class="stat-card warning">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>warning_amber</mat-icon></span>
-                <span class="stat-title">Critical Stock</span>
+                <span class="stat-title">{{ t('reports.lowStockReport.criticalStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ lowStockData()!.criticalStock | number }}</div>
@@ -821,7 +822,7 @@
             <div class="stat-card amber">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>info</mat-icon></span>
-                <span class="stat-title">Low Stock</span>
+                <span class="stat-title">{{ t('reports.lowStockReport.lowStock') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ lowStockData()!.lowStock | number }}</div>
@@ -831,23 +832,23 @@
 
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Low Stock Alert Items</h3>
+              <h3>{{ t('reports.lowStockReport.alertItems') }}</h3>
               <button type="button" class="btn btn--primary no-print" (click)="navigateToPurchase()">
-                <mat-icon>add_shopping_cart</mat-icon> Create Purchase Order
+                <mat-icon>add_shopping_cart</mat-icon> {{ t('reports.lowStockReport.createPO') }}
               </button>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>SKU</th>
-                    <th>Category</th>
-                    <th class="text-center">Current Stock</th>
-                    <th class="text-center">Min Stock</th>
-                    <th>Stock Status</th>
-                    <th>Recommended Action</th>
-                    <th class="no-print text-center">Quick Action</th>
+                    <th>{{ t('reports.lowStockReport.product') }}</th>
+                    <th>{{ t('reports.lowStockReport.sku') }}</th>
+                    <th>{{ t('reports.lowStockReport.category') }}</th>
+                    <th class="text-center">{{ t('reports.lowStockReport.currentStock') }}</th>
+                    <th class="text-center">{{ t('reports.lowStockReport.minStock') }}</th>
+                    <th>{{ t('reports.lowStockReport.stockStatus') }}</th>
+                    <th>{{ t('reports.lowStockReport.recommendedAction') }}</th>
+                    <th class="no-print text-center">{{ t('reports.lowStockReport.quickAction') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -864,19 +865,19 @@
                           [class.status--inactive]="row.stockStatus === 'Out of Stock'"
                           [class.status--low]="row.stockStatus === 'Critical Stock' || row.stockStatus === 'Low Stock'"
                         >
-                          {{ row.stockStatus }}
+                          {{ getStockStatusLabel(row.stockStatus) }}
                         </span>
                       </td>
-                      <td class="action-text">{{ row.recommendedAction }}</td>
+                      <td class="action-text">{{ getRecommendedActionLabel(row.recommendedAction) }}</td>
                       <td class="no-print text-center">
                         <button type="button" class="btn btn--secondary" (click)="navigateToPurchase()">
-                          <mat-icon>local_mall</mat-icon> Order
+                          <mat-icon>local_mall</mat-icon> {{ t('reports.lowStockReport.order') }}
                         </button>
                       </td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="8" class="table-empty text-center">No low stock items! All products well stocked.</td>
+                      <td colspan="8" class="table-empty text-center">{{ t('reports.lowStockReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -891,20 +892,20 @@
         <div class="report-section">
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Product Performance Matrix</h3>
+              <h3>{{ t('reports.productPerfReport.matrix') }}</h3>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Product Name</th>
-                    <th>SKU</th>
-                    <th>Category</th>
-                    <th class="text-center">Units Sold</th>
-                    <th class="text-right">Revenue</th>
-                    <th class="text-center">Purchased Qty</th>
-                    <th class="text-center">Current Stock</th>
-                    <th class="text-right">Gross Profit</th>
+                    <th>{{ t('reports.productPerfReport.productName') }}</th>
+                    <th>{{ t('reports.productPerfReport.sku') }}</th>
+                    <th>{{ t('reports.productPerfReport.category') }}</th>
+                    <th class="text-center">{{ t('reports.productPerfReport.unitsSold') }}</th>
+                    <th class="text-right">{{ t('reports.productPerfReport.revenue') }}</th>
+                    <th class="text-center">{{ t('reports.productPerfReport.purchasedQty') }}</th>
+                    <th class="text-center">{{ t('reports.productPerfReport.currentStock') }}</th>
+                    <th class="text-right">{{ t('reports.productPerfReport.grossProfit') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -923,7 +924,7 @@
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="8" class="table-empty text-center">No product performance records found.</td>
+                      <td colspan="8" class="table-empty text-center">{{ t('reports.productPerfReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -938,18 +939,18 @@
         <div class="report-section">
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Customer Purchasing Intelligence</h3>
+              <h3>{{ t('reports.customerReport.intelligence') }}</h3>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Customer Name</th>
-                    <th>Phone</th>
-                    <th class="text-center">Purchases</th>
-                    <th class="text-right">Total Spent</th>
-                    <th class="text-right">Avg Purchase Value</th>
-                    <th>Last Purchase Date</th>
+                    <th>{{ t('reports.customerReport.customerName') }}</th>
+                    <th>{{ t('reports.customerReport.phone') }}</th>
+                    <th class="text-center">{{ t('reports.customerReport.purchases') }}</th>
+                    <th class="text-right">{{ t('reports.customerReport.totalSpent') }}</th>
+                    <th class="text-right">{{ t('reports.customerReport.avgPurchaseValue') }}</th>
+                    <th>{{ t('reports.customerReport.lastPurchaseDate') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -960,11 +961,11 @@
                       <td class="text-center font-bold">{{ row.numberOfPurchases }}</td>
                       <td class="text-right font-bold amount-cell">{{ row.totalAmountSpent | number: '1.2-2' }} ETB</td>
                       <td class="text-right">{{ row.averagePurchaseValue | number: '1.2-2' }} ETB</td>
-                      <td>{{ row.lastPurchaseDate ? (row.lastPurchaseDate | date: 'mediumDate') : 'Never' }}</td>
+                      <td>{{ row.lastPurchaseDate ? (row.lastPurchaseDate | date: 'mediumDate') : t('reports.customerReport.never') }}</td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="6" class="table-empty text-center">No customer records found.</td>
+                      <td colspan="6" class="table-empty text-center">{{ t('reports.customerReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -979,18 +980,18 @@
         <div class="report-section">
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Supplier Performance & Procurement History</h3>
+              <h3>{{ t('reports.supplierReport.performance') }}</h3>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Supplier Name</th>
-                    <th>Contact Person</th>
-                    <th class="text-center">Purchases</th>
-                    <th class="text-right">Total Amount</th>
-                    <th class="text-center">Products Supplied</th>
-                    <th>Last Purchase Date</th>
+                    <th>{{ t('reports.supplierReport.supplierName') }}</th>
+                    <th>{{ t('reports.supplierReport.contactPerson') }}</th>
+                    <th class="text-center">{{ t('reports.supplierReport.purchases') }}</th>
+                    <th class="text-right">{{ t('reports.supplierReport.totalAmount') }}</th>
+                    <th class="text-center">{{ t('reports.supplierReport.productsSupplied') }}</th>
+                    <th>{{ t('reports.supplierReport.lastPurchaseDate') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1001,11 +1002,11 @@
                       <td class="text-center font-bold">{{ row.numberOfPurchases }}</td>
                       <td class="text-right font-bold amount-cell">{{ row.totalPurchaseAmount | number: '1.2-2' }} ETB</td>
                       <td class="text-center">{{ row.productsSupplied }}</td>
-                      <td>{{ row.lastPurchaseDate ? (row.lastPurchaseDate | date: 'mediumDate') : 'Never' }}</td>
+                      <td>{{ row.lastPurchaseDate ? (row.lastPurchaseDate | date: 'mediumDate') : t('reports.supplierReport.never') }}</td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="6" class="table-empty text-center">No supplier records found.</td>
+                      <td colspan="6" class="table-empty text-center">{{ t('reports.supplierReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -1022,7 +1023,7 @@
             <div class="stat-card teal">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>trending_up</mat-icon></span>
-                <span class="stat-title">Total Revenue</span>
+                <span class="stat-title">{{ t('reports.profitReport.totalRevenue') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ profitData()!.totalRevenue | number: '1.2-2' }} ETB</div>
@@ -1031,7 +1032,7 @@
             <div class="stat-card blue">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>shopping_cart</mat-icon></span>
-                <span class="stat-title">Cost of Goods Sold (COGS)</span>
+                <span class="stat-title">{{ t('reports.profitReport.cogs') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ profitData()!.totalCogs | number: '1.2-2' }} ETB</div>
@@ -1040,7 +1041,7 @@
             <div class="stat-card green">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>account_balance_wallet</mat-icon></span>
-                <span class="stat-title">Gross Profit</span>
+                <span class="stat-title">{{ t('reports.profitReport.grossProfit') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ profitData()!.grossProfit | number: '1.2-2' }} ETB</div>
@@ -1049,7 +1050,7 @@
             <div class="stat-card purple">
               <div class="stat-card-header">
                 <span class="stat-icon-wrap"><mat-icon>pie_chart</mat-icon></span>
-                <span class="stat-title">Gross Margin</span>
+                <span class="stat-title">{{ t('reports.profitReport.grossMargin') }}</span>
               </div>
               <div class="stat-card-body">
                 <div class="stat-value">{{ profitData()!.grossProfitMargin | number: '1.1-2' }}%</div>
@@ -1060,13 +1061,13 @@
           <div class="info-banner">
             <mat-icon>info</mat-icon>
             <div>
-              <strong>Historical Cost Basis Strategy:</strong>
+              <strong>{{ t('reports.profitReport.historicalCostBasis') }}</strong>
               <p>{{ profitData()!.costBasis }}</p>
             </div>
           </div>
 
           <div class="widget-card">
-            <h3 class="widget-title">Profitability Trend</h3>
+            <h3 class="widget-title">{{ t('reports.profitReport.profitabilityTrend') }}</h3>
             <app-report-line-chart
               [data]="profitData()!.profitOverTime"
               [color]="'var(--teal)'"
@@ -1080,20 +1081,20 @@
         <div class="report-section">
           <div class="table-card">
             <div class="table-header-title">
-              <h3>Inventory Stock Movements</h3>
+              <h3>{{ t('reports.stockMovements.title') }}</h3>
             </div>
             <div class="table-wrapper">
               <table class="app-table">
                 <thead>
                   <tr>
-                    <th>Date & Time</th>
-                    <th>Product</th>
-                    <th>Type</th>
-                    <th class="text-center">Qty Change</th>
-                    <th class="text-center">Prev Stock</th>
-                    <th class="text-center">New Stock</th>
-                    <th>Reference</th>
-                    <th>Performed By</th>
+                    <th>{{ t('reports.stockMovements.dateTime') }}</th>
+                    <th>{{ t('reports.stockMovements.product') }}</th>
+                    <th>{{ t('reports.stockMovements.type') }}</th>
+                    <th class="text-center">{{ t('reports.stockMovements.qtyChange') }}</th>
+                    <th class="text-center">{{ t('reports.stockMovements.prevStock') }}</th>
+                    <th class="text-center">{{ t('reports.stockMovements.newStock') }}</th>
+                    <th>{{ t('reports.stockMovements.reference') }}</th>
+                    <th>{{ t('reports.stockMovements.performedBy') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1107,7 +1108,7 @@
                           [class.status--active]="row.transactionType === 'Sale' || row.transactionType === 'Purchase'"
                           [class.status--draft]="row.transactionType === 'Adjustment'"
                         >
-                          {{ row.transactionType }}
+                          {{ getTransactionTypeLabel(row.transactionType) }}
                         </span>
                       </td>
                       <td class="text-center font-mono font-bold" [class.positive-text]="row.quantityChange > 0" [class.negative-text]="row.quantityChange < 0">
@@ -1120,7 +1121,7 @@
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="8" class="table-empty text-center">No stock transaction logs recorded.</td>
+                      <td colspan="8" class="table-empty text-center">{{ t('reports.stockMovements.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -1144,3 +1145,4 @@
     </div>
   }
 </div>
+</ng-container>

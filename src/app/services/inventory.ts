@@ -23,6 +23,7 @@ export class InventoryApiService {
 
     if (filter.productId) params = params.set('productId', filter.productId);
     if (filter.type) params = params.set('type', filter.type);
+    if (filter.dateRange) params = params.set('dateRange', filter.dateRange);
     if (filter.startDate) params = params.set('startDate', filter.startDate);
     if (filter.endDate) params = params.set('endDate', filter.endDate);
     if (filter.searchTerm) params = params.set('searchTerm', filter.searchTerm);

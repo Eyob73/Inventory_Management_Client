@@ -180,4 +180,106 @@ describe('SalesHistoryComponent - Clickable items and details dialog', () => {
       panelClass: 'pos-receipt-modal'
     });
   });
+
+  describe('Date Range Filters', () => {
+    it('should set selectedDateRange to today and populate start and end dates', () => {
+      component.onDateRangeChange('today');
+
+      expect(component.selectedDateRange()).toBe('today');
+      expect(component.startDate()).toBeTruthy();
+      expect(component.endDate()).toBeTruthy();
+      expect(component.startDate()).toBe(component.endDate());
+      expect(mockSaleService.getPagedSales).toHaveBeenCalledWith(expect.objectContaining({
+        dateRange: 'today',
+        startDate: component.startDate(),
+        endDate: component.endDate()
+      }));
+    });
+
+    it('should set selectedDateRange to yesterday and populate dates', () => {
+      component.onDateRangeChange('yesterday');
+
+      expect(component.selectedDateRange()).toBe('yesterday');
+      expect(component.startDate()).toBeTruthy();
+      expect(component.endDate()).toBeTruthy();
+      expect(component.startDate()).toBe(component.endDate());
+      expect(mockSaleService.getPagedSales).toHaveBeenCalledWith(expect.objectContaining({
+        dateRange: 'yesterday'
+      }));
+    });
+
+    it('should set selectedDateRange to this_week and calculate Monday through Sunday', () => {
+      component.onDateRangeChange('this_week');
+
+      expect(component.selectedDateRange()).toBe('this_week');
+      expect(component.startDate()).toBeTruthy();
+      expect(component.endDate()).toBeTruthy();
+      expect(new Date(component.startDate()).getTime()).toBeLessThanOrEqual(new Date(component.endDate()).getTime());
+      expect(mockSaleService.getPagedSales).toHaveBeenCalledWith(expect.objectContaining({
+        dateRange: 'this_week'
+      }));
+    });
+
+    it('should set selectedDateRange to this_month and calculate start and end of month', () => {
+      component.onDateRangeChange('this_month');
+
+      expect(component.selectedDateRange()).toBe('this_month');
+      const now = new Date();
+      expect(component.startDate()).toBe(component.formatDate(new Date(now.getFullYear(), now.getMonth(), 1)));
+      expect(mockSaleService.getPagedSales).toHaveBeenCalledWith(expect.objectContaining({
+        dateRange: 'this_month'
+      }));
+    });
+
+    it('should set selectedDateRange to this_year and calculate start and end of year', () => {
+      component.onDateRangeChange('this_year');
+
+      expect(component.selectedDateRange()).toBe('this_year');
+      const now = new Date();
+      expect(component.startDate()).toBe(`${now.getFullYear()}-01-01`);
+      expect(component.endDate()).toBe(`${now.getFullYear()}-12-31`);
+      expect(mockSaleService.getPagedSales).toHaveBeenCalledWith(expect.objectContaining({
+        dateRange: 'this_year'
+      }));
+    });
+
+    it('should clear dates when preset is empty (All Time)', () => {
+      component.onDateRangeChange('today');
+      expect(component.startDate()).toBeTruthy();
+
+      component.onDateRangeChange('');
+      expect(component.selectedDateRange()).toBe('');
+      expect(component.startDate()).toBe('');
+      expect(component.endDate()).toBe('');
+    });
+
+    it('should switch preset to custom when startDate is changed manually', () => {
+      component.onDateRangeChange('this_month');
+      expect(component.selectedDateRange()).toBe('this_month');
+
+      component.onStartDateChange(new Date('2026-05-15'));
+      expect(component.selectedDateRange()).toBe('custom');
+      expect(component.startDate()).toBe('2026-05-15');
+    });
+
+    it('should switch preset to custom when endDate is changed manually', () => {
+      component.onDateRangeChange('this_month');
+      expect(component.selectedDateRange()).toBe('this_month');
+
+      component.onEndDateChange(new Date('2026-05-20'));
+      expect(component.selectedDateRange()).toBe('custom');
+      expect(component.endDate()).toBe('2026-05-20');
+    });
+
+    it('should reset date range when resetFilters is called', () => {
+      component.onDateRangeChange('today');
+      expect(component.selectedDateRange()).toBe('today');
+
+      component.resetFilters();
+      expect(component.selectedDateRange()).toBe('');
+      expect(component.startDate()).toBe('');
+      expect(component.endDate()).toBe('');
+      expect(component.pageIndex()).toBe(1);
+    });
+  });
 });

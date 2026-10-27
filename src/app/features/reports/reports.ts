@@ -17,6 +17,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { TableSkeleton, TableSkeletonColumn } from '../../ui/table-skeleton/table-skeleton';
 import { CardSkeleton } from '../../ui/card-skeleton/card-skeleton';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
+import { formatPaymentMethod } from '../../utils/payment-method.util';
 
 import { ReportsService } from '../../services/reports.service';
 import { CategoryService } from '../../services/category';
@@ -80,6 +82,7 @@ type ReportTab =
     ReportLineChart,
     ReportBarChart,
     ReportDonutChart,
+    TranslocoDirective,
   ],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
@@ -93,6 +96,7 @@ export class Reports implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  readonly transloco = inject(TranslocoService);
 
   readonly Math = Math;
 
@@ -265,7 +269,7 @@ export class Reports implements OnInit {
 
   applyFilters(): void {
     if (this.startDate() && this.endDate() && this.startDate() > this.endDate()) {
-      this.dateValidationError.set('Start Date must be less than or equal to End Date.');
+      this.dateValidationError.set(this.transloco.translate('reports.dateValidationError') || 'Start Date must be less than or equal to End Date.');
       return;
     }
     this.dateValidationError.set(null);
@@ -444,11 +448,15 @@ export class Reports implements OnInit {
           a.download = `dashboard-report-${new Date().toISOString().slice(0, 10)}.${format}`;
           a.click();
           window.URL.revokeObjectURL(url);
-          this.snackBar.open('Exported dashboard report successfully.', 'Close', { duration: 3000 });
+          const msg = this.transloco.translate('reports.exportDashboardSuccess') || 'Exported dashboard report successfully.';
+          const closeText = this.transloco.translate('reports.close') || 'Close';
+          this.snackBar.open(msg, closeText, { duration: 3000 });
         },
         error: () => {
           onComplete();
-          this.snackBar.open('Failed to export dashboard report.', 'Close', { duration: 3000 });
+          const msg = this.transloco.translate('reports.exportDashboardFailed') || 'Failed to export dashboard report.';
+          const closeText = this.transloco.translate('reports.close') || 'Close';
+          this.snackBar.open(msg, closeText, { duration: 3000 });
         },
       });
     } else {
@@ -462,11 +470,16 @@ export class Reports implements OnInit {
           a.download = `${reportType}-report-${new Date().toISOString().slice(0, 10)}.${format}`;
           a.click();
           window.URL.revokeObjectURL(url);
-          this.snackBar.open(`Exported ${reportType} report successfully.`, 'Close', { duration: 3000 });
+          const reportName = this.transloco.translate(`reports.${reportType}`) || reportType;
+          const msg = this.transloco.translate('reports.exportSuccess', { report: reportName }) || `Exported ${reportType} report successfully.`;
+          const closeText = this.transloco.translate('reports.close') || 'Close';
+          this.snackBar.open(msg, closeText, { duration: 3000 });
         },
         error: () => {
           onComplete();
-          this.snackBar.open('Failed to export report.', 'Close', { duration: 3000 });
+          const msg = this.transloco.translate('reports.exportFailed') || 'Failed to export report.';
+          const closeText = this.transloco.translate('reports.close') || 'Close';
+          this.snackBar.open(msg, closeText, { duration: 3000 });
         },
       });
     }
@@ -507,5 +520,53 @@ export class Reports implements OnInit {
         ),
       error: () => {},
     });
+  }
+
+  getStockStatusLabel(status: string): string {
+    if (!status) return '';
+    switch (status.trim().toLowerCase()) {
+      case 'in stock':
+        return this.transloco.translate('reports.inventoryReport.inStock') || status;
+      case 'low stock':
+        return this.transloco.translate('reports.lowStockReport.lowStock') || status;
+      case 'critical stock':
+        return this.transloco.translate('reports.lowStockReport.criticalStock') || status;
+      case 'out of stock':
+        return this.transloco.translate('reports.lowStockReport.outOfStock') || status;
+      default:
+        return status;
+    }
+  }
+
+  getTransactionTypeLabel(type: string): string {
+    if (!type) return '';
+    switch (type.trim().toLowerCase()) {
+      case 'sale':
+        return this.transloco.translate('reports.sale') || type;
+      case 'purchase':
+        return this.transloco.translate('reports.purchase') || type;
+      case 'adjustment':
+        return this.transloco.translate('reports.adjustment') || type;
+      case 'return':
+        return this.transloco.translate('reports.return') || type;
+      default:
+        return type;
+    }
+  }
+
+  getPaymentMethodLabel(method: string): string {
+    return formatPaymentMethod({ paymentMethod: method }, (k) => this.transloco.translate(k));
+  }
+
+  getRecommendedActionLabel(action: string): string {
+    if (!action) return '';
+    const lower = action.toLowerCase();
+    if (lower.includes('reorder now')) return this.transloco.translate('reports.recommended.reorderNow') || action;
+    if (lower.includes('order stock')) return this.transloco.translate('reports.recommended.orderStock') || action;
+    if (lower.includes('monitor')) return this.transloco.translate('reports.recommended.monitor') || action;
+    if (lower.includes('clearance')) return this.transloco.translate('reports.recommended.clearance') || action;
+    if (lower.includes('discount')) return this.transloco.translate('reports.recommended.discount') || action;
+    if (lower.includes('immediately')) return this.transloco.translate('reports.recommended.createPurchaseImmediately') || action;
+    return action;
   }
 }

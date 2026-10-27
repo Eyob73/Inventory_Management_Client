@@ -17,6 +17,7 @@ export interface InventoryTransaction {
 export interface InventoryTransactionFilter {
   productId?: string;
   type?: string;
+  dateRange?: string;
   startDate?: string;
   endDate?: string;
   searchTerm?: string;
