@@ -175,6 +175,9 @@
   border-radius: 12px !important;
   box-shadow: var(--shadow-lg) !important;
   padding: 6px !important;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 
   .mat-mdc-option {
     color: var(--ink) !important;
@@ -213,6 +216,51 @@
       width: 0 !important;
       height: 0 !important;
       visibility: hidden !important;
+    }
+  }
+}
+
+/* ─── Dropdown Smooth Closing & Flicker Elimination ─────────────────────── */
+/* Fixes Angular Material issue #33851 where missing 'forwards' fill-mode
+   causes exit fade animation to abruptly reset opacity to 1 before DOM detachment. */
+.mat-select-panel-animations-enabled {
+  animation: _mat-select-enter 120ms cubic-bezier(0, 0, 0.2, 1) forwards;
+
+  &.mat-select-panel-exit {
+    animation: _mat-select-exit 100ms linear forwards !important;
+    pointer-events: none !important;
+
+    /* Freeze option state & transitions during closing to eliminate visual noise */
+    .mat-mdc-option {
+      transition: none !important;
+      pointer-events: none !important;
+    }
+  }
+}
+
+.mat-mdc-select-panel.mat-select-panel-exit {
+  animation: _mat-select-exit 100ms linear forwards !important;
+  pointer-events: none !important;
+
+  .mat-mdc-option {
+    transition: none !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Also ensure MatMenu panels close smoothly without option/item hover flashes */
+.mat-mdc-menu-panel {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+
+  &.mat-menu-panel-exit-animation {
+    animation: _mat-menu-exit 100ms 25ms linear forwards !important;
+    pointer-events: none !important;
+
+    .mat-mdc-menu-item {
+      transition: none !important;
+      pointer-events: none !important;
     }
   }
 }
