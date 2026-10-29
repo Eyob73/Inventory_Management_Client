@@ -83,47 +83,41 @@
     </div>
 
     <!-- Dashboard CSS Grid Layout with cdkDropListGroup -->
+    @if (activeWidgets().length > 0) {
     <div class="dashboard-grid" cdkDropListGroup>
       @for (w of activeWidgets(); track w.id) {
-      <div
-        class="widget-slot"
-        [class.col-span-1]="w.columns === 1"
-        [class.col-span-2]="w.columns === 2"
-        [class.col-span-3]="w.columns === 3"
-        [class.col-span-4]="w.columns === 4"
-        [class.row-span-1]="w.rows === 1"
-        [class.row-span-2]="w.rows === 2"
-        [class.row-span-3]="w.rows === 3"
-        [class.row-span-4]="w.rows === 4"
-        cdkDropList
-        [cdkDropListData]="w"
-        (cdkDropListDropped)="onWidgetDrop($event)"
-      >
+      <div class="widget-slot" [class.col-span-1]="w.columns === 1" [class.col-span-2]="w.columns === 2"
+        [class.col-span-3]="w.columns === 3" [class.col-span-4]="w.columns === 4" [class.row-span-1]="w.rows === 1"
+        [class.row-span-2]="w.rows === 2" [class.row-span-3]="w.rows === 3" [class.row-span-4]="w.rows === 4"
+        cdkDropList [cdkDropListData]="w" (cdkDropListDropped)="onWidgetDrop($event)">
         <app-widget [widget]="w" cdkDrag [cdkDragData]="w"
           [attr.aria-label]="t('dashboardWidgets.' + w.id + '.label')" />
       </div>
       }
-
-      <!-- Empty State Banner -->
-      @if (activeWidgets().length === 0) {
-      <div class="empty-state">
+    </div>
+    } @else {
+    <!-- Empty State Banner -->
+    <div class="empty-state animate-in">
+      <div class="empty-icon-wrap">
         <mat-icon>dashboard_customize</mat-icon>
-        <h3>{{ t('dashboard.empty.title') }}</h3>
-        <p>{{ t('dashboard.empty.desc') }}</p>
-        @if (!isSales()) {
-        <div class="empty-actions">
-          <button mat-flat-button class="empty-btn" (click)="openPanel()">
-            <mat-icon>tune</mat-icon>
-            {{ t('dashboard.actions.customizeDash') }}
-          </button>
-          <button mat-stroked-button (click)="resetLayout()">
-            <mat-icon>restart_alt</mat-icon>
-            {{ t('dashboard.actions.restoreLayout') }}
-          </button>
-        </div>
-        }
+      </div>
+      <div class="empty-text">
+        <h3 class="empty-title">{{ t('dashboard.empty.title') }}</h3>
+        <p class="empty-desc">{{ t('dashboard.empty.desc') }}</p>
+      </div>
+      @if (!isSales()) {
+      <div class="empty-actions">
+        <button mat-flat-button class="empty-btn empty-btn-primary" (click)="openPanel()" id="empty-state-customize-btn">
+          <mat-icon>tune</mat-icon>
+          <span>{{ t('dashboard.actions.customizeDash') }}</span>
+        </button>
+        <button mat-stroked-button class="empty-btn empty-btn-secondary" (click)="resetLayout()" id="empty-state-reset-btn">
+          <mat-icon>restart_alt</mat-icon>
+          <span>{{ t('dashboard.actions.restoreLayout') }}</span>
+        </button>
       </div>
       }
     </div>
+    }
   </div>
 </ng-container>
