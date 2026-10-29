@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SupplierService } from '../../../services/supplier';
@@ -28,9 +29,12 @@ import { PurchaseStore } from '../../../store/purchase.store';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule, TranslocoDirective],
+    MatProgressSpinnerModule,
+    TranslocoDirective,
+  ],
   templateUrl: './purchase-form.html',
   styleUrl: './purchase-form.scss',
 })

@@ -1,28 +1,54 @@
 <ng-container *transloco="let t">
-<div class="purchase-form-page">
-  <div class="pdp-header">
-    <div>
-      <a routerLink="/purchases" class="pdp-back">
-        <mat-icon>arrow_back</mat-icon>
-        {{ t('purchases.details.back') }}
-      </a>
-      <h2 class="pdp-title">{{ t('purchases.details.pageTitle') }}</h2>
-      <p class="pdp-subtitle">{{ t('purchases.details.subtitle') }}</p>
+  <div class="purchase-form-page">
+    <div class="pdp-header">
+      <div>
+        <a routerLink="/purchases" class="pdp-back">
+          <mat-icon>arrow_back</mat-icon>
+          {{ t('purchases.details.back') }}
+        </a>
+        <h2 class="pdp-title">{{ t('purchases.details.pageTitle') }}</h2>
+        <p class="pdp-subtitle">{{ t('purchases.details.subtitle') }}</p>
+      </div>
+      @if (purchase(); as po) {
+      <div class="pdp-header-actions">
+        @if (po.status === 'Draft') {
+        <button type="button" class="btn btn--secondary" (click)="edit()">
+          <mat-icon>edit</mat-icon>
+          <span>{{ t('purchases.details.btnEdit') }}</span>
+        </button>
+        <button type="button" class="btn btn--primary" (click)="complete()">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ t('purchases.details.btnComplete') }}</span>
+        </button>
+        }
+        @if (po.status !== 'Cancelled') {
+        <button type="button" class="btn btn--outline-warning" (click)="cancelPurchase()">
+          <mat-icon>cancel</mat-icon>
+          <span>{{ t('purchases.details.btnCancel') }}</span>
+        </button>
+        }
+        @if (canDelete && po.status === 'Draft') {
+        <button type="button" class="btn btn--outline-danger" (click)="deleteDraft()">
+          <mat-icon>delete_outline</mat-icon>
+          <span>{{ t('purchases.details.btnDelete') }}</span>
+        </button>
+        }
+      </div>
+      }
     </div>
-  </div>
 
-  <div class="customer-details-dialog">
-    @if (isLoading()) {
+    <div class="customer-details-dialog">
+      @if (isLoading()) {
       <div class="loading-state">
         <mat-spinner diameter="40"></mat-spinner>
         <p>{{ t('purchases.details.loading') }}</p>
       </div>
-    } @else if (error()) {
+      } @else if (error()) {
       <div class="error-banner">
         <mat-icon>error_outline</mat-icon>
         <span>{{ error() }}</span>
       </div>
-    } @else if (purchase(); as po) {
+      } @else if (purchase(); as po) {
       <section class="form-section">
         <div class="profile-card">
           <div class="profile-header">
@@ -30,15 +56,15 @@
             <div class="profile-main">
               <div class="name-row">
                 <h3 class="cust-name">{{ po.purchaseNumber }}</h3>
-                <span class="status-badge" [ngClass]="statusClass(po.status)">{{ po.status === 'Completed' ? t('purchases.stats.completed') : (po.status === 'Cancelled' ? t('purchases.cancelledStatus') : (po.status === 'Draft' ? t('purchases.draft') : po.status)) }}</span>
+                <span class="status-badge" [ngClass]="statusClass(po.status)">{{ po.status === 'Completed' ?
+                  t('purchases.stats.completed') : (po.status === 'Cancelled' ? t('purchases.cancelledStatus') :
+                  (po.status === 'Draft' ? t('purchases.draft') : po.status)) }}</span>
               </div>
               <div class="contact-row">
-                <span class="contact-item"
-                  ><mat-icon>local_shipping</mat-icon>{{ (po.supplierName === 'No supplier' || po.supplierName === 'No Supplier' || po.supplierName === 'Unknown Supplier' ? null : po.supplierName) || t('purchases.details.noSupplier') }}</span
-                >
-                <span class="contact-item"
-                  ><mat-icon>event</mat-icon>{{ po.purchaseDate | date: 'mediumDate' }}</span
-                >
+                <span class="contact-item"><mat-icon>local_shipping</mat-icon>{{ (po.supplierName === 'No supplier' ||
+                  po.supplierName === 'No Supplier' || po.supplierName === 'Unknown Supplier' ? null : po.supplierName)
+                  || t('purchases.details.noSupplier') }}</span>
+                <span class="contact-item"><mat-icon>event</mat-icon>{{ po.purchaseDate | date: 'mediumDate' }}</span>
               </div>
             </div>
           </div>
@@ -49,9 +75,7 @@
             </div>
             <div class="stat-pill">
               <span class="stat-label">{{ t('purchases.details.total') }}</span>
-              <span class="stat-value stat-value--highlight"
-                >{{ po.totalAmount | number: '1.2-2' }} ETB</span
-              >
+              <span class="stat-value stat-value--highlight">{{ po.totalAmount | number: '1.2-2' }} ETB</span>
             </div>
             <div class="stat-pill">
               <span class="stat-label">{{ t('purchases.details.created') }}</span>
@@ -59,13 +83,14 @@
             </div>
           </div>
           @if (po.notes) {
-            <p class="text-secondary" style="margin: 1rem 0 0">{{ po.notes }}</p>
+          <p class="text-secondary" style="margin: 1rem 0 0">{{ po.notes }}</p>
           }
         </div>
       </section>
 
       <section class="form-section sales-history-section">
-        <h4 class="section-title"><mat-icon>inventory_2</mat-icon><span>{{ t('purchases.details.itemsTitle') }}</span></h4>
+        <h4 class="section-title"><mat-icon>inventory_2</mat-icon><span>{{ t('purchases.details.itemsTitle') }}</span>
+        </h4>
         <div class="table-wrapper">
           <table mat-table [dataSource]="po.items" class="app-table sales-table">
             <ng-container matColumnDef="productName">
@@ -98,7 +123,7 @@
         </div>
       </section>
 
-            <section class="form-section sales-history-section" *ngIf="bottleImpacts().length > 0">
+      <section class="form-section sales-history-section" *ngIf="bottleImpacts().length > 0">
         <h4 class="section-title"><mat-icon>change_circle</mat-icon><span>Bottle Impact</span></h4>
         <div class="table-wrapper">
           <table class="app-table sales-table" style="width: 100%">
@@ -122,24 +147,30 @@
 
       <div class="dialog-actions">
         @if (po.status === 'Draft') {
-          <button type="button" class="btn btn--secondary" (click)="edit()">{{ t('purchases.details.btnEdit') }}</button>
-          <button type="button" class="btn btn--primary" (click)="complete()">
-            {{ t('purchases.details.btnComplete') }}
-          </button>
+        <button type="button" class="btn btn--secondary" (click)="edit()">
+          <mat-icon>edit</mat-icon>
+          <span>{{ t('purchases.details.btnEdit') }}</span>
+        </button>
+        <button type="button" class="btn btn--primary" (click)="complete()">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ t('purchases.details.btnComplete') }}</span>
+        </button>
         }
         @if (po.status !== 'Cancelled') {
-          <button type="button" class="btn btn--secondary" (click)="cancelPurchase()">
-            {{ t('purchases.details.btnCancel') }}
-          </button>
+        <button type="button" class="btn btn--outline-warning" (click)="cancelPurchase()">
+          <mat-icon>cancel</mat-icon>
+          <span>{{ t('purchases.details.btnCancel') }}</span>
+        </button>
         }
         @if (canDelete && po.status === 'Draft') {
-          <button type="button" class="btn btn--secondary" (click)="deleteDraft()">
-            {{ t('purchases.details.btnDelete') }}
-          </button>
+        <button type="button" class="btn btn--outline-danger" (click)="deleteDraft()">
+          <mat-icon>delete_outline</mat-icon>
+          <span>{{ t('purchases.details.btnDelete') }}</span>
+        </button>
         }
       </div>
-    }
+      }
+    </div>
   </div>
-</div>
 
 </ng-container>

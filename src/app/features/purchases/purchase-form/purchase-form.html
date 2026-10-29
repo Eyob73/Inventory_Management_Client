@@ -65,90 +65,98 @@
         </div>
       </section>
 
+      <!-- Line Items Section -->
       <section class="form-section" formArrayName="items">
         <div class="section-header">
           <div>
             <h2 class="section-title">{{ t('purchases.form.lineItems') }}</h2>
             <p class="section-hint">{{ t('purchases.form.unitCostHint') }}</p>
           </div>
-          <button type="button" class="btn btn--secondary" (click)="addLine()">{{ t('purchases.form.addLine') }}</button>
+          <button mat-stroked-button type="button" class="add-line-btn" (click)="addLine()">
+            <mat-icon>add</mat-icon>
+            <span>{{ t('purchases.form.addLine') }}</span>
+          </button>
         </div>
 
         <div class="line-list">
           @for (line of items.controls; let i = $index; track line) {
             <div class="line-card" [formGroupName]="i">
               <div class="line-card__fields">
-                <div class="form-group line-card__product">
-                  <label [attr.for]="'product-' + i">{{ t('purchases.form.product') }}</label>
-                  <mat-form-field appearance="outline" class="select-field">
-                    <mat-select
-                      [id]="'product-' + i"
-                      formControlName="productId"
-                      [placeholder]="t('purchases.form.selectProduct')"
-                      (openedChange)="onDropdownOpen($event)"
-                    >
-                      <div class="select-search-container">
-                        <div class="select-search-wrapper">
-                          <mat-icon class="select-search-icon">search</mat-icon>
-                          <input 
-                            matInput 
-                            type="text" 
-                            placeholder="Search..." 
-                            [ngModel]="productSearch()"
-                            (ngModelChange)="productSearch.set($event)"
-                            [ngModelOptions]="{standalone: true}"
-                            (keydown)="$event.stopPropagation()"
-                            class="select-search-input"
-                          />
-                        </div>
+                <mat-form-field appearance="outline" class="form-field-full line-field--product" subscriptSizing="dynamic">
+                  <mat-label>{{ t('purchases.form.product') }}</mat-label>
+                  <mat-select
+                    [id]="'product-' + i"
+                    formControlName="productId"
+                    [placeholder]="t('purchases.form.selectProduct')"
+                    (openedChange)="onDropdownOpen($event)"
+                    required
+                  >
+                    <div class="select-search-container">
+                      <div class="select-search-wrapper">
+                        <mat-icon class="select-search-icon">search</mat-icon>
+                        <input 
+                          matInput 
+                          type="text" 
+                          placeholder="Search..." 
+                          [ngModel]="productSearch()"
+                          (ngModelChange)="productSearch.set($event)"
+                          [ngModelOptions]="{standalone: true}"
+                          (keydown)="$event.stopPropagation()"
+                          class="select-search-input"
+                        />
                       </div>
-                      @for (product of availableProducts(i); track product.id) {
-                        <mat-option [value]="product.id"
-                          >{{ product.name }} ({{ product.sku }})</mat-option
-                        >
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                    </div>
+                    @for (product of availableProducts(i); track product.id) {
+                      <mat-option [value]="product.id">
+                        {{ product.name }} ({{ product.sku }})
+                      </mat-option>
+                    }
+                  </mat-select>
                   @if (isLineInvalid(i, 'productId')) {
-                    <span class="form-error">{{ t('purchases.form.productReq') }}</span>
+                    <mat-error>{{ t('purchases.form.productReq') }}</mat-error>
                   }
-                </div>
-                <div class="form-group">
-                  <label [attr.for]="'qty-' + i">{{ t('purchases.form.qty') }}</label>
-                  <mat-form-field appearance="outline" class="text-field">
-                    <input
-                      matInput
-                      [id]="'qty-' + i"
-                      type="number"
-                      min="1"
-                      step="1"
-                      formControlName="quantity"
-                      [class.has-error]="isLineInvalid(i, 'quantity')"
-                    />
-                  </mat-form-field>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-full line-field--qty" subscriptSizing="dynamic">
+                  <mat-label>{{ t('purchases.form.qty') }}</mat-label>
+                  <input
+                    matInput
+                    [id]="'qty-' + i"
+                    type="number"
+                    min="1"
+                    step="1"
+                    formControlName="quantity"
+                    placeholder="1"
+                    required
+                  />
                   @if (isLineInvalid(i, 'quantity')) {
-                    <span class="form-error">{{ t('purchases.form.qtyReq') }}</span>
+                    <mat-error>{{ t('purchases.form.qtyReq') }}</mat-error>
                   }
-                </div>
-                <div class="form-group">
-                  <label>{{ t('purchases.form.unitCost') }}</label>
-                  <mat-form-field appearance="outline" class="text-field">
-                    <input matInput type="text" [value]="lineCost(i) | number: '1.2-2'" readonly />
-                  </mat-form-field>
-                </div>
-                <div class="form-group">
-                  <label>{{ t('purchases.form.lineTotal') }}</label>
-                  <div class="line-total">{{ lineTotal(i) | number: '1.2-2' }} ETB</div>
-                </div>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-full line-field--cost" subscriptSizing="dynamic">
+                  <mat-label>{{ t('purchases.form.unitCost') }}</mat-label>
+                  <span matTextPrefix class="input-currency-prefix">ETB&nbsp;</span>
+                  <input matInput type="text" [value]="lineCost(i) | number: '1.2-2'" readonly />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field-full line-field--total" subscriptSizing="dynamic">
+                  <mat-label>{{ t('purchases.form.lineTotal') }}</mat-label>
+                  <span matTextPrefix class="input-currency-prefix">ETB&nbsp;</span>
+                  <input matInput type="text" [value]="lineTotal(i) | number: '1.2-2'" readonly class="line-total-input" />
+                </mat-form-field>
               </div>
+
               <button
+                mat-icon-button
                 type="button"
                 class="line-card__remove"
                 (click)="removeLine(i)"
                 [disabled]="items.length === 1"
                 [attr.aria-label]="t('purchases.form.removeLine')"
+                [title]="t('purchases.form.removeLine')"
               >
-                <mat-icon>close</mat-icon>
+                <mat-icon>delete_outline</mat-icon>
               </button>
             </div>
           }

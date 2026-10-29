@@ -69,10 +69,27 @@
     font-size: 0.9rem;
   }
 
+  .mat-mdc-form-field-subscript-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    position: relative;
+    height: auto;
+    overflow: visible;
+  }
+
+  .mat-mdc-form-field-hint-wrapper,
+  .mat-mdc-form-field-error-wrapper {
+    white-space: normal !important;
+    line-height: 1.4 !important;
+    overflow: visible;
+  }
+
   .mat-mdc-form-field-hint {
     color: var(--slate) !important;
-    opacity: 0.8;
-    font-size: 0.75rem;
+    opacity: 0.85;
+    font-size: 0.775rem;
+    line-height: 1.4 !important;
+    white-space: normal !important;
   }
 
   .mat-mdc-form-field-icon-prefix,
@@ -277,6 +294,26 @@
     width: 0 !important;
     height: 0 !important;
     visibility: hidden !important;
+  }
+}
+
+/* ─── Checkboxes ──────────────────────────────────────────────────────── */
+.mat-mdc-checkbox {
+  --mdc-checkbox-selected-checkmark-color: #ffffff;
+  --mdc-checkbox-selected-focus-icon-color: var(--moss, var(--teal));
+  --mdc-checkbox-selected-hover-icon-color: var(--moss, var(--teal));
+  --mdc-checkbox-selected-icon-color: var(--moss, var(--teal));
+  --mdc-checkbox-selected-pressed-icon-color: var(--moss, var(--teal));
+  --mdc-checkbox-unselected-focus-icon-color: var(--border-strong);
+  --mdc-checkbox-unselected-hover-icon-color: var(--border-strong);
+  --mdc-checkbox-unselected-icon-color: var(--border-strong);
+  --mdc-checkbox-unselected-pressed-icon-color: var(--moss, var(--teal));
+  --mdc-checkbox-focus-indicator-color: var(--moss, var(--teal));
+  --mat-checkbox-state-layer-color: var(--moss, var(--teal));
+
+  .mdc-checkbox .mdc-checkbox__background {
+    border-radius: 4px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
   }
 }
 

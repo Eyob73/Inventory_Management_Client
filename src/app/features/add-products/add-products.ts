@@ -9,7 +9,11 @@ import {
 } from "@angular/forms";
 import { rxResource } from "@angular/core/rxjs-interop";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
 import { Product } from "../../models/products.model";
 import { ProductStore } from "../../store/products.store";
 import { ProductService } from "../../services/product";
@@ -27,7 +31,19 @@ import { setDraft, getDraft, removeDraft } from '../../utils/draft-storage';
 @Component({
   selector: 'app-add-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatIconModule, MatDialogModule, TranslocoDirective],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    TranslocoDirective,
+  ],
   templateUrl: './add-products.html',
   styleUrl: './add-products.scss',
 })

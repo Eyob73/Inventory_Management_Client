@@ -50,164 +50,169 @@
         </div>
     </section>
 
+    <!-- Basic Information Section -->
     <section class="product-form__section">
         <h2 class="product-form__section-title">{{ t('addProducts.basicInfo') }}</h2>
 
-        <div class="form-group">
-            <label for="name">{{ t('addProducts.productName') }}</label>
-            <input type="text" id="name" formControlName="name" [class.has-error]="isInvalid('name')"
-                [placeholder]="t('addProducts.namePlaceholder')">
-            @if (isInvalid('name')) {
-            <span class="form-error">{{ t('addProducts.errNameReq') }}</span>
-            }
+        <div class="form-field-group">
+            <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ t('addProducts.productName') }}</mat-label>
+                <input matInput id="name" formControlName="name" [placeholder]="t('addProducts.namePlaceholder')" required>
+                @if (isInvalid('name')) {
+                <mat-error>{{ t('addProducts.errNameReq') }}</mat-error>
+                }
+            </mat-form-field>
         </div>
 
-        <div class="form-group">
-            <label for="description">{{ t('addProducts.description') }}</label>
-            <input type="text" id="description" formControlName="description"
-                [placeholder]="t('addProducts.descPlaceholder')">
+        <div class="form-field-group">
+            <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ t('addProducts.description') }}</mat-label>
+                <input matInput id="description" formControlName="description"
+                    [placeholder]="t('addProducts.descPlaceholder')">
+            </mat-form-field>
         </div>
 
-        <div class="form-row form-row--3">
-            <div class="form-group">
-                <label for="category">{{ t('addProducts.category') }}</label>
-                <mat-form-field appearance="outline" class="category-select-field">
-                    <mat-select id="category" formControlName="category" [placeholder]="t('addProducts.catPlaceholder')">
-                        @for (cat of categoriesResource.value() || []; track cat.id) {
-                        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
+        <div class="form-row form-row--2">
+            <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ t('addProducts.category') }}</mat-label>
+                <mat-select id="category" formControlName="category" [placeholder]="t('addProducts.catPlaceholder')" required>
+                    @for (cat of categoriesResource.value() || []; track cat.id) {
+                    <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                    }
+                </mat-select>
                 @if (categoriesResource.isLoading()) {
-                <span class="form-hint">{{ t('addProducts.loadingCat') }}</span>
+                <mat-hint>{{ t('addProducts.loadingCat') }}</mat-hint>
                 }
-            </div>
+                @if (isInvalid('category')) {
+                <mat-error>{{ t('addProducts.catPlaceholder') }}</mat-error>
+                }
+            </mat-form-field>
 
-            <div class="form-group">
-                <label for="supplierId">{{ t('addProducts.supplier') }}</label>
-                <mat-form-field appearance="outline" class="category-select-field">
-                    <mat-select id="supplierId" formControlName="supplierId" [placeholder]="t('addProducts.selectSupplier')"
-                        panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
-                        <mat-option [value]="''">{{ t('addProducts.noSupplier') }}</mat-option>
-                        @for (sup of suppliersResource.value() || []; track sup.id) {
-                        <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ t('addProducts.supplier') }}</mat-label>
+                <mat-select id="supplierId" formControlName="supplierId" [placeholder]="t('addProducts.selectSupplier')"
+                    panelClass="supplier-select-panel" [hideSingleSelectionIndicator]="true">
+                    <mat-option [value]="''">{{ t('addProducts.noSupplier') }}</mat-option>
+                    @for (sup of suppliersResource.value() || []; track sup.id) {
+                    <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
+                    }
+                </mat-select>
                 @if (suppliersResource.isLoading()) {
-                <span class="form-hint">{{ t('addProducts.loadingSup') }}</span>
+                <mat-hint>{{ t('addProducts.loadingSup') }}</mat-hint>
                 }
-            </div>
+            </mat-form-field>
+        </div>
 
-            <div class="form-group">
-                <label for="sku">{{ t('addProducts.sku') }}</label>
-                <input type="text" id="sku" formControlName="sku" [placeholder]="t('addProducts.skuPlaceholder')">
-            </div>
+        <div class="form-row form-row--2">
+            <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>{{ t('addProducts.sku') }}</mat-label>
+                <input matInput id="sku" formControlName="sku" [placeholder]="t('addProducts.skuPlaceholder')">
+            </mat-form-field>
 
-            <div class="form-group">
-                <label for="barcode">Barcode</label>
-                <div style="display: flex; gap: 8px;">
-                  <input style="flex: 1;" type="text" id="barcode" formControlName="barcode" placeholder="Scan or enter barcode">
-                  <button type="button" class="btn btn-outline" style="padding: 0 16px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--slate-soft, #f0f0f0)'" onmouseout="this.style.background='var(--surface)'" (click)="openCameraScanner()">
+            <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Barcode</mat-label>
+                <input matInput id="barcode" formControlName="barcode" placeholder="Scan or enter barcode">
+                <button mat-icon-button matSuffix type="button" (click)="openCameraScanner()" aria-label="Scan barcode" title="Scan barcode">
                     <mat-icon>camera_alt</mat-icon>
-                  </button>
-                </div>
-            </div>
+                </button>
+            </mat-form-field>
         </div>
     </section>
 
+    <!-- Pricing & Inventory Section -->
     <section class="product-form__section">
         <h2 class="product-form__section-title">{{ t('addProducts.pricingInv') }}</h2>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="price">{{ t('addProducts.price') }}</label>
-                <div class="input-prefix">
-                    <input type="number" id="price" formControlName="price" [class.has-error]="isInvalid('price')"
-                        placeholder="0.00" min="0" step="0.01">
-                </div>
+        <div class="form-row form-row--2">
+            <mat-form-field appearance="outline" class="form-field-full" subscriptSizing="dynamic">
+                <mat-label>{{ t('addProducts.price') }}</mat-label>
+                <span matTextPrefix class="input-currency-prefix">ETB&nbsp;</span>
+                <input matInput type="number" id="price" formControlName="price" placeholder="0.00" min="0" step="0.01" required>
                 @if (isInvalid('price')) {
-                <span class="form-error">{{ t('addProducts.errPriceValid') }}</span>
+                <mat-error>{{ t('addProducts.errPriceValid') }}</mat-error>
                 }
-            </div>
+            </mat-form-field>
 
-            <div class="form-group">
-                <label for="cost">{{ t('addProducts.cost') }}</label>
-                <div class="input-prefix">
-                    <input type="number" id="cost" formControlName="cost" [class.has-error]="isInvalid('cost')"
-                        placeholder="0.00" min="0" step="0.01">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="stock">{{ t('addProducts.currentStock') }}</label>
-                <input type="number" id="stock" formControlName="stock" placeholder="0" min="0" readonly>
-                <span class="form-hint">{{ t('addProducts.stockHint') }}</span>
-            </div>
+            <mat-form-field appearance="outline" class="form-field-full" subscriptSizing="dynamic">
+                <mat-label>{{ t('addProducts.cost') }}</mat-label>
+                <span matTextPrefix class="input-currency-prefix">ETB&nbsp;</span>
+                <input matInput type="number" id="cost" formControlName="cost" placeholder="0.00" min="0" step="0.01">
+            </mat-form-field>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="minimumStock">{{ t('addProducts.minStock') }}</label>
-                <input type="number" id="minimumStock" formControlName="minimumStock"
-                    [class.has-error]="isInvalid('minimumStock')" placeholder="0" min="0">
+        <div class="form-row form-row--2">
+            <mat-form-field appearance="outline" class="form-field-full stock-field" subscriptSizing="dynamic">
+                <mat-label>{{ t('addProducts.currentStock') }}</mat-label>
+                <input matInput type="number" id="stock" formControlName="stock" placeholder="0" readonly>
+                <mat-hint class="stock-hint">
+                    <mat-icon class="stock-hint__icon">info</mat-icon>
+                    <span>{{ t('addProducts.stockHint') }}</span>
+                </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field-full" subscriptSizing="dynamic">
+                <mat-label>{{ t('addProducts.minStock') }}</mat-label>
+                <input matInput type="number" id="minimumStock" formControlName="minimumStock" placeholder="0" min="0" required>
                 @if (isInvalid('minimumStock')) {
-                <span class="form-error">{{ t('addProducts.minStockErr') }}</span>
+                <mat-error>{{ t('addProducts.minStockErr') }}</mat-error>
                 }
-            </div>
-            <div class="form-group form-group--status">
-                <label for="isActive">{{ t('addProducts.catalogStatus') }}</label>
-                <label class="catalog-status-toggle">
-                    <input type="checkbox" id="isActive" formControlName="isActive">
-                    <span>{{ t('addProducts.active') }}</span>
-                </label>
+            </mat-form-field>
+        </div>
+
+        <div class="form-row form-row--2">
+            <div class="checkbox-card">
+                <mat-checkbox id="isActive" formControlName="isActive" color="primary">
+                    <div class="checkbox-info">
+                        <span class="checkbox-title">{{ t('addProducts.catalogStatus') }}</span>
+                        <span class="checkbox-sub">{{ t('addProducts.active') }}</span>
+                    </div>
+                </mat-checkbox>
             </div>
         </div>
     </section>
 
+    <!-- Returnable Bottle Configuration Section -->
     @if (isBottleManagementEnabled()) {
     <section class="product-form__section">
         <h2 class="product-form__section-title">Returnable Bottle Configuration</h2>
 
-        <div class="form-row">
-            <div class="form-group form-group--status">
-                <label for="isReturnable">Returnable Product?</label>
-                <label class="catalog-status-toggle">
-                    <input type="checkbox" id="isReturnable" formControlName="isReturnable">
-                    <span>Yes, this product is returnable</span>
-                </label>
+        <div class="form-row form-row--2">
+            <div class="checkbox-card">
+                <mat-checkbox id="isReturnable" formControlName="isReturnable" color="primary">
+                    <div class="checkbox-info">
+                        <span class="checkbox-title">Returnable Product?</span>
+                        <span class="checkbox-sub">Enable deposit tracking for returnable bottles</span>
+                    </div>
+                </mat-checkbox>
             </div>
             
             @if (productForm.get('isReturnable')?.value) {
-                <div class="form-group">
-                    <label for="bottleTypeId">Bottle Type</label>
-                    <mat-form-field appearance="outline" class="category-select-field">
-                        <mat-select id="bottleTypeId" formControlName="bottleTypeId" placeholder="Select Bottle Type">
-                            @for (type of bottleTypesResource.value() || []; track type.id) {
-                                <mat-option [value]="type.id">{{ type.name }} ({{ type.depositAmount }} ETB)</mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
+                <mat-form-field appearance="outline" class="form-field-full" subscriptSizing="dynamic">
+                    <mat-label>Bottle Type</mat-label>
+                    <mat-select id="bottleTypeId" formControlName="bottleTypeId" placeholder="Select Bottle Type">
+                        @for (type of bottleTypesResource.value() || []; track type.id) {
+                            <mat-option [value]="type.id">{{ type.name }} ({{ type.depositAmount }} ETB)</mat-option>
+                        }
+                    </mat-select>
                     @if (bottleTypesResource.isLoading()) {
-                        <span class="form-hint">Loading bottle types...</span>
+                        <mat-hint>Loading bottle types...</mat-hint>
                     }
-                </div>
+                </mat-form-field>
             }
         </div>
     </section>
     }
 
+    <!-- Variants Section -->
     <section class="product-form__section" formArrayName="variants">
         <div class="product-form__section-header">
             <div>
                 <h2 class="product-form__section-title">{{ t('addProducts.variants') }}</h2>
                 <p class="product-form__section-hint">{{ t('addProducts.variantsHint') }}</p>
             </div>
-            <button type="button" class="btn btn--ghost" (click)="addVariant()">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none">
-                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
-                {{ t('addProducts.addVariant') }}
+            <button mat-stroked-button type="button" class="add-variant-btn" (click)="addVariant()">
+                <mat-icon>add</mat-icon>
+                <span>{{ t('addProducts.addVariant') }}</span>
             </button>
         </div>
 
@@ -215,42 +220,47 @@
             @for (variant of variants.controls; let i = $index; track variant) {
             <div class="variant-card" [formGroupName]="i">
                 <div class="variant-card__fields">
-                    <div class="form-group">
-                        <label>{{ t('addProducts.variantName') }}</label>
-                        <input type="text" formControlName="name" [class.has-error]="isVariantInvalid(i, 'name')"
-                            [placeholder]="t('addProducts.egSize')">
-                    </div>
-                    <div class="form-group">
-                        <label>{{ t('addProducts.variantValue') }}</label>
-                        <input type="text" formControlName="value" [class.has-error]="isVariantInvalid(i, 'value')"
-                            [placeholder]="t('addProducts.egMedium')">
-                    </div>
-                    <div class="form-group form-group--narrow">
-                        <label>{{ t('addProducts.variantStock') }}</label>
-                        <input type="number" formControlName="stock" [class.has-error]="isVariantInvalid(i, 'stock')"
-                            placeholder="0" min="0">
-                    </div>
+                    <mat-form-field appearance="outline" class="form-field-full" subscriptSizing="dynamic">
+                        <mat-label>{{ t('addProducts.variantName') }}</mat-label>
+                        <input matInput formControlName="name" [placeholder]="t('addProducts.egSize')">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field-full" subscriptSizing="dynamic">
+                        <mat-label>{{ t('addProducts.variantValue') }}</mat-label>
+                        <input matInput formControlName="value" [placeholder]="t('addProducts.egMedium')">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field-full variant-field--narrow" subscriptSizing="dynamic">
+                        <mat-label>{{ t('addProducts.variantStock') }}</mat-label>
+                        <input matInput type="number" formControlName="stock" placeholder="0" min="0">
+                    </mat-form-field>
                 </div>
 
-                <button type="button" class="variant-card__remove" (click)="removeVariant(i)"
-                    [disabled]="variants.length === 1" [attr.aria-label]="t('addProducts.removeVariant')">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-                        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                <button mat-icon-button type="button" class="variant-card__remove" (click)="removeVariant(i)"
+                    [disabled]="variants.length === 1" [attr.aria-label]="t('addProducts.removeVariant')" [title]="t('addProducts.removeVariant')">
+                    <mat-icon>delete_outline</mat-icon>
                 </button>
             </div>
             }
         </div>
     </section>
 
+    <!-- Form Footer Actions -->
     <div class="product-form__footer">
-        <button type="button" class="btn btn--secondary" (click)="cancel()">{{ t('addProducts.cancel') }}</button>
-        <button type="submit" class="btn btn--primary" [disabled]="productForm.invalid || productStore.isLoading()">
-            @if (productStore.isLoading()) {
-            Saving...
-            } @else {
-            {{ isEditMode() ? t('addProducts.saveChanges') : t('addProducts.saveProduct') }}
+        <button mat-stroked-button type="button" class="form-footer-btn" (click)="cancel()">
+            {{ t('addProducts.cancel') }}
+        </button>
+        <button mat-flat-button type="submit" class="form-footer-btn form-footer-btn--primary" [disabled]="productForm.invalid || productStore.isLoading()">
+            @if (!productStore.isLoading()) {
+                <mat-icon>{{ isEditMode() ? 'check' : 'add' }}</mat-icon>
             }
+            <span>
+                @if (productStore.isLoading()) {
+                    Saving...
+                } @else {
+                    {{ isEditMode() ? t('addProducts.saveChanges') : t('addProducts.saveProduct') }}
+                }
+            </span>
         </button>
     </div>
 </ng-container>
