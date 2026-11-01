@@ -29,22 +29,16 @@ export const ProductStore = signalStore(
         hasPreviousPage: false,
         hasNextPage: false,
         search: '',
-          categoryId: 'ALL',
-          status: null as number | null,
+        categoryId: 'ALL',
+        status: null as number | null,
+        lowStockCount: 0,
+        outOfStockCount: 0,
+        totalInventoryValue: 0,
     }),
     withEntities<Product>(),
     withComputed((store) => ({
         products: computed(() => store.entities()),
         totalProducts: computed(() => store.entities().length),
-        lowStockCount: computed(
-            () => store.entities().filter((p) => p.quantityInStock > 0 && p.quantityInStock <= 15).length
-        ),
-        outOfStockCount: computed(
-            () => store.entities().filter((p) => p.quantityInStock <= 0).length
-        ),
-        totalInventoryValue: computed(
-            () => store.entities().reduce((sum, p) => sum + (p.price || 0) * (p.quantityInStock || 0), 0)
-        ),
     })),
     withMethods((store, api = inject(ProductService)) => ({
         loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string; categoryId?: string; status?: number | null } | void>(
@@ -55,8 +49,8 @@ export const ProductStore = signalStore(
                     const reqPageIndex = query.pageIndex ?? store.pageIndex();
                     const reqPageSize = query.pageSize ?? store.pageSize();
                     const search = query.search ?? store.search();
-                      const categoryId = query.categoryId ?? store.categoryId();
-                      const status = query.status !== undefined ? query.status : store.status();
+                    const categoryId = query.categoryId ?? store.categoryId();
+                    const status = query.status !== undefined ? query.status : store.status();
 
                     return api.getAll(reqPageIndex, reqPageSize, search || undefined, categoryId, status || undefined).pipe(
                         tap((res: PagedProductResponse | Product[]) => {
@@ -73,7 +67,10 @@ export const ProductStore = signalStore(
                                         hasPreviousPage: false,
                                         hasNextPage: false,
                                         search,
-                                        status
+                                        status,
+                                        lowStockCount: res.filter((p) => p.quantityInStock > 0 && p.quantityInStock <= 15).length,
+                                        outOfStockCount: res.filter((p) => p.quantityInStock <= 0).length,
+                                        totalInventoryValue: res.reduce((sum, p) => sum + (p.price || 0) * (p.quantityInStock || 0), 0),
                                     }
                                 );
                             } else {
@@ -89,7 +86,10 @@ export const ProductStore = signalStore(
                                         hasPreviousPage: res.hasPreviousPage || false,
                                         hasNextPage: res.hasNextPage || false,
                                         search,
-                                        status
+                                        status,
+                                        lowStockCount: res.lowStockCount ?? 0,
+                                        outOfStockCount: res.outOfStockCount ?? 0,
+                                        totalInventoryValue: res.totalInventoryValue ?? 0,
                                     }
                                 );
                             }
@@ -167,6 +167,9 @@ export const ProductStore = signalStore(
                                             totalPages: 1,
                                             hasPreviousPage: false,
                                             hasNextPage: false,
+                                            lowStockCount: res.filter((p) => p.quantityInStock > 0 && p.quantityInStock <= 15).length,
+                                            outOfStockCount: res.filter((p) => p.quantityInStock <= 0).length,
+                                            totalInventoryValue: res.reduce((sum, p) => sum + (p.price || 0) * (p.quantityInStock || 0), 0),
                                         });
                                     } else {
                                         patchState(store, setAllEntities(res.items || []), {
@@ -177,6 +180,9 @@ export const ProductStore = signalStore(
                                             totalPages: res.totalPages || 1,
                                             hasPreviousPage: res.hasPreviousPage || false,
                                             hasNextPage: res.hasNextPage || false,
+                                            lowStockCount: res.lowStockCount ?? 0,
+                                            outOfStockCount: res.outOfStockCount ?? 0,
+                                            totalInventoryValue: res.totalInventoryValue ?? 0,
                                         });
                                     }
                                 })
