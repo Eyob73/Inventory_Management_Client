@@ -28,6 +28,9 @@ export interface PagedResult<T> {
     totalPages: number;
     hasPreviousPage: boolean;
     hasNextPage: boolean;
+    lowStockCount?: number;
+    outOfStockCount?: number;
+    totalInventoryValue?: number;
 }
 
 export type PagedProductResponse = PagedResult<Product>;
