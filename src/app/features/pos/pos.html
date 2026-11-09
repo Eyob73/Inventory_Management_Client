@@ -8,55 +8,58 @@
 
       <!-- Top bar: search + category chips -->
       <header class="catalog-topbar">
-        <div class="search-row" style="display: flex; gap: 1rem; width: 100%;">
-          <mat-form-field appearance="outline" class="search-form-field catalog-search" style="flex: 1;">
-            <mat-icon matPrefix class="search-icon">search</mat-icon>
-            <input matInput type="text" [placeholder]="t('pos.search')" [ngModel]="searchTerm()"
-              (ngModelChange)="onSearchChange($event)" />
-            <button *ngIf="searchTerm()" matSuffix mat-icon-button (click)="onSearchChange('')"
+        <!-- Search and Barcode Bar (Refined Design) -->
+        <section aria-label="Search and Scanner" class="search-scanner-bar">
+          <div class="search-input-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input #searchInput class="search-input" type="text"
+              [placeholder]="t('pos.search')"
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearchChange($event)"
+              (keyup)="onSearchOrBarcodeEnter(searchInput.value)" />
+            <button *ngIf="searchTerm()" type="button" class="search-clear-btn" (click)="onSearchChange('')"
               [attr.aria-label]="t('pos.clearSearch')">
               <mat-icon>close</mat-icon>
             </button>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="search-form-field catalog-search barcode-scan" style="flex: 1;">
-            <mat-icon matPrefix class="search-icon">qr_code_scanner</mat-icon>
-            <input matInput #barcodeInput type="text" [placeholder]="t('pos.scanBarcode')" autocomplete="off"
-              inputmode="none" (keyup.enter)="onBarcodeScanned(barcodeInput.value); barcodeInput.value = ''" />
-            <button matSuffix mat-icon-button (click)="openCameraScanner()" [attr.aria-label]="t('pos.scanWithCamera')"
-              [matTooltip]="t('pos.scanWithCamera')">
-              <mat-icon>camera_alt</mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
+          </div>
+          <button type="button" class="scanner-btn" (click)="openCameraScanner()"
+            [title]="t('pos.scanWithCamera')" [attr.aria-label]="t('pos.scanWithCamera')">
+            <mat-icon class="scanner-icon-qr">qr_code_scanner</mat-icon>
+            <span class="scanner-btn-label">Scan or</span>
+            <mat-icon class="scanner-icon-cam">photo_camera</mat-icon>
+          </button>
+        </section>
 
-        <div class="category-rail">
-          <button class="cat-pill" [class.cat-pill--active]="selectedCategoryId() === 'ALL'"
+        <!-- Category Horizontal Rail -->
+        <section aria-label="Category Selection" class="category-rail no-scrollbar">
+          <button type="button" class="cat-pill" [class.cat-pill--active]="selectedCategoryId() === 'ALL'"
             (click)="onCategorySelect('ALL')">
-            <mat-icon>grid_view</mat-icon>
+            <mat-icon class="cat-pill-icon">grid_view</mat-icon>
             <span>{{ t('pos.all') }}</span>
           </button>
-          <button *ngFor="let cat of categories()" class="cat-pill"
-            [class.cat-pill--active]="selectedCategoryId() === cat.id" [style.--cat-accent]="categoryColor(cat.id)"
+          <button *ngFor="let cat of categories()" type="button" class="cat-pill"
+            [class.cat-pill--active]="selectedCategoryId() === cat.id"
             (click)="onCategorySelect(cat.id)">
-            <span class="cat-pip"></span>
+            <span class="cat-pip" [style.background-color]="categoryColor(cat.id)"></span>
             <span>{{ cat.name }}</span>
+            <span class="cat-count" *ngIf="cat.productCount != null">{{ cat.productCount }}</span>
           </button>
-        </div>
+        </section>
       </header>
 
-      <!-- Product count indicator -->
+      <!-- List Meta Header -->
       <div class="catalog-meta" *ngIf="!isLoadingProducts()">
         <span class="catalog-count">
           {{ t('pos.showing') }} {{ products().length }} {{ t('pos.of') }} {{ totalCount() }} {{ totalCount() !== 1 ?
           t('pos.productsStr') : t('pos.productStr') }}
         </span>
         <span class="catalog-page-info" *ngIf="totalCount() > 0">
-          {{ t('pos.page') }} {{ currentPage() + 1 }} {{ t('pos.of') }} {{ totalPages() }}
+          {{ t('pos.page') }} <span class="page-num">{{ currentPage() + 1 }}</span> {{ t('pos.of') }} {{ totalPages() }}
         </span>
       </div>
 
-      <!-- Product grid -->
-      <div class="catalog-grid-scroll">
+      <!-- Product Catalog Container -->
+      <div class="catalog-grid-scroll no-scrollbar">
 
         <!-- Loading -->
         <div *ngIf="isLoadingProducts()" class="catalog-placeholder">
@@ -71,76 +74,131 @@
           <p class="placeholder-sub">{{ t('pos.tryDiff') }}</p>
         </div>
 
-        <!-- Grid -->
-        <div *ngIf="!isLoadingProducts() && products().length > 0" class="catalog-grid">
-          <button *ngFor="let product of products()" class="product-tile"
-            [class.product-tile--oos]="product.quantityInStock <= 0"
-            [class.product-tile--in-cart]="cartQuantities().has(product.id)" (click)="addToCart(product)"
-            [disabled]="product.quantityInStock <= 0">
+        <!-- Products Catalog -->
+        <section aria-label="Products Catalog" class="catalog-grid" *ngIf="!isLoadingProducts() && products().length > 0">
+          <article *ngFor="let product of products()" class="product-card"
+            [class.product-card--oos]="product.quantityInStock <= 0"
+            [class.product-card--in-cart]="cartQuantities().has(product.id)"
+            (click)="product.quantityInStock > 0 && addToCart(product)"
+            data-purpose="product-card">
 
-            <!-- In-cart quantity bubble -->
-            <span class="tile-cart-qty" *ngIf="cartQuantities().get(product.id) as qty">
-              {{ qty }}
-            </span>
+            <!-- Stock Status Pill & Cart Qty Badge -->
+            <div class="card-top-row">
+              <span class="stock-pill"
+                [class.stock-pill--low]="product.quantityInStock > 0 && product.quantityInStock <= 5"
+                [class.stock-pill--out]="product.quantityInStock <= 0">
+                <mat-icon class="stock-pill-icon">{{
+                  product.quantityInStock <= 0 ? 'remove_circle_outline' : product.quantityInStock <= 5
+                    ? 'warning_amber' : 'check_circle'
+                }}</mat-icon>
+                <span>{{ product.quantityInStock > 0 ? (product.quantityInStock + ' ' + t('pos.left')) : t('pos.outOfStock') }}</span>
+              </span>
 
-
-            <!-- Main content -->
-            <div class="tile-body">
-              <div class="tile-stock-row">
-                <span class="stock-chip"
-                  [class.stock-chip--low]="product.quantityInStock > 0 && product.quantityInStock <= 5"
-                  [class.stock-chip--out]="product.quantityInStock <= 0">
-                  <mat-icon>{{
-                    product.quantityInStock <= 0 ? 'remove_circle_outline' : product.quantityInStock <=5
-                      ? 'warning_amber' : 'check_circle' }}</mat-icon>
-                      {{ product.quantityInStock > 0 ? product.quantityInStock + ' ' + t('pos.left') :
-                      t('pos.outOfStock') }}
-                </span>
-              </div>
-
-              <div class="tile-image-wrapper">
-                @if (product.imageUrl) {
-                <img [src]="product.imageUrl.startsWith('http') ? product.imageUrl : baseUrl + product.imageUrl"
-                  [alt]="product.name" class="tile-image">
-                } @else {
-                <div class="tile-image-placeholder">
-                  <mat-icon>inventory_2</mat-icon>
-                </div>
-                }
-              </div>
-
-              <h4 class="tile-name">{{ product.name }}</h4>
-              <span class="tile-sku">{{ product.sku }}</span>
-            </div>
-
-            <div class="tile-footer">
-              <span class="tile-price">{{ product.price | number:'1.2-2' }} ETB</span>
-              <span class="tile-add-icon" aria-hidden="true">
-                <mat-icon>add</mat-icon>
+              <!-- In-cart quantity bubble -->
+              <span class="card-cart-qty" *ngIf="cartQuantities().get(product.id) as qty">
+                {{ qty }}
               </span>
             </div>
-          </button>
-        </div>
+
+            <!-- Product Image Preview -->
+            <div class="card-image-wrapper">
+              @if (product.imageUrl) {
+                <img [src]="product.imageUrl.startsWith('http') ? product.imageUrl : baseUrl + product.imageUrl"
+                     [alt]="product.name" class="card-image" loading="lazy" />
+              } @else {
+                <div class="card-image-placeholder">
+                  <mat-icon>inventory_2</mat-icon>
+                </div>
+              }
+              <div class="card-image-gradient"></div>
+              <span class="card-category-tag" *ngIf="getCategoryName(product.categoryId) as catName">
+                {{ catName }}
+              </span>
+            </div>
+
+            <!-- Product Info -->
+            <div class="card-info">
+              <h3 class="card-name">{{ product.name }}</h3>
+              <p class="card-sku" *ngIf="product.sku || product.barcode">{{ product.sku || product.barcode }}</p>
+            </div>
+
+            <!-- Subtle Dashed Divider Line -->
+            <div class="card-divider"></div>
+
+            <!-- Card Footer: Price & Add Action -->
+            <div class="card-footer">
+              <div class="card-price-group">
+                <span class="card-price-amount">{{ product.price | number:'1.2-2' }}</span>
+                <span class="card-price-currency">ETB</span>
+              </div>
+              <button type="button" class="card-add-btn"
+                [disabled]="product.quantityInStock <= 0"
+                (click)="$event.stopPropagation(); addToCart(product)"
+                [attr.aria-label]="'Add ' + product.name + ' to order'">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </article>
+        </section>
 
       </div>
 
-      <!-- Catalog Pagination -->
-      <mat-paginator *ngIf="!isLoadingProducts() && totalCount() > 0" class="pos-paginator" [length]="totalCount()"
-        [pageSize]="pageSize()" [pageIndex]="currentPage()" [pageSizeOptions]="[5, 10, 15, 20, 30, 50]"
-        [showFirstLastButtons]="true" (page)="onPageChange($event)" [attr.aria-label]="t('pos.ariaPaginator')">
-      </mat-paginator>
+      <!-- Pagination and Count Controls (Refined Design) -->
+      <div class="catalog-pagination-wrap" *ngIf="!isLoadingProducts() && totalCount() > 0">
+        <!-- Items Per Page Dropdown -->
+        <div class="pagination-page-size-row">
+          <span class="page-size-label">Items per page:</span>
+          <div class="page-size-select-wrap">
+            <select class="page-size-select" [ngModel]="pageSize()" (ngModelChange)="onPageSizeChange(+$event)" aria-label="Items per page">
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="20">20</option>
+              <option [value]="30">30</option>
+              <option [value]="50">50</option>
+            </select>
+            <mat-icon class="select-chevron">keyboard_arrow_down</mat-icon>
+          </div>
+        </div>
 
-      <!-- Mobile Floating Next Button (Checkout) -->
+        <!-- Pagination Buttons Pill -->
+        <div class="pagination-pill">
+          <span class="pagination-range-text">
+            {{ getRangeStart() }} - {{ getRangeEnd() }} {{ t('pos.of') }} {{ totalCount() }}
+          </span>
+          <div class="pagination-actions">
+            <!-- First Page -->
+            <button type="button" class="page-btn" [disabled]="currentPage() === 0" (click)="goToPage(0)" aria-label="First page">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <!-- Prev Page -->
+            <button type="button" class="page-btn" [disabled]="currentPage() === 0" (click)="goToPage(currentPage() - 1)" aria-label="Previous page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <!-- Next Page -->
+            <button type="button" class="page-btn" [disabled]="currentPage() >= totalPages() - 1" (click)="goToPage(currentPage() + 1)" aria-label="Next page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <!-- Last Page -->
+            <button type="button" class="page-btn" [disabled]="currentPage() >= totalPages() - 1" (click)="goToPage(totalPages() - 1)" aria-label="Last page">
+              <mat-icon>last_page</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Floating Checkout Action Bar (Floating Next Button) -->
       <div class="mobile-next-checkout" *ngIf="cartItemCount() > 0">
-        <button type="button" class="btn btn--primary mobile-next-btn" (click)="isMobileCheckoutView.set(true)"
+        <button type="button" class="mobile-next-btn" (click)="isMobileCheckoutView.set(true)"
           [attr.aria-label]="(t('pos.next') || 'Next') + ' - ' + cartItemCount() + ' ' + (cartItemCount() === 1 ? t('pos.item') : t('pos.items')) + ' · ' + (grandTotal() | number:'1.2-2') + ' ETB'">
           <div class="mobile-next-left">
-            <span class="mobile-next-badge">{{ cartItemCount() }}</span>
+            <div class="mobile-next-badge">
+              {{ cartItemCount() }}
+            </div>
             <span class="mobile-next-label">{{ t('pos.next') || 'Next' }}</span>
           </div>
           <div class="mobile-next-right">
             <span class="mobile-next-totals">{{ grandTotal() | number:'1.2-2' }} ETB</span>
-            <mat-icon>chevron_right</mat-icon>
+            <mat-icon class="mobile-next-chevron">chevron_right</mat-icon>
           </div>
         </button>
       </div>

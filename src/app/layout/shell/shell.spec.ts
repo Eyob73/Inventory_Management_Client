@@ -639,4 +639,33 @@ describe('Shell Component - Swipe Gestures and Horizontal Scroll Isolation', () 
       document.body.removeChild(normalEl);
     });
   });
+
+  describe('Mobile Bottom Navigation', () => {
+    it('should include reports tab for Admin users', () => {
+      (component['authStore'] as any).userRole.set('admin');
+      const items = component.mobileNavItems();
+      expect(items.some(i => i.path === '/reports' && i.labelKey === 'navigation.reports' && i.icon === 'bar_chart')).toBe(true);
+      expect(items.length).toBe(5);
+    });
+
+    it('should include reports tab for Manager users', () => {
+      (component['authStore'] as any).userRole.set('manager');
+      const items = component.mobileNavItems();
+      expect(items.some(i => i.path === '/reports')).toBe(true);
+    });
+
+    it('should exclude reports tab for Sales users', () => {
+      (component['authStore'] as any).userRole.set('sales');
+      const items = component.mobileNavItems();
+      expect(items.some(i => i.path === '/reports')).toBe(false);
+      expect(items.length).toBe(4);
+    });
+
+    it('should return system-admin navigation items for SystemAdmin users', () => {
+      (component['authStore'] as any).userRole.set('systemadmin');
+      const items = component.mobileNavItems();
+      expect(items.some(i => i.path === '/system-admin/dashboard')).toBe(true);
+      expect(items.some(i => i.path === '/reports')).toBe(false);
+    });
+  });
 });

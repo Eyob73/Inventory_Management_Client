@@ -215,6 +215,12 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
     return role === 'admin' || role === 'manager' || role === 'sales' || role === 'systemadmin';
   });
 
+  // Admin and Manager can access Reports
+  readonly canAccessReports = computed(() => {
+    const role = (this.authStore.userRole() || '').toLowerCase();
+    return !role || role === 'admin' || role === 'administrator' || role === 'manager';
+  });
+
   readonly settingsRoute = computed(() => {
     const role = (this.authStore.userRole() || '').toLowerCase();
     return role === 'systemadmin' ? '/system-admin/settings' : '/settings';
@@ -233,12 +239,16 @@ export class Shell implements OnInit, AfterViewInit, OnDestroy {
         { labelKey: 'navigation.settings', path: '/system-admin/settings', icon: 'settings' },
       ];
     }
-    return [
+    const items = [
       { labelKey: 'navigation.dashboard', path: '/dashboard', icon: 'dashboard' },
       { labelKey: 'navigation.products', path: '/products', icon: 'inventory_2' },
       { labelKey: 'navigation.sales', path: '/sales-history', icon: 'trending_up' },
-      { labelKey: 'navigation.settings', path: this.settingsRoute(), icon: 'settings' },
     ];
+    if (this.canAccessReports()) {
+      items.push({ labelKey: 'navigation.reports', path: '/reports', icon: 'bar_chart' });
+    }
+    items.push({ labelKey: 'navigation.settings', path: this.settingsRoute(), icon: 'settings' });
+    return items;
   });
 
   readonly sidenavWidth = computed(() =>

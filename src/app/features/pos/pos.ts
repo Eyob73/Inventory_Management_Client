@@ -404,6 +404,42 @@ export class PosComponent implements OnInit, OnDestroy {
     });
   }
 
+  getCategoryName(categoryId?: string): string {
+    if (!categoryId) return '';
+    const cat = this.categories().find((c) => c.id === categoryId);
+    return cat ? cat.name : '';
+  }
+
+  getRangeStart(): number {
+    if (this.totalCount() === 0) return 0;
+    return this.currentPage() * this.pageSize() + 1;
+  }
+
+  getRangeEnd(): number {
+    return Math.min((this.currentPage() + 1) * this.pageSize(), this.totalCount());
+  }
+
+  onPageSizeChange(newSize: number): void {
+    if (newSize === this.pageSize()) return;
+    this.pageSize.set(newSize);
+    this.currentPage.set(0);
+    this.loadProducts();
+  }
+
+  goToPage(pageIndex: number): void {
+    if (pageIndex < 0 || pageIndex >= this.totalPages()) return;
+    this.currentPage.set(pageIndex);
+    this.loadProducts();
+  }
+
+  onSearchOrBarcodeEnter(value: string): void {
+    const trimmed = value?.trim();
+    if (!trimmed) return;
+    if (/^\d{4,18}$/.test(trimmed)) {
+      this.onBarcodeScanned(trimmed);
+    }
+  }
+
   onCategorySelect(catId: string): void {
     this.selectedCategoryId.set(catId);
     this.currentPage.set(0);
