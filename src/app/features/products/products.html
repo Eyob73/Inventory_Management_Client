@@ -45,8 +45,8 @@
           <span class="stat-title">{{ t('products.stats.inventoryValue') }}</span>
         </div>
         <div class="stat-card-body">
-          <div class="stat-value">{{ store.totalInventoryValue() | number: '1.0-0' }} ETB</div>
-          <span class="stat-sub">{{ t('products.stats.totalStockValue') }}</span>
+          <div class="stat-value">{{ store.totalInventoryValue() | number: '1.2-2' }} ETB</div>
+          <span class="stat-sub">{{ isSales() ? t('products.stats.estRetail') : t('products.stats.totalStockValue') }}</span>
         </div>
       </div>
       <div class="stat-card warning">

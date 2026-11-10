@@ -16,6 +16,8 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap, catchError, EMPTY, switchMap, exhaustMap } from 'rxjs';
 import { ProductService } from '../services/product';
 import { Product, PagedProductResponse } from '../models/products.model';
+import { AuthStore } from './auth.store';
+import { canViewProductCost } from '../utils/product-permissions';
 
 export const ProductStore = signalStore(
     { providedIn: 'root' },
@@ -40,7 +42,19 @@ export const ProductStore = signalStore(
         products: computed(() => store.entities()),
         totalProducts: computed(() => store.entities().length),
     })),
-    withMethods((store, api = inject(ProductService)) => ({
+    withMethods((store, api = inject(ProductService), authStore = inject(AuthStore)) => {
+        const calcInventoryValue = (items: Product[]): number => {
+            const showCost = canViewProductCost(authStore.userRole());
+            const round2 = (n: number) => Math.round(n * 100) / 100;
+            return round2(
+                items.reduce(
+                    (sum, p) => sum + round2(((showCost ? p.cost : p.price) || 0) * (p.quantityInStock || 0)),
+                    0
+                )
+            );
+        };
+
+        return {
         loadProducts: rxMethod<{ pageIndex?: number; pageSize?: number; search?: string; categoryId?: string; status?: number | null } | void>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
@@ -70,7 +84,7 @@ export const ProductStore = signalStore(
                                         status,
                                         lowStockCount: res.filter((p) => p.quantityInStock > 0 && p.quantityInStock <= 15).length,
                                         outOfStockCount: res.filter((p) => p.quantityInStock <= 0).length,
-                                        totalInventoryValue: res.reduce((sum, p) => sum + (p.price || 0) * (p.quantityInStock || 0), 0),
+                                        totalInventoryValue: calcInventoryValue(res),
                                     }
                                 );
                             } else {
@@ -169,7 +183,7 @@ export const ProductStore = signalStore(
                                             hasNextPage: false,
                                             lowStockCount: res.filter((p) => p.quantityInStock > 0 && p.quantityInStock <= 15).length,
                                             outOfStockCount: res.filter((p) => p.quantityInStock <= 0).length,
-                                            totalInventoryValue: res.reduce((sum, p) => sum + (p.price || 0) * (p.quantityInStock || 0), 0),
+                                            totalInventoryValue: calcInventoryValue(res),
                                         });
                                     } else {
                                         patchState(store, setAllEntities(res.items || []), {
@@ -199,5 +213,6 @@ export const ProductStore = signalStore(
                 )
             )
         ),
-    }))
+    };
+    })
 );

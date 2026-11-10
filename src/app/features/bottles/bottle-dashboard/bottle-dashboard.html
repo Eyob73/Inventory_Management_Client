@@ -173,45 +173,47 @@
           }
         </div>
       } @else {
-        <div class="table-wrapper">
-          <table class="app-table">
-            <thead>
-              <tr>
-                <th>{{ t('table.bottleType') }}</th>
-                <th>{{ t('table.size') }}</th>
-                <th class="text-right">{{ t('table.total') }}</th>
-                <th class="text-right">{{ t('table.available') }}</th>
-                <th class="text-right">{{ t('table.inCirculation') }}</th>
-                <th class="text-right">{{ t('table.deposit') }}</th>
-                <th>{{ t('table.status') }}</th>
-                <th class="text-right">{{ t('table.action') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (inv of inventoryStore.inventory(); track inv.id) {
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table class="app-table">
+              <thead>
                 <tr>
-                  <td class="font-medium">{{ inv.bottleTypeName }}</td>
-                  <td class="text-muted">{{ getBottleTypeDetails(inv.bottleTypeId)?.capacity || '-' }}</td>
-                  <td class="text-right font-mono">{{ inv.emptyBottles + inv.fullBottles + inv.withCustomers }}</td>
-                  <td class="text-right font-mono">{{ inv.emptyBottles }}</td>
-                  <td class="text-right font-mono">{{ inv.withCustomers }}</td>
-                  <td class="text-right font-mono">{{ getBottleTypeDetails(inv.bottleTypeId)?.depositAmount | currency:'ETB ' }}</td>
-                  <td>
-                    <span class="status-badge" [ngClass]="getInventoryStatusClass(inv)">
-                      {{ t(getInventoryStatus(inv)) }}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="actions-cell">
-                      <button class="action-btn" [routerLink]="['/bottles/inventory']" [title]="t('viewDetails')">
-                        <mat-icon>visibility</mat-icon>
-                      </button>
-                    </div>
-                  </td>
+                  <th>{{ t('table.bottleType') }}</th>
+                  <th>{{ t('table.size') }}</th>
+                  <th class="text-right">{{ t('table.total') }}</th>
+                  <th class="text-right">{{ t('table.available') }}</th>
+                  <th class="text-right">{{ t('table.inCirculation') }}</th>
+                  <th class="text-right">{{ t('table.deposit') }}</th>
+                  <th>{{ t('table.status') }}</th>
+                  <th class="text-right">{{ t('table.action') }}</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (inv of inventoryStore.inventory(); track inv.id) {
+                  <tr>
+                    <td class="font-medium">{{ inv.bottleTypeName }}</td>
+                    <td class="text-muted">{{ getBottleTypeDetails(inv.bottleTypeId)?.capacity || '-' }}</td>
+                    <td class="text-right font-mono">{{ inv.emptyBottles + inv.fullBottles + inv.withCustomers }}</td>
+                    <td class="text-right font-mono">{{ inv.emptyBottles }}</td>
+                    <td class="text-right font-mono">{{ inv.withCustomers }}</td>
+                    <td class="text-right font-mono">{{ getBottleTypeDetails(inv.bottleTypeId)?.depositAmount | currency:'ETB ' }}</td>
+                    <td>
+                      <span class="status-badge" [ngClass]="getInventoryStatusClass(inv)">
+                        {{ t(getInventoryStatus(inv)) }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="actions-cell">
+                        <button type="button" class="action-btn" [routerLink]="['/bottles/inventory']" [title]="t('viewDetails')">
+                          <mat-icon>visibility</mat-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
       }
     </div>
