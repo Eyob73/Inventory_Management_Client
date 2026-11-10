@@ -119,6 +119,7 @@ export interface InventoryReportSummary {
   totalProducts: number;
   totalStockQuantity: number;
   inventoryValue: number;
+  inventorySellingValue?: number;
   lowStockProducts: number;
   outOfStockProducts: number;
   criticalStockProducts: number;

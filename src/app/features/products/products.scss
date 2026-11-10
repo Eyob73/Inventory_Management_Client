@@ -39,13 +39,27 @@
 // ── Stat Cards ───────────────────────────────────────────────────
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+  width: 100%;
+  min-width: 0;
+
+  app-card-skeleton {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    gap: 0.75rem;
+  }
 }
 
 .stat-card {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
@@ -66,6 +80,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
+    min-width: 0;
 
     .stat-icon-wrap {
       display: flex;
@@ -86,6 +101,7 @@
     }
 
     .stat-title {
+      min-width: 0;
       font-size: 12px;
       font-weight: 600;
       color: var(--slate);
@@ -101,6 +117,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
   }
 
   .stat-value {
@@ -120,6 +137,9 @@
     font-size: 11px;
     color: var(--slate);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   &.teal .stat-icon-wrap    { background: var(--teal-soft);  color: var(--teal-dark);  }
@@ -129,6 +149,38 @@
   &.amber .stat-icon-wrap   { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
   &.warning .stat-icon-wrap { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
   &.danger .stat-icon-wrap  { background: var(--rose-soft);  color: var(--rose);      }
+
+  @media (max-width: 600px) {
+    padding: 10px 12px;
+
+    .stat-card-header {
+      gap: 6px;
+      margin-bottom: 6px;
+
+      .stat-icon-wrap {
+        width: 24px;
+        height: 24px;
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+
+      .stat-title {
+        font-size: 11px;
+      }
+    }
+
+    .stat-value {
+      font-size: 16px;
+    }
+
+    .stat-sub {
+      font-size: 10px;
+    }
+  }
 }
 .mat-column-no {
   width: 55px;
