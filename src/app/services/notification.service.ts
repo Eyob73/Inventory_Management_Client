@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 import { AuthService } from './auth';
 import * as signalR from '@microsoft/signalr';
 import { SwPush } from '@angular/service-worker';
+import { firstValueFrom, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +37,7 @@ export class NotificationService implements OnDestroy {
       } else {
         this.stopSignalRConnection();
         this.clearAll();
+        this.unsubscribePush();
       }
     });
   }
@@ -99,6 +102,89 @@ export class NotificationService implements OnDestroy {
       }
     } catch (err) {
       console.error('Could not subscribe to notifications', err);
+    }
+  }
+
+  public async unsubscribePush(): Promise<void> {
+    try {
+      let subPayload: any = null;
+
+      // 1. Check native browser push manager for active subscription
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window) {
+        try {
+          const reg = await navigator.serviceWorker.getRegistration();
+          const activeSub = await reg?.pushManager?.getSubscription();
+          if (activeSub) {
+            subPayload = activeSub.toJSON ? activeSub.toJSON() : null;
+            if (!subPayload) {
+              subPayload = { endpoint: activeSub.endpoint };
+            } else if (!subPayload.endpoint) {
+              subPayload.endpoint = activeSub.endpoint;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not inspect native push subscription:', e);
+        }
+      }
+
+      // 2. Fallback check via Angular SwPush subscription observable
+      if (!subPayload?.endpoint && this.swPush.isEnabled) {
+        try {
+          const swSub = await Promise.race([
+            firstValueFrom(this.swPush.subscription),
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 1000))
+          ]);
+          if (swSub) {
+            subPayload = (swSub as any).toJSON ? (swSub as any).toJSON() : swSub;
+            if (!subPayload.endpoint && (swSub as any).endpoint) {
+              subPayload.endpoint = (swSub as any).endpoint;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not retrieve swPush subscription:', e);
+        }
+      }
+
+      // 3. Inform backend to delete subscription record so pushes are never dispatched to this device
+      if (subPayload?.endpoint) {
+        try {
+          await firstValueFrom(
+            this.http.post(`${environment.apiUrl}/PushSubscriptions/unsubscribe`, subPayload, { withCredentials: true })
+              .pipe(catchError((err) => {
+                console.warn('Backend push unsubscribe error (safe to ignore if already deleted):', err);
+                return of(null);
+              }))
+          );
+        } catch (err) {
+          console.warn('Error sending unsubscribe to backend:', err);
+        }
+      }
+
+      // 4. Unsubscribe the browser push manager
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window) {
+        try {
+          const reg = await navigator.serviceWorker.getRegistration();
+          const activeSub = await reg?.pushManager?.getSubscription();
+          if (activeSub) {
+            await activeSub.unsubscribe();
+          }
+        } catch (e) {
+          console.warn('Native push manager unsubscription failed:', e);
+        }
+      }
+
+      // 5. Unsubscribe via Angular SwPush as well
+      if (this.swPush.isEnabled) {
+        try {
+          await this.swPush.unsubscribe();
+        } catch (e) {
+          // Ignore if already unsubscribed
+        }
+      }
+
+      console.log('Push notifications successfully unsubscribed for device.');
+    } catch (err) {
+      console.error('Error during unsubscribePush:', err);
     }
   }
 

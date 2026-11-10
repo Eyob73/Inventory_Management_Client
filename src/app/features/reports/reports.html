@@ -257,11 +257,11 @@
               <app-card-skeleton type="kpi"></app-card-skeleton>
             }
           </div>
+          <app-table-skeleton [rows]="8" [columns]="skeletonColumns"></app-table-skeleton>
           <div class="charts-row">
             <app-card-skeleton type="chart"></app-card-skeleton>
             <app-card-skeleton type="chart"></app-card-skeleton>
           </div>
-          <app-table-skeleton [rows]="8" [columns]="skeletonColumns"></app-table-skeleton>
         </div>
       } @else if (activeTab() === 'inventory') {
         <div class="report-section">
@@ -496,22 +496,6 @@
             </div>
           </div>
 
-          <div class="charts-row">
-            <div class="widget-card">
-              <h3 class="widget-title">{{ t('reports.salesReport.salesAnalytics') }}</h3>
-              <app-report-line-chart [data]="salesData()!.salesByDay"></app-report-line-chart>
-            </div>
-            <div class="widget-card">
-              <h3 class="widget-title">{{ t('reports.salesReport.topSellingProducts') }}</h3>
-              <app-report-bar-chart
-                [data]="topProductsBarData()"
-                [horizontal]="true"
-                [barColor]="'var(--teal)'"
-                [formatAsCurrency]="false"
-              ></app-report-bar-chart>
-            </div>
-          </div>
-
           <!-- Sales Table -->
           <div class="table-card">
             <div class="table-header-title">
@@ -529,12 +513,28 @@
                     <th class="text-right">{{ t('reports.salesReport.totalAmount') }}</th>
                     <th>{{ t('reports.salesReport.paymentMethod') }}</th>
                     <th>{{ t('reports.salesReport.status') }}</th>
+                    <th class="text-center no-print">{{ t('salesHistory.table.actions') || 'Actions' }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   @for (row of salesData()!.table.items; track row.id) {
-                    <tr>
-                      <td class="font-mono font-bold">{{ row.invoiceNumber }}</td>
+                    <tr
+                      class="sales-row clickable-row"
+                      [class.row-loading]="loadingSaleId() === row.id"
+                      (click)="openSaleDetail(row)"
+                      (keydown.enter)="openSaleDetail(row)"
+                      (keydown.space)="openSaleDetail(row); $event.preventDefault()"
+                      tabindex="0"
+                      role="button"
+                      [matTooltip]="t('salesHistory.table.viewReceipt') || 'View sale details'"
+                      [attr.aria-label]="(t('salesHistory.table.viewReceipt') || 'View Receipt') + ': ' + row.invoiceNumber"
+                    >
+                      <td class="font-mono font-bold invoice-cell">
+                        <span class="invoice-number">{{ row.invoiceNumber }}</span>
+                        @if (loadingSaleId() === row.id) {
+                          <mat-spinner diameter="14" class="inline-spinner"></mat-spinner>
+                        }
+                      </td>
                       <td>{{ row.customer }}</td>
                       <td>{{ row.date | date: 'medium' }}</td>
                       <td class="text-center font-bold">{{ row.numberOfItems }}</td>
@@ -545,10 +545,22 @@
                       <td>
                         <span class="status-badge status--active">{{ row.status }}</span>
                       </td>
+                      <td class="text-center no-print" (click)="$event.stopPropagation()">
+                        <button
+                          type="button"
+                          mat-icon-button
+                          class="action-btn"
+                          (click)="openSaleDetail(row)"
+                          [matTooltip]="t('salesHistory.table.viewReceipt') || 'View Receipt'"
+                          [disabled]="loadingSaleId() === row.id"
+                        >
+                          <mat-icon>receipt_long</mat-icon>
+                        </button>
+                      </td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="7" class="table-empty text-center">{{ t('reports.salesReport.noRecords') }}</td>
+                      <td colspan="8" class="table-empty text-center">{{ t('reports.salesReport.noRecords') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -565,6 +577,23 @@
               showFirstLastButtons
               class="no-print"
             ></mat-paginator>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="charts-row">
+            <div class="widget-card">
+              <h3 class="widget-title">{{ t('reports.salesReport.salesAnalytics') }}</h3>
+              <app-report-line-chart [data]="salesData()!.salesByDay"></app-report-line-chart>
+            </div>
+            <div class="widget-card">
+              <h3 class="widget-title">{{ t('reports.salesReport.topSellingProducts') }}</h3>
+              <app-report-bar-chart
+                [data]="topProductsBarData()"
+                [horizontal]="true"
+                [barColor]="'var(--teal)'"
+                [formatAsCurrency]="false"
+              ></app-report-bar-chart>
+            </div>
           </div>
         </div>
       }
@@ -608,24 +637,6 @@
               <div class="stat-card-body">
                 <div class="stat-value">{{ purchasesData()!.summary.averagePurchaseValue | number: '1.2-2' }} ETB</div>
               </div>
-            </div>
-          </div>
-
-          <div class="charts-row">
-            <div class="widget-card">
-              <h3 class="widget-title">{{ t('reports.purchasesReport.purchasesOverTime') }}</h3>
-              <app-report-line-chart
-                [data]="purchasesData()!.purchasesOverTime"
-                [color]="'var(--primary)'"
-              ></app-report-line-chart>
-            </div>
-            <div class="widget-card">
-              <h3 class="widget-title">{{ t('reports.purchasesReport.purchasesBySupplier') }}</h3>
-              <app-report-bar-chart
-                [data]="salesBySupplierBarData()"
-                [horizontal]="true"
-                [barColor]="'var(--primary)'"
-              ></app-report-bar-chart>
             </div>
           </div>
 
@@ -678,6 +689,25 @@
               showFirstLastButtons
               class="no-print"
             ></mat-paginator>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="charts-row">
+            <div class="widget-card">
+              <h3 class="widget-title">{{ t('reports.purchasesReport.purchasesOverTime') }}</h3>
+              <app-report-line-chart
+                [data]="purchasesData()!.purchasesOverTime"
+                [color]="'var(--primary)'"
+              ></app-report-line-chart>
+            </div>
+            <div class="widget-card">
+              <h3 class="widget-title">{{ t('reports.purchasesReport.purchasesBySupplier') }}</h3>
+              <app-report-bar-chart
+                [data]="salesBySupplierBarData()"
+                [horizontal]="true"
+                [barColor]="'var(--primary)'"
+              ></app-report-bar-chart>
+            </div>
           </div>
         </div>
       }

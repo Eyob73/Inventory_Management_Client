@@ -8,11 +8,12 @@ import {
   withHooks,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, tap, catchError, EMPTY, of, switchMap, exhaustMap } from 'rxjs';
+import { pipe, tap, catchError, EMPTY, of, switchMap, exhaustMap, from } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { TenantApiService } from '../services/tenant';
 import { NavigationService } from '../services/navigation-service';
+import { NotificationService } from '../services/notification.service';
 import { User, LoginCredentials, RegisterCredentials } from '../models/auth.model';
 
 export interface AuthState {
@@ -43,7 +44,14 @@ export const AuthStore = signalStore(
     }),
     isLoggedIn: computed(() => store.isAuthenticated()),
   })),
-  withMethods((store, authService = inject(AuthService), router = inject(Router), tenantService = inject(TenantApiService), navigationService = inject(NavigationService)) => ({
+  withMethods((
+    store,
+    authService = inject(AuthService),
+    router = inject(Router),
+    tenantService = inject(TenantApiService),
+    navigationService = inject(NavigationService),
+    notificationService = inject(NotificationService)
+  ) => ({
     checkAuth: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
@@ -244,7 +252,12 @@ export const AuthStore = signalStore(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
         exhaustMap(() =>
-          authService.logout().pipe(
+          from(notificationService.unsubscribePush()).pipe(
+            catchError((err) => {
+              console.warn('Error unsubscribing push during logout:', err);
+              return of(null);
+            }),
+            switchMap(() => authService.logout()),
             tap(() => {
               localStorage.setItem('logged_out', 'true');
               patchState(store, {

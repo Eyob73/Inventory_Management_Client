@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -21,16 +22,20 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { formatPaymentMethod } from '../../utils/payment-method.util';
 
 import { ReportsService } from '../../services/reports.service';
+import { SaleService } from '../../services/sale.service';
 import { CategoryService } from '../../services/category';
 import { ProductService } from '../../services/product';
 import { SupplierService } from '../../services/supplier';
 import { CustomerService } from '../../services/customer.service';
 import { UserService } from '../../services/user.service';
+import { Sale } from '../../models/sale.model';
+import { SaleDetailsDialogComponent } from '../../component/sale-details-dialog/sale-details-dialog';
 
 import {
   ReportFilter,
   DashboardReport,
   SalesReport,
+  SalesReportRow,
   PurchasesReport,
   InventoryReport,
   LowStockReport,
@@ -73,6 +78,7 @@ type ReportTab =
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
+    MatDialogModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
@@ -96,9 +102,13 @@ export class Reports implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private saleService = inject(SaleService);
   readonly transloco = inject(TranslocoService);
 
   readonly Math = Math;
+
+  loadingSaleId = signal<string | null>(null);
 
   readonly skeletonColumns: TableSkeletonColumn[] = [
     { width: '15%' },
@@ -568,5 +578,48 @@ export class Reports implements OnInit {
     if (lower.includes('discount')) return this.transloco.translate('reports.recommended.discount') || action;
     if (lower.includes('immediately')) return this.transloco.translate('reports.recommended.createPurchaseImmediately') || action;
     return action;
+  }
+
+  openSaleDetail(row: SalesReportRow): void {
+    if (!row?.id) return;
+    if (this.loadingSaleId()) return;
+
+    this.loadingSaleId.set(row.id);
+    this.saleService.getSaleById(row.id).subscribe({
+      next: (sale) => {
+        this.loadingSaleId.set(null);
+        this.dialog.open(SaleDetailsDialogComponent, {
+          data: { sale },
+          width: '680px',
+          panelClass: 'pos-receipt-modal',
+        });
+      },
+      error: (err) => {
+        this.loadingSaleId.set(null);
+        console.error('Error fetching full sale details:', err);
+        const fallbackSale: Sale = {
+          id: row.id,
+          saleNumber: row.invoiceNumber,
+          saleDate: row.date,
+          customerId: null,
+          customerName: row.customer,
+          subtotal: row.totalAmount,
+          discountAmount: 0,
+          taxAmount: 0,
+          totalAmount: row.totalAmount,
+          paymentMethod: row.paymentMethod,
+          amountReceived: row.totalAmount,
+          changeAmount: 0,
+          status: row.status,
+          createdAt: row.date,
+          items: [],
+        };
+        this.dialog.open(SaleDetailsDialogComponent, {
+          data: { sale: fallbackSale },
+          width: '680px',
+          panelClass: 'pos-receipt-modal',
+        });
+      },
+    });
   }
 }
