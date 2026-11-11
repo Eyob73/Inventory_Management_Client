@@ -353,16 +353,30 @@
   text-align: left;
   cursor: pointer;
   outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition: all var(--pos-transition);
 
-  &:hover:not(.product-card--oos):not(.product-tile--oos) {
-    border-color: var(--moss);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(.product-card--oos):not(.product-tile--oos) {
+      background: var(--surface);
+      border-color: var(--moss);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
   }
 
   &:active:not(.product-card--oos):not(.product-tile--oos) {
+    background: var(--surface);
     transform: scale(0.99);
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    &:not(:active):not(.product-card--oos):not(.product-tile--oos) {
+      background: var(--surface);
+      transform: none;
+    }
   }
 
   &.product-card--in-cart,
@@ -560,6 +574,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
       box-shadow: var(--shadow-sm);
       transition: all var(--pos-transition);
 
@@ -569,10 +585,12 @@
         height: 20px;
       }
 
-      &:hover:not(:disabled) {
-        background: var(--moss);
-        color: var(--btn-primary-fg);
-        border-color: var(--moss);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover:not(:disabled) {
+          background: var(--moss);
+          color: var(--btn-primary-fg);
+          border-color: var(--moss);
+        }
       }
 
       &:active:not(:disabled) {
