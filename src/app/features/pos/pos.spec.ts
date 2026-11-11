@@ -160,5 +160,37 @@ describe('PosComponent - Payment Verification Toggle Integration', () => {
     expect(component.discountAmount()).toBe(0);
     expect(component.amountReceived()).toBe(0);
   });
+
+  it('should render product cards without mobile tap-highlight and preserve surface background', () => {
+    const productService = TestBed.inject(ProductService) as any;
+    productService.getAll.mockReturnValue(
+      of({
+        items: [
+          { id: 'p1', name: 'Test Water', price: 25, quantityInStock: 10, isActive: true }
+        ],
+        totalCount: 1
+      })
+    );
+    vi.spyOn(tenantApiService, 'getPosPaymentVerification').mockReturnValue(of({ enabled: false } as any));
+
+    fixture.detectChanges();
+
+    const card: HTMLElement | null = fixture.nativeElement.querySelector('[data-purpose="product-card"]');
+    expect(card).toBeTruthy();
+
+    const cardStyle = getComputedStyle(card!);
+    expect(cardStyle.touchAction).toBe('manipulation');
+    expect(cardStyle.userSelect).toBe('none');
+    expect(cardStyle.background || cardStyle.backgroundColor).toContain('var(--surface)');
+
+    const componentCss = Array.from(document.querySelectorAll('style'))
+      .map((s) => s.textContent ?? '')
+      .join('\n');
+    expect(componentCss).toMatch(/-webkit-tap-highlight-color:\s*transparent/);
+
+    card!.click();
+    expect(component.cart().length).toBe(1);
+    fixture.destroy();
+  });
 });
 

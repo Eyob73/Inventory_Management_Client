@@ -331,25 +331,58 @@ export interface DataViewAction {
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
       box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
       transition: box-shadow 0.2s var(--ease, ease), border-color 0.2s var(--ease, ease), transform 0.2s var(--ease, ease);
     }
-    .data-card:hover {
-      box-shadow: var(--shadow-md, 0 4px 8px rgba(0,0,0,0.1));
+    @media (hover: hover) and (pointer: fine) {
+      .data-card:hover {
+        box-shadow: var(--shadow-md, 0 4px 8px rgba(0,0,0,0.1));
+      }
+      .data-card--clickable:hover {
+        background: var(--surface, var(--mat-sys-surface, #ffffff));
+        border-color: var(--primary, #0ea5e9);
+        transform: translateY(-2px);
+      }
+      :host-context(.dark-theme) .data-card--clickable:hover {
+        background: var(--surface, var(--mat-sys-surface-container));
+      }
+      .data-card--clickable:hover .card-field.field-text.card-title .field-value {
+        color: var(--primary, #0ea5e9);
+      }
+    }
+    .data-card--clickable {
+      user-select: none;
     }
     .data-card--clickable .data-card-content {
       cursor: pointer;
     }
-    .data-card--clickable:hover {
-      border-color: var(--primary, #0ea5e9);
-      transform: translateY(-2px);
+    .data-card:active,
+    .data-card--clickable:active {
+      background: var(--surface, var(--mat-sys-surface, #ffffff));
     }
-    .data-card--clickable:hover .card-field.field-text.card-title .field-value {
-      color: var(--primary, #0ea5e9);
+    .data-card--clickable:has(.data-card-content:active) {
+      transform: scale(0.99);
     }
     :host-context(.dark-theme) .data-card {
       background: var(--surface, var(--mat-sys-surface-container));
       border-color: var(--border, var(--mat-sys-outline-variant));
+    }
+    :host-context(.dark-theme) .data-card:active,
+    :host-context(.dark-theme) .data-card--clickable:active {
+      background: var(--surface, var(--mat-sys-surface-container));
+    }
+    @media (hover: none), (pointer: coarse) {
+      .data-card:not(:active),
+      .data-card--clickable:not(:active) {
+        background: var(--surface, var(--mat-sys-surface, #ffffff));
+        transform: none;
+      }
+      :host-context(.dark-theme) .data-card:not(:active),
+      :host-context(.dark-theme) .data-card--clickable:not(:active) {
+        background: var(--surface, var(--mat-sys-surface-container));
+      }
     }
     .data-card-content {
       padding: 16px;
@@ -357,6 +390,8 @@ export interface DataViewAction {
       display: flex;
       flex-direction: column;
       gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .card-image-wrapper {
       width: 100%;
